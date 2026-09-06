@@ -30,7 +30,7 @@ class PayMintService
         ?string $customAccountName = null,
         string $preferredBank = 'palmpay'
     ): VirtualAccount {
-        if (!in_array($kycType, ['nin', 'bvn'])) {
+        if (! in_array($kycType, ['nin', 'bvn'])) {
             throw new \InvalidArgumentException('KYC type must be either nin or bvn.');
         }
 
@@ -77,26 +77,22 @@ class PayMintService
             Log::info('PayMint Virtual Account API Response:', ['response' => $resData]);
 
             // Check response status
-            if (($resData['status'] ?? '') !== 'success' && !isset($resData['data'])) {
+            if (($resData['status'] ?? '') !== 'success' && ! isset($resData['data'])) {
                 $errorMsg = $resData['message'] ?? 'Failed to generate virtual account with PayMint.';
                 throw new \Exception($errorMsg);
             }
 
             $accountData = $resData['data']['accounts'][0] ?? null;
 
-            if (!$accountData) {
+            if (! $accountData) {
                 throw new \Exception('No virtual account details returned from PayMint.');
             }
 
-            // Save raw unmasked NIN or BVN on holder model (or Store owner)
+            // Save raw unmasked NIN or BVN on holder model
             if ($holder instanceof User) {
                 $kycField = strtolower($kycType);
                 $holder->$kycField = $kycNumber;
                 $holder->save();
-            } elseif ($holder instanceof Store && $holder->owner) {
-                $kycField = strtolower($kycType);
-                $holder->owner->$kycField = $kycNumber;
-                $holder->owner->save();
             }
 
             // Reference identifier
@@ -112,6 +108,7 @@ class PayMintService
                     'bank_name' => $accountData['bank_name'] ?? 'PalmPay',
                     'account_number' => $accountData['account_number'],
                     'account_name' => $accountData['account_name'] ?? $accountName,
+                    'email_alias' => $emailAlias,
                     'provider' => 'paymint',
                     'status' => $accountData['status'] ?? 'active',
                     'reference' => $reference,
@@ -136,11 +133,19 @@ class PayMintService
 
     /**
      * Create a unique email alias to trace webhooks back to tenant and holder.
+     * Format for User: t{store_id}-u{user_id}@va.affanhub.com (e.g. t1-u94@va.affanhub.com)
+     * Format for Store: t{store_id}-merchant@va.affanhub.com (e.g. t1-merchant@va.affanhub.com)
      */
     public function customerEmailAlias(Model $holder): string
     {
-        $tenantId = tenant('id') ?? $holder->store_id ?? 'main';
-        return sprintf('t%s-u%s@va.affanhub.com', $tenantId, $holder->id);
+        if ($holder instanceof User) {
+            $storeId = $holder->store_id ?? ($holder->store->id ?? 1);
+            return sprintf('t%s-u%s@va.affanhub.com', $storeId, $holder->id);
+        }
+
+        // Holder is Store
+        $storeId = $holder->id ?? 1;
+        return sprintf('t%s-merchant@va.affanhub.com', $storeId);
     }
 
     /**

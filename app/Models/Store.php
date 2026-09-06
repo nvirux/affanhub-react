@@ -84,4 +84,10 @@ class Store extends BaseTenant implements TenantWithDatabase
     {
         return $this->hasMany(StoreDataPlan::class);
     }
+
+    public function settlementAccount(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(SettlementAccount::class, 'store_id')->where('is_active', true);
+    }
 }
+

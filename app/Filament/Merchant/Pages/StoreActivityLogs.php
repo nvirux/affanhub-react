@@ -36,7 +36,7 @@ class StoreActivityLogs extends Page implements HasTable
     {
         return $table
             ->query(
-                ActivityLog::query()->where('tenant_id', Filament::getTenant()->getKey())
+                ActivityLog::query()->where('tenant_id', Filament::getTenant()?->getKey())
             )
             ->columns([
                 TextColumn::make('created_at')
@@ -50,6 +50,8 @@ class StoreActivityLogs extends Page implements HasTable
                 TextColumn::make('event')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
+                        'manual_wallet_credit', 'admin_manual_capital_credit' => 'success',
+                        'manual_wallet_debit', 'admin_manual_capital_debit' => 'warning',
                         'domain_added' => 'info',
                         'domain_verified' => 'success',
                         'domain_removed' => 'danger',
@@ -66,6 +68,10 @@ class StoreActivityLogs extends Page implements HasTable
             ->filters([
                 SelectFilter::make('event')
                     ->options([
+                        'manual_wallet_credit' => 'Manual Customer Credit',
+                        'manual_wallet_debit' => 'Manual Customer Debit',
+                        'admin_manual_capital_credit' => 'Admin Capital Credit',
+                        'admin_manual_capital_debit' => 'Admin Capital Debit',
                         'domain_added' => 'Domain Added',
                         'domain_verified' => 'Domain Verified',
                         'domain_primary_changed' => 'Primary Domain Changed',

@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'vtulab' => [
+        'base_url' => env('VTULAB_BASE_URL', 'https://vtulab.com/api/v1'),
+        'api_key' => env('VTULAB_API_KEY'),
+        'secret_key' => env('VTULAB_SECRET_KEY'),
+        'is_sandbox' => env('VTULAB_IS_SANDBOX', true),
+    ],
 ];

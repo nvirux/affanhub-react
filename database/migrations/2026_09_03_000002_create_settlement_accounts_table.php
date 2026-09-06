@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stores', function (Blueprint $table) {
+        Schema::create('settlement_accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('owner_id')->constrained('owners')->cascadeOnDelete();
-            $table->string('name');
-            $table->string('status')->default('active');
+            $table->string('store_id');
+            $table->string('bank_name');
+            $table->string('bank_code')->nullable();
+            $table->string('account_number');
+            $table->string('account_name');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
-            $table->json('data')->nullable();
         });
     }
 
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stores');
+        Schema::dropIfExists('settlement_accounts');
     }
 };

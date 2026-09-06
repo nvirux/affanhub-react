@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Stores\Tables;
 
+use App\Models\ActivityLog;
 use App\Models\Store;
 use App\Services\WalletService;
 use Filament\Actions\Action;
@@ -14,6 +15,7 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\Facades\Auth;
 
 class StoresTable
 {
@@ -109,6 +111,7 @@ class StoresTable
                         $mainWallet = $record->mainWallet();
                         $amount = (float) $data['amount'];
                         $reason = $data['reason'];
+                        $adminUser = Auth::guard('admin')->user() ?? Auth::user();
 
                         try {
                             if ($data['operation'] === 'credit') {
@@ -123,6 +126,21 @@ class StoresTable
                                         'store_name' => $record->name,
                                     ]
                                 );
+
+                                ActivityLog::create([
+                                    'tenant_id' => $record->id,
+                                    'causer_type' => $adminUser ? get_class($adminUser) : null,
+                                    'causer_id' => $adminUser?->id,
+                                    'event' => 'admin_manual_capital_credit',
+                                    'description' => sprintf('Super Admin credited ₦%s wholesale capital to store %s. Reason: %s', number_format($amount, 2), $record->name, $reason),
+                                    'properties' => [
+                                        'amount' => $amount,
+                                        'store_id' => $record->id,
+                                        'store_name' => $record->name,
+                                        'reason' => $reason,
+                                    ],
+                                ]);
+
                                 Notification::make()
                                     ->title(sprintf('Successfully credited ₦%s capital to %s', number_format($amount, 2), $record->name))
                                     ->success()
@@ -139,6 +157,21 @@ class StoresTable
                                         'store_name' => $record->name,
                                     ]
                                 );
+
+                                ActivityLog::create([
+                                    'tenant_id' => $record->id,
+                                    'causer_type' => $adminUser ? get_class($adminUser) : null,
+                                    'causer_id' => $adminUser?->id,
+                                    'event' => 'admin_manual_capital_debit',
+                                    'description' => sprintf('Super Admin debited ₦%s wholesale capital from store %s. Reason: %s', number_format($amount, 2), $record->name, $reason),
+                                    'properties' => [
+                                        'amount' => $amount,
+                                        'store_id' => $record->id,
+                                        'store_name' => $record->name,
+                                        'reason' => $reason,
+                                    ],
+                                ]);
+
                                 Notification::make()
                                     ->title(sprintf('Successfully debited ₦%s capital from %s', number_format($amount, 2), $record->name))
                                     ->warning()

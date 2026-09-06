@@ -5,6 +5,7 @@ namespace App\Filament\Merchant\Resources;
 use App\Filament\Merchant\Resources\CustomerResource\Pages\CreateCustomer;
 use App\Filament\Merchant\Resources\CustomerResource\Pages\EditCustomer;
 use App\Filament\Merchant\Resources\CustomerResource\Pages\ListCustomers;
+use App\Models\ActivityLog;
 use App\Models\User;
 use App\Services\WalletService;
 use BackedEnum;
@@ -19,6 +20,7 @@ use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use UnitEnum;
 
@@ -112,9 +114,11 @@ class CustomerResource extends Resource
                             ->placeholder('e.g., Cash deposit received via POS / WhatsApp'),
                     ])
                     ->action(function (User $record, array $data, WalletService $walletService): void {
+                        $store = \Filament\Facades\Filament::getTenant();
                         $userWallet = $record->wallet('main');
                         $amount = (float) $data['amount'];
                         $reason = $data['reason'];
+                        $causer = Auth::user();
 
                         try {
                             if ($data['operation'] === 'credit') {
@@ -129,6 +133,23 @@ class CustomerResource extends Resource
                                         'user_name' => $record->name,
                                     ]
                                 );
+
+                                if ($store) {
+                                    ActivityLog::create([
+                                        'tenant_id' => $store->id,
+                                        'causer_type' => $causer ? get_class($causer) : null,
+                                        'causer_id' => $causer?->id,
+                                        'event' => 'manual_wallet_credit',
+                                        'description' => sprintf('Credited ₦%s to customer %s (%s). Reason: %s', number_format($amount, 2), $record->name, $record->email, $reason),
+                                        'properties' => [
+                                            'amount' => $amount,
+                                            'customer_id' => $record->id,
+                                            'customer_name' => $record->name,
+                                            'reason' => $reason,
+                                        ],
+                                    ]);
+                                }
+
                                 Notification::make()
                                     ->title(sprintf('Successfully credited ₦%s to %s', number_format($amount, 2), $record->name))
                                     ->success()
@@ -145,6 +166,23 @@ class CustomerResource extends Resource
                                         'user_name' => $record->name,
                                     ]
                                 );
+
+                                if ($store) {
+                                    ActivityLog::create([
+                                        'tenant_id' => $store->id,
+                                        'causer_type' => $causer ? get_class($causer) : null,
+                                        'causer_id' => $causer?->id,
+                                        'event' => 'manual_wallet_debit',
+                                        'description' => sprintf('Debited ₦%s from customer %s (%s). Reason: %s', number_format($amount, 2), $record->name, $record->email, $reason),
+                                        'properties' => [
+                                            'amount' => $amount,
+                                            'customer_id' => $record->id,
+                                            'customer_name' => $record->name,
+                                            'reason' => $reason,
+                                        ],
+                                    ]);
+                                }
+
                                 Notification::make()
                                     ->title(sprintf('Successfully debited ₦%s from %s', number_format($amount, 2), $record->name))
                                     ->warning()
