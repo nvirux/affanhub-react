@@ -35,15 +35,24 @@ class StoreAndDomainSeeder extends Seeder
         );
 
         // 3. Create the Domain mapping for this store in Stancl Tenancy
-        $domainName = 'demo.localhost';
-        DB::table('domains')->updateOrInsert(
-            ['domain' => $domainName],
-            [
-                'tenant_id' => $store->id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        );
+        $baseDomain = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
+        $domains = array_unique(array_filter([
+            'demo.localhost',
+            'demo.idcore.africa',
+            $baseDomain !== 'localhost' ? 'demo.'.$baseDomain : null,
+        ]));
+
+        foreach ($domains as $domainName) {
+            DB::table('domains')->updateOrInsert(
+                ['domain' => $domainName],
+                [
+                    'tenant_id' => $store->id,
+                    'is_primary' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+        }
 
         // 4. Associate the Owner with the 'owner' role in the pivot table
         DB::table('store_owner')->updateOrInsert(
