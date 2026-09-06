@@ -1,0 +1,99 @@
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
+/**
+* @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
+ * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
+ * @route '//merchant.localhost/{tenant}/store-data-plans'
+ */
+const ListStoreDataPlans = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ListStoreDataPlans.url(args, options),
+    method: 'get',
+})
+
+ListStoreDataPlans.definition = {
+    methods: ["get","head"],
+    url: '//merchant.localhost/{tenant}/store-data-plans',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
+ * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
+ * @route '//merchant.localhost/{tenant}/store-data-plans'
+ */
+ListStoreDataPlans.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { tenant: args }
+    }
+
+    
+    if (Array.isArray(args)) {
+        args = {
+                    tenant: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        tenant: args.tenant,
+                }
+
+    return ListStoreDataPlans.definition.url
+            .replace('{tenant}', parsedArgs.tenant.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
+ * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
+ * @route '//merchant.localhost/{tenant}/store-data-plans'
+ */
+ListStoreDataPlans.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ListStoreDataPlans.url(args, options),
+    method: 'get',
+})
+/**
+* @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
+ * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
+ * @route '//merchant.localhost/{tenant}/store-data-plans'
+ */
+ListStoreDataPlans.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ListStoreDataPlans.url(args, options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
+ * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
+ * @route '//merchant.localhost/{tenant}/store-data-plans'
+ */
+    const ListStoreDataPlansForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ListStoreDataPlans.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
+ * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
+ * @route '//merchant.localhost/{tenant}/store-data-plans'
+ */
+        ListStoreDataPlansForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListStoreDataPlans.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
+ * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
+ * @route '//merchant.localhost/{tenant}/store-data-plans'
+ */
+        ListStoreDataPlansForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListStoreDataPlans.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ListStoreDataPlans.form = ListStoreDataPlansForm
+export default ListStoreDataPlans
