@@ -7,15 +7,17 @@ use App\Filament\Merchant\Resources\StaffResource\Pages\EditStaff;
 use App\Filament\Merchant\Resources\StaffResource\Pages\ListStaff;
 use App\Models\Owner;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
+use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
 use UnitEnum;
 
@@ -37,9 +39,23 @@ class StaffResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    public static function canViewAny(): bool
+    {
+        $tenant = Filament::getTenant();
+        $user = auth()->user();
+        if (! $tenant || ! $user) {
+            return false;
+        }
+
+        $role = $tenant->members()->where('owner_id', $user->id)->first()?->pivot?->role;
+
+        return in_array($role, ['owner', 'manager']);
+    }
+
     public static function getNavigationBadge(): ?string
     {
-        $store = \Filament\Facades\Filament::getTenant();
+        $store = Filament::getTenant();
+
         return $store ? (string) $store->members()->count() : null;
     }
 
@@ -61,9 +77,11 @@ class StaffResource extends Resource
                 ->placeholder('e.g. 08012345678'),
             Select::make('role')
                 ->options([
+                    'owner' => 'Owner',
                     'manager' => 'Manager',
                     'staff' => 'Staff',
                 ])
+                ->disabled(fn (?Owner $record) => $record?->pivot?->role === 'owner' || $record?->id === auth()->id())
                 ->required()
                 ->default('staff'),
             TextInput::make('password')
@@ -102,8 +120,27 @@ class StaffResource extends Resource
                     ->sortable(),
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()
+                    ->hidden(fn (Owner $record) => $record->pivot?->role === 'owner' && $record->id !== auth()->id()),
+                Action::make('remove')
+                    ->label('Remove')
+                    ->icon('heroicon-o-user-minus')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Remove Staff Member')
+                    ->modalDescription('Are you sure you want to remove this staff member from this store? Their user account will remain intact, but they will lose access to this store.')
+                    ->action(function (Owner $record) {
+                        $tenant = Filament::getTenant();
+                        if ($tenant) {
+                            $tenant->members()->detach($record->id);
+                        }
+
+                        Notification::make()
+                            ->title('Staff member removed from store')
+                            ->success()
+                            ->send();
+                    })
+                    ->hidden(fn (Owner $record) => $record->id === auth()->id() || $record->pivot?->role === 'owner'),
             ]);
     }
 

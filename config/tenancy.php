@@ -30,6 +30,7 @@ return [
         '127.0.0.1',
         $appHost,
         $appHost ? 'merchant.'.$appHost : 'merchant.localhost', // Filament Merchant Panel Domain
+        $appHost ? 'admin.'.$appHost : 'admin.localhost', // Filament Admin Panel Domain
     ]))),
 
     /**
