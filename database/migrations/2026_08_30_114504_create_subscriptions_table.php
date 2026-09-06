@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->string('store_id');
-            $table->foreign('store_id')->references('id')->on('stores')->cascadeOnDelete();
+            $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
             $table->foreignId('plan_id')->constrained('plans')->cascadeOnDelete();
             $table->decimal('price', 10, 2); // custom price negotiated, or copy of standard plan price
             $table->string('billing_interval')->default('month'); // month, year

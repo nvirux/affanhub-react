@@ -2,10 +2,11 @@
 
 namespace App\Filament\Merchant\Pages;
 
+use App\Models\Domain;
 use App\Models\Store;
-use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\Tenancy\RegisterTenant;
+use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 
 class RegisterStore extends RegisterTenant
@@ -19,15 +20,23 @@ class RegisterStore extends RegisterTenant
     {
         return $schema
             ->components([
-                TextInput::make('id')
-                    ->label('Store Slug (e.g. "annur")')
+                TextInput::make('subdomain')
+                    ->label('Store Subdomain (e.g. "annur")')
                     ->required()
-                    ->unique(table: 'stores', column: 'id')
                     ->alphaDash()
                     ->notIn(config('tenancy.reserved_tenant_ids', []))
                     ->validationMessages([
                         'not_in' => 'This store URL is reserved by AffanHub and cannot be used.',
-                    ]),
+                    ])
+                    ->rule(function () {
+                        return function (string $attribute, $value, \Closure $fail) {
+                            $baseDomain = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
+                            $fullDomain = strtolower(trim($value)).'.'.$baseDomain;
+                            if (Domain::where('domain', $fullDomain)->exists()) {
+                                $fail('This store subdomain is already taken.');
+                            }
+                        };
+                    }),
                 TextInput::make('name')
                     ->label('Store Name')
                     ->required()
@@ -38,13 +47,12 @@ class RegisterStore extends RegisterTenant
     protected function handleRegistration(array $data): Model
     {
         $store = Store::create([
-            'id' => $data['id'],
             'name' => $data['name'],
             'owner_id' => auth()->id(),
         ]);
 
         $owner = auth()->user();
-        
+
         if ($owner) {
             $owner->stores()->attach($store->id, ['role' => 'owner']);
         }
@@ -52,9 +60,10 @@ class RegisterStore extends RegisterTenant
         // Automatically create the domain for this new store!
         // We use config('app.url') so it works dynamically in production (e.g., affanhub.com)
         $baseDomain = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
-        
+
         $store->domains()->create([
-            'domain' => $data['id'] . '.' . $baseDomain,
+            'domain' => strtolower(trim($data['subdomain'])).'.'.$baseDomain,
+            'is_primary' => true,
         ]);
 
         return $store;

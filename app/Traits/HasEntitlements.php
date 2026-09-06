@@ -40,6 +40,7 @@ trait HasEntitlements
     public function hasActiveSubscription(): bool
     {
         $sub = $this->activeSubscription;
+
         return $sub ? $sub->isActive() : false;
     }
 
@@ -48,7 +49,7 @@ trait HasEntitlements
      */
     public function isSuspended(): bool
     {
-        return !$this->hasActiveSubscription();
+        return ! $this->hasActiveSubscription();
     }
 
     /**
@@ -58,7 +59,7 @@ trait HasEntitlements
     {
         // 1. Resolve feature metadata
         $feature = Feature::where('slug', $featureSlug)->first();
-        if (!$feature) {
+        if (! $feature) {
             return null;
         }
 
@@ -96,6 +97,14 @@ trait HasEntitlements
     }
 
     /**
+     * Alias for hasFeature to check entitlement access.
+     */
+    public function hasEntitlement(string $featureSlug): bool
+    {
+        return $this->hasFeature($featureSlug);
+    }
+
+    /**
      * Resolves and returns an integer value for checking numerical limits.
      */
     public function getFeatureLimit(string $featureSlug): int
@@ -121,6 +130,6 @@ trait HasEntitlements
                 return (float) $value;
             default:
                 return (string) $value;
-            }
+        }
     }
 }

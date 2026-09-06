@@ -3,11 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\Owner;
-use App\Models\Store;
 use App\Models\Plan;
+use App\Models\Store;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class StoreAndDomainSeeder extends Seeder
 {
@@ -24,11 +25,11 @@ class StoreAndDomainSeeder extends Seeder
         );
 
         // 2. Create the demo Store
-        $store = Store::updateOrCreate(
-            ['id' => 'demo'],
+        $store = Store::firstOrCreate(
+            ['name' => 'Demo Storefront'],
             [
+                'public_id' => 'str_demo',
                 'owner_id' => $owner->id,
-                'name' => 'Demo Storefront',
                 'status' => 'active',
             ]
         );
@@ -69,11 +70,12 @@ class StoreAndDomainSeeder extends Seeder
         }
 
         // 6. Create a demo customer user inside this store
-        \App\Models\User::updateOrCreate(
+        User::updateOrCreate(
             ['email' => 'customer@demo.com'],
             [
                 'store_id' => $store->id,
                 'name' => 'Demo Customer',
+                'phone' => '08012345680',
                 'password' => Hash::make('password'),
             ]
         );

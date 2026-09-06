@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Merchant\Pages\RegisterStore;
+use App\Models\Store;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -24,13 +26,13 @@ class MerchantPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->id('merchant')->domain('merchant.' . (parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost'))
+            ->id('merchant')->domain('merchant.'.(parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost'))
             ->path('')
             ->login()->profile()
             ->registration()
             ->authGuard('owner')
-            ->tenant(\App\Models\Store::class)
-            ->tenantRegistration(\App\Filament\Merchant\Pages\RegisterStore::class)
+            ->tenant(Store::class, slugAttribute: 'public_id')
+            ->tenantRegistration(RegisterStore::class)
             ->colors([
                 'primary' => Color::Amber,
             ])

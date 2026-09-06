@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('withdrawals', function (Blueprint $table) {
             $table->id();
-            $table->string('store_id');
+            $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
             $table->decimal('amount', 15, 2);
             $table->string('bank_name');
             $table->string('account_number');

@@ -10,15 +10,13 @@ class CreateDomainsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
         Schema::create('domains', function (Blueprint $table) {
             $table->increments('id');
             $table->string('domain', 255)->unique();
-            $table->string('tenant_id');
+            $table->foreignId('tenant_id')->constrained('stores')->cascadeOnUpdate()->cascadeOnDelete();
             $table->boolean('is_primary')->default(false);
             $table->string('status')->default('pending');
             $table->boolean('is_verified')->default(false);
@@ -47,14 +45,11 @@ class CreateDomainsTable extends Migration
             $table->string('verification_failure_reason')->nullable();
 
             $table->timestamps();
-            $table->foreign('tenant_id')->references('id')->on('stores')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {

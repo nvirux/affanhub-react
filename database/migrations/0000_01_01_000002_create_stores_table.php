@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('stores', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->id();
+            $table->string('public_id')->unique();
             $table->foreignId('owner_id')->constrained('owners')->cascadeOnDelete();
             $table->string('name');
             $table->string('status')->default('active');

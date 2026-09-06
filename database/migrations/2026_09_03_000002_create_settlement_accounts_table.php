@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('settlement_accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('store_id');
+            $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
             $table->string('bank_name');
             $table->string('bank_code')->nullable();
             $table->string('account_number');

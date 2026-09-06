@@ -12,9 +12,9 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
 class StoresTable
@@ -23,32 +23,33 @@ class StoresTable
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('Store Slug')
+                TextColumn::make('public_id')
+                    ->label('Public ID')
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
-                
+
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
-                
+
                 TextColumn::make('owner.name')
                     ->label('Owner (Merchant)')
                     ->searchable()
                     ->sortable(),
-                
+
                 TextColumn::make('main_wallet')
                     ->label('Main Capital (₦)')
                     ->badge()
                     ->color('info')
-                    ->state(fn (Store $record) => '₦' . number_format((float) ($record->mainWallet()->balance ?? 0), 2)),
+                    ->state(fn (Store $record) => '₦'.number_format((float) ($record->mainWallet()->balance ?? 0), 2)),
 
                 TextColumn::make('profit_wallet')
                     ->label('Profit Wallet (₦)')
                     ->badge()
                     ->color('success')
-                    ->state(fn (Store $record) => '₦' . number_format((float) ($record->profitWallet()->balance ?? 0), 2)),
+                    ->state(fn (Store $record) => '₦'.number_format((float) ($record->profitWallet()->balance ?? 0), 2)),
 
                 TextColumn::make('activeSubscription.plan.name')
                     ->label('Active Plan')
@@ -60,7 +61,7 @@ class StoresTable
                         default => 'danger',
                     })
                     ->placeholder('No Active Plan'),
-                
+
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -69,7 +70,7 @@ class StoresTable
                         default => 'warning',
                     })
                     ->sortable(),
-                
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -179,7 +180,7 @@ class StoresTable
                             }
                         } catch (\Throwable $e) {
                             Notification::make()
-                                ->title('Operation Failed: ' . $e->getMessage())
+                                ->title('Operation Failed: '.$e->getMessage())
                                 ->danger()
                                 ->send();
                         }

@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('store_data_plans', function (Blueprint $table) {
             $table->id();
-            $table->string('store_id');
-            $table->foreign('store_id')->references('id')->on('stores')->cascadeOnDelete();
+            $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
             $table->foreignId('data_plan_id')->constrained('data_plans')->cascadeOnDelete();
             $table->decimal('selling_price', 10, 2);
             $table->boolean('is_enabled')->default(true);

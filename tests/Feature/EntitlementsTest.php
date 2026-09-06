@@ -1,10 +1,10 @@
 <?php
 
-use App\Models\Store;
-use App\Models\Plan;
+use App\Models\Admin;
 use App\Models\Feature;
 use App\Models\Owner;
-use App\Models\Admin;
+use App\Models\Plan;
+use App\Models\Store;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -24,9 +24,8 @@ test('it resolves default global feature values if store has no subscription', f
         'email' => 'owner@example.com',
         'password' => bcrypt('password'),
     ]);
-    
+
     $store = Store::create([
-        'id' => 'test-store',
         'name' => 'Test Store',
         'owner_id' => $owner->id,
     ]);
@@ -66,9 +65,8 @@ test('it resolves plan feature values when store has active subscription', funct
         'email' => 'owner@example.com',
         'password' => bcrypt('password'),
     ]);
-    
+
     $store = Store::create([
-        'id' => 'test-store',
         'name' => 'Test Store',
         'owner_id' => $owner->id,
     ]);
@@ -116,9 +114,8 @@ test('it resolves store-specific custom overrides regardless of plan features', 
         'email' => 'owner@example.com',
         'password' => bcrypt('password'),
     ]);
-    
+
     $store = Store::create([
-        'id' => 'test-store',
         'name' => 'Test Store',
         'owner_id' => $owner->id,
     ]);
@@ -181,9 +178,8 @@ test('it falls back to global default if subscription is expired', function () {
         'email' => 'owner@example.com',
         'password' => bcrypt('password'),
     ]);
-    
+
     $store = Store::create([
-        'id' => 'test-store',
         'name' => 'Test Store',
         'owner_id' => $owner->id,
     ]);

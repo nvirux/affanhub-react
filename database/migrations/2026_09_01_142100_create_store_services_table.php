@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('store_services', function (Blueprint $table) {
             $table->id();
-            $table->string('store_id');
-            $table->foreign('store_id')->references('id')->on('stores')->cascadeOnDelete();
+            $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
             $table->foreignId('service_id')->constrained('services')->cascadeOnDelete();
             $table->boolean('is_enabled')->default(true);
             $table->integer('sort_order')->default(0);

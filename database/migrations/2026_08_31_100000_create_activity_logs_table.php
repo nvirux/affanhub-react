@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
-            $table->string('tenant_id')->nullable();
+            $table->foreignId('tenant_id')->nullable()->constrained('stores')->cascadeOnDelete();
             $table->string('causer_type')->nullable();
             $table->unsignedBigInteger('causer_id')->nullable();
             $table->string('event');
@@ -21,11 +21,6 @@ return new class extends Migration
             $table->json('properties')->nullable();
             $table->timestamp('created_at')->nullable();
 
-            $table->foreign('tenant_id')
-                ->references('id')
-                ->on('stores')
-                ->cascadeOnDelete();
-                
             $table->index(['causer_type', 'causer_id']);
         });
     }

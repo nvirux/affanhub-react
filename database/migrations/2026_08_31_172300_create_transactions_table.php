@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->string('store_id')->nullable();
-            $table->foreign('store_id')->references('id')->on('stores')->cascadeOnDelete();
+            $table->foreignId('store_id')->nullable()->constrained('stores')->cascadeOnDelete();
             $table->string('service_type'); // airtime, data, tv, electricity
             $table->decimal('amount', 15, 2);
             $table->decimal('cost_price', 15, 2);
