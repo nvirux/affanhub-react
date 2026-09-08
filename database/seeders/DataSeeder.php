@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Network;
-use App\Models\DataType;
 use App\Models\DataPlan;
+use App\Models\DataType;
+use App\Models\Network;
+use Illuminate\Database\Seeder;
 
 class DataSeeder extends Seeder
 {

@@ -17,15 +17,15 @@ class SubscriptionTrendsChart extends ChartWidget
     {
         $data = [];
         $labels = [];
-        
+
         for ($i = 5; $i >= 0; $i--) {
             $month = now()->subMonths($i);
             $labels[] = $month->format('M Y');
-            
+
             // Count subscriptions created in that month
             $count = Subscription::whereBetween('created_at', [
                 $month->startOfMonth()->toDateTimeString(),
-                $month->endOfMonth()->toDateTimeString()
+                $month->endOfMonth()->toDateTimeString(),
             ])->count();
 
             $data[] = $count;

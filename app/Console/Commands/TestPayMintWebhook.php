@@ -2,16 +2,19 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\Webhook\PayMintWebhookController;
 use App\Models\Store;
 use App\Models\User;
 use App\Models\VirtualAccount;
-use App\Models\WalletTransaction;
+use App\Services\WalletService;
 use Illuminate\Console\Command;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class TestPayMintWebhook extends Command
 {
     protected $signature = 'test:paymint-webhook {--amount=700} {--user=} {--merchant}';
+
     protected $description = 'Simulate an incoming PayMint bank deposit webhook for Customer or Merchant Store.';
 
     public function handle(): int
@@ -24,6 +27,7 @@ class TestPayMintWebhook extends Command
             $store = Store::first();
             if (! $store) {
                 $this->error('No store found for merchant deposit simulation.');
+
                 return 1;
             }
 
@@ -37,6 +41,7 @@ class TestPayMintWebhook extends Command
 
             if (! $user) {
                 $this->error('No user found for customer deposit simulation.');
+
                 return 1;
             }
 
@@ -61,10 +66,10 @@ class TestPayMintWebhook extends Command
                 'holder_id' => $holder->id,
                 'provider' => 'palmpay',
                 'bank_name' => 'Palmpay',
-                'account_number' => '669' . rand(1000000, 9999999),
+                'account_number' => '669'.rand(1000000, 9999999),
                 'account_name' => $isMerchant ? $store->name : $user->name,
                 'email_alias' => $aliasEmail,
-                'reference' => 'pm_va_' . Str::random(8),
+                'reference' => 'pm_va_'.Str::random(8),
             ]);
             $this->info("Created Test Virtual Account for {$holderName}: {$virtualAccount->bank_name} - {$virtualAccount->account_number} ({$aliasEmail})");
         } else {
@@ -74,14 +79,14 @@ class TestPayMintWebhook extends Command
 
         $initialBalance = (float) ($wallet->balance ?? 0);
         $amount = (float) $this->option('amount');
-        $txRef = 'PMNT|PAY|' . date('YmdHis') . '|' . strtoupper(Str::random(6));
-        $evtId = 'PMNT|EVT|' . date('YmdHis') . '|' . strtoupper(Str::random(6));
+        $txRef = 'PMNT|PAY|'.date('YmdHis').'|'.strtoupper(Str::random(6));
+        $evtId = 'PMNT|EVT|'.date('YmdHis').'|'.strtoupper(Str::random(6));
 
         $this->line("👤 Target Holder: {$holderName} (#{$holder->id})");
         $this->line("💳 Virtual Account Number: {$virtualAccount->account_number} ({$virtualAccount->bank_name})");
         $this->line("📧 Email Alias: {$aliasEmail}");
-        $this->line("💰 Balance Before Deposit: ₦" . number_format($initialBalance, 2));
-        $this->line("💵 Simulating Deposit Amount: ₦" . number_format($amount, 2));
+        $this->line('💰 Balance Before Deposit: ₦'.number_format($initialBalance, 2));
+        $this->line('💵 Simulating Deposit Amount: ₦'.number_format($amount, 2));
         $this->line("📑 PayMint Reference: {$txRef}");
 
         // 3. Exact PayMint Webhook Payload Structure
@@ -121,36 +126,36 @@ class TestPayMintWebhook extends Command
         ];
 
         // 4. Pass Request with X-Test-Bypass-Signature header for local CLI testing
-        $request = new \Illuminate\Http\Request();
+        $request = new Request;
         $request->replace($payload);
         $request->headers->set('X-Test-Bypass-Signature', 'true');
 
-        $controller = app(\App\Http\Controllers\Webhook\PayMintWebhookController::class);
-        $response = $controller->handle($request, app(\App\Services\WalletService::class));
+        $controller = app(PayMintWebhookController::class);
+        $response = $controller->handle($request, app(WalletService::class));
 
-        $this->info("📡 Webhook Response Status: " . $response->getStatusCode());
-        $this->line("📦 Response Content: " . $response->getContent());
+        $this->info('📡 Webhook Response Status: '.$response->getStatusCode());
+        $this->line('📦 Response Content: '.$response->getContent());
 
         // 5. Verify Wallet Balance Update
         $wallet->refresh();
         $newBalance = (float) $wallet->balance;
 
-        $this->line("🟢 Balance After Deposit: ₦" . number_format($newBalance, 2));
+        $this->line('🟢 Balance After Deposit: ₦'.number_format($newBalance, 2));
 
         if (abs($newBalance - ($initialBalance + $amount)) < 0.01) {
-            $this->info("✅ SUCCESS: {$holderName} wallet credited cleanly by ₦" . number_format($amount, 2) . "!");
+            $this->info("✅ SUCCESS: {$holderName} wallet credited cleanly by ₦".number_format($amount, 2).'!');
         } else {
-            $this->warn("⚠️ Warning: Balance did not match expected amount.");
+            $this->warn('⚠️ Warning: Balance did not match expected amount.');
         }
 
         // 6. Test Idempotency Guard (Duplicate Webhook Payload)
         $this->line("\n🔄 Testing Idempotency Protection (Sending duplicate payload)...");
-        $dupResponse = $controller->handle($request, app(\App\Services\WalletService::class));
-        $this->info("📡 Duplicate Webhook Response Status: " . $dupResponse->getStatusCode());
-        $this->line("📦 Duplicate Response Content: " . $dupResponse->getContent());
+        $dupResponse = $controller->handle($request, app(WalletService::class));
+        $this->info('📡 Duplicate Webhook Response Status: '.$dupResponse->getStatusCode());
+        $this->line('📦 Duplicate Response Content: '.$dupResponse->getContent());
 
         if (str_contains($dupResponse->getContent(), 'duplicate') || str_contains($dupResponse->getContent(), 'Already processed')) {
-            $this->info("🛡️ IDEMPOTENCY PASSED: System blocked double-deposit!");
+            $this->info('🛡️ IDEMPOTENCY PASSED: System blocked double-deposit!');
         }
 
         return 0;

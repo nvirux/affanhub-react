@@ -3,9 +3,10 @@
 namespace App\Filament\Merchant\Resources\StaffResource\Pages;
 
 use App\Filament\Merchant\Resources\StaffResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Models\Owner;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 
 class CreateStaff extends CreateRecord
@@ -16,7 +17,7 @@ class CreateStaff extends CreateRecord
     {
         $tenant = Filament::getTenant();
         $staffLimit = $tenant->getFeatureLimit('staff_limit');
-        
+
         // Count store members (excluding the owner role if we want, or total accounts)
         // Let's count total store members
         $currentStaffCount = $tenant->members()->count();
@@ -28,7 +29,7 @@ class CreateStaff extends CreateRecord
                 ->danger()
                 ->persistent()
                 ->send();
-            
+
             $this->halt();
         }
     }
@@ -39,7 +40,7 @@ class CreateStaff extends CreateRecord
         unset($data['role']);
 
         // Create the Owner record
-        $record = \App\Models\Owner::create($data);
+        $record = Owner::create($data);
 
         // Associate with the current store tenant
         $tenant = Filament::getTenant();

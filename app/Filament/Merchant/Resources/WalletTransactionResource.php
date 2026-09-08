@@ -9,9 +9,9 @@ use App\Models\WalletTransaction;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use UnitEnum;
 
 class WalletTransactionResource extends Resource
@@ -54,18 +54,21 @@ class WalletTransactionResource extends Resource
                     })
                     ->state(function (WalletTransaction $record) {
                         $wallet = $record->wallet;
-                        if (!$wallet) return 'N/A';
+                        if (! $wallet) {
+                            return 'N/A';
+                        }
 
                         if ($wallet->holder_type === Store::class) {
-                            return 'STORE ' . strtoupper($wallet->type ?? 'MAIN');
+                            return 'STORE '.strtoupper($wallet->type ?? 'MAIN');
                         }
 
                         if ($wallet->holder_type === User::class) {
                             $user = User::find($wallet->holder_id);
-                            return 'CUST: ' . ($user->name ?? 'User #' . $wallet->holder_id);
+
+                            return 'CUST: '.($user->name ?? 'User #'.$wallet->holder_id);
                         }
 
-                        return 'ACCOUNT #' . $wallet->id;
+                        return 'ACCOUNT #'.$wallet->id;
                     }),
                 TextColumn::make('type')
                     ->label('Type')

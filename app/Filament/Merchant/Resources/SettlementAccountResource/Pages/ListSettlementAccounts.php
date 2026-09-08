@@ -72,7 +72,9 @@ class ListSettlementAccounts extends ListRecords
                 ->color('primary')
                 ->visible(function () {
                     $store = Filament::getTenant();
-                    if (! $store) return true;
+                    if (! $store) {
+                        return true;
+                    }
 
                     return ! SettlementAccount::where('store_id', $store->id)
                         ->where('status', 'pending')
@@ -106,6 +108,7 @@ class ListSettlementAccounts extends ListRecords
 
                     if (! $store) {
                         Notification::make()->title('No store context found')->danger()->send();
+
                         return;
                     }
 
@@ -120,6 +123,7 @@ class ListSettlementAccounts extends ListRecords
                             ->body('You already have a pending bank account verification request in progress.')
                             ->danger()
                             ->send();
+
                         return;
                     }
 

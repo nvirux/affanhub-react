@@ -7,13 +7,19 @@ use Stancl\Tenancy\Database\Models\Domain as BaseDomain;
 class Domain extends BaseDomain
 {
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_VERIFIED = 'verified';
+
     public const STATUS_FAILED = 'failed';
+
     public const STATUS_INACTIVE = 'inactive';
 
     public const VERIFY_PENDING_DNS = 'pending_dns';
+
     public const VERIFY_OWNERSHIP_VERIFIED = 'ownership_verified';
+
     public const VERIFY_CONNECTED = 'connected';
+
     public const VERIFY_ACTIVE = 'active';
 
     protected $fillable = [
@@ -72,14 +78,14 @@ class Domain extends BaseDomain
             return true;
         }
 
-        return $this->is_verified 
-            || $this->is_approved 
-            || $this->is_routing_enabled 
+        return $this->is_verified
+            || $this->is_approved
+            || $this->is_routing_enabled
             || $this->is_legacy
             || in_array($this->verification_status, [
                 self::VERIFY_ACTIVE,
                 self::VERIFY_CONNECTED,
-                self::STATUS_VERIFIED
+                self::STATUS_VERIFIED,
             ], true);
     }
 
@@ -137,10 +143,11 @@ class Domain extends BaseDomain
     {
         $centralDomains = config('tenancy.central_domains', []);
         foreach ($centralDomains as $central) {
-            if (str_ends_with($this->domain, '.' . $central)) {
+            if (str_ends_with($this->domain, '.'.$central)) {
                 return false;
             }
         }
+
         return true;
     }
 

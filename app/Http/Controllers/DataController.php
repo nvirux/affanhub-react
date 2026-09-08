@@ -79,6 +79,7 @@ class DataController extends Controller
             if ($request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => 'Unauthenticated user.'], 401);
             }
+
             return Redirect::back()->with('error', 'Unauthenticated user.');
         }
 
@@ -115,6 +116,7 @@ class DataController extends Controller
             if ($request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
             }
+
             return Redirect::back()->with('error', $e->getMessage());
         }
     }

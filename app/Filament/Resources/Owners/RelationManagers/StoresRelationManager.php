@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources\Owners\RelationManagers;
 
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
-use Filament\Tables\Table;
-use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\AttachAction;
 use Filament\Actions\DetachAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class StoresRelationManager extends RelationManager
 {

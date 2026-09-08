@@ -3,6 +3,7 @@
 namespace App\Services\Audit;
 
 use App\Models\ActivityLog;
+use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Auth;
 
 class ActivityLogger
@@ -10,7 +11,7 @@ class ActivityLogger
     public static function log(string $event, string $description, ?array $properties = null, ?string $tenantId = null): ActivityLog
     {
         $causer = null;
-        
+
         if (Auth::guard('admin')->check()) {
             $causer = Auth::guard('admin')->user();
         } elseif (Auth::guard('owner')->check()) {
@@ -21,8 +22,8 @@ class ActivityLogger
 
         // Auto-detect current active tenant if exists
         if (empty($tenantId)) {
-            if (class_exists(\Filament\Facades\Filament::class) && \Filament\Facades\Filament::getTenant()) {
-                $tenantId = \Filament\Facades\Filament::getTenant()->getKey();
+            if (class_exists(Filament::class) && Filament::getTenant()) {
+                $tenantId = Filament::getTenant()->getKey();
             } elseif (function_exists('tenant') && tenant()) {
                 $tenantId = tenant()->id;
             }

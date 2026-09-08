@@ -32,7 +32,7 @@ class ListPlanDataPrices extends ListRecords
 
         foreach ($networks as $network) {
             $netId = $network->id;
-            $tabs['net_' . $netId] = Tab::make($network->name)
+            $tabs['net_'.$netId] = Tab::make($network->name)
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('dataPlan', fn ($q) => $q->where('network_id', $netId)))
                 ->badge(
                     PlanDataPrice::whereHas('dataPlan', fn ($q) => $q->where('network_id', $netId))->count()

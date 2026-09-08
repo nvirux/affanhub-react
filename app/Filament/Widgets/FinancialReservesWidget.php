@@ -27,15 +27,15 @@ class FinancialReservesWidget extends BaseWidget
             ->sum('balance');
 
         return [
-            Stat::make('Customer Reserve', '₦' . number_format($customerReserve, 2))
+            Stat::make('Customer Reserve', '₦'.number_format($customerReserve, 2))
                 ->description('Total customer wallet balances')
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('info'),
-            Stat::make('Wholesale Capital Reserve', '₦' . number_format($wholesaleReserve, 2))
+            Stat::make('Wholesale Capital Reserve', '₦'.number_format($wholesaleReserve, 2))
                 ->description('Merchant wholesale capital for orders')
                 ->descriptionIcon('heroicon-m-building-storefront')
                 ->color('primary'),
-            Stat::make('Unclaimed Merchant Profits', '₦' . number_format($merchantProfits, 2))
+            Stat::make('Unclaimed Merchant Profits', '₦'.number_format($merchantProfits, 2))
                 ->description('Merchant profits awaiting withdrawal')
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('success'),

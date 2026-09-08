@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/webhooks/paymint'
  */
 const handle4db542e154b257599d72fa166c3b9904 = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ handle4db542e154b257599d72fa166c3b9904.definition = {
 
 /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/webhooks/paymint'
  */
 handle4db542e154b257599d72fa166c3b9904.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ handle4db542e154b257599d72fa166c3b9904.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/webhooks/paymint'
  */
 handle4db542e154b257599d72fa166c3b9904.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ handle4db542e154b257599d72fa166c3b9904.post = (options?: RouteQueryOptions): Rou
 
     /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/webhooks/paymint'
  */
     const handle4db542e154b257599d72fa166c3b9904Form = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ handle4db542e154b257599d72fa166c3b9904.post = (options?: RouteQueryOptions): Rou
 
             /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/webhooks/paymint'
  */
         handle4db542e154b257599d72fa166c3b9904Form.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -56,7 +56,7 @@ handle4db542e154b257599d72fa166c3b9904.post = (options?: RouteQueryOptions): Rou
     handle4db542e154b257599d72fa166c3b9904.form = handle4db542e154b257599d72fa166c3b9904Form
     /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/api/webhooks/paymint'
  */
 const handleca17042d4c8e9ecda0e6d2ede1ac85f1 = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -71,7 +71,7 @@ handleca17042d4c8e9ecda0e6d2ede1ac85f1.definition = {
 
 /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/api/webhooks/paymint'
  */
 handleca17042d4c8e9ecda0e6d2ede1ac85f1.url = (options?: RouteQueryOptions) => {
@@ -80,7 +80,7 @@ handleca17042d4c8e9ecda0e6d2ede1ac85f1.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/api/webhooks/paymint'
  */
 handleca17042d4c8e9ecda0e6d2ede1ac85f1.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -90,7 +90,7 @@ handleca17042d4c8e9ecda0e6d2ede1ac85f1.post = (options?: RouteQueryOptions): Rou
 
     /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/api/webhooks/paymint'
  */
     const handleca17042d4c8e9ecda0e6d2ede1ac85f1Form = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -100,7 +100,7 @@ handleca17042d4c8e9ecda0e6d2ede1ac85f1.post = (options?: RouteQueryOptions): Rou
 
             /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/api/webhooks/paymint'
  */
         handleca17042d4c8e9ecda0e6d2ede1ac85f1Form.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

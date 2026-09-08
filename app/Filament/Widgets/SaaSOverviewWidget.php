@@ -19,7 +19,7 @@ class SaaSOverviewWidget extends BaseWidget
         $yearlyRevenue = Subscription::where('status', 'active')
             ->where('billing_interval', 'year')
             ->sum('price');
-        
+
         $estimatedMonthlyValue = $monthlyRevenue + ($yearlyRevenue / 12);
 
         return [
@@ -31,7 +31,7 @@ class SaaSOverviewWidget extends BaseWidget
                 ->description('Currently paid or active plans')
                 ->descriptionIcon('heroicon-m-credit-card')
                 ->color('info'),
-            Stat::make('Monthly Run Rate', '₦' . number_format($estimatedMonthlyValue, 2))
+            Stat::make('Monthly Run Rate', '₦'.number_format($estimatedMonthlyValue, 2))
                 ->description('Estimated MRR from subscriptions')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('warning'),

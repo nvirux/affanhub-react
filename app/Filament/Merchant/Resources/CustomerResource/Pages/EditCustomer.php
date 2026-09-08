@@ -3,8 +3,8 @@
 namespace App\Filament\Merchant\Resources\CustomerResource\Pages;
 
 use App\Filament\Merchant\Resources\CustomerResource;
-use Filament\Resources\Pages\EditRecord;
 use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
 
 class EditCustomer extends EditRecord
 {

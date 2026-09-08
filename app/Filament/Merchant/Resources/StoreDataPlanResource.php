@@ -3,25 +3,26 @@
 namespace App\Filament\Merchant\Resources;
 
 use App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans;
+use App\Models\PlanDataPrice;
 use App\Models\StoreDataPlan;
 use App\Models\Subscription;
-use App\Models\PlanDataPrice;
 use BackedEnum;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
-use Filament\Actions\EditAction;
-use Filament\Actions\BulkAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Notifications\Notification;
+use Filament\Tables\Table;
 use UnitEnum;
 
 class StoreDataPlanResource extends Resource
@@ -86,7 +87,7 @@ class StoreDataPlanResource extends Resource
                     ->badge()
                     ->color('purple')
                     ->state(function (StoreDataPlan $record) {
-                        $store = \Filament\Facades\Filament::getTenant();
+                        $store = Filament::getTenant();
                         $subscription = Subscription::where('store_id', $store?->id)
                             ->whereIn('status', ['active', 'trialing'])
                             ->latest()
@@ -98,12 +99,13 @@ class StoreDataPlanResource extends Resource
                                 ->first();
 
                             if ($planPrice && $planPrice->wholesale_price !== null) {
-                                return '₦' . number_format((float) $planPrice->wholesale_price, 2);
+                                return '₦'.number_format((float) $planPrice->wholesale_price, 2);
                             }
                         }
 
                         $baseWholesale = $record->dataPlan->selling_price ?? $record->dataPlan->default_retail_price;
-                        return '₦' . number_format((float) $baseWholesale, 2);
+
+                        return '₦'.number_format((float) $baseWholesale, 2);
                     }),
                 TextInputColumn::make('selling_price')
                     ->label('Your Store Price (₦)')
@@ -114,7 +116,7 @@ class StoreDataPlanResource extends Resource
                     ->badge()
                     ->color('success')
                     ->state(function (StoreDataPlan $record) {
-                        $store = \Filament\Facades\Filament::getTenant();
+                        $store = Filament::getTenant();
                         $subscription = Subscription::where('store_id', $store?->id)
                             ->whereIn('status', ['active', 'trialing'])
                             ->latest()
@@ -133,7 +135,8 @@ class StoreDataPlanResource extends Resource
                         }
 
                         $profit = (float) $record->selling_price - $wholesaleCost;
-                        return '₦' . number_format($profit, 2);
+
+                        return '₦'.number_format($profit, 2);
                     }),
                 ToggleColumn::make('is_best_offer')
                     ->label('HOT 🔥 Best Offer'),

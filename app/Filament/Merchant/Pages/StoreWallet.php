@@ -2,13 +2,12 @@
 
 namespace App\Filament\Merchant\Pages;
 
-use App\Models\VirtualAccount;
 use App\Services\Payment\PayMintService;
+use BackedEnum;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use BackedEnum;
 
 class StoreWallet extends Page
 {
@@ -25,7 +24,9 @@ class StoreWallet extends Page
     protected static ?int $navigationSort = 1;
 
     public string $kycType = 'nin';
+
     public string $kycNumber = '';
+
     public string $phone = '';
 
     public function mount()
@@ -34,7 +35,7 @@ class StoreWallet extends Page
         if ($store && $store->owner) {
             $this->phone = $store->owner->phone ?? '';
             $this->kycNumber = $store->owner->nin ?? $store->owner->bvn ?? '';
-            if (!empty($store->owner->bvn) && empty($store->owner->nin)) {
+            if (! empty($store->owner->bvn) && empty($store->owner->nin)) {
                 $this->kycType = 'bvn';
             }
         }
@@ -44,9 +45,9 @@ class StoreWallet extends Page
     {
         $store = Filament::getTenant();
         if ($store && $store->owner) {
-            if ($value === 'nin' && !empty($store->owner->nin)) {
+            if ($value === 'nin' && ! empty($store->owner->nin)) {
                 $this->kycNumber = $store->owner->nin;
-            } elseif ($value === 'bvn' && !empty($store->owner->bvn)) {
+            } elseif ($value === 'bvn' && ! empty($store->owner->bvn)) {
                 $this->kycNumber = $store->owner->bvn;
             }
         }
@@ -62,14 +63,15 @@ class StoreWallet extends Page
 
         $store = Filament::getTenant();
 
-        if (!$store) {
+        if (! $store) {
             Notification::make()->title('Store not found.')->danger()->send();
+
             return;
         }
 
         try {
             // Save phone to owner model if missing
-            if ($store->owner && empty($store->owner->phone) && !empty($this->phone)) {
+            if ($store->owner && empty($store->owner->phone) && ! empty($this->phone)) {
                 $store->owner->phone = $this->phone;
                 $store->owner->save();
             }
@@ -80,7 +82,7 @@ class StoreWallet extends Page
                 $this->kycType,
                 $this->kycNumber,
                 $this->phone,
-                'AffanHub - ' . $store->name
+                'AffanHub - '.$store->name
             );
 
             Notification::make()

@@ -3,18 +3,13 @@
 namespace App\Filament\Resources\VirtualAccounts;
 
 use App\Models\VirtualAccount;
+use BackedEnum;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\Action;
-use Filament\Notifications\Notification;
-use Filament\Support\Icons\Heroicon;
-use BackedEnum;
-
-use App\Filament\Resources\VirtualAccounts\Pages;
+use Filament\Tables\Table;
 
 class VirtualAccountResource extends Resource
 {

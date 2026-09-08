@@ -48,6 +48,13 @@ class PlanAndFeatureSeeder extends Seeder
                 'default_value' => 'false',
                 'description' => 'Allows store to activate customer referral and earning programs.',
             ],
+            [
+                'name' => 'Custom Branding & Theming',
+                'slug' => 'custom_branding',
+                'type' => 'boolean',
+                'default_value' => 'false',
+                'description' => 'Allows custom HEX brand colors, custom favicon upload, and advanced web chat widgets.',
+            ],
         ];
 
         $featureModels = [];
@@ -96,6 +103,7 @@ class PlanAndFeatureSeeder extends Seeder
                 'api_access' => 'false',
                 'custom_pricing_margins' => 'false',
                 'referral_system' => 'false',
+                'custom_branding' => 'false',
             ],
             'pro' => [
                 'staff_limit' => '10',
@@ -103,6 +111,7 @@ class PlanAndFeatureSeeder extends Seeder
                 'api_access' => 'false',
                 'custom_pricing_margins' => 'true',
                 'referral_system' => 'true',
+                'custom_branding' => 'true',
             ],
             'enterprise' => [
                 'staff_limit' => '999', // Representation of "unlimited"
@@ -110,6 +119,7 @@ class PlanAndFeatureSeeder extends Seeder
                 'api_access' => 'true',
                 'custom_pricing_margins' => 'true',
                 'referral_system' => 'true',
+                'custom_branding' => 'true',
             ],
         ];
 

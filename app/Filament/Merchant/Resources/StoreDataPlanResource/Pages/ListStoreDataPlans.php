@@ -6,6 +6,7 @@ use App\Filament\Merchant\Resources\StoreDataPlanResource;
 use App\Models\DataPlan;
 use App\Models\Network;
 use App\Models\StoreDataPlan;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,7 +22,7 @@ class ListStoreDataPlans extends ListRecords
 
     protected function getTableQuery(): ?Builder
     {
-        $store = \Filament\Facades\Filament::getTenant();
+        $store = Filament::getTenant();
 
         if ($store) {
             $masterPlans = DataPlan::where('is_active', true)->get();
@@ -47,7 +48,7 @@ class ListStoreDataPlans extends ListRecords
 
     public function getTabs(): array
     {
-        $store = \Filament\Facades\Filament::getTenant();
+        $store = Filament::getTenant();
         $storeId = $store ? $store->id : null;
 
         $tabs = [
@@ -59,7 +60,7 @@ class ListStoreDataPlans extends ListRecords
 
         foreach ($networks as $network) {
             $netId = $network->id;
-            $tabs['net_' . $netId] = Tab::make($network->name)
+            $tabs['net_'.$netId] = Tab::make($network->name)
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('dataPlan', fn ($q) => $q->where('network_id', $netId)))
                 ->badge(
                     StoreDataPlan::where('store_id', $storeId)

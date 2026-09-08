@@ -30,9 +30,14 @@
             }
         </style>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        {{-- Tenant Favicon or System Default --}}
+        @if(tenant() && tenant('favicon_path'))
+            <link rel="icon" href="{{ global_asset('storage/' . tenant('favicon_path')) }}" sizes="any">
+        @else
+            <link rel="icon" href="/favicon.ico" sizes="any">
+            <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+            <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        @endif
 
         @fonts
 
@@ -41,6 +46,32 @@
         <x-inertia::head>
             <title>{{ config('app.name', 'Laravel') }}</title>
         </x-inertia::head>
+
+        {{-- Tenant Dynamic Brand Theme & Foreground Contrast (Loaded last to ensure absolute cascade priority) --}}
+        @if(tenant() && tenant('primary_color'))
+            @php
+                $tenantPrimary = tenant('primary_color');
+                $tenantForeground = \App\Services\Branding\ColorHelper::getContrastForeground($tenantPrimary);
+            @endphp
+            <style id="tenant-brand-theme">
+                :root, html, body {
+                    --primary: {{ $tenantPrimary }} !important;
+                    --color-primary: {{ $tenantPrimary }} !important;
+                    --primary-foreground: {{ $tenantForeground }} !important;
+                    --color-primary-foreground: {{ $tenantForeground }} !important;
+                    --ring: {{ $tenantPrimary }} !important;
+                    --color-ring: {{ $tenantPrimary }} !important;
+                }
+                .dark, html.dark, body.dark {
+                    --primary: {{ $tenantPrimary }} !important;
+                    --color-primary: {{ $tenantPrimary }} !important;
+                    --primary-foreground: {{ $tenantForeground }} !important;
+                    --color-primary-foreground: {{ $tenantForeground }} !important;
+                    --ring: {{ $tenantPrimary }} !important;
+                    --color-ring: {{ $tenantPrimary }} !important;
+                }
+            </style>
+        @endif
     </head>
     <body class="font-sans antialiased">
         <x-inertia::app />

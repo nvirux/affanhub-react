@@ -21,12 +21,12 @@ class CustomDomainOnboardingService
         // Conflict check: Check if domain is used by ANY other tenant (active or soft deleted)
         // We normalize by removing www. for the comparison to prevent root/www overlap across tenants
         $normalizedForComparison = preg_replace('/^www\./i', '', $domainName);
-        
-        $conflict = Domain::where(function($query) use ($domainName, $normalizedForComparison) {
-                $query->where('domain', $domainName)
-                      ->orWhere('domain', 'www.' . $normalizedForComparison)
-                      ->orWhere('domain', $normalizedForComparison);
-            })
+
+        $conflict = Domain::where(function ($query) use ($domainName, $normalizedForComparison) {
+            $query->where('domain', $domainName)
+                ->orWhere('domain', 'www.'.$normalizedForComparison)
+                ->orWhere('domain', $normalizedForComparison);
+        })
             ->where('tenant_id', '!=', $tenant->id)
             ->first();
 
@@ -48,6 +48,7 @@ class CustomDomainOnboardingService
             // If it's already healthy/verified, don't reset it!
             if ($existing->isHealthy()) {
                 $existing->update(['is_primary' => true]);
+
                 return $existing;
             }
 
@@ -69,7 +70,7 @@ class CustomDomainOnboardingService
         }
 
         // Generate deterministic token
-        $token = substr(hash_hmac('sha256', $tenant->id . '|' . $domainName, config('app.key')), 0, 32);
+        $token = substr(hash_hmac('sha256', $tenant->id.'|'.$domainName, config('app.key')), 0, 32);
 
         return Domain::create([
             'tenant_id' => $tenant->id,
@@ -87,8 +88,9 @@ class CustomDomainOnboardingService
     public function processOnboarding(Domain $domain, bool $force = false): bool
     {
         // Immutable safety for healthy domains
-        if ($domain->isHealthy() && !$force) {
+        if ($domain->isHealthy() && ! $force) {
             $this->checkConnection($domain);
+
             return true;
         }
 
@@ -101,12 +103,13 @@ class CustomDomainOnboardingService
                 $domain->update([
                     'verification_error' => 'Step 1 Failed: Verification token is missing.',
                 ]);
+
                 return false;
             }
 
             $domain->increment('verification_attempts');
             $domain->update(['last_verification_attempt_at' => now()]);
-            
+
             $ownership = $this->dns->verifyOwnership($domain->domain, $domain->verification_token);
 
             $domain->update([
@@ -139,33 +142,33 @@ class CustomDomainOnboardingService
                 $hasExceededTime = $domain->created_at->diffInHours(now()) >= 48;
 
                 if ($hasExceededAttempts || $hasExceededTime) {
-                    $reason = $hasExceededAttempts 
-                        ? 'Verification attempts limit reached (10).' 
+                    $reason = $hasExceededAttempts
+                        ? 'Verification attempts limit reached (10).'
                         : 'Verification time limit reached (48 hours).';
-                    
+
                     $domain->update([
                         'verification_paused_at' => now(),
                         'verification_failed_at' => now(),
                         'verification_failure_reason' => 'TXT verification token was not found after multiple attempts.',
-                        'verification_error' => 'Step 1 Failed: ' . $reason,
+                        'verification_error' => 'Step 1 Failed: '.$reason,
                         'last_verification_message' => 'Verification paused. Please check your DNS record and click Retry Verification.',
                     ]);
 
                     Log::error('Domain verification reached retry limit and is now paused.', [
                         'domain' => $domain->domain,
                         'attempts' => $domain->verification_attempts,
-                        'reason' => $reason
+                        'reason' => $reason,
                     ]);
                 } else {
                     $domain->update([
                         'last_verification_message' => $ownership['message'],
-                        'verification_error' => 'Step 1 Failed: ' . $ownership['message'],
+                        'verification_error' => 'Step 1 Failed: '.$ownership['message'],
                     ]);
 
                     if ($isFirstFailure) {
                         Log::warning('Domain ownership verification failed (First attempt)', [
                             'domain' => $domain->domain,
-                            'error' => $ownership['message']
+                            'error' => $ownership['message'],
                         ]);
                     }
                 }
@@ -205,7 +208,7 @@ class CustomDomainOnboardingService
     {
         // Lightweight diagnostics for healthy domains
         $this->runOriginDiagnostics($domain);
-        
+
         $domain->updateQuietly([
             'last_verification_message' => 'Domain is active. Connection diagnostics refreshed.',
         ]);
@@ -214,7 +217,7 @@ class CustomDomainOnboardingService
     public function removeDomain(Domain $domain): void
     {
         // Platform subdomains cannot be removed this way
-        if (!$domain->isCustom()) {
+        if (! $domain->isCustom()) {
             throw new \Exception('Platform subdomains cannot be removed.');
         }
 

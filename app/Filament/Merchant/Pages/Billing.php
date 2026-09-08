@@ -3,11 +3,11 @@
 namespace App\Filament\Merchant\Pages;
 
 use App\Models\Plan;
+use BackedEnum;
 use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Filament\Notifications\Notification;
-use BackedEnum;
 
 class Billing extends Page
 {
@@ -41,6 +41,7 @@ class Billing extends Page
                 ->body('Our enterprise plan requires a custom agreement. Our sales team has been notified and will contact you soon!')
                 ->info()
                 ->send();
+
             return;
         }
 

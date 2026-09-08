@@ -17,15 +17,15 @@ class RevenueGrowthChart extends ChartWidget
     {
         $data = [];
         $labels = [];
-        
+
         for ($i = 5; $i >= 0; $i--) {
             $month = now()->subMonths($i);
             $labels[] = $month->format('M Y');
-            
+
             // Sum prices of subscriptions created in that month
             $revenue = Subscription::whereBetween('created_at', [
                 $month->startOfMonth()->toDateTimeString(),
-                $month->endOfMonth()->toDateTimeString()
+                $month->endOfMonth()->toDateTimeString(),
             ])->sum('price');
 
             $data[] = floatval($revenue);

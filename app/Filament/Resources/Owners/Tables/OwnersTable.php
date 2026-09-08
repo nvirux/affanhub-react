@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\Owners\Tables;
 
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
-use Filament\Tables\Table;
+use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class OwnersTable
 {

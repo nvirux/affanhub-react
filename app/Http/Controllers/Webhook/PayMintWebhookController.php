@@ -10,6 +10,7 @@ use App\Models\WalletTransaction;
 use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use PayMint\Laravel\Facades\PayMint;
 
 class PayMintWebhookController extends Controller
 {
@@ -32,10 +33,11 @@ class PayMintWebhookController extends Controller
 
         if (! $isLocalTesting) {
             try {
-                if (class_exists(\PayMint\Laravel\Facades\PayMint::class)) {
-                    $isValid = \PayMint\Laravel\Facades\PayMint::webhooks()->verifySignature($payload, $signature);
+                if (class_exists(PayMint::class)) {
+                    $isValid = PayMint::webhooks()->verifySignature($payload, $signature);
                     if (! $isValid) {
                         Log::warning('PayMint Webhook Signature Invalid!');
+
                         return response()->json(['error' => 'Invalid signature detected.'], 401);
                     }
                 } else {
@@ -45,12 +47,14 @@ class PayMintWebhookController extends Controller
                         $expectedSignature = hash_hmac('sha512', $payload, $secret);
                         if (! hash_equals($expectedSignature, (string) $signature)) {
                             Log::warning('PayMint Webhook Signature Mismatch!');
+
                             return response()->json(['error' => 'Invalid signature.'], 401);
                         }
                     }
                 }
             } catch (\Throwable $e) {
-                Log::error('PayMint Signature Verification Exception: ' . $e->getMessage());
+                Log::error('PayMint Signature Verification Exception: '.$e->getMessage());
+
                 return response()->json(['error' => 'Signature verification error.'], 401);
             }
         }
@@ -90,16 +94,18 @@ class PayMintWebhookController extends Controller
 
             if (! $virtualAccount) {
                 Log::warning('PayMint Webhook: No VirtualAccount found matching payload account_number/email.', ['account' => $accountNumber, 'email' => $customerEmail]);
+
                 return response()->json(['status' => 'not_found', 'message' => 'Virtual account not found.'], 404);
             }
 
             // Idempotency check: verify if transaction reference was already processed
-            $alreadyProcessed = WalletTransaction::where('reference', 'DEP_' . $txReference)
+            $alreadyProcessed = WalletTransaction::where('reference', 'DEP_'.$txReference)
                 ->orWhere('reference', $txReference)
                 ->exists();
 
             if ($alreadyProcessed) {
                 Log::info('PayMint Webhook: Deposit reference already processed.', ['reference' => $txReference]);
+
                 return response()->json(['status' => 'duplicate', 'message' => 'Already processed.'], 200);
             }
 
@@ -108,6 +114,7 @@ class PayMintWebhookController extends Controller
 
             if (! $holder) {
                 Log::error('PayMint Webhook: VirtualAccount has no associated holder.', ['va_id' => $virtualAccount->id]);
+
                 return response()->json(['status' => 'error', 'message' => 'Account holder missing.'], 500);
             }
 
@@ -152,7 +159,7 @@ class PayMintWebhookController extends Controller
                             'bank_transfer_deposit',
                             "Bank Deposit from {$senderName} ({$senderBank}) via {$virtualAccount->bank_name}",
                             ['provider' => $data['provider'] ?? 'paymint', 'raw_event' => $data],
-                            'DEP_' . $txReference
+                            'DEP_'.$txReference
                         );
                     }
                 } else {
@@ -165,12 +172,12 @@ class PayMintWebhookController extends Controller
                         'bank_transfer_deposit',
                         "Store Deposit from {$senderName} ({$senderBank}) via {$virtualAccount->bank_name}",
                         ['provider' => $data['provider'] ?? 'paymint', 'raw_event' => $data],
-                        'DEP_' . $txReference
+                        'DEP_'.$txReference
                     );
                 }
 
                 Log::info(sprintf(
-                    "PayMint Webhook: Deposit of ₦%s credited successfully via WalletService to Holder #%s (%s)",
+                    'PayMint Webhook: Deposit of ₦%s credited successfully via WalletService to Holder #%s (%s)',
                     number_format($amount, 2),
                     $holder->id,
                     $virtualAccount->account_number
@@ -182,7 +189,8 @@ class PayMintWebhookController extends Controller
                     'reference' => $txReference,
                 ]);
             } catch (\Throwable $e) {
-                Log::error('PayMint Webhook Crediting Failed: ' . $e->getMessage(), ['exception' => $e]);
+                Log::error('PayMint Webhook Crediting Failed: '.$e->getMessage(), ['exception' => $e]);
+
                 return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
             }
         }

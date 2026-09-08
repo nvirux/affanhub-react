@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\Domains\Tables;
 
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
-use Filament\Tables\Table;
+use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 
 class DomainsTable
 {
@@ -27,9 +27,9 @@ class DomainsTable
                     ->sortable(),
                 TextColumn::make('type')
                     ->badge()
-                    ->state(fn ($record): string => str_ends_with($record->domain, '.' . $baseDomain) ? 'subdomain' : 'custom_domain')
+                    ->state(fn ($record): string => str_ends_with($record->domain, '.'.$baseDomain) ? 'subdomain' : 'custom_domain')
                     ->color(fn (string $state): string => $state === 'custom_domain' ? 'success' : 'primary')
-                    ->formatStateUsing(fn (string $state): string => match($state) {
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'custom_domain' => 'Custom Domain',
                         'subdomain' => 'Subdomain',
                         default => $state

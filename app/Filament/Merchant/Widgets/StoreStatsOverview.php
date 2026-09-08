@@ -14,7 +14,7 @@ class StoreStatsOverview extends BaseWidget
     {
         $store = Filament::getTenant();
 
-        if (!$store) {
+        if (! $store) {
             return [];
         }
 
@@ -24,12 +24,12 @@ class StoreStatsOverview extends BaseWidget
         $staffCount = $store->members()->count();
 
         return [
-            Stat::make('Main Wallet Balance', '₦' . number_format($mainBalance, 2))
+            Stat::make('Main Wallet Balance', '₦'.number_format($mainBalance, 2))
                 ->description('Operating balance for store funding')
                 ->descriptionIcon('heroicon-m-wallet')
                 ->color('primary'),
 
-            Stat::make('Profit Wallet Balance', '₦' . number_format($profitBalance, 2))
+            Stat::make('Profit Wallet Balance', '₦'.number_format($profitBalance, 2))
                 ->description('Accumulated profit margin earnings')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),

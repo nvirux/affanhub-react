@@ -2,12 +2,14 @@
 
 namespace App\Filament\Merchant\Pages;
 
+use App\Models\PlanFeature;
 use App\Models\Service;
 use App\Models\StoreService;
-use Filament\Pages\Page;
-use Filament\Notifications\Notification;
-use Filament\Support\Icons\Heroicon;
 use BackedEnum;
+use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
+use Filament\Pages\Page;
+use Filament\Support\Icons\Heroicon;
 use UnitEnum;
 
 class ManageServices extends Page
@@ -42,8 +44,8 @@ class ManageServices extends Page
 
     public function loadServiceSettings(): void
     {
-        $tenant = \Filament\Facades\Filament::getTenant() ?? tenant();
-        if (!$tenant) {
+        $tenant = Filament::getTenant() ?? tenant();
+        if (! $tenant) {
             return;
         }
 
@@ -56,7 +58,7 @@ class ManageServices extends Page
             if ($service->feature_id && $service->feature) {
                 $hasAccess = $tenant->hasFeature($service->feature->slug);
 
-                $planFeature = \App\Models\PlanFeature::where('feature_id', $service->feature_id)
+                $planFeature = PlanFeature::where('feature_id', $service->feature_id)
                     ->where('value', 'true')
                     ->first();
 
@@ -88,26 +90,27 @@ class ManageServices extends Page
 
     public function toggleService(int $serviceId): void
     {
-        if (!isset($this->serviceSettings[$serviceId])) {
+        if (! isset($this->serviceSettings[$serviceId])) {
             return;
         }
 
-        if (!$this->serviceSettings[$serviceId]['has_access']) {
+        if (! $this->serviceSettings[$serviceId]['has_access']) {
             Notification::make()
                 ->title('Feature Locked')
-                ->body('Upgrade to ' . $this->serviceSettings[$serviceId]['required_plan'] . ' to enable ' . $this->serviceSettings[$serviceId]['name'] . ' on your storefront.')
+                ->body('Upgrade to '.$this->serviceSettings[$serviceId]['required_plan'].' to enable '.$this->serviceSettings[$serviceId]['name'].' on your storefront.')
                 ->warning()
                 ->send();
+
             return;
         }
 
-        $this->serviceSettings[$serviceId]['is_enabled'] = !$this->serviceSettings[$serviceId]['is_enabled'];
+        $this->serviceSettings[$serviceId]['is_enabled'] = ! $this->serviceSettings[$serviceId]['is_enabled'];
         $this->saveServiceSetting($serviceId);
     }
 
     public function updateSortOrder(int $serviceId, $order): void
     {
-        if (!isset($this->serviceSettings[$serviceId])) {
+        if (! isset($this->serviceSettings[$serviceId])) {
             return;
         }
 
@@ -117,8 +120,8 @@ class ManageServices extends Page
 
     public function saveServiceSetting(int $serviceId): void
     {
-        $tenant = \Filament\Facades\Filament::getTenant() ?? tenant();
-        if (!$tenant || !isset($this->serviceSettings[$serviceId])) {
+        $tenant = Filament::getTenant() ?? tenant();
+        if (! $tenant || ! isset($this->serviceSettings[$serviceId])) {
             return;
         }
 

@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources\Stores\RelationManagers;
 
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
-use Filament\Tables\Table;
+use App\Models\Plan;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\CreateAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
+use Filament\Tables\Table;
 
 class SubscriptionsRelationManager extends RelationManager
 {
@@ -27,7 +28,7 @@ class SubscriptionsRelationManager extends RelationManager
                 ->required()
                 ->live()
                 ->afterStateUpdated(function (Select $component, $state, callable $set) {
-                    $plan = \App\Models\Plan::find($state);
+                    $plan = Plan::find($state);
                     if ($plan) {
                         $set('price', $plan->price_monthly);
                     }
@@ -74,7 +75,7 @@ class SubscriptionsRelationManager extends RelationManager
                     ->label('Interval')
                     ->badge()
                     ->color(fn (string $state): string => $state === 'year' ? 'success' : 'primary')
-                    ->formatStateUsing(fn (string $state): string => ucfirst($state) . 'ly'),
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state).'ly'),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::paymint
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/webhooks/paymint'
  */
 export const paymint = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ paymint.definition = {
 
 /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::paymint
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/webhooks/paymint'
  */
 paymint.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ paymint.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::paymint
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/webhooks/paymint'
  */
 paymint.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ paymint.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::paymint
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/webhooks/paymint'
  */
     const paymintForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ paymint.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::paymint
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:19
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:20
  * @route '/webhooks/paymint'
  */
         paymintForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

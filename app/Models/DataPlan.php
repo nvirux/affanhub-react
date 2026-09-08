@@ -67,6 +67,7 @@ class DataPlan extends Model
         if (preg_match('/(\d+)\s*(?:hours?|hrs?)\b/i', $raw, $matches)) {
             $hours = (int) $matches[1];
             $days = $hours / 24;
+
             return $days <= 6 ? 'Daily' : ($days <= 14 ? 'Weekly' : 'Monthly');
         }
 
@@ -82,18 +83,21 @@ class DataPlan extends Model
             if ($days <= 364) {
                 return 'Monthly';
             }
+
             return 'Yearly';
         }
 
         // Check for weeks (e.g. "1 week", "2 weeks", "2 wks")
         if (preg_match('/(\d+)\s*(?:weeks?|wks?)\b/i', $raw, $matches)) {
             $weeks = (int) $matches[1];
+
             return $weeks <= 2 ? 'Weekly' : 'Monthly';
         }
 
         // Check for months (e.g. "1 month", "2 months", "3 months")
         if (preg_match('/(\d+)\s*(?:months?|mos?)\b/i', $raw, $matches)) {
             $months = (int) $matches[1];
+
             return $months < 12 ? 'Monthly' : 'Yearly';
         }
 

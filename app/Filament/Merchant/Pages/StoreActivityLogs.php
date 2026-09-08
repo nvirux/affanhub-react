@@ -3,18 +3,18 @@
 namespace App\Filament\Merchant\Pages;
 
 use App\Models\ActivityLog;
-use Filament\Facades\Filament;
-use Filament\Pages\Page;
-use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use UnitEnum;
 use BackedEnum;
+use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Pages\Page;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use UnitEnum;
 
 class StoreActivityLogs extends Page implements HasTable
 {
@@ -98,7 +98,7 @@ class StoreActivityLogs extends Page implements HasTable
                             ->formatStateUsing(fn ($state) => is_array($state) ? json_encode($state, JSON_PRETTY_PRINT) : $state)
                             ->rows(8)
                             ->columnSpanFull(),
-                    ])
+                    ]),
             ])
             ->defaultSort('created_at', 'desc');
     }

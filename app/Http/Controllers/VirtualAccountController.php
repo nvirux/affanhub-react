@@ -23,7 +23,7 @@ class VirtualAccountController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return Redirect::back()->with('error', 'Unauthenticated user.');
         }
 
@@ -35,10 +35,10 @@ class VirtualAccountController extends Controller
         ]);
 
         try {
-            if (!empty($validated['name']) && $validated['name'] !== $user->name) {
+            if (! empty($validated['name']) && $validated['name'] !== $user->name) {
                 $user->name = trim($validated['name']);
             }
-            if (!empty($validated['phone'])) {
+            if (! empty($validated['phone'])) {
                 $user->phone = trim($validated['phone']);
             }
             $user->save();
@@ -50,7 +50,7 @@ class VirtualAccountController extends Controller
                 $user->phone
             );
 
-            return Redirect::back()->with('success', 'Virtual account generated successfully! Bank: ' . $account->bank_name);
+            return Redirect::back()->with('success', 'Virtual account generated successfully! Bank: '.$account->bank_name);
         } catch (\Throwable $e) {
             return Redirect::back()->with('error', $e->getMessage());
         }

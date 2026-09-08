@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 
 class Wallet extends Model
@@ -40,7 +40,7 @@ class Wallet extends Model
      */
     public function deposit(float $amount, string $description, ?string $reference = null, ?array $meta = null): WalletTransaction
     {
-        $reference ??= 'dep_' . Str::random(16);
+        $reference ??= 'dep_'.Str::random(16);
 
         return \DB::transaction(function () use ($amount, $description, $reference, $meta) {
             // Lock the wallet row to prevent race conditions during updates
@@ -67,13 +67,13 @@ class Wallet extends Model
      */
     public function withdraw(float $amount, string $description, ?string $reference = null, ?array $meta = null): WalletTransaction
     {
-        $reference ??= 'wth_' . Str::random(16);
+        $reference ??= 'wth_'.Str::random(16);
 
         return \DB::transaction(function () use ($amount, $description, $reference, $meta) {
             // Lock the wallet row
             $wallet = self::where('id', $this->id)->lockForUpdate()->first();
 
-            if (!$wallet->hasSufficientBalance($amount)) {
+            if (! $wallet->hasSufficientBalance($amount)) {
                 throw new \Exception('Insufficient wallet balance.');
             }
 

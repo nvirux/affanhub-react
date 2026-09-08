@@ -67,7 +67,7 @@ class ListWithdrawals extends ListRecords
                     if (! $settlement) {
                         return [
                             Placeholder::make('warning')
-                                ->content('⚠️ You do not have an active, approved Settlement Bank Account yet. Please go to Settings -> Settlement Banks to submit your payout bank details for approval.')
+                                ->content('⚠️ You do not have an active, approved Settlement Bank Account yet. Please go to Settings -> Settlement Banks to submit your payout bank details for approval.'),
                         ];
                     }
 
@@ -87,6 +87,7 @@ class ListWithdrawals extends ListRecords
 
                     if (! $store) {
                         Notification::make()->title('No store context found')->danger()->send();
+
                         return;
                     }
 
@@ -100,6 +101,7 @@ class ListWithdrawals extends ListRecords
                             ->title('Approved active Settlement Bank Account required.')
                             ->danger()
                             ->send();
+
                         return;
                     }
 
@@ -112,11 +114,12 @@ class ListWithdrawals extends ListRecords
                             ->title(sprintf('Insufficient Profit Balance. Available: ₦%s, Requested: ₦%s.', number_format($currentBalance, 2), number_format($amount, 2)))
                             ->danger()
                             ->send();
+
                         return;
                     }
 
                     try {
-                        $reference = 'WTH_' . strtoupper(Str::random(10));
+                        $reference = 'WTH_'.strtoupper(Str::random(10));
 
                         // 1. Debit Merchant Profit Wallet
                         $walletService->debit(
@@ -163,7 +166,7 @@ class ListWithdrawals extends ListRecords
                             ->send();
                     } catch (\Throwable $e) {
                         Notification::make()
-                            ->title('Withdrawal Failed: ' . $e->getMessage())
+                            ->title('Withdrawal Failed: '.$e->getMessage())
                             ->danger()
                             ->send();
                     }

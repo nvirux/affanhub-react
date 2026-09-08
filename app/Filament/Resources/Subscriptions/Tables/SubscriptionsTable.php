@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\Subscriptions\Tables;
 
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
-use Filament\Tables\Table;
+use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 
 class SubscriptionsTable
 {
@@ -28,7 +28,7 @@ class SubscriptionsTable
                     ->label('Interval')
                     ->badge()
                     ->color(fn (string $state): string => $state === 'year' ? 'success' : 'primary')
-                    ->formatStateUsing(fn (string $state): string => ucfirst($state) . 'ly')
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state).'ly')
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()

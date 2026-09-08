@@ -3,9 +3,8 @@
 namespace App\Filament\Resources\Stores\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class VirtualAccountsRelationManager extends RelationManager
 {

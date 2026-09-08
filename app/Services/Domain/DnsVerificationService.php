@@ -104,7 +104,7 @@ class DnsVerificationService
             'status' => false,
             'message' => count($foundTxtValues) > 0
                 ? 'TXT record found but token does not match.'
-                : 'No TXT record found for ' . $verifyHost,
+                : 'No TXT record found for '.$verifyHost,
             'checked_host' => $verifyHost,
             'expected_token' => $expectedToken,
             'found_txt_values' => $foundTxtValues,
@@ -224,7 +224,7 @@ class DnsVerificationService
             'status' => false,
             'http_status' => null,
             'cloudflare_detected' => false,
-            'message' => 'Connectivity failed: ' . $lastError,
+            'message' => 'Connectivity failed: '.$lastError,
             'resolved_ip' => $lastResolvedIp,
             'checked_url' => null,
             'checked_urls' => array_column($attemptDiagnostics, 'url'),
@@ -256,6 +256,7 @@ class DnsVerificationService
         $domain = strtolower($domain);
         $domain = preg_replace('/^https?:\/\//i', '', $domain);
         $domain = explode('/', $domain)[0];
+
         return trim($domain, '. ');
     }
 
@@ -275,7 +276,7 @@ class DnsVerificationService
         }
 
         try {
-            $output = @shell_exec('dig +short TXT ' . escapeshellarg($host) . ' 2>&1');
+            $output = @shell_exec('dig +short TXT '.escapeshellarg($host).' 2>&1');
 
             if (! is_string($output)) {
                 return null;
@@ -283,9 +284,9 @@ class DnsVerificationService
 
             $output = trim($output);
 
-            if ($output === '' || 
-                str_contains($output, 'command not found') || 
-                str_contains($output, 'not recognized') || 
+            if ($output === '' ||
+                str_contains($output, 'command not found') ||
+                str_contains($output, 'not recognized') ||
                 str_contains($output, 'connection timed out')) {
                 return null;
             }

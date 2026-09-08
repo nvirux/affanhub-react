@@ -2,26 +2,24 @@
 
 namespace App\Filament\Resources\PlanDataPrices;
 
-use App\Models\PlanDataPrice;
-use App\Models\Plan;
 use App\Models\DataPlan;
+use App\Models\Plan;
+use App\Models\PlanDataPrice;
+use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Support\Icons\Heroicon;
-use BackedEnum;
+use Filament\Tables\Table;
 use UnitEnum;
-use App\Filament\Resources\PlanDataPrices\Pages;
 
 class PlanDataPriceResource extends Resource
 {
@@ -50,7 +48,7 @@ class PlanDataPriceResource extends Resource
                         DataPlan::with('network')
                             ->get()
                             ->mapWithKeys(fn ($dp) => [
-                                $dp->id => '[' . strtoupper($dp->network->name ?? '') . '] ' . $dp->name . ' (' . $dp->validity . ')'
+                                $dp->id => '['.strtoupper($dp->network->name ?? '').'] '.$dp->name.' ('.$dp->validity.')',
                             ])
                     )
                     ->required()

@@ -3,15 +3,12 @@
 namespace App\Filament\Resources\Transactions;
 
 use App\Models\Transaction;
+use BackedEnum;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Support\Icons\Heroicon;
-use BackedEnum;
-
-use App\Filament\Resources\Transactions\Pages;
+use Filament\Tables\Table;
 
 class TransactionResource extends Resource
 {

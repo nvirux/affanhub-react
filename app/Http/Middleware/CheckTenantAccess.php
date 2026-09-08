@@ -22,15 +22,16 @@ class CheckTenantAccess
             // If they are accessing the store via a custom domain, they must have the custom_domain entitlement active!
             $currentHost = $request->getHost();
             $baseDomain = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
-            
+
             // Check if host is not a subdomain of the base domain
-            $isSubdomain = str_ends_with($currentHost, '.' . $baseDomain) || $currentHost === $baseDomain;
-            
-            if (!$isSubdomain) {
+            $isSubdomain = str_ends_with($currentHost, '.'.$baseDomain) || $currentHost === $baseDomain;
+
+            if (! $isSubdomain) {
                 // They are using a custom domain! Check entitlement.
-                if (!$tenant->hasFeature('custom_domain')) {
+                if (! $tenant->hasFeature('custom_domain')) {
                     // Redirect them to their main subdomain URL
-                    $subdomainUrl = $request->getScheme() . '://' . $tenant->id . '.' . $baseDomain . $request->getRequestUri();
+                    $subdomainUrl = $request->getScheme().'://'.$tenant->id.'.'.$baseDomain.$request->getRequestUri();
+
                     return redirect($subdomainUrl);
                 }
             }

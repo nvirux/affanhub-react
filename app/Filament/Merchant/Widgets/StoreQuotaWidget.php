@@ -13,18 +13,18 @@ class StoreQuotaWidget extends BaseWidget
     protected function getStats(): array
     {
         $tenant = Filament::getTenant();
-        
+
         // 1. Plan Stats
         $subscription = $tenant->activeSubscription;
         $planName = $subscription?->plan?->name ?? 'Starter';
         $interval = $subscription ? ucfirst($subscription->billing_interval) : 'Free';
-        $renewal = $subscription?->ends_at ? 'Renews ' . $subscription->ends_at->format('M d, Y') : 'Free Forever';
+        $renewal = $subscription?->ends_at ? 'Renews '.$subscription->ends_at->format('M d, Y') : 'Free Forever';
 
         // 2. Staff Stats
         $staffLimit = $tenant->getFeatureLimit('staff_limit');
         $currentStaff = $tenant->members()->count();
         $staffPercent = $staffLimit > 0 ? round(($currentStaff / $staffLimit) * 100) : 0;
-        
+
         $staffColor = 'success';
         if ($staffPercent >= 100) {
             $staffColor = 'danger';
@@ -35,7 +35,7 @@ class StoreQuotaWidget extends BaseWidget
         // 3. Domain Stats
         $hasCustomDomain = $tenant->hasFeature('custom_domain');
         $primaryDomain = $tenant->domains()->where('is_primary', true)->first();
-        
+
         $domainStatus = 'Default';
         $domainDesc = $primaryDomain?->domain ?? 'No domains linked';
         $domainColor = 'gray';
@@ -48,7 +48,7 @@ class StoreQuotaWidget extends BaseWidget
                 $domainColor = 'info';
             } else {
                 $verifiedCount = $customDomains->filter(fn ($d) => $d->isHealthy())->count();
-                $domainStatus = $verifiedCount . ' Active';
+                $domainStatus = $verifiedCount.' Active';
                 $domainDesc = $primaryDomain?->domain ?? 'Custom domain active';
                 $domainColor = 'success';
             }

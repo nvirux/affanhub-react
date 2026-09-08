@@ -9,17 +9,18 @@ use App\Models\ActivityLog;
 use App\Models\User;
 use App\Services\WalletService;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\Action;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Notifications\Notification;
+use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use UnitEnum;
@@ -44,7 +45,8 @@ class CustomerResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $store = \Filament\Facades\Filament::getTenant();
+        $store = Filament::getTenant();
+
         return $store ? (string) $store->users()->count() : null;
     }
 
@@ -84,7 +86,7 @@ class CustomerResource extends Resource
                     ->label('Wallet Balance (₦)')
                     ->badge()
                     ->color('success')
-                    ->state(fn (User $record) => '₦' . number_format((float) ($record->wallet('main')->balance ?? 0), 2)),
+                    ->state(fn (User $record) => '₦'.number_format((float) ($record->wallet('main')->balance ?? 0), 2)),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
@@ -114,7 +116,7 @@ class CustomerResource extends Resource
                             ->placeholder('e.g., Cash deposit received via POS / WhatsApp'),
                     ])
                     ->action(function (User $record, array $data, WalletService $walletService): void {
-                        $store = \Filament\Facades\Filament::getTenant();
+                        $store = Filament::getTenant();
                         $userWallet = $record->wallet('main');
                         $amount = (float) $data['amount'];
                         $reason = $data['reason'];
@@ -190,7 +192,7 @@ class CustomerResource extends Resource
                             }
                         } catch (\Throwable $e) {
                             Notification::make()
-                                ->title('Operation Failed: ' . $e->getMessage())
+                                ->title('Operation Failed: '.$e->getMessage())
                                 ->danger()
                                 ->send();
                         }

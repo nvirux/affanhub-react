@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\Branding\ColorHelper;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -41,15 +42,18 @@ class HandleInertiaRequests extends Middleware
             'store' => tenant() ? [
                 'id' => tenant('id'),
                 'name' => tenant('name'),
-                'logo_url' => tenant('logo_path') ? global_asset('storage/' . tenant('logo_path')) : null,
+                'logo_url' => tenant('logo_path') ? global_asset('storage/'.tenant('logo_path')) : null,
                 'whatsapp_chat_enabled' => (bool) (tenant('whatsapp_chat_enabled') ?? false),
-                'whatsapp_chat_phone' => (function() {
+                'whatsapp_chat_phone' => (function () {
                     $phone = tenant('whatsapp_chat_phone');
-                    if (!$phone) return null;
+                    if (! $phone) {
+                        return null;
+                    }
                     $phone = preg_replace('/\D/', '', $phone);
                     if (str_starts_with($phone, '0')) {
-                        $phone = '234' . substr($phone, 1);
+                        $phone = '234'.substr($phone, 1);
                     }
+
                     return $phone;
                 })(),
                 'whatsapp_chat_message' => tenant('whatsapp_chat_message'),
@@ -57,6 +61,9 @@ class HandleInertiaRequests extends Middleware
                 'tawk_property_id' => tenant('tawk_property_id'),
                 'tawk_widget_id' => tenant('tawk_widget_id'),
                 'dashboard_subtitle' => tenant('dashboard_subtitle'),
+                'primary_color' => tenant('primary_color') ?? ColorHelper::DEFAULT_HEX,
+                'primary_foreground_color' => ColorHelper::getContrastForeground(tenant('primary_color') ?? ColorHelper::DEFAULT_HEX),
+                'favicon_url' => tenant('favicon_path') ? global_asset('storage/'.tenant('favicon_path')) : null,
             ] : null,
             'auth' => [
                 'user' => fn () => $request->user() ? [

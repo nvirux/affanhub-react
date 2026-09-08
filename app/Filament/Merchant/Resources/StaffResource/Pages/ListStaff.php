@@ -3,8 +3,8 @@
 namespace App\Filament\Merchant\Resources\StaffResource\Pages;
 
 use App\Filament\Merchant\Resources\StaffResource;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
 
 class ListStaff extends ListRecords
 {

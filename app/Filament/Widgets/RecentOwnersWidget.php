@@ -3,8 +3,8 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Owner;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class RecentOwnersWidget extends BaseWidget
