@@ -94,6 +94,8 @@ export default function Dashboard() {
     const handleServiceClick = (key: string) => {
         if (key === 'data') {
             router.get('/vtu/data');
+        } else if (key === 'airtime') {
+            router.get('/vtu/airtime');
         }
     };
 

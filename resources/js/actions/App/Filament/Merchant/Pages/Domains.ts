@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-const Domains = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+const Domains = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: Domains.url(args, options),
     method: 'get',
 })
@@ -19,11 +19,14 @@ Domains.definition = {
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-Domains.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+Domains.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -34,7 +37,9 @@ Domains.url = (args: { tenant: string | number } | [tenant: string | number ] | 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return Domains.definition.url
@@ -47,7 +52,7 @@ Domains.url = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-Domains.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+Domains.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: Domains.url(args, options),
     method: 'get',
 })
@@ -56,7 +61,7 @@ Domains.get = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-Domains.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+Domains.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: Domains.url(args, options),
     method: 'head',
 })
@@ -66,7 +71,7 @@ Domains.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-    const DomainsForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const DomainsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: Domains.url(args, options),
         method: 'get',
     })
@@ -76,7 +81,7 @@ Domains.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-        DomainsForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        DomainsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: Domains.url(args, options),
             method: 'get',
         })
@@ -85,7 +90,7 @@ Domains.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-        DomainsForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        DomainsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: Domains.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',

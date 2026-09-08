@@ -282,7 +282,7 @@ register.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     register.form = registerForm
 /**
- * @see routes/tenant.php:40
+ * @see routes/tenant.php:43
  * @route '/dashboard'
  */
 export const dashboard = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -296,7 +296,7 @@ dashboard.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/tenant.php:40
+ * @see routes/tenant.php:43
  * @route '/dashboard'
  */
 dashboard.url = (options?: RouteQueryOptions) => {
@@ -304,7 +304,7 @@ dashboard.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/tenant.php:40
+ * @see routes/tenant.php:43
  * @route '/dashboard'
  */
 dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -312,7 +312,7 @@ dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/tenant.php:40
+ * @see routes/tenant.php:43
  * @route '/dashboard'
  */
 dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -321,7 +321,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
- * @see routes/tenant.php:40
+ * @see routes/tenant.php:43
  * @route '/dashboard'
  */
     const dashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -330,7 +330,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
- * @see routes/tenant.php:40
+ * @see routes/tenant.php:43
  * @route '/dashboard'
  */
         dashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -338,7 +338,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
- * @see routes/tenant.php:40
+ * @see routes/tenant.php:43
  * @route '/dashboard'
  */
         dashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -352,3 +352,81 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
     
     dashboard.form = dashboardForm
+/**
+* @see \App\Http\Controllers\EarnController::earn
+ * @see app/Http/Controllers/EarnController.php:18
+ * @route '/earn'
+ */
+export const earn = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: earn.url(options),
+    method: 'get',
+})
+
+earn.definition = {
+    methods: ["get","head"],
+    url: '/earn',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\EarnController::earn
+ * @see app/Http/Controllers/EarnController.php:18
+ * @route '/earn'
+ */
+earn.url = (options?: RouteQueryOptions) => {
+    return earn.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\EarnController::earn
+ * @see app/Http/Controllers/EarnController.php:18
+ * @route '/earn'
+ */
+earn.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: earn.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\EarnController::earn
+ * @see app/Http/Controllers/EarnController.php:18
+ * @route '/earn'
+ */
+earn.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: earn.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\EarnController::earn
+ * @see app/Http/Controllers/EarnController.php:18
+ * @route '/earn'
+ */
+    const earnForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: earn.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\EarnController::earn
+ * @see app/Http/Controllers/EarnController.php:18
+ * @route '/earn'
+ */
+        earnForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: earn.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\EarnController::earn
+ * @see app/Http/Controllers/EarnController.php:18
+ * @route '/earn'
+ */
+        earnForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: earn.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    earn.form = earnForm

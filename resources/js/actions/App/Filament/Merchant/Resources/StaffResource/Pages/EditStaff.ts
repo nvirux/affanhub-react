@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-const EditStaff = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+const EditStaff = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditStaff.url(args, options),
     method: 'get',
 })
@@ -19,7 +19,7 @@ EditStaff.definition = {
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-EditStaff.url = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions) => {
+EditStaff.url = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
                     tenant: args[0],
@@ -30,7 +30,9 @@ EditStaff.url = (args: { tenant: string | number, record: string | number } | [t
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                                 record: args.record,
                 }
 
@@ -45,7 +47,7 @@ EditStaff.url = (args: { tenant: string | number, record: string | number } | [t
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-EditStaff.get = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+EditStaff.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditStaff.url(args, options),
     method: 'get',
 })
@@ -54,7 +56,7 @@ EditStaff.get = (args: { tenant: string | number, record: string | number } | [t
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-EditStaff.head = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+EditStaff.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: EditStaff.url(args, options),
     method: 'head',
 })
@@ -64,7 +66,7 @@ EditStaff.head = (args: { tenant: string | number, record: string | number } | [
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-    const EditStaffForm = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const EditStaffForm = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: EditStaff.url(args, options),
         method: 'get',
     })
@@ -74,7 +76,7 @@ EditStaff.head = (args: { tenant: string | number, record: string | number } | [
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-        EditStaffForm.get = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        EditStaffForm.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: EditStaff.url(args, options),
             method: 'get',
         })
@@ -83,7 +85,7 @@ EditStaff.head = (args: { tenant: string | number, record: string | number } | [
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-        EditStaffForm.head = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        EditStaffForm.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: EditStaff.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',

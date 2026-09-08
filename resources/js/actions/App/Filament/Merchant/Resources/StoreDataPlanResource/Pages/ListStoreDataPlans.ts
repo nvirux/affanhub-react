@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
  * @route '//merchant.localhost/{tenant}/store-data-plans'
  */
-const ListStoreDataPlans = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+const ListStoreDataPlans = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreDataPlans.url(args, options),
     method: 'get',
 })
@@ -19,11 +19,14 @@ ListStoreDataPlans.definition = {
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
  * @route '//merchant.localhost/{tenant}/store-data-plans'
  */
-ListStoreDataPlans.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+ListStoreDataPlans.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -34,7 +37,9 @@ ListStoreDataPlans.url = (args: { tenant: string | number } | [tenant: string | 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return ListStoreDataPlans.definition.url
@@ -47,7 +52,7 @@ ListStoreDataPlans.url = (args: { tenant: string | number } | [tenant: string | 
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
  * @route '//merchant.localhost/{tenant}/store-data-plans'
  */
-ListStoreDataPlans.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+ListStoreDataPlans.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreDataPlans.url(args, options),
     method: 'get',
 })
@@ -56,7 +61,7 @@ ListStoreDataPlans.get = (args: { tenant: string | number } | [tenant: string | 
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
  * @route '//merchant.localhost/{tenant}/store-data-plans'
  */
-ListStoreDataPlans.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+ListStoreDataPlans.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: ListStoreDataPlans.url(args, options),
     method: 'head',
 })
@@ -66,7 +71,7 @@ ListStoreDataPlans.head = (args: { tenant: string | number } | [tenant: string |
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
  * @route '//merchant.localhost/{tenant}/store-data-plans'
  */
-    const ListStoreDataPlansForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const ListStoreDataPlansForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: ListStoreDataPlans.url(args, options),
         method: 'get',
     })
@@ -76,7 +81,7 @@ ListStoreDataPlans.head = (args: { tenant: string | number } | [tenant: string |
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
  * @route '//merchant.localhost/{tenant}/store-data-plans'
  */
-        ListStoreDataPlansForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        ListStoreDataPlansForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreDataPlans.url(args, options),
             method: 'get',
         })
@@ -85,7 +90,7 @@ ListStoreDataPlans.head = (args: { tenant: string | number } | [tenant: string |
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
  * @route '//merchant.localhost/{tenant}/store-data-plans'
  */
-        ListStoreDataPlansForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        ListStoreDataPlansForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreDataPlans.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',

@@ -7,6 +7,7 @@ use App\Models\Store;
 use App\Models\StoreDataPlan;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Services\ReferralService;
 use App\Services\WalletService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,7 @@ use Illuminate\Support\Str;
 class DataService
 {
     protected WalletService $walletService;
+
     protected VtuLabService $vtuLabService;
 
     public function __construct(WalletService $walletService, VtuLabService $vtuLabService)
@@ -26,10 +28,7 @@ class DataService
     /**
      * Execute an atomic Data Plan purchase for a customer on a store storefront.
      *
-     * @param User $customer
-     * @param StoreDataPlan $storeDataPlan
-     * @param string $phoneNumber (11-digit recipient phone number)
-     * @return array
+     * @param  string  $phoneNumber  (11-digit recipient phone number)
      */
     public function buyDataPlan(User $customer, StoreDataPlan $storeDataPlan, string $phoneNumber): array
     {
@@ -74,7 +73,7 @@ class DataService
 
         // Generate dynamic Store-prefixed reference (e.g. DEMO_STORE_DATA_20260904165120_8FA29X)
         $storePrefix = strtoupper(Str::slug($store->name ?? 'AFF', '_'));
-        $txReference = $storePrefix . '_DATA_' . date('YmdHis') . '_' . strtoupper(Str::random(6));
+        $txReference = $storePrefix.'_DATA_'.date('YmdHis').'_'.strtoupper(Str::random(6));
 
         DB::beginTransaction();
         try {
@@ -105,7 +104,7 @@ class DataService
                     'retail_price' => $customerRetailPrice,
                     'wholesale_cost' => $resellerWholesaleCost,
                 ],
-                'WS_' . $txReference
+                'WS_'.$txReference
             );
 
             // 3. Credit Store Profit Wallet (Profit Margin)
@@ -121,15 +120,15 @@ class DataService
                         'retail_price' => $customerRetailPrice,
                         'wholesale_cost' => $resellerWholesaleCost,
                     ],
-                    'PRF_' . $txReference
+                    'PRF_'.$txReference
                 );
             }
 
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Data Purchase Wallet Debit Error: ' . $e->getMessage());
-            throw new \Exception('Failed to process wallet transaction: ' . $e->getMessage());
+            Log::error('Data Purchase Wallet Debit Error: '.$e->getMessage());
+            throw new \Exception('Failed to process wallet transaction: '.$e->getMessage());
         }
 
         // 4. Call VTULab API Driver with exact signature (planId, phone, reference)
@@ -157,6 +156,12 @@ class DataService
                 ],
             ]);
 
+            try {
+                app(ReferralService::class)->checkAndReward($customer, 'purchase', $customerRetailPrice);
+            } catch (\Throwable $refErr) {
+                Log::warning('Referral purchase check error: '.$refErr->getMessage());
+            }
+
             return [
                 'success' => true,
                 'status' => $status,
@@ -177,7 +182,7 @@ class DataService
                 $customerRetailPrice,
                 "Auto-Refund: Data purchase failed ({$errorMessage})",
                 ['failed_reference' => $txReference, 'reason' => $errorMessage],
-                'REF_' . $txReference
+                'REF_'.$txReference
             );
 
             // Auto-Refund Store Main Wallet
@@ -185,9 +190,9 @@ class DataService
                 $storeMainWallet,
                 $resellerWholesaleCost,
                 'wholesale_refund',
-                "Auto-Refund Store Wholesale: Data purchase failed",
+                'Auto-Refund Store Wholesale: Data purchase failed',
                 ['failed_reference' => $txReference],
-                'REF_WS_' . $txReference
+                'REF_WS_'.$txReference
             );
 
             // Reverse Store Profit if credited
@@ -198,9 +203,9 @@ class DataService
                         $storeProfitWallet,
                         $profitMargin,
                         'profit_reversal',
-                        "Reversal Store Profit: Data purchase failed",
+                        'Reversal Store Profit: Data purchase failed',
                         ['failed_reference' => $txReference],
-                        'REV_PRF_' . $txReference
+                        'REV_PRF_'.$txReference
                     );
                 }
             }
@@ -232,8 +237,8 @@ class DataService
                 'refunded' => true,
             ];
         } catch (\Throwable $refundError) {
-            Log::critical("CRITICAL: Auto-Refund Exception for {$txReference}: " . $refundError->getMessage());
-            throw new \Exception("Data delivery failed and refund exception occurred: " . $refundError->getMessage());
+            Log::critical("CRITICAL: Auto-Refund Exception for {$txReference}: ".$refundError->getMessage());
+            throw new \Exception('Data delivery failed and refund exception occurred: '.$refundError->getMessage());
         }
     }
 }

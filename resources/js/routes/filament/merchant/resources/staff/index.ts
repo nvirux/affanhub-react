@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/ListStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff'
  */
-export const index = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const index = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(args, options),
     method: 'get',
 })
@@ -19,11 +19,14 @@ index.definition = {
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/ListStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff'
  */
-index.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+index.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -34,7 +37,9 @@ index.url = (args: { tenant: string | number } | [tenant: string | number ] | st
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return index.definition.url
@@ -47,7 +52,7 @@ index.url = (args: { tenant: string | number } | [tenant: string | number ] | st
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/ListStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff'
  */
-index.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+index.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(args, options),
     method: 'get',
 })
@@ -56,7 +61,7 @@ index.get = (args: { tenant: string | number } | [tenant: string | number ] | st
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/ListStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff'
  */
-index.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+index.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(args, options),
     method: 'head',
 })
@@ -66,7 +71,7 @@ index.head = (args: { tenant: string | number } | [tenant: string | number ] | s
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/ListStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff'
  */
-    const indexForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const indexForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: index.url(args, options),
         method: 'get',
     })
@@ -76,7 +81,7 @@ index.head = (args: { tenant: string | number } | [tenant: string | number ] | s
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/ListStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff'
  */
-        indexForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        indexForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: index.url(args, options),
             method: 'get',
         })
@@ -85,7 +90,7 @@ index.head = (args: { tenant: string | number } | [tenant: string | number ] | s
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/ListStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff'
  */
-        indexForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        indexForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: index.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -101,7 +106,7 @@ index.head = (args: { tenant: string | number } | [tenant: string | number ] | s
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/CreateStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/create'
  */
-export const create = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const create = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: create.url(args, options),
     method: 'get',
 })
@@ -116,11 +121,14 @@ create.definition = {
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/CreateStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/create'
  */
-create.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+create.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -131,7 +139,9 @@ create.url = (args: { tenant: string | number } | [tenant: string | number ] | s
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return create.definition.url
@@ -144,7 +154,7 @@ create.url = (args: { tenant: string | number } | [tenant: string | number ] | s
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/CreateStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/create'
  */
-create.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+create.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: create.url(args, options),
     method: 'get',
 })
@@ -153,7 +163,7 @@ create.get = (args: { tenant: string | number } | [tenant: string | number ] | s
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/CreateStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/create'
  */
-create.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+create.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: create.url(args, options),
     method: 'head',
 })
@@ -163,7 +173,7 @@ create.head = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/CreateStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/create'
  */
-    const createForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const createForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: create.url(args, options),
         method: 'get',
     })
@@ -173,7 +183,7 @@ create.head = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/CreateStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/create'
  */
-        createForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        createForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: create.url(args, options),
             method: 'get',
         })
@@ -182,7 +192,7 @@ create.head = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/CreateStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/create'
  */
-        createForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        createForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: create.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -198,7 +208,7 @@ create.head = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-export const edit = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const edit = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -213,7 +223,7 @@ edit.definition = {
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-edit.url = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions) => {
+edit.url = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
                     tenant: args[0],
@@ -224,7 +234,9 @@ edit.url = (args: { tenant: string | number, record: string | number } | [tenant
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                                 record: args.record,
                 }
 
@@ -239,7 +251,7 @@ edit.url = (args: { tenant: string | number, record: string | number } | [tenant
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-edit.get = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+edit.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -248,7 +260,7 @@ edit.get = (args: { tenant: string | number, record: string | number } | [tenant
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-edit.head = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+edit.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: edit.url(args, options),
     method: 'head',
 })
@@ -258,7 +270,7 @@ edit.head = (args: { tenant: string | number, record: string | number } | [tenan
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-    const editForm = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const editForm = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: edit.url(args, options),
         method: 'get',
     })
@@ -268,7 +280,7 @@ edit.head = (args: { tenant: string | number, record: string | number } | [tenan
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-        editForm.get = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        editForm.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: edit.url(args, options),
             method: 'get',
         })
@@ -277,7 +289,7 @@ edit.head = (args: { tenant: string | number, record: string | number } | [tenan
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
  * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
  */
-        editForm.head = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        editForm.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: edit.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',

@@ -82,7 +82,7 @@ Dashboard290de1a60ece11a70fd722ba71387a3e.head = (options?: RouteQueryOptions): 
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-const Dashboardd1ad3750184e9a9225ff9cf5815168d4 = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+const Dashboardd1ad3750184e9a9225ff9cf5815168d4 = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: Dashboardd1ad3750184e9a9225ff9cf5815168d4.url(args, options),
     method: 'get',
 })
@@ -97,11 +97,14 @@ Dashboardd1ad3750184e9a9225ff9cf5815168d4.definition = {
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-Dashboardd1ad3750184e9a9225ff9cf5815168d4.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+Dashboardd1ad3750184e9a9225ff9cf5815168d4.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -112,7 +115,9 @@ Dashboardd1ad3750184e9a9225ff9cf5815168d4.url = (args: { tenant: string | number
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return Dashboardd1ad3750184e9a9225ff9cf5815168d4.definition.url
@@ -125,7 +130,7 @@ Dashboardd1ad3750184e9a9225ff9cf5815168d4.url = (args: { tenant: string | number
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-Dashboardd1ad3750184e9a9225ff9cf5815168d4.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+Dashboardd1ad3750184e9a9225ff9cf5815168d4.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: Dashboardd1ad3750184e9a9225ff9cf5815168d4.url(args, options),
     method: 'get',
 })
@@ -134,7 +139,7 @@ Dashboardd1ad3750184e9a9225ff9cf5815168d4.get = (args: { tenant: string | number
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-Dashboardd1ad3750184e9a9225ff9cf5815168d4.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+Dashboardd1ad3750184e9a9225ff9cf5815168d4.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: Dashboardd1ad3750184e9a9225ff9cf5815168d4.url(args, options),
     method: 'head',
 })
@@ -144,7 +149,7 @@ Dashboardd1ad3750184e9a9225ff9cf5815168d4.head = (args: { tenant: string | numbe
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-    const Dashboardd1ad3750184e9a9225ff9cf5815168d4Form = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const Dashboardd1ad3750184e9a9225ff9cf5815168d4Form = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: Dashboardd1ad3750184e9a9225ff9cf5815168d4.url(args, options),
         method: 'get',
     })
@@ -154,7 +159,7 @@ Dashboardd1ad3750184e9a9225ff9cf5815168d4.head = (args: { tenant: string | numbe
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-        Dashboardd1ad3750184e9a9225ff9cf5815168d4Form.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        Dashboardd1ad3750184e9a9225ff9cf5815168d4Form.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: Dashboardd1ad3750184e9a9225ff9cf5815168d4.url(args, options),
             method: 'get',
         })
@@ -163,7 +168,7 @@ Dashboardd1ad3750184e9a9225ff9cf5815168d4.head = (args: { tenant: string | numbe
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-        Dashboardd1ad3750184e9a9225ff9cf5815168d4Form.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        Dashboardd1ad3750184e9a9225ff9cf5815168d4Form.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: Dashboardd1ad3750184e9a9225ff9cf5815168d4.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',

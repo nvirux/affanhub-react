@@ -7,9 +7,14 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 /**
@@ -56,7 +61,7 @@ class User extends Authenticatable
         return $this->belongsTo(Store::class, 'store_id');
     }
 
-    public function wallets(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    public function wallets(): MorphMany
     {
         return $this->morphMany(Wallet::class, 'holder');
     }
@@ -72,23 +77,49 @@ class User extends Authenticatable
         ]);
     }
 
-    public function virtualAccounts(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    public function virtualAccounts(): MorphMany
     {
         return $this->morphMany(VirtualAccount::class, 'holder');
     }
 
-    public function transactions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
     }
 
-    public function referrer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function referrer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'referred_by');
     }
 
-    public function referrals(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function referrals(): HasMany
     {
         return $this->hasMany(User::class, 'referred_by');
+    }
+
+    public function storeReferrals(): HasMany
+    {
+        return $this->hasMany(Referral::class, 'referrer_id');
+    }
+
+    public function referredReferral(): HasOne
+    {
+        return $this->hasOne(Referral::class, 'referred_id');
+    }
+
+    public function ensureReferralCode(): string
+    {
+        if (! empty($this->referral_code)) {
+            return $this->referral_code;
+        }
+
+        do {
+            $code = 'AF'.strtoupper(Str::random(5));
+        } while (static::where('referral_code', $code)->exists());
+
+        $this->referral_code = $code;
+        $this->saveQuietly();
+
+        return $code;
     }
 }

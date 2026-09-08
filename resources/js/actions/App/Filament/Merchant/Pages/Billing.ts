@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-const Billing = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+const Billing = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: Billing.url(args, options),
     method: 'get',
 })
@@ -19,11 +19,14 @@ Billing.definition = {
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-Billing.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+Billing.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -34,7 +37,9 @@ Billing.url = (args: { tenant: string | number } | [tenant: string | number ] | 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return Billing.definition.url
@@ -47,7 +52,7 @@ Billing.url = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-Billing.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+Billing.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: Billing.url(args, options),
     method: 'get',
 })
@@ -56,7 +61,7 @@ Billing.get = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-Billing.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+Billing.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: Billing.url(args, options),
     method: 'head',
 })
@@ -66,7 +71,7 @@ Billing.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-    const BillingForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const BillingForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: Billing.url(args, options),
         method: 'get',
     })
@@ -76,7 +81,7 @@ Billing.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-        BillingForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        BillingForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: Billing.url(args, options),
             method: 'get',
         })
@@ -85,7 +90,7 @@ Billing.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-        BillingForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        BillingForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: Billing.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',

@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
  * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
  */
-const EditCustomer = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+const EditCustomer = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditCustomer.url(args, options),
     method: 'get',
 })
@@ -19,7 +19,7 @@ EditCustomer.definition = {
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
  * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
  */
-EditCustomer.url = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions) => {
+EditCustomer.url = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
                     tenant: args[0],
@@ -30,7 +30,9 @@ EditCustomer.url = (args: { tenant: string | number, record: string | number } |
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                                 record: args.record,
                 }
 
@@ -45,7 +47,7 @@ EditCustomer.url = (args: { tenant: string | number, record: string | number } |
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
  * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
  */
-EditCustomer.get = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+EditCustomer.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditCustomer.url(args, options),
     method: 'get',
 })
@@ -54,7 +56,7 @@ EditCustomer.get = (args: { tenant: string | number, record: string | number } |
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
  * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
  */
-EditCustomer.head = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+EditCustomer.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: EditCustomer.url(args, options),
     method: 'head',
 })
@@ -64,7 +66,7 @@ EditCustomer.head = (args: { tenant: string | number, record: string | number } 
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
  * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
  */
-    const EditCustomerForm = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const EditCustomerForm = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: EditCustomer.url(args, options),
         method: 'get',
     })
@@ -74,7 +76,7 @@ EditCustomer.head = (args: { tenant: string | number, record: string | number } 
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
  * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
  */
-        EditCustomerForm.get = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        EditCustomerForm.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: EditCustomer.url(args, options),
             method: 'get',
         })
@@ -83,7 +85,7 @@ EditCustomer.head = (args: { tenant: string | number, record: string | number } 
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
  * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
  */
-        EditCustomerForm.head = (args: { tenant: string | number, record: string | number } | [tenant: string | number, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        EditCustomerForm.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: EditCustomer.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',

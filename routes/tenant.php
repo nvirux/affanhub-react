@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Route;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
-use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-
+use App\Http\Controllers\EarnController;
+use App\Http\Controllers\VirtualAccountController;
+use App\Http\Middleware\CheckTenantAccess;
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -18,7 +17,12 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |
 */
 
-use App\Http\Middleware\CheckTenantAccess;
+use App\Models\Service;
+use App\Models\StoreService;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 Route::middleware([
     'web',
@@ -26,7 +30,7 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
     CheckTenantAccess::class,
 ])->group(function () {
-    
+
     // Make authentication routes tenant-aware!
     Route::group([
         'namespace' => 'Laravel\Fortify\Http\Controllers',
@@ -34,13 +38,12 @@ Route::middleware([
         require base_path('vendor/laravel/fortify/routes/routes.php');
     });
 
-
     // Customer Dashboard
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('dashboard', function () {
             $tenant = tenant();
-            $allServices = \App\Models\Service::where('is_active', true)->get();
-            
+            $allServices = Service::where('is_active', true)->get();
+
             $enabledServices = [];
             foreach ($allServices as $service) {
                 $hasAccess = true;
@@ -48,7 +51,7 @@ Route::middleware([
                     $hasAccess = $tenant->hasFeature($service->feature->slug);
                 }
 
-                $setting = \App\Models\StoreService::where('store_id', $tenant->id)
+                $setting = StoreService::where('store_id', $tenant->id)
                     ->where('service_id', $service->id)
                     ->first();
 
@@ -70,17 +73,19 @@ Route::middleware([
 
             usort($enabledServices, fn ($a, $b) => $a['sort_order'] <=> $b['sort_order']);
 
-            return \Inertia\Inertia::render('Storefront/Dashboard', [
+            return Inertia::render('Storefront/Dashboard', [
                 'store_services' => $enabledServices,
             ]);
         })->name('dashboard');
 
-        Route::post('/virtual-account/generate', [\App\Http\Controllers\VirtualAccountController::class, 'generate'])
+        Route::post('/virtual-account/generate', [VirtualAccountController::class, 'generate'])
             ->name('virtual-account.generate');
 
-        require __DIR__ . '/vtu.php';
+        Route::get('/earn', [EarnController::class, 'index'])->name('earn');
+
+        require __DIR__.'/vtu.php';
     });
 
     // Customer Settings
-    require __DIR__ .'/settings.php';
+    require __DIR__.'/settings.php';
 });

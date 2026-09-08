@@ -25,4 +25,19 @@ class Network extends Model
     {
         return $this->hasMany(DataPlan::class);
     }
+
+    public function airtimeDiscount()
+    {
+        return $this->hasOne(AirtimeDiscount::class);
+    }
+
+    public function planAirtimeDiscounts()
+    {
+        return $this->hasMany(PlanAirtimeDiscount::class);
+    }
+
+    public function storeAirtimeDiscounts()
+    {
+        return $this->hasMany(StoreAirtimeDiscount::class);
+    }
 }

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             PlanAndFeatureSeeder::class,
             AdminSeeder::class,
             StoreAndDomainSeeder::class,
+            AirtimeDiscountSeeder::class,
         ]);
     }
 }

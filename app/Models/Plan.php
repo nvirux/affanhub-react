@@ -31,10 +31,15 @@ class Plan extends Model
         return $this->hasMany(PlanFeature::class);
     }
 
+    public function planAirtimeDiscounts(): HasMany
+    {
+        return $this->hasMany(PlanAirtimeDiscount::class);
+    }
+
     public function getFeatureValue(string $featureSlug)
     {
         $feature = Feature::where('slug', $featureSlug)->first();
-        if (!$feature) {
+        if (! $feature) {
             return null;
         }
 

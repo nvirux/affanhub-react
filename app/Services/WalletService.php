@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class WalletService
@@ -20,7 +22,7 @@ class WalletService
         ?array $meta = [],
         ?string $reference = null
     ): WalletTransaction {
-        return DB::transaction(function () use ($wallet, $amount, $category, $description, $meta, $reference) {
+        $tx = DB::transaction(function () use ($wallet, $amount, $category, $description, $meta, $reference) {
             /** @var Wallet $lockedWallet */
             $lockedWallet = Wallet::where('id', $wallet->id)->lockForUpdate()->firstOrFail();
 
@@ -30,7 +32,7 @@ class WalletService
             $lockedWallet->balance = $balanceAfter;
             $lockedWallet->save();
 
-            $ref = $reference ?? ('WT_' . strtoupper(Str::random(12)));
+            $ref = $reference ?? ('WT_'.strtoupper(Str::random(12)));
 
             return WalletTransaction::create([
                 'wallet_id' => $lockedWallet->id,
@@ -45,6 +47,36 @@ class WalletService
                 'meta' => $meta,
             ]);
         });
+
+        if (in_array($category, ['deposit', 'bank_transfer_deposit'], true) && $wallet->holder instanceof User) {
+            try {
+                app(ReferralService::class)->checkAndReward($wallet->holder, 'deposit', $amount);
+            } catch (\Throwable $e) {
+                Log::warning('Referral deposit check error: '.$e->getMessage());
+            }
+        }
+
+        return $tx;
+    }
+
+    /**
+     * Refund a wallet atomically and record an immutable ledger entry.
+     */
+    public function refund(
+        Wallet $wallet,
+        float $amount,
+        string $description,
+        ?array $meta = [],
+        ?string $reference = null
+    ): WalletTransaction {
+        return $this->credit(
+            $wallet,
+            $amount,
+            'refund',
+            $description,
+            $meta,
+            $reference
+        );
     }
 
     /**
@@ -77,7 +109,7 @@ class WalletService
             $lockedWallet->balance = $balanceAfter;
             $lockedWallet->save();
 
-            $ref = $reference ?? ('WT_' . strtoupper(Str::random(12)));
+            $ref = $reference ?? ('WT_'.strtoupper(Str::random(12)));
 
             return WalletTransaction::create([
                 'wallet_id' => $lockedWallet->id,
@@ -111,7 +143,7 @@ class WalletService
                 'bank_transfer_deposit',
                 'Customer Bank Transfer Deposit',
                 array_merge($depositMeta, ['channel' => 'virtual_account']),
-                'DEP_' . $reference
+                'DEP_'.$reference
             );
 
             $storeTx = $this->credit(
@@ -120,7 +152,7 @@ class WalletService
                 'store_auto_credit',
                 'Automated Customer Deposit Wholesale Pass-through Credit',
                 array_merge($depositMeta, ['channel' => 'store_auto_pass_through']),
-                'ST_DEP_' . $reference
+                'ST_DEP_'.$reference
             );
 
             return [

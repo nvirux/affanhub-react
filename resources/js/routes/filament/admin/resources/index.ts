@@ -1,11 +1,13 @@
 import activityLogs from './activity-logs'
 import admins from './admins'
+import airtimeDiscounts from './airtime-discounts'
 import dataPlans from './data-plans'
 import dataTypes from './data-types'
 import domains from './domains'
 import features from './features'
 import networks from './networks'
 import owners from './owners'
+import planAirtimeDiscounts from './plan-airtime-discounts'
 import planDataPrices from './plan-data-prices'
 import plans from './plans'
 import services from './services'
@@ -20,12 +22,14 @@ import withdrawals from './withdrawals'
 const resources = {
     activityLogs: Object.assign(activityLogs, activityLogs),
 admins: Object.assign(admins, admins),
+airtimeDiscounts: Object.assign(airtimeDiscounts, airtimeDiscounts),
 dataPlans: Object.assign(dataPlans, dataPlans),
 dataTypes: Object.assign(dataTypes, dataTypes),
 domains: Object.assign(domains, domains),
 features: Object.assign(features, features),
 networks: Object.assign(networks, networks),
 owners: Object.assign(owners, owners),
+planAirtimeDiscounts: Object.assign(planAirtimeDiscounts, planAirtimeDiscounts),
 planDataPrices: Object.assign(planDataPrices, planDataPrices),
 plans: Object.assign(plans, plans),
 services: Object.assign(services, services),

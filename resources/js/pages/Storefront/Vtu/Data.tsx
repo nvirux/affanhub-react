@@ -7,6 +7,8 @@ import {
     Smartphone, Wallet, RefreshCw, Zap, Bell, Headphones, MoreVertical,
     ChevronDown, UserCheck, User, Users
 } from 'lucide-react';
+import { ConfirmPaymentSheet } from '@/components/confirm-payment-sheet';
+import { PhoneNetworkCard, NETWORK_ICONS, NETWORKS_LIST } from '@/components/phone-network-card';
 
 export default function DataPage() {
     const { auth, store, flash, errors } = usePage<any>().props;
@@ -21,25 +23,10 @@ export default function DataPage() {
     const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
 
     const [phone, setPhone] = useState<string>('');
-    const [networkDropdownOpen, setNetworkDropdownOpen] = useState<boolean>(false);
+    const [phoneError, setPhoneError] = useState<string | null>(null);
     const [isLoadingPlans, setIsLoadingPlans] = useState<boolean>(true);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-    // Auto-detect phone network prefix
-    useEffect(() => {
-        if (phone.length >= 4) {
-            const prefix = phone.substring(0, 4);
-            const mtnPrefixes = ['0803', '0806', '0703', '0706', '0813', '0816', '0810', '0814', '0903', '0906', '0913', '0916'];
-            const airtelPrefixes = ['0802', '0808', '0708', '0812', '0701', '0902', '0901', '0904', '0907', '0912'];
-            const gloPrefixes = ['0805', '0807', '0705', '0815', '0811', '0905', '0915'];
-            const etisalatPrefixes = ['0809', '0817', '0818', '0909', '0908'];
-
-            if (mtnPrefixes.includes(prefix)) setSelectedNetwork('mtn');
-            else if (airtelPrefixes.includes(prefix)) setSelectedNetwork('airtel');
-            else if (gloPrefixes.includes(prefix)) setSelectedNetwork('glo');
-            else if (etisalatPrefixes.includes(prefix)) setSelectedNetwork('9mobile');
-        }
-    }, [phone]);
+    const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
 
     // Fetch data plans from API endpoint
     useEffect(() => {
@@ -60,8 +47,24 @@ export default function DataPage() {
     // Filtered selected plan
     const selectedPlan = dataPlans.find((p) => p.id === selectedPlanId);
 
-    const handlePurchase = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSelectPlan = (plan: any) => {
+        setSelectedPlanId(plan.id);
+        if (!phone || phone.trim() === '') {
+            setPhoneError('Please enter recipient phone number');
+            document.getElementById('phone-input')?.focus();
+            return;
+        }
+        if (phone.length !== 11) {
+            setPhoneError('Phone number must be 11 digits');
+            document.getElementById('phone-input')?.focus();
+            return;
+        }
+        setPhoneError(null);
+        setIsConfirmOpen(true);
+    };
+
+    const handlePurchase = (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
         if (!selectedPlanId || !phone || phone.length !== 11) return;
 
         setIsSubmitting(true);
@@ -73,6 +76,8 @@ export default function DataPage() {
             onFinish: () => setIsSubmitting(false),
             onSuccess: () => {
                 setSelectedPlanId(null);
+                setIsConfirmOpen(false);
+                setPhoneError(null);
             }
         });
     };
@@ -181,98 +186,31 @@ export default function DataPage() {
                 )}
 
                 {isLoadingPlans ? (
-                    <div className="py-16 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 flex flex-col items-center gap-2 bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-3xl p-6 shadow-xs">
+                    <div className="py-16 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 flex flex-col items-center gap-2 bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-6 shadow-xs">
                         <RefreshCw className="w-6 h-6 animate-spin text-primary" />
                         <span>Loading data packages...</span>
                     </div>
                 ) : (
-                    <form onSubmit={handlePurchase} className="space-y-4">
+                    <div className="space-y-4">
 
-                        {/* 1. TOP CARD: Network & Phone Selector */}
-                        <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-3xl p-4 sm:p-5 shadow-xs">
-                            <div className="relative flex items-center bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700/80 rounded-2xl px-3 py-2 sm:py-2.5 focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all">
-                                
-                                {/* Network Selector Dropdown Trigger */}
-                                <div className="relative shrink-0">
-                                    <button
-                                        type="button"
-                                        onClick={() => setNetworkDropdownOpen(!networkDropdownOpen)}
-                                        className="flex items-center gap-2 pr-3 border-r border-gray-200 dark:border-gray-700 cursor-pointer"
-                                    >
-                                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black text-white shadow-2xs ${
-                                            selectedNetwork === 'mtn' ? 'bg-amber-400 text-black' :
-                                            selectedNetwork === 'airtel' ? 'bg-red-600' :
-                                            selectedNetwork === 'glo' ? 'bg-emerald-600' : 'bg-green-700'
-                                        }`}>
-                                            {selectedNetwork.toUpperCase()}
-                                        </span>
-                                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                                    </button>
+                        {/* 1. Network & Phone Selector Card (Component) */}
+                        <PhoneNetworkCard
+                            phone={phone}
+                            setPhone={setPhone}
+                            selectedNetwork={selectedNetwork}
+                            setSelectedNetwork={setSelectedNetwork}
+                            phoneError={phoneError}
+                            setPhoneError={setPhoneError}
+                            userPhone={user?.phone}
+                            onNetworkChange={() => setSelectedPlanId(null)}
+                        />
 
-                                    {/* Network Popup Dropdown */}
-                                    {networkDropdownOpen && (
-                                        <>
-                                            <div className="fixed inset-0 z-40" onClick={() => setNetworkDropdownOpen(false)} />
-                                            <div className="absolute left-0 top-full mt-2 w-48 bg-white dark:bg-[#1c1c28] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 p-2 space-y-1">
-                                                {[
-                                                    { slug: 'mtn', name: 'MTN', color: 'bg-amber-400 text-black' },
-                                                    { slug: 'airtel', name: 'Airtel', color: 'bg-red-600 text-white' },
-                                                    { slug: 'glo', name: 'Glo', color: 'bg-emerald-600 text-white' },
-                                                    { slug: '9mobile', name: '9mobile', color: 'bg-green-700 text-white' },
-                                                ].map((net) => (
-                                                    <button
-                                                        key={net.slug}
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setSelectedNetwork(net.slug);
-                                                            setSelectedPlanId(null);
-                                                            setNetworkDropdownOpen(false);
-                                                        }}
-                                                        className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                                                            selectedNetwork === net.slug
-                                                                ? 'bg-primary/10 text-primary'
-                                                                : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
-                                                        }`}
-                                                    >
-                                                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black ${net.color}`}>
-                                                            {net.name[0]}
-                                                        </span>
-                                                        <span>{net.name}</span>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-
-                                {/* Phone Input */}
-                                <input
-                                    type="text"
-                                    maxLength={11}
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                                    placeholder="090 2529 3759"
-                                    className="w-full bg-transparent px-3 py-1 text-base font-bold text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none tracking-wide"
-                                />
-
-                                {/* Beneficiary Round Icon */}
-                                <button
-                                    type="button"
-                                    onClick={() => setPhone(user?.phone || '09025293759')}
-                                    className="w-9 h-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center justify-center shrink-0 cursor-pointer"
-                                    title="Auto-fill phone number"
-                                >
-                                    <User className="w-5 h-5" />
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* 2. BOTTOM CARD: Data Category Switcher & Package Cards */}
-                        <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-3xl p-4 sm:p-5 shadow-xs space-y-4">
+                        {/* 2. Data Category Switcher & Package Cards (Standalone) */}
+                        <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
                             
                             {/* Segmented Control Pill Switcher (Dynamically rendered, hiding empty tabs) */}
                             {availableTabs.length > 0 && (
-                                <div className="bg-slate-100/90 dark:bg-gray-900 p-1 rounded-2xl flex gap-1 overflow-x-auto no-scrollbar">
+                                <div className="bg-slate-100/90 dark:bg-gray-900 p-1 rounded-xl flex gap-1 overflow-x-auto no-scrollbar">
                                     {availableTabs.map((tab) => {
                                         const isActive = selectedValidityTab === tab.slug;
                                         return (
@@ -303,19 +241,13 @@ export default function DataPage() {
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                                    {activePlans.map((plan) => {
-                                        const isSelected = selectedPlanId === plan.id;
-                                        return (
-                                            <button
-                                                key={plan.id}
-                                                type="button"
-                                                onClick={() => setSelectedPlanId(plan.id)}
-                                                className={`rounded-2xl border text-left transition-all cursor-pointer overflow-hidden flex flex-col justify-between relative ${
-                                                    isSelected
-                                                        ? 'border-2 border-primary ring-2 ring-primary/20 shadow-md bg-white dark:bg-gray-900'
-                                                        : 'border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-primary/40'
-                                                }`}
-                                            >
+                                    {activePlans.map((plan) => (
+                                        <button
+                                            key={plan.id}
+                                            type="button"
+                                            onClick={() => handleSelectPlan(plan)}
+                                            className="rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-primary/40 text-left transition-all cursor-pointer overflow-hidden flex flex-col justify-between relative"
+                                        >
                                                 {/* Top Half: Size, Type Badge & Subtitle */}
                                                 <div className="p-3.5 sm:p-4">
                                                     <div className="flex items-center gap-1.5 flex-wrap">
@@ -348,47 +280,67 @@ export default function DataPage() {
                                                     </div>
                                                 </div>
                                             </button>
-                                        );
-                                    })}
-                                </div>
-                            )}
-
-                            {/* Purchase Submit Button */}
-                            {selectedPlan && (
-                                <div className="space-y-3 pt-2">
-                                    <div className="bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 flex items-center justify-between text-xs">
-                                        <div>
-                                            <span className="text-gray-400 block font-semibold">Total Amount</span>
-                                            <span className="text-base font-black text-gray-900 dark:text-white">
-                                                ₦{Number(selectedPlan.price).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
-                                            </span>
-                                        </div>
-                                        <div className="text-right">
-                                            <span className="text-gray-400 block font-semibold">Selected Plan</span>
-                                            <span className="font-bold text-primary">{selectedPlan.network_name} {selectedPlan.name}</span>
-                                        </div>
-                                    </div>
-
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting || !selectedPlanId || phone.length !== 11}
-                                        className="w-full py-4 rounded-2xl bg-primary text-white text-sm font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-primary/25 hover:opacity-95 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                                    >
-                                        {isSubmitting ? (
-                                            <span>Processing Transaction...</span>
-                                        ) : (
-                                            <>
-                                                <Zap className="w-4 h-4" />
-                                                <span>Confirm & Recharge Data Bundle</span>
-                                            </>
-                                        )}
-                                    </button>
+                                    ))}
                                 </div>
                             )}
                         </div>
-                    </form>
+                    </div>
                 )}
             </div>
+
+            {/* ── CONFIRM TO PAY BOTTOM SHEET MODAL (REUSABLE COMPONENT) ── */}
+            {selectedPlan && (
+                <ConfirmPaymentSheet
+                    isOpen={isConfirmOpen}
+                    onOpenChange={setIsConfirmOpen}
+                    title="Confirm to Pay"
+                    amount={Number(selectedPlan.price)}
+                    walletBalance={Number(mainWallet?.balance || 0)}
+                    isSubmitting={isSubmitting}
+                    confirmButtonText="Confirm & Recharge Data Bundle"
+                    onConfirm={handlePurchase}
+                    details={[
+                        {
+                            label: 'Network',
+                            value: (
+                                <div className="flex items-center gap-1.5 font-bold text-gray-900 dark:text-white">
+                                    {NETWORK_ICONS[selectedPlan.network_slug || selectedNetwork] && (
+                                        <img
+                                            src={NETWORK_ICONS[selectedPlan.network_slug || selectedNetwork]}
+                                            alt={selectedPlan.network_name || selectedNetwork}
+                                            className="w-3.5 h-3.5 rounded-full object-contain bg-white"
+                                        />
+                                    )}
+                                    <span className="uppercase text-xs">{selectedPlan.network_name || selectedNetwork}</span>
+                                </div>
+                            ),
+                        },
+                        {
+                            label: 'Plan',
+                            value: (
+                                <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                                    <span className="font-extrabold text-gray-900 dark:text-white text-xs">
+                                        {selectedPlan.name}
+                                    </span>
+                                    <span className="text-[9px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded uppercase">
+                                        {selectedPlan.data_type_name || 'DATA'}
+                                    </span>
+                                </div>
+                            ),
+                            subtitle: selectedPlan.validity || '30 days',
+                        },
+                        {
+                            label: 'Recipient',
+                            value: (
+                                <div className="flex items-center gap-1 font-black text-gray-900 dark:text-white font-mono text-xs">
+                                    <Smartphone className="w-3 h-3 text-primary" />
+                                    <span>{phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1 $2 $3')}</span>
+                                </div>
+                            ),
+                        },
+                    ]}
+                />
+            )}
         </>
     );
 }
@@ -401,3 +353,4 @@ DataPage.layout = {
         },
     ],
 };
+

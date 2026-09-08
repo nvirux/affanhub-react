@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-export const billing = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const billing = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: billing.url(args, options),
     method: 'get',
 })
@@ -19,11 +19,14 @@ billing.definition = {
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-billing.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+billing.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -34,7 +37,9 @@ billing.url = (args: { tenant: string | number } | [tenant: string | number ] | 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return billing.definition.url
@@ -47,7 +52,7 @@ billing.url = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-billing.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+billing.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: billing.url(args, options),
     method: 'get',
 })
@@ -56,7 +61,7 @@ billing.get = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-billing.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+billing.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: billing.url(args, options),
     method: 'head',
 })
@@ -66,7 +71,7 @@ billing.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-    const billingForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const billingForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: billing.url(args, options),
         method: 'get',
     })
@@ -76,7 +81,7 @@ billing.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-        billingForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        billingForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: billing.url(args, options),
             method: 'get',
         })
@@ -85,7 +90,7 @@ billing.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Billing.php:7
  * @route '//merchant.localhost/{tenant}/billing'
  */
-        billingForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        billingForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: billing.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -101,7 +106,7 @@ billing.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-export const domains = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const domains = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: domains.url(args, options),
     method: 'get',
 })
@@ -116,11 +121,14 @@ domains.definition = {
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-domains.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+domains.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -131,7 +139,9 @@ domains.url = (args: { tenant: string | number } | [tenant: string | number ] | 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return domains.definition.url
@@ -144,7 +154,7 @@ domains.url = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-domains.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+domains.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: domains.url(args, options),
     method: 'get',
 })
@@ -153,7 +163,7 @@ domains.get = (args: { tenant: string | number } | [tenant: string | number ] | 
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-domains.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+domains.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: domains.url(args, options),
     method: 'head',
 })
@@ -163,7 +173,7 @@ domains.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-    const domainsForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const domainsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: domains.url(args, options),
         method: 'get',
     })
@@ -173,7 +183,7 @@ domains.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-        domainsForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        domainsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: domains.url(args, options),
             method: 'get',
         })
@@ -182,7 +192,7 @@ domains.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
  */
-        domainsForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        domainsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: domains.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -198,7 +208,7 @@ domains.head = (args: { tenant: string | number } | [tenant: string | number ] |
  * @see app/Filament/Merchant/Pages/ManageServices.php:7
  * @route '//merchant.localhost/{tenant}/manage-services'
  */
-export const manageServices = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const manageServices = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: manageServices.url(args, options),
     method: 'get',
 })
@@ -213,11 +223,14 @@ manageServices.definition = {
  * @see app/Filament/Merchant/Pages/ManageServices.php:7
  * @route '//merchant.localhost/{tenant}/manage-services'
  */
-manageServices.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+manageServices.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -228,7 +241,9 @@ manageServices.url = (args: { tenant: string | number } | [tenant: string | numb
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return manageServices.definition.url
@@ -241,7 +256,7 @@ manageServices.url = (args: { tenant: string | number } | [tenant: string | numb
  * @see app/Filament/Merchant/Pages/ManageServices.php:7
  * @route '//merchant.localhost/{tenant}/manage-services'
  */
-manageServices.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+manageServices.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: manageServices.url(args, options),
     method: 'get',
 })
@@ -250,7 +265,7 @@ manageServices.get = (args: { tenant: string | number } | [tenant: string | numb
  * @see app/Filament/Merchant/Pages/ManageServices.php:7
  * @route '//merchant.localhost/{tenant}/manage-services'
  */
-manageServices.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+manageServices.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: manageServices.url(args, options),
     method: 'head',
 })
@@ -260,7 +275,7 @@ manageServices.head = (args: { tenant: string | number } | [tenant: string | num
  * @see app/Filament/Merchant/Pages/ManageServices.php:7
  * @route '//merchant.localhost/{tenant}/manage-services'
  */
-    const manageServicesForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const manageServicesForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: manageServices.url(args, options),
         method: 'get',
     })
@@ -270,7 +285,7 @@ manageServices.head = (args: { tenant: string | number } | [tenant: string | num
  * @see app/Filament/Merchant/Pages/ManageServices.php:7
  * @route '//merchant.localhost/{tenant}/manage-services'
  */
-        manageServicesForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        manageServicesForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: manageServices.url(args, options),
             method: 'get',
         })
@@ -279,7 +294,7 @@ manageServices.head = (args: { tenant: string | number } | [tenant: string | num
  * @see app/Filament/Merchant/Pages/ManageServices.php:7
  * @route '//merchant.localhost/{tenant}/manage-services'
  */
-        manageServicesForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        manageServicesForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: manageServices.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -291,11 +306,113 @@ manageServices.head = (args: { tenant: string | number } | [tenant: string | num
     
     manageServices.form = manageServicesForm
 /**
+* @see \App\Filament\Merchant\Pages\ReferralProgram::__invoke
+ * @see app/Filament/Merchant/Pages/ReferralProgram.php:7
+ * @route '//merchant.localhost/{tenant}/referral-program'
+ */
+export const referralProgram = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: referralProgram.url(args, options),
+    method: 'get',
+})
+
+referralProgram.definition = {
+    methods: ["get","head"],
+    url: '//merchant.localhost/{tenant}/referral-program',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Filament\Merchant\Pages\ReferralProgram::__invoke
+ * @see app/Filament/Merchant/Pages/ReferralProgram.php:7
+ * @route '//merchant.localhost/{tenant}/referral-program'
+ */
+referralProgram.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { tenant: args }
+    }
+
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
+    
+    if (Array.isArray(args)) {
+        args = {
+                    tenant: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
+                }
+
+    return referralProgram.definition.url
+            .replace('{tenant}', parsedArgs.tenant.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Filament\Merchant\Pages\ReferralProgram::__invoke
+ * @see app/Filament/Merchant/Pages/ReferralProgram.php:7
+ * @route '//merchant.localhost/{tenant}/referral-program'
+ */
+referralProgram.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: referralProgram.url(args, options),
+    method: 'get',
+})
+/**
+* @see \App\Filament\Merchant\Pages\ReferralProgram::__invoke
+ * @see app/Filament/Merchant/Pages/ReferralProgram.php:7
+ * @route '//merchant.localhost/{tenant}/referral-program'
+ */
+referralProgram.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: referralProgram.url(args, options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Filament\Merchant\Pages\ReferralProgram::__invoke
+ * @see app/Filament/Merchant/Pages/ReferralProgram.php:7
+ * @route '//merchant.localhost/{tenant}/referral-program'
+ */
+    const referralProgramForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: referralProgram.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Pages\ReferralProgram::__invoke
+ * @see app/Filament/Merchant/Pages/ReferralProgram.php:7
+ * @route '//merchant.localhost/{tenant}/referral-program'
+ */
+        referralProgramForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: referralProgram.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Pages\ReferralProgram::__invoke
+ * @see app/Filament/Merchant/Pages/ReferralProgram.php:7
+ * @route '//merchant.localhost/{tenant}/referral-program'
+ */
+        referralProgramForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: referralProgram.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    referralProgram.form = referralProgramForm
+/**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
  * @route '//merchant.localhost/{tenant}/store-activity-logs'
  */
-export const storeActivityLogs = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const storeActivityLogs = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: storeActivityLogs.url(args, options),
     method: 'get',
 })
@@ -310,11 +427,14 @@ storeActivityLogs.definition = {
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
  * @route '//merchant.localhost/{tenant}/store-activity-logs'
  */
-storeActivityLogs.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+storeActivityLogs.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -325,7 +445,9 @@ storeActivityLogs.url = (args: { tenant: string | number } | [tenant: string | n
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return storeActivityLogs.definition.url
@@ -338,7 +460,7 @@ storeActivityLogs.url = (args: { tenant: string | number } | [tenant: string | n
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
  * @route '//merchant.localhost/{tenant}/store-activity-logs'
  */
-storeActivityLogs.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+storeActivityLogs.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: storeActivityLogs.url(args, options),
     method: 'get',
 })
@@ -347,7 +469,7 @@ storeActivityLogs.get = (args: { tenant: string | number } | [tenant: string | n
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
  * @route '//merchant.localhost/{tenant}/store-activity-logs'
  */
-storeActivityLogs.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+storeActivityLogs.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: storeActivityLogs.url(args, options),
     method: 'head',
 })
@@ -357,7 +479,7 @@ storeActivityLogs.head = (args: { tenant: string | number } | [tenant: string | 
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
  * @route '//merchant.localhost/{tenant}/store-activity-logs'
  */
-    const storeActivityLogsForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const storeActivityLogsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: storeActivityLogs.url(args, options),
         method: 'get',
     })
@@ -367,7 +489,7 @@ storeActivityLogs.head = (args: { tenant: string | number } | [tenant: string | 
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
  * @route '//merchant.localhost/{tenant}/store-activity-logs'
  */
-        storeActivityLogsForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        storeActivityLogsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: storeActivityLogs.url(args, options),
             method: 'get',
         })
@@ -376,7 +498,7 @@ storeActivityLogs.head = (args: { tenant: string | number } | [tenant: string | 
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
  * @route '//merchant.localhost/{tenant}/store-activity-logs'
  */
-        storeActivityLogsForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        storeActivityLogsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: storeActivityLogs.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -392,7 +514,7 @@ storeActivityLogs.head = (args: { tenant: string | number } | [tenant: string | 
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
  * @route '//merchant.localhost/{tenant}/store-settings'
  */
-export const storeSettings = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const storeSettings = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: storeSettings.url(args, options),
     method: 'get',
 })
@@ -407,11 +529,14 @@ storeSettings.definition = {
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
  * @route '//merchant.localhost/{tenant}/store-settings'
  */
-storeSettings.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+storeSettings.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -422,7 +547,9 @@ storeSettings.url = (args: { tenant: string | number } | [tenant: string | numbe
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return storeSettings.definition.url
@@ -435,7 +562,7 @@ storeSettings.url = (args: { tenant: string | number } | [tenant: string | numbe
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
  * @route '//merchant.localhost/{tenant}/store-settings'
  */
-storeSettings.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+storeSettings.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: storeSettings.url(args, options),
     method: 'get',
 })
@@ -444,7 +571,7 @@ storeSettings.get = (args: { tenant: string | number } | [tenant: string | numbe
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
  * @route '//merchant.localhost/{tenant}/store-settings'
  */
-storeSettings.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+storeSettings.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: storeSettings.url(args, options),
     method: 'head',
 })
@@ -454,7 +581,7 @@ storeSettings.head = (args: { tenant: string | number } | [tenant: string | numb
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
  * @route '//merchant.localhost/{tenant}/store-settings'
  */
-    const storeSettingsForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const storeSettingsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: storeSettings.url(args, options),
         method: 'get',
     })
@@ -464,7 +591,7 @@ storeSettings.head = (args: { tenant: string | number } | [tenant: string | numb
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
  * @route '//merchant.localhost/{tenant}/store-settings'
  */
-        storeSettingsForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        storeSettingsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: storeSettings.url(args, options),
             method: 'get',
         })
@@ -473,7 +600,7 @@ storeSettings.head = (args: { tenant: string | number } | [tenant: string | numb
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
  * @route '//merchant.localhost/{tenant}/store-settings'
  */
-        storeSettingsForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        storeSettingsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: storeSettings.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -489,7 +616,7 @@ storeSettings.head = (args: { tenant: string | number } | [tenant: string | numb
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
  * @route '//merchant.localhost/{tenant}/store-wallet'
  */
-export const storeWallet = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const storeWallet = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: storeWallet.url(args, options),
     method: 'get',
 })
@@ -504,11 +631,14 @@ storeWallet.definition = {
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
  * @route '//merchant.localhost/{tenant}/store-wallet'
  */
-storeWallet.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+storeWallet.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -519,7 +649,9 @@ storeWallet.url = (args: { tenant: string | number } | [tenant: string | number 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return storeWallet.definition.url
@@ -532,7 +664,7 @@ storeWallet.url = (args: { tenant: string | number } | [tenant: string | number 
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
  * @route '//merchant.localhost/{tenant}/store-wallet'
  */
-storeWallet.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+storeWallet.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: storeWallet.url(args, options),
     method: 'get',
 })
@@ -541,7 +673,7 @@ storeWallet.get = (args: { tenant: string | number } | [tenant: string | number 
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
  * @route '//merchant.localhost/{tenant}/store-wallet'
  */
-storeWallet.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+storeWallet.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: storeWallet.url(args, options),
     method: 'head',
 })
@@ -551,7 +683,7 @@ storeWallet.head = (args: { tenant: string | number } | [tenant: string | number
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
  * @route '//merchant.localhost/{tenant}/store-wallet'
  */
-    const storeWalletForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const storeWalletForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: storeWallet.url(args, options),
         method: 'get',
     })
@@ -561,7 +693,7 @@ storeWallet.head = (args: { tenant: string | number } | [tenant: string | number
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
  * @route '//merchant.localhost/{tenant}/store-wallet'
  */
-        storeWalletForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        storeWalletForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: storeWallet.url(args, options),
             method: 'get',
         })
@@ -570,7 +702,7 @@ storeWallet.head = (args: { tenant: string | number } | [tenant: string | number
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
  * @route '//merchant.localhost/{tenant}/store-wallet'
  */
-        storeWalletForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        storeWalletForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: storeWallet.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -586,7 +718,7 @@ storeWallet.head = (args: { tenant: string | number } | [tenant: string | number
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-export const dashboard = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const dashboard = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: dashboard.url(args, options),
     method: 'get',
 })
@@ -601,11 +733,14 @@ dashboard.definition = {
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-dashboard.url = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions) => {
+dashboard.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
 
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
     
     if (Array.isArray(args)) {
         args = {
@@ -616,7 +751,9 @@ dashboard.url = (args: { tenant: string | number } | [tenant: string | number ] 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        tenant: args.tenant,
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
                 }
 
     return dashboard.definition.url
@@ -629,7 +766,7 @@ dashboard.url = (args: { tenant: string | number } | [tenant: string | number ] 
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-dashboard.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+dashboard.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: dashboard.url(args, options),
     method: 'get',
 })
@@ -638,7 +775,7 @@ dashboard.get = (args: { tenant: string | number } | [tenant: string | number ] 
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-dashboard.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+dashboard.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: dashboard.url(args, options),
     method: 'head',
 })
@@ -648,7 +785,7 @@ dashboard.head = (args: { tenant: string | number } | [tenant: string | number ]
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-    const dashboardForm = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const dashboardForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: dashboard.url(args, options),
         method: 'get',
     })
@@ -658,7 +795,7 @@ dashboard.head = (args: { tenant: string | number } | [tenant: string | number ]
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-        dashboardForm.get = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        dashboardForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: dashboard.url(args, options),
             method: 'get',
         })
@@ -667,7 +804,7 @@ dashboard.head = (args: { tenant: string | number } | [tenant: string | number ]
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//merchant.localhost/{tenant}'
  */
-        dashboardForm.head = (args: { tenant: string | number } | [tenant: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        dashboardForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: dashboard.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -682,6 +819,7 @@ const pages = {
     billing: Object.assign(billing, billing),
 domains: Object.assign(domains, domains),
 manageServices: Object.assign(manageServices, manageServices),
+referralProgram: Object.assign(referralProgram, referralProgram),
 storeActivityLogs: Object.assign(storeActivityLogs, storeActivityLogs),
 storeSettings: Object.assign(storeSettings, storeSettings),
 storeWallet: Object.assign(storeWallet, storeWallet),

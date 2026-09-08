@@ -41,6 +41,13 @@ class PlanAndFeatureSeeder extends Seeder
                 'default_value' => 'false',
                 'description' => 'Allows customizing VTU markup margins.',
             ],
+            [
+                'name' => 'Referral & Earn System',
+                'slug' => 'referral_system',
+                'type' => 'boolean',
+                'default_value' => 'false',
+                'description' => 'Allows store to activate customer referral and earning programs.',
+            ],
         ];
 
         $featureModels = [];
@@ -88,18 +95,21 @@ class PlanAndFeatureSeeder extends Seeder
                 'custom_domain' => 'false',
                 'api_access' => 'false',
                 'custom_pricing_margins' => 'false',
+                'referral_system' => 'false',
             ],
             'pro' => [
                 'staff_limit' => '10',
                 'custom_domain' => 'true',
                 'api_access' => 'false',
                 'custom_pricing_margins' => 'true',
+                'referral_system' => 'true',
             ],
             'enterprise' => [
                 'staff_limit' => '999', // Representation of "unlimited"
                 'custom_domain' => 'true',
                 'api_access' => 'true',
                 'custom_pricing_margins' => 'true',
+                'referral_system' => 'true',
             ],
         ];
 
