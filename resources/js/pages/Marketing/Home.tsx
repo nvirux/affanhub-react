@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import {
     ArrowRight, Menu, X, CheckCircle2, Zap, Users, BarChart3,
     Globe, Shield, Wallet, Store, Smartphone, Wifi, Tv, GraduationCap,
@@ -68,15 +68,17 @@ const PLANS = [
     },
 ];
 
-const getMerchantUrl = (path = '') => {
-    if (typeof window === 'undefined') return '#';
-    const host = window.location.host;
-    const protocol = window.location.protocol;
-    
-    if (host.includes('localhost') || host.includes('127.0.0.1')) {
-        return `${protocol}//merchant.localhost:8000${path}`;
+const resolveMerchantUrl = (merchantBase?: string, path = '') => {
+    if (merchantBase) return `${merchantBase}${path}`;
+    if (typeof window !== 'undefined') {
+        const host = window.location.host;
+        const protocol = window.location.protocol;
+        if (host.includes('localhost') || host.includes('127.0.0.1')) {
+            return `${protocol}//merchant.localhost:8000${path}`;
+        }
+        return `${protocol}//merchant.${host}${path}`;
     }
-    return `${protocol}//merchant.${host}${path}`;
+    return `http://merchant.localhost:8000${path}`;
 };
 
 const STEPS = [
@@ -106,7 +108,9 @@ const FAQS = [
 ];
 
 export default function MarketingHome() {
+    const { merchant_url } = usePage<any>().props;
     const [mobileOpen, setMobileOpen] = useState(false);
+    const getMerchantUrl = (path = '') => resolveMerchantUrl(merchant_url, path);
 
     return (
         <div className="min-h-screen bg-white text-slate-900 flex flex-col" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>

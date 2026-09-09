@@ -6,10 +6,16 @@ import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const defaultAppName = import.meta.env.VITE_APP_NAME || 'AffanHub';
 
 createInertiaApp({
-    title: (title) => (title ? `${title} - ${appName}` : appName),
+    title: (title) => {
+        const appName =
+            (typeof document !== 'undefined'
+                ? document.querySelector('meta[name="app-name"]')?.getAttribute('content')
+                : null) || defaultAppName;
+        return title ? `${title} - ${appName}` : appName;
+    },
     layout: (name) => {
         switch (true) {
             case ['Marketing/Home', 'Storefront/Home'].includes(name):
