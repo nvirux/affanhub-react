@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Auth\TenantAuthController;
+use App\Http\Controllers\Auth\TenantPinSetupController;
 use App\Http\Controllers\EarnController;
 use App\Http\Controllers\VirtualAccountController;
-use App\Http\Middleware\CheckTenantAccess;
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -17,6 +18,7 @@ use App\Http\Middleware\CheckTenantAccess;
 |
 */
 
+use App\Http\Middleware\CheckTenantAccess;
 use App\Models\Service;
 use App\Models\StoreService;
 use Illuminate\Support\Facades\Route;
@@ -32,10 +34,20 @@ Route::middleware([
 ])->group(function () {
 
     // Make authentication routes tenant-aware!
+    Route::post('/login/check-identifier', [TenantAuthController::class, 'checkIdentifier'])
+        ->name('login.check-identifier')
+        ->middleware('throttle:30,1');
+
     Route::group([
         'namespace' => 'Laravel\Fortify\Http\Controllers',
     ], function () {
         require base_path('vendor/laravel/fortify/routes/routes.php');
+    });
+
+    // PIN Setup for legacy password users
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/setup-pin', [TenantPinSetupController::class, 'show'])->name('pin.setup');
+        Route::post('/setup-pin', [TenantPinSetupController::class, 'store'])->name('pin.setup.store');
     });
 
     // Customer Dashboard

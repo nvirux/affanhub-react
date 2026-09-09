@@ -14,16 +14,12 @@ export default function AppLogoIcon({ className = 'size-10', ...props }: HTMLAtt
         );
     }
 
-    if (store) {
-        return (
-            <div
-                className={`flex items-center justify-center rounded-xl bg-primary text-primary-foreground font-black shadow-md shadow-primary/20 ${className}`}
-                {...props}
-            >
-                <span className="text-lg leading-none select-none">{initial}</span>
-            </div>
-        );
-    }
+    // If tenant has no custom logo uploaded, display the sleek Affan icon
+    return (
+        <div className={`flex items-center justify-center overflow-hidden rounded-xl ${className}`} {...props}>
+            <img src="/affan-icon.png" alt={storeName} className="h-full w-full object-contain" />
+        </div>
+    );
 
     // Central Platform (AffanHub)
     return (

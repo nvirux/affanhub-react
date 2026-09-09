@@ -64,3 +64,36 @@ test('registration fails when phone number is missing', function () {
     $response->assertSessionHasErrors(['phone']);
     expect(User::where('email', 'nophone@example.com')->exists())->toBeFalse();
 });
+
+test('new users can register with 4-digit login pin', function () {
+    $response = $this->post('http://demo.localhost/register', [
+        'name' => 'PIN Newbie',
+        'email' => 'pinnewbie@example.com',
+        'phone' => '08099112233',
+        'pin' => '5678',
+        'pin_confirmation' => '5678',
+    ]);
+
+    $this->assertAuthenticated();
+    $response->assertRedirect('http://demo.localhost/dashboard');
+
+    $user = User::where('email', 'pinnewbie@example.com')->first();
+    expect($user)->not->toBeNull()
+        ->and($user->phone)->toBe('08099112233')
+        ->and($user->login_pin_enabled)->toBeTrue()
+        ->and($user->password)->toBeNull()
+        ->and(Hash::check('5678', $user->login_pin_hash))->toBeTrue();
+});
+
+test('registration fails when pin is not 4 digits or does not match confirmation', function () {
+    $response = $this->post('http://demo.localhost/register', [
+        'name' => 'Invalid PIN User',
+        'email' => 'invalidpin@example.com',
+        'phone' => '08055443322',
+        'pin' => '123',
+        'pin_confirmation' => '1234',
+    ]);
+
+    $response->assertSessionHasErrors(['pin']);
+    expect(User::where('email', 'invalidpin@example.com')->exists())->toBeFalse();
+});

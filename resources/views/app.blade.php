@@ -34,17 +34,10 @@
         @if(tenant() && tenant('favicon_path'))
             <link rel="icon" href="{{ global_asset('storage/' . tenant('favicon_path')) }}" sizes="any">
             <link rel="apple-touch-icon" href="{{ global_asset('storage/' . tenant('favicon_path')) }}">
-        @elseif(tenant())
-            @php
-                $initial = strtoupper(substr(tenant('name') ?? 'S', 0, 1));
-                $brandColor = tenant('primary_color') ?: '#2563EB';
-                $brandSvg = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='28' fill='".urlencode($brandColor)."'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='56' font-weight='900' fill='%23ffffff'>".$initial."</text></svg>";
-            @endphp
-            <link rel="icon" href="{{ $brandSvg }}" type="image/svg+xml">
         @else
             <link rel="icon" href="/affan-icon.png" type="image/png">
-            <link rel="shortcut icon" href="/favicon.ico">
-            <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+            <link rel="shortcut icon" href="/affan-icon.png" type="image/png">
+            <link rel="apple-touch-icon" href="/affan-icon.png">
         @endif
 
         {{-- Dynamic App Name for Inertia Head and Title Resolvers --}}
