@@ -4,7 +4,7 @@ use App\Http\Controllers\AirtimeController;
 use App\Http\Controllers\DataController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'transaction_pin'])->group(function () {
     // Airtime Routes
     Route::get('/vtu/airtime', [AirtimeController::class, 'index'])->name('vtu.airtime');
     Route::post('/vtu/airtime/purchase', [AirtimeController::class, 'purchase'])->name('vtu.airtime.purchase');

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DataController::plans
- * @see app/Http/Controllers/DataController.php:28
+ * @see app/Http/Controllers/DataController.php:30
  * @route '/vtu/data/plans'
  */
 export const plans = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ plans.definition = {
 
 /**
 * @see \App\Http\Controllers\DataController::plans
- * @see app/Http/Controllers/DataController.php:28
+ * @see app/Http/Controllers/DataController.php:30
  * @route '/vtu/data/plans'
  */
 plans.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ plans.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DataController::plans
- * @see app/Http/Controllers/DataController.php:28
+ * @see app/Http/Controllers/DataController.php:30
  * @route '/vtu/data/plans'
  */
 plans.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ plans.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\DataController::plans
- * @see app/Http/Controllers/DataController.php:28
+ * @see app/Http/Controllers/DataController.php:30
  * @route '/vtu/data/plans'
  */
 plans.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ plans.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\DataController::plans
- * @see app/Http/Controllers/DataController.php:28
+ * @see app/Http/Controllers/DataController.php:30
  * @route '/vtu/data/plans'
  */
     const plansForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ plans.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\DataController::plans
- * @see app/Http/Controllers/DataController.php:28
+ * @see app/Http/Controllers/DataController.php:30
  * @route '/vtu/data/plans'
  */
         plansForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ plans.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\DataController::plans
- * @see app/Http/Controllers/DataController.php:28
+ * @see app/Http/Controllers/DataController.php:30
  * @route '/vtu/data/plans'
  */
         plansForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ plans.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     plans.form = plansForm
 /**
 * @see \App\Http\Controllers\DataController::purchase
- * @see app/Http/Controllers/DataController.php:74
+ * @see app/Http/Controllers/DataController.php:76
  * @route '/vtu/data/purchase'
  */
 export const purchase = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ purchase.definition = {
 
 /**
 * @see \App\Http\Controllers\DataController::purchase
- * @see app/Http/Controllers/DataController.php:74
+ * @see app/Http/Controllers/DataController.php:76
  * @route '/vtu/data/purchase'
  */
 purchase.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ purchase.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DataController::purchase
- * @see app/Http/Controllers/DataController.php:74
+ * @see app/Http/Controllers/DataController.php:76
  * @route '/vtu/data/purchase'
  */
 purchase.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ purchase.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\DataController::purchase
- * @see app/Http/Controllers/DataController.php:74
+ * @see app/Http/Controllers/DataController.php:76
  * @route '/vtu/data/purchase'
  */
     const purchaseForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -123,7 +123,7 @@ purchase.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\DataController::purchase
- * @see app/Http/Controllers/DataController.php:74
+ * @see app/Http/Controllers/DataController.php:76
  * @route '/vtu/data/purchase'
  */
         purchaseForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

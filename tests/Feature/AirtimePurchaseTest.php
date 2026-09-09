@@ -54,7 +54,7 @@ beforeEach(function () {
         'is_active' => true,
     ]);
 
-    $this->user = User::factory()->create([
+    $this->user = User::factory()->withTransactionPin('1234')->create([
         'store_id' => $this->store->id,
     ]);
 });
@@ -157,9 +157,24 @@ test('it validates min and max amount limits', function () {
         'network_id' => $this->network->id,
         'amount' => 20,
         'phone' => '08012345678',
+        'transaction_pin' => '1234',
     ]);
 
     $response->assertStatus(422);
+});
+
+test('it rejects airtime purchase when transaction PIN is incorrect', function () {
+    $this->actingAs($this->user);
+
+    $response = $this->postJson('http://demo.localhost/vtu/airtime/purchase', [
+        'network_id' => $this->network->id,
+        'amount' => 100,
+        'phone' => '08012345678',
+        'transaction_pin' => '0000',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('transaction_pin');
 });
 
 test('it auto-refunds customer and store when provider call fails', function () {

@@ -58,4 +58,35 @@ class UserFactory extends Factory
             'two_factor_confirmed_at' => now(),
         ]);
     }
+
+    /**
+     * Indicate that the model has a login PIN configured.
+     */
+    public function withLoginPin(?string $pin = '1234'): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'login_pin_hash' => $pin ? Hash::make($pin) : null,
+            'login_pin_enabled' => (bool) $pin,
+        ]);
+    }
+
+    /**
+     * Indicate that the model has a transaction PIN configured.
+     */
+    public function withTransactionPin(?string $pin = '5678'): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'transaction_pin_hash' => $pin ? Hash::make($pin) : null,
+        ]);
+    }
+
+    /**
+     * Indicate that the model does not have a password.
+     */
+    public function withoutPassword(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'password' => null,
+        ]);
+    }
 }

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\AirtimeController::index
- * @see app/Http/Controllers/AirtimeController.php:21
+ * @see app/Http/Controllers/AirtimeController.php:23
  * @route '/vtu/airtime'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\AirtimeController::index
- * @see app/Http/Controllers/AirtimeController.php:21
+ * @see app/Http/Controllers/AirtimeController.php:23
  * @route '/vtu/airtime'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AirtimeController::index
- * @see app/Http/Controllers/AirtimeController.php:21
+ * @see app/Http/Controllers/AirtimeController.php:23
  * @route '/vtu/airtime'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\AirtimeController::index
- * @see app/Http/Controllers/AirtimeController.php:21
+ * @see app/Http/Controllers/AirtimeController.php:23
  * @route '/vtu/airtime'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\AirtimeController::index
- * @see app/Http/Controllers/AirtimeController.php:21
+ * @see app/Http/Controllers/AirtimeController.php:23
  * @route '/vtu/airtime'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\AirtimeController::index
- * @see app/Http/Controllers/AirtimeController.php:21
+ * @see app/Http/Controllers/AirtimeController.php:23
  * @route '/vtu/airtime'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\AirtimeController::index
- * @see app/Http/Controllers/AirtimeController.php:21
+ * @see app/Http/Controllers/AirtimeController.php:23
  * @route '/vtu/airtime'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\AirtimeController::purchase
- * @see app/Http/Controllers/AirtimeController.php:80
+ * @see app/Http/Controllers/AirtimeController.php:82
  * @route '/vtu/airtime/purchase'
  */
 export const purchase = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ purchase.definition = {
 
 /**
 * @see \App\Http\Controllers\AirtimeController::purchase
- * @see app/Http/Controllers/AirtimeController.php:80
+ * @see app/Http/Controllers/AirtimeController.php:82
  * @route '/vtu/airtime/purchase'
  */
 purchase.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ purchase.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AirtimeController::purchase
- * @see app/Http/Controllers/AirtimeController.php:80
+ * @see app/Http/Controllers/AirtimeController.php:82
  * @route '/vtu/airtime/purchase'
  */
 purchase.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ purchase.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\AirtimeController::purchase
- * @see app/Http/Controllers/AirtimeController.php:80
+ * @see app/Http/Controllers/AirtimeController.php:82
  * @route '/vtu/airtime/purchase'
  */
     const purchaseForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -123,7 +123,7 @@ purchase.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\AirtimeController::purchase
- * @see app/Http/Controllers/AirtimeController.php:80
+ * @see app/Http/Controllers/AirtimeController.php:82
  * @route '/vtu/airtime/purchase'
  */
         purchaseForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

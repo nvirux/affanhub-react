@@ -10,6 +10,8 @@ use App\Services\Vtu\AirtimeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -92,7 +94,14 @@ class AirtimeController extends Controller
             'network_id' => 'required|exists:networks,id',
             'amount' => 'required|numeric|min:50',
             'phone' => 'required|string|min:10|max:14',
+            'transaction_pin' => 'required|string',
         ]);
+
+        if (! $user->hasTransactionPin() || ! Hash::check($validated['transaction_pin'], $user->transaction_pin_hash)) {
+            throw ValidationException::withMessages([
+                'transaction_pin' => 'Incorrect 4-digit transaction PIN. Please try again.',
+            ]);
+        }
 
         $network = Network::findOrFail($validated['network_id']);
 

@@ -375,8 +375,15 @@ export default function Login({ status, canResetPassword }: Props) {
                                 error={Boolean(loginError)}
                             />
 
-                            {hasPassword && (
-                                <div className="flex items-center justify-center w-full max-w-[280px] sm:max-w-[300px] text-xs pt-4">
+                            <div className={`flex items-center ${hasPassword ? 'justify-between' : 'justify-center'} w-full max-w-[280px] sm:max-w-[300px] text-xs pt-4`}>
+                                <TextLink
+                                    href={`/forgot-pin?identifier=${encodeURIComponent(identifier)}`}
+                                    className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                                >
+                                    Forgot PIN?
+                                </TextLink>
+
+                                {hasPassword && (
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -385,10 +392,10 @@ export default function Login({ status, canResetPassword }: Props) {
                                         }}
                                         className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                                     >
-                                        Use password instead
+                                        Use password
                                     </button>
-                                </div>
-                            )}
+                                )}
+                            </div>
 
                             {isSubmitting && (
                                 <div className="flex items-center gap-2 text-xs font-semibold text-primary mt-3">

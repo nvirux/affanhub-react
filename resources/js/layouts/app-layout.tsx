@@ -4,6 +4,7 @@ import { usePage, Link } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { Home, Wallet, Gift, History, User } from 'lucide-react';
 import { dashboard } from '@/routes';
+import { edit as editProfile } from '@/routes/profile';
 
 export default function AppLayout({
     breadcrumbs = [],
@@ -17,6 +18,7 @@ export default function AppLayout({
 
     const isDashboardActive = url.startsWith('/dashboard');
     const isEarnActive = url.startsWith('/earn');
+    const isProfileActive = url.startsWith('/settings');
 
     return (
         <AppLayoutTemplate breadcrumbs={breadcrumbs}>
@@ -33,7 +35,7 @@ export default function AppLayout({
                     }`}
                 >
                     <Home className="w-5 h-5 stroke-[1.8]" />
-                    <span className="text-[10px] font-bold">Dashboard</span>
+                    <span className="text-[10px] font-bold">Home</span>
                 </Link>
                 <Link
                     href="#"
@@ -81,8 +83,10 @@ export default function AppLayout({
                     <span className="text-[10px] font-bold">History</span>
                 </Link>
                 <Link
-                    href="#"
-                    className="flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                    href={editProfile().url}
+                    className={`flex flex-col items-center justify-center gap-1 transition-colors ${
+                        isProfileActive ? 'text-primary font-bold' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                    }`}
                 >
                     <User className="w-5 h-5 stroke-[1.8]" />
                     <span className="text-[10px] font-bold">Profile</span>

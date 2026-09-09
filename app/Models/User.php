@@ -30,6 +30,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string|null $password
  * @property string|null $login_pin_hash
  * @property bool $login_pin_enabled
+ * @property string|null $transaction_pin_hash
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
@@ -37,8 +38,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'phone', 'bvn', 'nin', 'referral_code', 'referred_by', 'password', 'login_pin_hash', 'login_pin_enabled', 'store_id'])]
-#[Hidden(['password', 'login_pin_hash', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
+#[Fillable(['name', 'email', 'phone', 'bvn', 'nin', 'referral_code', 'referred_by', 'password', 'login_pin_hash', 'login_pin_enabled', 'transaction_pin_hash', 'store_id'])]
+#[Hidden(['password', 'login_pin_hash', 'transaction_pin_hash', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -56,6 +57,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'login_pin_hash' => 'hashed',
             'login_pin_enabled' => 'boolean',
+            'transaction_pin_hash' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
@@ -63,6 +65,16 @@ class User extends Authenticatable
     public function hasLoginPin(): bool
     {
         return (bool) $this->login_pin_enabled && ! empty($this->login_pin_hash);
+    }
+
+    public function hasTransactionPin(): bool
+    {
+        return ! empty($this->transaction_pin_hash);
+    }
+
+    public function hasPassword(): bool
+    {
+        return ! empty($this->password);
     }
 
     public function store()

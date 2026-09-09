@@ -94,9 +94,13 @@ export default function EarnPage({
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0 ml-2">
-                    <button type="button" className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors cursor-pointer" title="Customer Support">
+                    <Link
+                        href="/contact"
+                        className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors cursor-pointer"
+                        title="Customer Support"
+                    >
                         <Headphones className="w-5 h-5 stroke-[1.8]" />
-                    </button>
+                    </Link>
                 </div>
             </div>
 

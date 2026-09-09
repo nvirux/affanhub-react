@@ -9,7 +9,9 @@ use App\Models\StoreDataPlan;
 use App\Services\Vtu\DataService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class DataController extends Controller
@@ -86,7 +88,14 @@ class DataController extends Controller
         $validated = $request->validate([
             'data_plan_id' => 'required|exists:data_plans,id',
             'phone' => 'required|string|min:10|max:14',
+            'transaction_pin' => 'required|string',
         ]);
+
+        if (! $user->hasTransactionPin() || ! Hash::check($validated['transaction_pin'], $user->transaction_pin_hash)) {
+            throw ValidationException::withMessages([
+                'transaction_pin' => 'Incorrect 4-digit transaction PIN. Please try again.',
+            ]);
+        }
 
         $dataPlan = DataPlan::findOrFail($validated['data_plan_id']);
         $tenantId = tenant('id') ?? $user->store_id ?? 1;

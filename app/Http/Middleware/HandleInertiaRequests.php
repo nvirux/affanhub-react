@@ -54,6 +54,12 @@ class HandleInertiaRequests extends Middleware
             'store' => tenant() ? [
                 'id' => tenant('id'),
                 'name' => tenant('name'),
+                'description' => tenant('description'),
+                'contact_email' => tenant('contact_email'),
+                'contact_phone' => tenant('contact_phone'),
+                'social_instagram' => tenant('social_instagram'),
+                'social_facebook' => tenant('social_facebook'),
+                'social_whatsapp' => tenant('social_whatsapp'),
                 'logo_url' => tenant('logo_path') ? global_asset('storage/'.tenant('logo_path')) : null,
                 'whatsapp_chat_enabled' => (bool) (tenant('whatsapp_chat_enabled') ?? false),
                 'whatsapp_chat_phone' => (function () {

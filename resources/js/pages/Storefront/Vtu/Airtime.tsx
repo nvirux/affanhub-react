@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { PhoneNetworkCard, NETWORK_ICONS } from '@/components/phone-network-card';
 import { ConfirmPaymentSheet } from '@/components/confirm-payment-sheet';
+import { TransactionPinSheet } from '@/components/transaction-pin-sheet';
 
 const AIRTIME_PRESETS = [
     { amount: 100, label: '₦100' },
@@ -47,6 +48,8 @@ export default function AirtimePage({ networks = [], wallet_balance }: AirtimePa
     const [amountError, setAmountError] = useState<string | null>(null);
 
     const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
+    const [isPinSheetOpen, setIsPinSheetOpen] = useState<boolean>(false);
+    const [pinError, setPinError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -141,8 +144,14 @@ export default function AirtimePage({ networks = [], wallet_balance }: AirtimePa
             return;
         }
 
+        setIsConfirmOpen(false);
+        setPinError(null);
+        setIsPinSheetOpen(true);
+    };
+
+    const handlePinSubmit = (pin: string) => {
         setIsSubmitting(true);
-        setStatusMessage(null);
+        setPinError(null);
 
         router.post(
             '/vtu/airtime/purchase',
@@ -150,6 +159,7 @@ export default function AirtimePage({ networks = [], wallet_balance }: AirtimePa
                 network_id: currentNetworkObj.id,
                 amount: currentAmount,
                 phone: phone,
+                transaction_pin: pin,
             },
             {
                 preserveScroll: true,
@@ -157,7 +167,7 @@ export default function AirtimePage({ networks = [], wallet_balance }: AirtimePa
                     setIsSubmitting(false);
                 },
                 onSuccess: () => {
-                    setIsConfirmOpen(false);
+                    setIsPinSheetOpen(false);
                     setPhoneError(null);
                     setStatusMessage({
                         type: 'success',
@@ -165,12 +175,16 @@ export default function AirtimePage({ networks = [], wallet_balance }: AirtimePa
                     });
                 },
                 onError: (pageErrors: any) => {
-                    setIsConfirmOpen(false);
-                    const msg = pageErrors.message || pageErrors.amount || pageErrors.phone || 'Airtime recharge failed.';
-                    setStatusMessage({
-                        type: 'error',
-                        text: msg,
-                    });
+                    const msg = pageErrors.message || pageErrors.transaction_pin || pageErrors.amount || pageErrors.phone || 'Airtime recharge failed.';
+                    if (msg.toLowerCase().includes('pin')) {
+                        setPinError(msg);
+                    } else {
+                        setIsPinSheetOpen(false);
+                        setStatusMessage({
+                            type: 'error',
+                            text: msg,
+                        });
+                    }
                 },
             }
         );
@@ -202,9 +216,13 @@ export default function AirtimePage({ networks = [], wallet_balance }: AirtimePa
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0 ml-2">
-                    <button type="button" className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors cursor-pointer" title="Customer Support">
+                    <Link
+                        href="/contact"
+                        className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors cursor-pointer"
+                        title="Customer Support"
+                    >
                         <Headphones className="w-5 h-5 stroke-[1.8]" />
-                    </button>
+                    </Link>
                     <button type="button" className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors cursor-pointer" title="Options">
                         <MoreVertical className="w-5 h-5 stroke-[1.8]" />
                     </button>
@@ -397,6 +415,24 @@ export default function AirtimePage({ networks = [], wallet_balance }: AirtimePa
                         ),
                     },
                 ]}
+            />
+
+            {/* Transaction PIN Verification Sheet */}
+            <TransactionPinSheet
+                isOpen={isPinSheetOpen}
+                onOpenChange={setIsPinSheetOpen}
+                title="Authorize Airtime Purchase"
+                description="Enter your 4-digit Transaction PIN to complete recharge"
+                summary={
+                    <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">{selectedNetwork.toUpperCase()} Airtime</span>
+                        <span className="font-bold text-foreground">₦{currentAmount.toLocaleString()} &rarr; {phone}</span>
+                    </div>
+                }
+                isSubmitting={isSubmitting}
+                error={pinError}
+                onClearError={() => setPinError(null)}
+                onSubmitPin={handlePinSubmit}
             />
         </>
     );

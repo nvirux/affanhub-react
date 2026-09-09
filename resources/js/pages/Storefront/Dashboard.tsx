@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Head, usePage, router } from '@inertiajs/react';
+import { Head, usePage, router, Link } from '@inertiajs/react';
 import { dashboard, logout } from '@/routes';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useAppearance } from '@/hooks/use-appearance';
@@ -28,7 +28,7 @@ export default function Dashboard() {
 
     const getIconComponent = (iconName: string, category: string) => {
         const cls = "w-5 h-5 md:w-7 md:h-7 stroke-[1.75]";
-        switch(iconName) {
+        switch (iconName) {
             case 'Smartphone': return <Smartphone className={cls} />;
             case 'Wifi': return <Wifi className={cls} />;
             case 'Tv': return <Tv className={cls} />;
@@ -146,20 +146,20 @@ export default function Dashboard() {
 
     return (
         <>
-            <Head title="Customer Dashboard" />
-            
+            <Head title="Dashboard" />
+
             {/* ────────────────────────────────────────────────────────
                 DESKTOP VIEW (hidden md:flex)
                 ──────────────────────────────────────────────────────── */}
             <div className="hidden md:flex h-full w-full flex-1 flex-col gap-6 font-sans p-6 max-w-7xl mx-auto">
-                
+
                 {/* Header & Wallet Section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 className="text-[22px] font-bold text-gray-900 dark:text-white tracking-tight">Dashboard</h1>
-                        <p className="text-[13px] text-gray-500 dark:text-gray-400 mt-0.5">Overview of your {store?.name || 'VTULab'} account</p>
+                        <p className="text-[13px] text-gray-500 dark:text-gray-400 mt-0.5">Overview of your {store?.name || 'AffanHub'} account</p>
                     </div>
-                    
+
                     <div className="flex items-center gap-4 bg-white dark:bg-[#1e1e2d] px-4 py-2.5 rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
                         <div className="flex flex-col pr-4 border-r border-gray-100 dark:border-gray-700">
                             <div className="flex items-center gap-1.5 cursor-pointer select-none" onClick={toggleBalance}>
@@ -198,7 +198,7 @@ export default function Dashboard() {
                             <BarChart3 className="w-5 h-5 md:w-6 md:h-6" />
                         </div>
                     </div>
-                    
+
                     {/* Stat 2 */}
                     <div className="bg-white dark:bg-[#1e1e2d] p-4 md:p-5 rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0">
                         <div>
@@ -213,7 +213,7 @@ export default function Dashboard() {
                             <CheckCircle className="w-5 h-5 md:w-6 md:h-6" />
                         </div>
                     </div>
-                    
+
                     {/* Stat 3 */}
                     <div className="bg-white dark:bg-[#1e1e2d] p-4 md:p-5 rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0">
                         <div>
@@ -227,7 +227,7 @@ export default function Dashboard() {
                             <Wallet className="w-5 h-5 md:w-6 md:h-6" />
                         </div>
                     </div>
-                    
+
                     {/* Stat 4 */}
                     <div className="bg-white dark:bg-[#1e1e2d] p-4 md:p-5 rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0">
                         <div>
@@ -245,7 +245,7 @@ export default function Dashboard() {
 
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    
+
                     {/* Left Column: Services & API Banner */}
                     <div className="lg:col-span-7 flex flex-col gap-6">
                         {/* Quick Services (Single Customizable Card) */}
@@ -254,7 +254,7 @@ export default function Dashboard() {
                                 <h2 className="text-[16px] font-bold text-gray-900 dark:text-white">Quick Services</h2>
                                 <button className="text-[13px] font-bold text-primary hover:opacity-80 cursor-pointer">View all</button>
                             </div>
-                            
+
                             <div className="grid grid-cols-4 gap-2 md:gap-4">
                                 {((store_services && store_services.length > 0) ? store_services.slice(0, 7) : [
                                     { key: 'airtime', name: 'Airtime', description: 'Top up airtime', icon: 'Smartphone', category: 'vtu' },
@@ -265,16 +265,16 @@ export default function Dashboard() {
                                     { key: 'airtime_cash', name: 'Airtime to Cash', description: 'Convert to cash', icon: 'RefreshCw', category: 'vtu' },
                                     { key: 'bulk_sms', name: 'Bulk SMS', description: 'Send messages', icon: 'MessageSquare', category: 'vtu' },
                                 ]).map((svc: any) => (
-                                    <ServiceItem 
+                                    <ServiceItem
                                         key={svc.key || svc.id}
-                                        icon={getIconComponent(svc.icon, svc.category)} 
-                                        title={svc.name} 
-                                        subtitle={svc.description || 'Quick service'} 
-                                        color={getColorClass(svc.key, svc.category)} 
+                                        icon={getIconComponent(svc.icon, svc.category)}
+                                        title={svc.name}
+                                        subtitle={svc.description || 'Quick service'}
+                                        color={getColorClass(svc.key, svc.category)}
                                         onClick={() => handleServiceClick(svc.key)}
                                     />
                                 ))}
-                                
+
                                 <button className="group flex flex-col items-center p-2 md:p-4 rounded-[1rem] md:rounded-2xl bg-primary/5 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 transition-all duration-300 w-full text-center cursor-pointer">
                                     <div className="w-10 h-10 md:w-12 md:h-12 mb-2 md:mb-3 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <div className="grid grid-cols-2 gap-1 w-5 h-5 md:w-6 md:h-6 text-primary group-hover:text-gray-600 transition-colors">
@@ -326,8 +326,9 @@ export default function Dashboard() {
                                             <stop offset="0%" stopColor="#6236FF" stopOpacity="0.35" />
                                             <stop offset="100%" stopColor="#6236FF" stopOpacity="0" />
                                         </radialGradient>
-                                        
-                                        <style dangerouslySetInnerHTML={{__html: `
+
+                                        <style dangerouslySetInnerHTML={{
+                                            __html: `
                                             @keyframes floatCentral { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
                                             @keyframes floatTag1 { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-10px) scale(1.04); } }
                                             @keyframes floatTag2 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
@@ -401,7 +402,7 @@ export default function Dashboard() {
                             <h2 className="text-[16px] font-bold text-gray-900 dark:text-white">Recent Transactions</h2>
                             <button className="text-[13px] font-bold text-primary hover:opacity-85">View all</button>
                         </div>
-                        
+
                         <div className="flex flex-col gap-4 flex-1">
                             {transactions.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-10 text-gray-400">
@@ -423,7 +424,7 @@ export default function Dashboard() {
                 MOBILE VIEW (block md:hidden)
                 ──────────────────────────────────────────────────────── */}
             <div className="block md:hidden font-sans bg-[#f8f7fc] dark:bg-zinc-900 min-h-screen pb-24 w-full overflow-x-clip relative">
-                
+
                 {/* Sticky Top Header Navigation */}
                 <div className="sticky top-0 z-30 bg-primary dark:bg-primary/95 backdrop-blur-md text-white pt-3 pb-3 px-4 shadow-sm">
                     <div className="flex items-center justify-between">
@@ -442,9 +443,9 @@ export default function Dashboard() {
                         <div className="flex items-center gap-1">
                             {/* Theme switcher Popover */}
                             <div className="relative">
-                                <button 
-                                    onClick={() => setThemeMenuOpen(!themeMenuOpen)} 
-                                    className="text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors flex items-center justify-center focus:outline-none cursor-pointer" 
+                                <button
+                                    onClick={() => setThemeMenuOpen(!themeMenuOpen)}
+                                    className="text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors flex items-center justify-center focus:outline-none cursor-pointer"
                                     title={`Theme: ${appearance}`}
                                 >
                                     {appearance === 'light' ? (
@@ -460,21 +461,21 @@ export default function Dashboard() {
                                     <>
                                         {/* Click-away backdrop */}
                                         <div className="fixed inset-0 z-40" onClick={() => setThemeMenuOpen(false)} />
-                                        
+
                                         <div className="absolute right-0 mt-2 w-32 rounded-xl shadow-xl bg-white dark:bg-[#1c1c24] border border-gray-100 dark:border-gray-800 py-1.5 z-50 text-slate-700 dark:text-slate-200">
-                                            <button 
+                                            <button
                                                 onClick={() => { updateAppearance('light'); setThemeMenuOpen(false); }}
                                                 className={`flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${appearance === 'light' ? 'text-primary font-bold bg-primary/5 dark:bg-primary/10' : ''}`}
                                             >
                                                 <Sun className="w-3.5 h-3.5" /> Light
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => { updateAppearance('dark'); setThemeMenuOpen(false); }}
                                                 className={`flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${appearance === 'dark' ? 'text-primary font-bold bg-primary/5 dark:bg-primary/10' : ''}`}
                                             >
                                                 <Moon className="w-3.5 h-3.5" /> Dark
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => { updateAppearance('system'); setThemeMenuOpen(false); }}
                                                 className={`flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${appearance === 'system' ? 'text-primary font-bold bg-primary/5 dark:bg-primary/10' : ''}`}
                                             >
@@ -486,9 +487,9 @@ export default function Dashboard() {
                             </div>
 
                             {/* Support link */}
-                            <a href="#" className="text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors" title="Customer Support">
+                            <Link href="/contact" className="text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer" title="Customer Support">
                                 <Headphones className="w-5 h-5" />
-                            </a>
+                            </Link>
 
                             {/* Notifications */}
                             <div className="relative cursor-pointer p-1.5 text-white hover:bg-white/10 rounded-lg transition-colors">
@@ -547,11 +548,11 @@ export default function Dashboard() {
                             ]).map((svc: any) => {
                                 const displayName = svc.key === 'airtime' ? 'Airtime'
                                     : svc.key === 'data' ? 'Data'
-                                    : svc.key === 'electricity' ? 'Electricity'
-                                    : (svc.key === 'education' || svc.key === 'exam_pins') ? 'Education'
-                                    : svc.key === 'nin_verification' ? 'NIN Verify'
-                                    : svc.key === 'bvn_verification' ? 'BVN Verify'
-                                    : svc.name;
+                                        : svc.key === 'electricity' ? 'Electricity'
+                                            : (svc.key === 'education' || svc.key === 'exam_pins') ? 'Education'
+                                                : svc.key === 'nin_verification' ? 'NIN Verify'
+                                                    : svc.key === 'bvn_verification' ? 'BVN Verify'
+                                                        : svc.name;
                                 return (
                                     <button key={svc.key || svc.id} onClick={() => handleServiceClick(svc.key)} className="flex flex-col items-center group w-full cursor-pointer">
                                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-1.5 group-active:scale-95 transition-transform ${getColorClass(svc.key, svc.category).split(' ')[0]} ${getColorClass(svc.key, svc.category).split(' ')[1]}`}>
@@ -622,7 +623,7 @@ export default function Dashboard() {
                             {/* Premium Virtual Bank Card */}
                             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 p-4 sm:p-5 text-white shadow-xl shadow-indigo-500/20">
                                 <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none" />
-                                
+
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
                                         <div className="w-8 h-8 rounded-lg bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20">
@@ -703,22 +704,20 @@ export default function Dashboard() {
                                     <button
                                         type="button"
                                         onClick={() => setKycType('nin')}
-                                        className={`py-1.5 text-[11px] font-bold rounded-md transition-all ${
-                                            kycType === 'nin'
+                                        className={`py-1.5 text-[11px] font-bold rounded-md transition-all ${kycType === 'nin'
                                                 ? 'bg-white dark:bg-[#1e1e2d] text-primary shadow-xs'
                                                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900'
-                                        }`}
+                                            }`}
                                     >
                                         NIN (National ID)
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setKycType('bvn')}
-                                        className={`py-1.5 text-[11px] font-bold rounded-lg transition-all ${
-                                            kycType === 'bvn'
+                                        className={`py-1.5 text-[11px] font-bold rounded-lg transition-all ${kycType === 'bvn'
                                                 ? 'bg-white dark:bg-[#1e1e2d] text-primary shadow-xs'
                                                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900'
-                                        }`}
+                                            }`}
                                     >
                                         BVN (Bank Verif. No)
                                     </button>

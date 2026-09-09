@@ -8,6 +8,7 @@ import {
     ChevronDown, UserCheck, User, Users
 } from 'lucide-react';
 import { ConfirmPaymentSheet } from '@/components/confirm-payment-sheet';
+import { TransactionPinSheet } from '@/components/transaction-pin-sheet';
 import { PhoneNetworkCard, NETWORK_ICONS, NETWORKS_LIST } from '@/components/phone-network-card';
 
 export default function DataPage() {
@@ -27,6 +28,8 @@ export default function DataPage() {
     const [isLoadingPlans, setIsLoadingPlans] = useState<boolean>(true);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
+    const [isPinSheetOpen, setIsPinSheetOpen] = useState<boolean>(false);
+    const [pinError, setPinError] = useState<string | null>(null);
 
     // Fetch data plans from API endpoint
     useEffect(() => {
@@ -63,23 +66,45 @@ export default function DataPage() {
         setIsConfirmOpen(true);
     };
 
-    const handlePurchase = (e?: React.FormEvent) => {
+    const handleOpenPinSheet = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (!selectedPlanId || !phone || phone.length !== 11) return;
 
+        setIsConfirmOpen(false);
+        setPinError(null);
+        setIsPinSheetOpen(true);
+    };
+
+    const handlePinSubmit = (pin: string) => {
         setIsSubmitting(true);
-        router.post('/vtu/data/purchase', {
-            network: selectedNetwork,
-            data_plan_id: selectedPlanId,
-            phone: phone,
-        }, {
-            onFinish: () => setIsSubmitting(false),
-            onSuccess: () => {
-                setSelectedPlanId(null);
-                setIsConfirmOpen(false);
-                setPhoneError(null);
+        setPinError(null);
+
+        router.post(
+            '/vtu/data/purchase',
+            {
+                network: selectedNetwork,
+                data_plan_id: selectedPlanId,
+                phone: phone,
+                transaction_pin: pin,
+            },
+            {
+                preserveScroll: true,
+                onFinish: () => setIsSubmitting(false),
+                onSuccess: () => {
+                    setSelectedPlanId(null);
+                    setIsPinSheetOpen(false);
+                    setPhoneError(null);
+                },
+                onError: (errs: any) => {
+                    const msg = errs.message || errs.transaction_pin || errs.phone || 'Data purchase failed.';
+                    if (msg.toLowerCase().includes('pin')) {
+                        setPinError(msg);
+                    } else {
+                        setIsPinSheetOpen(false);
+                    }
+                },
             }
-        });
+        );
     };
 
     // Helper to get group slug for plan
@@ -159,9 +184,13 @@ export default function DataPage() {
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0 ml-2">
-                    <button type="button" className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors cursor-pointer" title="Customer Support">
+                    <Link
+                        href="/contact"
+                        className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors cursor-pointer"
+                        title="Customer Support"
+                    >
                         <Headphones className="w-5 h-5 stroke-[1.8]" />
-                    </button>
+                    </Link>
                     <button type="button" className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors cursor-pointer" title="Options">
                         <MoreVertical className="w-5 h-5 stroke-[1.8]" />
                     </button>
@@ -298,7 +327,7 @@ export default function DataPage() {
                     walletBalance={Number(mainWallet?.balance || 0)}
                     isSubmitting={isSubmitting}
                     confirmButtonText="Confirm & Recharge Data Bundle"
-                    onConfirm={handlePurchase}
+                    onConfirm={handleOpenPinSheet}
                     details={[
                         {
                             label: 'Network',
@@ -339,6 +368,26 @@ export default function DataPage() {
                             ),
                         },
                     ]}
+                />
+            )}
+
+            {/* Transaction PIN Verification Sheet */}
+            {selectedPlan && (
+                <TransactionPinSheet
+                    isOpen={isPinSheetOpen}
+                    onOpenChange={setIsPinSheetOpen}
+                    title="Authorize Data Purchase"
+                    description="Enter your 4-digit Transaction PIN to complete purchase"
+                    summary={
+                        <div className="flex items-center justify-between text-xs">
+                            <span className="text-muted-foreground">{selectedPlan.network_name || selectedNetwork.toUpperCase()} {selectedPlan.name}</span>
+                            <span className="font-bold text-foreground">₦{Number(selectedPlan.price).toLocaleString()} &rarr; {phone}</span>
+                        </div>
+                    }
+                    isSubmitting={isSubmitting}
+                    error={pinError}
+                    onClearError={() => setPinError(null)}
+                    onSubmitPin={handlePinSubmit}
                 />
             )}
         </>

@@ -282,7 +282,7 @@ register.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     register.form = registerForm
 /**
- * @see routes/tenant.php:55
+ * @see routes/tenant.php:70
  * @route '/dashboard'
  */
 export const dashboard = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -296,7 +296,7 @@ dashboard.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/tenant.php:55
+ * @see routes/tenant.php:70
  * @route '/dashboard'
  */
 dashboard.url = (options?: RouteQueryOptions) => {
@@ -304,7 +304,7 @@ dashboard.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/tenant.php:55
+ * @see routes/tenant.php:70
  * @route '/dashboard'
  */
 dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -312,7 +312,7 @@ dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/tenant.php:55
+ * @see routes/tenant.php:70
  * @route '/dashboard'
  */
 dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -321,7 +321,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
- * @see routes/tenant.php:55
+ * @see routes/tenant.php:70
  * @route '/dashboard'
  */
     const dashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -330,7 +330,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
- * @see routes/tenant.php:55
+ * @see routes/tenant.php:70
  * @route '/dashboard'
  */
         dashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -338,7 +338,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
- * @see routes/tenant.php:55
+ * @see routes/tenant.php:70
  * @route '/dashboard'
  */
         dashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -430,3 +430,152 @@ earn.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
     
     earn.form = earnForm
+/**
+* @see \App\Http\Controllers\WalletController::wallet
+ * @see app/Http/Controllers/WalletController.php:18
+ * @route '/wallet'
+ */
+export const wallet = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: wallet.url(options),
+    method: 'get',
+})
+
+wallet.definition = {
+    methods: ["get","head"],
+    url: '/wallet',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\WalletController::wallet
+ * @see app/Http/Controllers/WalletController.php:18
+ * @route '/wallet'
+ */
+wallet.url = (options?: RouteQueryOptions) => {
+    return wallet.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\WalletController::wallet
+ * @see app/Http/Controllers/WalletController.php:18
+ * @route '/wallet'
+ */
+wallet.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: wallet.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\WalletController::wallet
+ * @see app/Http/Controllers/WalletController.php:18
+ * @route '/wallet'
+ */
+wallet.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: wallet.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\WalletController::wallet
+ * @see app/Http/Controllers/WalletController.php:18
+ * @route '/wallet'
+ */
+    const walletForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: wallet.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\WalletController::wallet
+ * @see app/Http/Controllers/WalletController.php:18
+ * @route '/wallet'
+ */
+        walletForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: wallet.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\WalletController::wallet
+ * @see app/Http/Controllers/WalletController.php:18
+ * @route '/wallet'
+ */
+        walletForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: wallet.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    wallet.form = walletForm
+/**
+ * @see routes/tenant.php:118
+ * @route '/contact'
+ */
+export const contact = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: contact.url(options),
+    method: 'get',
+})
+
+contact.definition = {
+    methods: ["get","head"],
+    url: '/contact',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+ * @see routes/tenant.php:118
+ * @route '/contact'
+ */
+contact.url = (options?: RouteQueryOptions) => {
+    return contact.definition.url + queryParams(options)
+}
+
+/**
+ * @see routes/tenant.php:118
+ * @route '/contact'
+ */
+contact.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: contact.url(options),
+    method: 'get',
+})
+/**
+ * @see routes/tenant.php:118
+ * @route '/contact'
+ */
+contact.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: contact.url(options),
+    method: 'head',
+})
+
+    /**
+ * @see routes/tenant.php:118
+ * @route '/contact'
+ */
+    const contactForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: contact.url(options),
+        method: 'get',
+    })
+
+            /**
+ * @see routes/tenant.php:118
+ * @route '/contact'
+ */
+        contactForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: contact.url(options),
+            method: 'get',
+        })
+            /**
+ * @see routes/tenant.php:118
+ * @route '/contact'
+ */
+        contactForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: contact.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    contact.form = contactForm
