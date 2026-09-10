@@ -14,7 +14,6 @@ import { PhoneNetworkCard, NETWORK_ICONS, NETWORKS_LIST } from '@/components/pho
 export default function DataPage() {
     const { auth, store, flash, errors } = usePage<any>().props;
     const user = auth?.user;
-    const mainWallet = user?.wallets?.find((w: any) => w.type === 'main') || user?.wallet;
 
     const [networks, setNetworks] = useState<any[]>([]);
     const [dataTypes, setDataTypes] = useState<any[]>([]);
@@ -324,7 +323,6 @@ export default function DataPage() {
                     onOpenChange={setIsConfirmOpen}
                     title="Confirm to Pay"
                     amount={Number(selectedPlan.price)}
-                    walletBalance={Number(mainWallet?.balance || 0)}
                     isSubmitting={isSubmitting}
                     confirmButtonText="Confirm & Recharge Data Bundle"
                     onConfirm={handleOpenPinSheet}

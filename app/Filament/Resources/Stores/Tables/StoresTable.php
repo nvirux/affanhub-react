@@ -16,6 +16,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class StoresTable
 {
@@ -184,6 +186,69 @@ class StoresTable
                                 ->danger()
                                 ->send();
                         }
+                    }),
+                Action::make('impersonate')
+                    ->label('Impersonate')
+                    ->icon('heroicon-o-arrow-right-end-on-rectangle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading(fn (Store $record) => "Impersonate {$record->name}")
+                    ->modalDescription("You will be securely logged in to the merchant panel as this store's owner. You can return to Super Admin at any time.")
+                    ->modalSubmitActionLabel('Start Impersonation')
+                    ->action(function (Store $record) {
+                        $owner = $record->owner;
+                        if (! $owner) {
+                            Notification::make()
+                                ->title('Store has no owner assigned.')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        $adminUser = Auth::guard('admin')->user() ?? Auth::user();
+                        if (! $adminUser) {
+                            Notification::make()
+                                ->title('Unauthorized: Super Admin session required.')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        // Generate 60-second secure one-time token
+                        $token = Str::random(40);
+                        Cache::put("impersonate_token_{$token}", [
+                            'admin_id' => $adminUser->id,
+                            'admin_name' => $adminUser->name ?? 'Super Admin',
+                            'owner_id' => $owner->id,
+                            'store_id' => $record->id,
+                            'store_name' => $record->name,
+                            'created_at' => now()->timestamp,
+                        ], now()->addSeconds(60));
+
+                        ActivityLog::create([
+                            'tenant_id' => $record->id,
+                            'causer_type' => get_class($adminUser),
+                            'causer_id' => $adminUser->id,
+                            'event' => 'admin_impersonate_store_start',
+                            'description' => sprintf('Super Admin %s started impersonating store %s (Owner: %s)', $adminUser->name ?? 'Admin', $record->name, $owner->name),
+                            'properties' => [
+                                'store_id' => $record->id,
+                                'store_name' => $record->name,
+                                'owner_id' => $owner->id,
+                            ],
+                        ]);
+
+                        $scheme = request()->getScheme();
+                        $host = request()->getHost();
+                        $cleanHost = preg_replace('/^(admin|merchant)\./', '', $host);
+                        $port = request()->getPort();
+                        $portStr = ($port && ! in_array($port, [80, 443])) ? ":{$port}" : '';
+
+                        $url = "{$scheme}://merchant.{$cleanHost}{$portStr}/impersonate/consume?token={$token}&tenant={$record->public_id}";
+
+                        return redirect()->away($url);
                     }),
                 EditAction::make(),
             ])

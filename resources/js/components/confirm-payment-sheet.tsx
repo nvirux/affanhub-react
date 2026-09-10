@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { dashboard } from '@/routes';
 import {
     Sheet,
@@ -22,7 +22,7 @@ interface ConfirmPaymentSheetProps {
     amount: number;
     subAmountText?: React.ReactNode;
     details: PaymentDetailItem[];
-    walletBalance: number;
+    walletBalance?: number;
     isSubmitting?: boolean;
     confirmButtonText?: string;
     onConfirm: () => void;
@@ -40,9 +40,11 @@ export function ConfirmPaymentSheet({
     isSubmitting = false,
     confirmButtonText = 'Confirm & Pay',
     onConfirm,
-    fundWalletUrl,
+    fundWalletUrl = '/wallet',
 }: ConfirmPaymentSheetProps) {
-    const isInsufficient = walletBalance < amount;
+    const { auth } = usePage<any>().props;
+    const currentBalance = walletBalance !== undefined ? walletBalance : Number(auth?.user?.wallet_balance ?? 0);
+    const isInsufficient = currentBalance < amount;
 
     return (
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
@@ -102,18 +104,16 @@ export function ConfirmPaymentSheet({
                                 Wallet Balance
                             </span>
                             <span className={`text-sm font-black ${isInsufficient ? 'text-rose-500' : 'text-gray-900 dark:text-white'}`}>
-                                ₦{Number(walletBalance).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                ₦{Number(currentBalance).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                             </span>
                         </div>
 
-                        {isInsufficient && (
-                            <Link
-                                href={fundWalletUrl || dashboard().url}
-                                className="text-xs font-bold text-primary hover:underline flex items-center gap-1 bg-primary/10 hover:bg-primary/20 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
-                            >
-                                <span>+ Add Money</span>
-                            </Link>
-                        )}
+                        <Link
+                            href={fundWalletUrl || '/wallet'}
+                            className="text-xs font-bold text-primary hover:underline flex items-center gap-1 bg-primary/10 hover:bg-primary/20 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                        >
+                            <span>+ Add Money</span>
+                        </Link>
                     </div>
 
                     {/* Action Button */}

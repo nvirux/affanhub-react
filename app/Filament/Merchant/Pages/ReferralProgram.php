@@ -104,9 +104,13 @@ class ReferralProgram extends Page
         }
 
         if (! $this->hasAccess) {
+            $required = method_exists($tenant, 'getFeatureUpgradeRequirement')
+                ? $tenant->getFeatureUpgradeRequirement('referral_system')
+                : 'Pro Plan';
+
             Notification::make()
                 ->title('Feature Locked')
-                ->body('The Customer Referral System is available on Pro and Enterprise plans. Please upgrade your subscription to enable this feature.')
+                ->body("The Customer Referral System is not available on your current plan. Please upgrade to {$required} or contact support.")
                 ->warning()
                 ->send();
 

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Merchant\Pages;
 
-use App\Models\PlanFeature;
 use App\Models\Service;
 use App\Models\StoreService;
 use BackedEnum;
@@ -53,18 +52,14 @@ class ManageServices extends Page
 
         foreach ($allServices as $service) {
             $hasAccess = true;
-            $requiredPlanName = 'Pro Plan';
+            $requiredPlanName = 'Enterprise Plan or Contact Support';
 
             if ($service->feature_id && $service->feature) {
                 $hasAccess = $tenant->hasFeature($service->feature->slug);
 
-                $planFeature = PlanFeature::where('feature_id', $service->feature_id)
-                    ->where('value', 'true')
-                    ->first();
-
-                if ($planFeature && $planFeature->plan) {
-                    $requiredPlanName = $planFeature->plan->name;
-                }
+                $requiredPlanName = method_exists($tenant, 'getFeatureUpgradeRequirement')
+                    ? $tenant->getFeatureUpgradeRequirement($service->feature->slug)
+                    : 'Enterprise Plan';
             }
 
             $setting = StoreService::where('store_id', $tenant->id)

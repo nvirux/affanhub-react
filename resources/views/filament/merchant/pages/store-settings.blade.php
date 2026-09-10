@@ -414,8 +414,13 @@
                             <div style="display: flex; align-items: center; justify-content: space-between;">
                                 <label style="font-size: 0.875rem; font-weight: 700; color: #374151;">Custom Brand Color (HEX)</label>
                                 @if (! $hasCustomBranding)
+                                    @php
+                                        $requiredBrandingPlan = method_exists($tenant, 'getFeatureUpgradeRequirement')
+                                            ? $tenant->getFeatureUpgradeRequirement('custom_branding')
+                                            : 'Pro Plan';
+                                    @endphp
                                     <span style="font-size: 0.75rem; font-weight: 700; color: #d97706; background: #fef3c7; padding: 0.125rem 0.5rem; border-radius: 9999px;">
-                                        🔒 Pro Feature
+                                        🔒 {{ $requiredBrandingPlan }}
                                     </span>
                                 @endif
                             </div>
@@ -442,7 +447,7 @@
                             @if (! $hasCustomBranding)
                                 <div style="background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 0.625rem 0.875rem; margin-top: 0.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
                                     <span style="font-size: 0.75rem; color: #92400e; font-weight: 500;">
-                                        Enter exact brand hex codes with Pro.
+                                        Enter exact brand hex codes with {{ $requiredBrandingPlan }}.
                                     </span>
                                     <a href="{{ \App\Filament\Merchant\Pages\Billing::getUrl() }}" style="font-size: 0.75rem; font-weight: 700; color: #b45309; text-decoration: underline; white-space: nowrap;">
                                         Upgrade

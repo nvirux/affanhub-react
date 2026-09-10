@@ -1,3 +1,5 @@
+import HomeController from './HomeController'
+import ImpersonationController from './ImpersonationController'
 import Webhook from './Webhook'
 import Auth from './Auth'
 import VirtualAccountController from './VirtualAccountController'
@@ -7,7 +9,9 @@ import AirtimeController from './AirtimeController'
 import DataController from './DataController'
 import Settings from './Settings'
 const Controllers = {
-    Webhook: Object.assign(Webhook, Webhook),
+    HomeController: Object.assign(HomeController, HomeController),
+ImpersonationController: Object.assign(ImpersonationController, ImpersonationController),
+Webhook: Object.assign(Webhook, Webhook),
 Auth: Object.assign(Auth, Auth),
 VirtualAccountController: Object.assign(VirtualAccountController, VirtualAccountController),
 EarnController: Object.assign(EarnController, EarnController),

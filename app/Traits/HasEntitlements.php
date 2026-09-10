@@ -113,6 +113,58 @@ trait HasEntitlements
     }
 
     /**
+     * Get a human-readable upgrade or plan recommendation message for a locked feature.
+     */
+    public function getFeatureUpgradeRequirement(string $featureSlug): string
+    {
+        $feature = Feature::where('slug', $featureSlug)->first();
+        if (! $feature) {
+            return 'Enterprise Plan or Contact Support';
+        }
+
+        $activeSub = $this->activeSubscription;
+        $currentPlanSlug = $activeSub?->plan?->slug ?? 'starter';
+
+        // Find plans that enable this feature
+        $plansWithFeature = PlanFeature::where('feature_id', $feature->id)
+            ->where(function ($query) {
+                $query->where('value', 'true')
+                    ->orWhere('value', '1')
+                    ->orWhereRaw('CAST(value AS INTEGER) > 0');
+            })
+            ->with('plan')
+            ->get()
+            ->sortBy(fn ($pf) => $pf->plan?->price_monthly ?? 999999);
+
+        if ($plansWithFeature->isEmpty()) {
+            return 'Enterprise Plan or Contact Support';
+        }
+
+        // Check if feature is in Enterprise only
+        $hasPro = $plansWithFeature->contains(fn ($pf) => $pf->plan?->slug === 'pro');
+        $hasEnterprise = $plansWithFeature->contains(fn ($pf) => $pf->plan?->slug === 'enterprise');
+
+        if ($currentPlanSlug === 'pro') {
+            if ($hasEnterprise) {
+                return 'Enterprise Plan';
+            }
+
+            return 'Enterprise Plan or Contact Support';
+        }
+
+        if ($currentPlanSlug === 'starter') {
+            if ($hasPro) {
+                return 'Pro Plan';
+            }
+            if ($hasEnterprise) {
+                return 'Enterprise Plan';
+            }
+        }
+
+        return 'Enterprise Plan or Contact Support';
+    }
+
+    /**
      * Converts a database string value to its typed scalar representation.
      */
     protected function castFeatureValue($value, string $type)

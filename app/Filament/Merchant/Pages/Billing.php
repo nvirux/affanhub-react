@@ -8,6 +8,7 @@ use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Str;
 
 class Billing extends Page
 {
@@ -25,14 +26,30 @@ class Billing extends Page
 
     public string $interval = 'month'; // 'month' or 'year'
 
-    public function selectInterval(string $interval)
+    public bool $showPaymentModal = false;
+
+    public ?int $selectedPlanId = null;
+
+    public function selectInterval(string $interval): void
     {
         $this->interval = $interval;
     }
 
-    public function subscribe(int $planId)
+    public function getSelectedPlanProperty(): ?Plan
     {
-        $tenant = Filament::getTenant();
+        return $this->selectedPlanId ? Plan::find($this->selectedPlanId) : null;
+    }
+
+    /**
+     * Initiate subscription flow. If plan requires payment, opens the confirmation/payment modal.
+     */
+    public function subscribe(int $planId): void
+    {
+        $this->openPaymentModal($planId);
+    }
+
+    public function openPaymentModal(int $planId): void
+    {
         $plan = Plan::findOrFail($planId);
 
         if ($plan->slug === 'enterprise') {
@@ -45,24 +62,117 @@ class Billing extends Page
             return;
         }
 
-        $price = $this->interval === 'year' ? $plan->price_yearly : $plan->price_monthly;
+        $price = (float) ($this->interval === 'year' ? $plan->price_yearly : $plan->price_monthly);
 
-        // Cancel previous subscriptions
-        $tenant->subscriptions()->update(['status' => 'cancelled']);
+        // If the plan is free (e.g. Starter), activate immediately without charging
+        if ($price <= 0) {
+            $this->activateFreePlan($plan);
 
-        // Create new subscription
+            return;
+        }
+
+        $this->selectedPlanId = $plan->id;
+        $this->showPaymentModal = true;
+    }
+
+    public function closePaymentModal(): void
+    {
+        $this->showPaymentModal = false;
+        $this->selectedPlanId = null;
+    }
+
+    /**
+     * Process wallet debit and activate the chosen paid subscription plan.
+     */
+    public function confirmAndPay(): void
+    {
+        if (! $this->selectedPlanId) {
+            return;
+        }
+
+        $tenant = Filament::getTenant();
+        $plan = Plan::findOrFail($this->selectedPlanId);
+        $price = (float) ($this->interval === 'year' ? $plan->price_yearly : $plan->price_monthly);
+
+        $wallet = $tenant->mainWallet();
+
+        if (! $wallet->hasSufficientBalance($price)) {
+            Notification::make()
+                ->title('Insufficient Store Balance')
+                ->body('Your store main wallet balance (₦'.number_format($wallet->balance, 2).') is insufficient for this plan (₦'.number_format($price, 2).'). Please fund your store wallet first.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        try {
+            // Debit store main wallet atomically
+            $wallet->withdraw(
+                amount: $price,
+                description: "Subscription payment for {$plan->name} plan (".ucfirst($this->interval).'ly)',
+                reference: 'sub_'.strtolower(Str::random(14)),
+                meta: [
+                    'plan_id' => $plan->id,
+                    'plan_name' => $plan->name,
+                    'billing_interval' => $this->interval,
+                    'type' => 'subscription',
+                ]
+            );
+
+            // Cancel previous active subscriptions
+            $tenant->subscriptions()->where('status', 'active')->update(['status' => 'cancelled']);
+
+            // Create new active subscription
+            $tenant->subscriptions()->create([
+                'plan_id' => $plan->id,
+                'price' => $price,
+                'billing_interval' => $this->interval,
+                'status' => 'active',
+                'starts_at' => now(),
+                'ends_at' => $this->interval === 'year' ? now()->addYear() : now()->addMonth(),
+            ]);
+
+            $this->closePaymentModal();
+
+            Notification::make()
+                ->title("Upgraded to {$plan->name}!")
+                ->body('₦'.number_format($price, 2)." has been debited from your store wallet. Store {$tenant->name} is now upgraded to {$plan->name}!")
+                ->success()
+                ->send();
+
+        } catch (\Throwable $e) {
+            Notification::make()
+                ->title('Payment Failed')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+        }
+    }
+
+    /**
+     * Activate a free plan (e.g. Starter) without debiting the wallet.
+     */
+    protected function activateFreePlan(Plan $plan): void
+    {
+        $tenant = Filament::getTenant();
+
+        // Cancel previous active subscriptions
+        $tenant->subscriptions()->where('status', 'active')->update(['status' => 'cancelled']);
+
+        // Create new active subscription
         $tenant->subscriptions()->create([
             'plan_id' => $plan->id,
-            'price' => $price ?? 0.00,
+            'price' => 0.00,
             'billing_interval' => $this->interval,
             'status' => 'active',
             'starts_at' => now(),
-            'ends_at' => $this->interval === 'year' ? now()->addYear() : now()->addMonth(),
+            'ends_at' => null,
         ]);
 
         Notification::make()
-            ->title("Upgraded to {$plan->name}!")
-            ->body("Your store {$tenant->name} has been successfully upgraded to the {$plan->name} plan.")
+            ->title("Switched to {$plan->name}")
+            ->body("Your store {$tenant->name} has been switched to the {$plan->name} plan.")
             ->success()
             ->send();
     }

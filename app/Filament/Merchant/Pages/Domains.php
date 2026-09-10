@@ -33,9 +33,13 @@ class Domains extends Page
 
         // Entitlement Check: custom_domain
         if (! $tenant->hasFeature('custom_domain')) {
+            $required = method_exists($tenant, 'getFeatureUpgradeRequirement')
+                ? $tenant->getFeatureUpgradeRequirement('custom_domain')
+                : 'Enterprise Plan';
+
             Notification::make()
                 ->title('Feature Locked')
-                ->body('Custom domain mapping is not available on your current plan. Please upgrade to the Pro plan.')
+                ->body("Custom domain mapping is not available on your current plan. Please upgrade to {$required} or contact support.")
                 ->danger()
                 ->send();
 

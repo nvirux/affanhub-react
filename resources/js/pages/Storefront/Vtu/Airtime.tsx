@@ -34,11 +34,9 @@ interface AirtimePageProps {
     wallet_balance?: number;
 }
 
-export default function AirtimePage({ networks = [], wallet_balance }: AirtimePageProps) {
+export default function AirtimePage({ networks = [] }: AirtimePageProps) {
     const { auth, flash, errors } = usePage<any>().props;
     const user = auth?.user;
-    const mainWallet = user?.wallets?.find((w: any) => w.type === 'main') || user?.wallet;
-    const userWalletBalance = wallet_balance !== undefined ? wallet_balance : Number(mainWallet?.balance || 0);
 
     const [selectedNetwork, setSelectedNetwork] = useState<string>('mtn');
     const [phone, setPhone] = useState<string>('');
@@ -377,7 +375,6 @@ export default function AirtimePage({ networks = [], wallet_balance }: AirtimePa
                         </p>
                     ) : undefined
                 }
-                walletBalance={Number(userWalletBalance)}
                 isSubmitting={isSubmitting}
                 confirmButtonText="Confirm & Recharge Airtime"
                 onConfirm={handleConfirmRecharge}

@@ -1,18 +1,11 @@
 <?php
 
-use App\Http\Controllers\StorefrontController;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Pipeline;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ImpersonationController;
 use Illuminate\Support\Facades\Route;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 
-Route::get('/', function (Request $request) {
-    if (in_array($request->getHost(), config('tenancy.central_domains'))) {
-        return inertia('Marketing/Home');
-    }
+Route::get('/', HomeController::class)->name('home');
 
-    return app(Pipeline::class)
-        ->send($request)
-        ->through([InitializeTenancyByDomain::class])
-        ->then(fn () => app(StorefrontController::class)->index($request));
-})->name('home');
+// Impersonation Routes
+Route::get('/impersonate/consume', [ImpersonationController::class, 'consume'])->name('impersonate.consume');
+Route::get('/impersonate/leave', [ImpersonationController::class, 'leave'])->name('impersonate.leave');
