@@ -14,7 +14,7 @@
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14",
-        "paymint/paymint-laravel": "^1.0",
+        "paymint/paymint-laravel": "^1.1",
         "stancl/tenancy": "^3.10"
     },
     "require-dev": {

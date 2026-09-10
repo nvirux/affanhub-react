@@ -8,7 +8,9 @@ use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use PayMint\Laravel\Facades\PayMint;
 
 class Billing extends Page
 {
@@ -82,6 +84,72 @@ class Billing extends Page
     }
 
     /**
+     * Initiate PayMint Hosted Checkout for subscription payment.
+     */
+    public function payWithCheckout(): mixed
+    {
+        if (! $this->selectedPlanId) {
+            return null;
+        }
+
+        $tenant = Filament::getTenant();
+        $plan = Plan::findOrFail($this->selectedPlanId);
+        $price = (float) ($this->interval === 'year' ? $plan->price_yearly : $plan->price_monthly);
+
+        $owner = $tenant->owner;
+        $email = $owner?->email ?? 'merchant@store.com';
+        $name = $owner?->name ?? $tenant->name;
+        $phone = $owner?->phone ?? '08012345678';
+
+        $reference = 'SUB_'.strtoupper(Str::random(12));
+
+        $redirectUrl = route('merchant.billing.callback', ['tenant' => $tenant->public_id]);
+
+        try {
+            // Initialize Hosted Checkout session via PayMint SDK
+            $response = PayMint::checkout()->initialize([
+                'amount' => (int) $price,
+                'email' => $email,
+                'reference' => $reference,
+                'redirect_url' => $redirectUrl,
+                'name' => $name,
+                'phone' => $phone,
+            ]);
+
+            if (($response['status'] ?? '') !== 'success' || empty($response['data']['authorization_url'])) {
+                $errorMsg = $response['message'] ?? 'Failed to initialize PayMint Checkout.';
+                Notification::make()
+                    ->title('Checkout Initialization Failed')
+                    ->body($errorMsg)
+                    ->danger()
+                    ->send();
+
+                return null;
+            }
+
+            // Cache checkout intent for 2 hours
+            Cache::put("billing_checkout_{$reference}", [
+                'store_id' => $tenant->id,
+                'plan_id' => $plan->id,
+                'interval' => $this->interval,
+                'price' => $price,
+            ], now()->addHours(2));
+
+            // Redirect merchant to PayMint authorization URL
+            return redirect()->away($response['data']['authorization_url']);
+
+        } catch (\Throwable $e) {
+            Notification::make()
+                ->title('Checkout Error')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+
+            return null;
+        }
+    }
+
+    /**
      * Process wallet debit and activate the chosen paid subscription plan.
      */
     public function confirmAndPay(): void
@@ -99,7 +167,7 @@ class Billing extends Page
         if (! $wallet->hasSufficientBalance($price)) {
             Notification::make()
                 ->title('Insufficient Store Balance')
-                ->body('Your store main wallet balance (₦'.number_format($wallet->balance, 2).') is insufficient for this plan (₦'.number_format($price, 2).'). Please fund your store wallet first.')
+                ->body('Your store main wallet balance (₦'.number_format($wallet->balance, 2).') is insufficient for this plan (₦'.number_format($price, 2).'). Please fund your store wallet or pay via PayMint Checkout.')
                 ->danger()
                 ->send();
 

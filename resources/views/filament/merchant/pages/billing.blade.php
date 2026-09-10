@@ -296,57 +296,50 @@
                             </div>
                         </div>
 
-                        @if($hasSufficientFunds)
-                            <!-- Sufficient Funds Notice -->
-                            <div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 14px; padding: 1rem; display: flex; align-items: flex-start; gap: 0.75rem;">
-                                <span style="color: #059669; font-size: 1.25rem; line-height: 1;">✓</span>
-                                <div style="font-size: 0.8125rem; color: #065f46;">
-                                    <p style="font-weight: 700; margin: 0;">Sufficient Wallet Balance</p>
-                                    <p style="margin: 0.25rem 0 0 0;">
-                                        ₦{{ number_format($planPrice, 2) }} will be debited from your store main balance. Balance remaining after activation: <strong>₦{{ number_format($storeBalance - $planPrice, 2) }}</strong>.
-                                    </p>
-                                </div>
-                            </div>
-                        @else
-                            <!-- Insufficient Balance Alert -->
-                            <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 14px; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.875rem;">
-                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                                    <span style="color: #dc2626; font-size: 1.25rem; line-height: 1;">⚠️</span>
-                                    <div style="font-size: 0.8125rem; color: #991b1b;">
-                                        <p style="font-weight: 800; margin: 0;">Insufficient Store Balance</p>
-                                        <p style="margin: 0.25rem 0 0 0;">
-                                            You need <strong>₦{{ number_format($planPrice - $storeBalance, 2) }}</strong> more in your store wallet to activate this plan.
-                                        </p>
-                                    </div>
-                                </div>
+                        <!-- Payment Options Area -->
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <!-- Option 1: Hosted Checkout (PRIMARY) -->
+                            <button wire:click="payWithCheckout" wire:loading.attr="disabled" type="button" style="width: 100%; padding: 0.875rem 1.25rem; border: none; background: linear-gradient(135deg, #111827 0%, #1f2937 100%); color: white; font-weight: 800; font-size: 0.95rem; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s;">
+                                <span wire:loading.remove wire:target="payWithCheckout" style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span>⚡</span>
+                                    <span>Pay ₦{{ number_format($planPrice, 2) }} with PayMint Checkout</span>
+                                </span>
+                                <span wire:loading wire:target="payWithCheckout" style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span>Connecting to PayMint...</span>
+                                </span>
+                            </button>
+                            <p style="text-align: center; font-size: 0.75rem; color: #6b7280; margin: 0;">
+                                Accepts instant Bank Transfer, Debit Card, &amp; USSD
+                            </p>
 
-                                <!-- Virtual Account Quick Transfer Info -->
-                                @if($storeVirtualAcc)
-                                    <div style="background-color: white; border: 1px solid #fca5a5; border-radius: 12px; padding: 0.875rem;">
-                                        <div style="font-size: 0.7rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">
-                                            Instant Top-up via Dedicated Bank Account:
-                                        </div>
-                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.35rem;">
-                                            <div>
-                                                <div style="font-size: 1.25rem; font-weight: 900; color: #111827; letter-spacing: 0.03em;">
-                                                    {{ $storeVirtualAcc->account_number }}
-                                                </div>
-                                                <div style="font-size: 0.8125rem; color: #4b5563; font-weight: 600;">
-                                                    {{ $storeVirtualAcc->bank_name }} &bull; {{ $storeVirtualAcc->account_name }}
-                                                </div>
-                                            </div>
-                                            <span style="font-size: 0.75rem; background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; padding: 0.25rem 0.5rem; border-radius: 6px; font-weight: 700;">
-                                                Auto-credits 24/7
-                                            </span>
-                                        </div>
-                                    </div>
-                                @else
-                                    <div style="font-size: 0.8125rem; color: #6b7280;">
-                                        Visit <a href="{{ route('filament.merchant.pages.store-wallet', ['tenant' => $tenant->public_id]) }}" style="color: #d97706; font-weight: 700; text-decoration: underline;">Wallet & Funding</a> to generate your dedicated bank account and fund your store wallet.
-                                    </div>
-                                @endif
+                            <!-- Divider -->
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin: 0.25rem 0;">
+                                <div style="flex: 1; height: 1px; background-color: #e5e7eb;"></div>
+                                <span style="font-size: 0.75rem; color: #9ca3af; font-weight: 600; text-transform: uppercase;">or</span>
+                                <div style="flex: 1; height: 1px; background-color: #e5e7eb;"></div>
                             </div>
-                        @endif
+
+                            <!-- Option 2: Pay from Store Wallet Balance -->
+                            @if($hasSufficientFunds)
+                                <button wire:click="confirmAndPay" wire:loading.attr="disabled" type="button" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d97706; background-color: #fffbeb; color: #b45309; font-weight: 700; font-size: 0.875rem; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s;">
+                                    <span wire:loading.remove wire:target="confirmAndPay">
+                                        💼 Pay ₦{{ number_format($planPrice, 2) }} from Store Balance
+                                    </span>
+                                    <span wire:loading wire:target="confirmAndPay">
+                                        Debiting Store Balance...
+                                    </span>
+                                </button>
+                            @else
+                                <div style="display: flex; align-items: center; justify-content: space-between; background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 0.75rem 1rem;">
+                                    <div style="font-size: 0.8125rem; color: #6b7280;">
+                                        Store Balance: <strong style="color: #dc2626;">₦{{ number_format($storeBalance, 2) }}</strong> (Shortfall: ₦{{ number_format($planPrice - $storeBalance, 2) }})
+                                    </div>
+                                    <a href="{{ route('filament.merchant.pages.store-wallet', ['tenant' => $tenant->public_id]) }}" style="font-size: 0.8125rem; font-weight: 700; color: #d97706; text-decoration: underline;">
+                                        Top up Wallet &rarr;
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
                     <!-- Modal Footer -->
@@ -354,21 +347,6 @@
                         <button wire:click="closePaymentModal" type="button" style="padding: 0.625rem 1.25rem; border: 1px solid #d1d5db; background-color: white; color: #374151; font-weight: 600; font-size: 0.875rem; border-radius: 10px; cursor: pointer;">
                             Cancel
                         </button>
-
-                        @if($hasSufficientFunds)
-                            <button wire:click="confirmAndPay" wire:loading.attr="disabled" type="button" style="padding: 0.625rem 1.5rem; border: none; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; font-weight: 800; font-size: 0.875rem; border-radius: 10px; cursor: pointer; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);">
-                                <span wire:loading.remove wire:target="confirmAndPay">
-                                    Confirm & Pay ₦{{ number_format($planPrice, 2) }}
-                                </span>
-                                <span wire:loading wire:target="confirmAndPay">
-                                    Processing Payment...
-                                </span>
-                            </button>
-                        @else
-                            <a href="{{ route('filament.merchant.pages.store-wallet', ['tenant' => $tenant->public_id]) }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1.25rem; border: none; background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: white; font-weight: 700; font-size: 0.875rem; border-radius: 10px; text-decoration: none;">
-                                Fund Store Wallet &rarr;
-                            </a>
-                        @endif
                     </div>
                 </div>
             </div>
