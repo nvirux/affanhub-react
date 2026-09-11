@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ecd7e2711a78ab24f040871af6185dd9",
+    "content-hash": "771d4236f2c5196926367817d1eec953",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -4588,21 +4588,21 @@
         },
         {
             "name": "paymint/paymint-laravel",
-            "version": "v1.0.2",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Paymint-Africa/paymint-laravel.git",
-                "reference": "ad00dd6f4c9f17199f3a027d23b6e436f21407ad"
+                "reference": "1faa77f8eeb000f6fcdbbf41235d8a38cc39409c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Paymint-Africa/paymint-laravel/zipball/ad00dd6f4c9f17199f3a027d23b6e436f21407ad",
-                "reference": "ad00dd6f4c9f17199f3a027d23b6e436f21407ad",
+                "url": "https://api.github.com/repos/Paymint-Africa/paymint-laravel/zipball/1faa77f8eeb000f6fcdbbf41235d8a38cc39409c",
+                "reference": "1faa77f8eeb000f6fcdbbf41235d8a38cc39409c",
                 "shasum": ""
             },
             "require": {
                 "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
-                "paymint/paymint-php": "^1.0",
+                "paymint/paymint-php": "^1.1.1",
                 "php": "^8.1"
             },
             "type": "library",
@@ -4625,22 +4625,22 @@
             "description": "The official Laravel wrapper for PayMint Africa",
             "support": {
                 "issues": "https://github.com/Paymint-Africa/paymint-laravel/issues",
-                "source": "https://github.com/Paymint-Africa/paymint-laravel/tree/v1.0.2"
+                "source": "https://github.com/Paymint-Africa/paymint-laravel/tree/v1.1.1"
             },
-            "time": "2026-08-31T15:41:13+00:00"
+            "time": "2026-09-11T08:21:33+00:00"
         },
         {
             "name": "paymint/paymint-php",
-            "version": "v1.1.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Paymint-Africa/paymint-php.git",
-                "reference": "309dedd69ddf2d1c8049b379f977be61bfdb7cbc"
+                "reference": "1baea2d2de301a1494c45f51a7d101eb87b6e4b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Paymint-Africa/paymint-php/zipball/309dedd69ddf2d1c8049b379f977be61bfdb7cbc",
-                "reference": "309dedd69ddf2d1c8049b379f977be61bfdb7cbc",
+                "url": "https://api.github.com/repos/Paymint-Africa/paymint-php/zipball/1baea2d2de301a1494c45f51a7d101eb87b6e4b2",
+                "reference": "1baea2d2de301a1494c45f51a7d101eb87b6e4b2",
                 "shasum": ""
             },
             "require": {
@@ -4657,9 +4657,9 @@
             "description": "The official Core PHP SDK for PayMint Africa",
             "support": {
                 "issues": "https://github.com/Paymint-Africa/paymint-php/issues",
-                "source": "https://github.com/Paymint-Africa/paymint-php/tree/v1.1.0"
+                "source": "https://github.com/Paymint-Africa/paymint-php/tree/v1.1.1"
             },
-            "time": "2026-09-10T19:15:02+00:00"
+            "time": "2026-09-10T21:25:48+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",

@@ -9,6 +9,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use PayMint\Laravel\Facades\PayMint;
 
@@ -135,10 +136,21 @@ class Billing extends Page
                 'price' => $price,
             ], now()->addHours(2));
 
-            // Redirect merchant to PayMint authorization URL
-            return redirect()->away($response['data']['authorization_url']);
+            Log::info('PayMint Checkout Session Initialized:', [
+                'reference' => $reference,
+                'auth_url' => $response['data']['authorization_url'],
+            ]);
+
+            $authUrl = $response['data']['authorization_url'];
+
+            // Trigger immediate client-side redirect in Livewire
+            $this->js("window.location.href = '{$authUrl}';");
+
+            return $this->redirect($authUrl, navigate: false);
 
         } catch (\Throwable $e) {
+            Log::error('PayWithCheckout Exception: '.$e->getMessage());
+
             Notification::make()
                 ->title('Checkout Error')
                 ->body($e->getMessage())
