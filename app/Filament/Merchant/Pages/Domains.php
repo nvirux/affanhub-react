@@ -21,7 +21,7 @@ class Domains extends Page
 
     protected static ?string $navigationLabel = 'Domains';
 
-    protected static ?int $navigationSort = 9;
+    protected static ?int $navigationSort = 2;
 
     protected string $view = 'filament.merchant.pages.domains';
 

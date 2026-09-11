@@ -324,10 +324,16 @@
 
                         {{-- Store Subdomain (Read only) --}}
                         <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
-                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151;">Store Subdomain (Unique ID)</label>
+                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151;">Store Subdomain / Web Address</label>
+                            @php
+                                $primaryDomain = $tenant->getPrimaryDomain() ?? ($tenant->public_id . '.' . (parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost'));
+                                $port = request()->getPort();
+                                $portSuffix = ($port && ! in_array((int) $port, [80, 443]) && ! str_contains($primaryDomain, ':')) ? ":{$port}" : '';
+                                $displayDomain = $primaryDomain . $portSuffix;
+                            @endphp
                             <input 
                                 type="text" 
-                                value="{{ $tenant->id }}.localhost:8000" 
+                                value="{{ $displayDomain }}" 
                                 disabled 
                                 class="settings-input"
                                 style="background-color: #f9fafb; color: #6b7280; cursor: not-allowed;"

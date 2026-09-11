@@ -25,7 +25,7 @@ class StoreAirtimeDiscountResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDevicePhoneMobile;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Store Management';
+    protected static string|UnitEnum|null $navigationGroup = 'Products & Pricing';
 
     protected static ?string $navigationLabel = 'Airtime Pricing';
 
@@ -33,7 +33,7 @@ class StoreAirtimeDiscountResource extends Resource
 
     protected static ?string $tenantRelationshipName = 'storeAirtimeDiscounts';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {

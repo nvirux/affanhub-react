@@ -13,7 +13,7 @@ class StoreWallet extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWallet;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finance';
+    protected static string|\UnitEnum|null $navigationGroup = 'Finance & Wallet';
 
     protected string $view = 'filament.merchant.pages.store-wallet';
 

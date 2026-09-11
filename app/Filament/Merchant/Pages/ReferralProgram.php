@@ -16,13 +16,13 @@ class ReferralProgram extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGift;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Store Management';
+    protected static UnitEnum|string|null $navigationGroup = 'Customers & Growth';
 
     protected static ?string $navigationLabel = 'Referral Program';
 
     protected static ?string $title = 'Referral & Viral Growth';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 3;
 
     protected string $view = 'filament.merchant.pages.referral-program';
 

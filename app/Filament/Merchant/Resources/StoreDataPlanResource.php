@@ -31,7 +31,7 @@ class StoreDataPlanResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCircleStack;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Store Management';
+    protected static string|UnitEnum|null $navigationGroup = 'Products & Pricing';
 
     protected static ?string $navigationLabel = 'Data Plan Pricing';
 
@@ -39,7 +39,7 @@ class StoreDataPlanResource extends Resource
 
     protected static ?string $tenantRelationshipName = 'storeDataPlans';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

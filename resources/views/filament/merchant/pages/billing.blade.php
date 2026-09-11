@@ -16,6 +16,31 @@
 
     <div style="font-family: inherit; display: flex; flex-direction: column; gap: 2rem;">
         
+        {{-- Onboarding Welcome Banner --}}
+        @if(request()->query('onboarding'))
+            <div style="background: linear-gradient(135deg, #111827 0%, #1f2937 100%); border-radius: 20px; padding: 1.5rem 2rem; color: white; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.25rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="display: flex; align-items: center; gap: 1.25rem;">
+                    <div style="width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; flex-shrink: 0; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);">
+                        🎉
+                    </div>
+                    <div>
+                        <h2 style="font-size: 1.35rem; font-weight: 800; margin: 0; letter-spacing: -0.01em;">
+                            Your store <span style="color: #f59e0b;">{{ $tenant->name }}</span> is ready!
+                        </h2>
+                        <p style="font-size: 0.875rem; color: #9ca3af; margin: 0.25rem 0 0 0;">
+                            Select a plan below to activate your wholesale rates and features, or continue free on Starter. You can upgrade anytime.
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <a href="{{ route('filament.merchant.pages.dashboard', ['tenant' => $tenant->public_id]) }}" 
+                       style="padding: 0.625rem 1.25rem; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25); color: white; font-size: 0.875rem; font-weight: 700; border-radius: 10px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.375rem; transition: all 0.2s;">
+                        Skip to Dashboard →
+                    </a>
+                </div>
+            </div>
+        @endif
+
         {{-- Top Section: Current Status & Entitlements --}}
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
             

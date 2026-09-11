@@ -25,7 +25,7 @@ class Billing extends Page
 
     protected static ?string $navigationLabel = 'Billing';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 3;
 
     public string $interval = 'month'; // 'month' or 'year'
 

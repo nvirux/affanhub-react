@@ -28,7 +28,7 @@ class StoreActivityLogs extends Page implements HasTable
 
     protected static ?string $navigationLabel = 'Activity Logs';
 
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 4;
 
     protected string $view = 'filament.merchant.pages.store-activity-logs';
 

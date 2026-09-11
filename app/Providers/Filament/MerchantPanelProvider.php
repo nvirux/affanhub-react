@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Merchant\Pages\Auth\Register;
 use App\Filament\Merchant\Pages\RegisterStore;
 use App\Models\Store;
 use Filament\Http\Middleware\Authenticate;
@@ -30,7 +31,7 @@ class MerchantPanelProvider extends PanelProvider
             ->id('merchant')->domain('merchant.'.(parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost'))
             ->path('')
             ->login()->profile()
-            ->registration()
+            ->registration(Register::class)
             ->authGuard('owner')
             ->tenant(Store::class, slugAttribute: 'public_id')
             ->tenantRegistration(RegisterStore::class)
@@ -39,6 +40,12 @@ class MerchantPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Merchant/Resources'), for: 'App\Filament\Merchant\Resources')
             ->discoverPages(in: app_path('Filament/Merchant/Pages'), for: 'App\Filament\Merchant\Pages')
+            ->navigationGroups([
+                'Products & Pricing',
+                'Finance & Wallet',
+                'Customers & Growth',
+                'Settings',
+            ])
             ->pages([
                 Dashboard::class,
             ])

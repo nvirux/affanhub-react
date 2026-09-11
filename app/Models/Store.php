@@ -126,4 +126,29 @@ class Store extends BaseTenant implements TenantWithDatabase
     {
         return $this->hasMany(Referral::class);
     }
+
+    public function getPrimaryDomain(): ?string
+    {
+        return $this->domains()->where('is_primary', true)->value('domain')
+            ?? $this->domains()->value('domain');
+    }
+
+    public function getStoreUrl(): string
+    {
+        $domain = $this->getPrimaryDomain();
+
+        if (! $domain) {
+            $baseDomain = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
+            $domain = $this->public_id.'.'.$baseDomain;
+        }
+
+        $port = request()->getPort();
+        if ($port && ! in_array((int) $port, [80, 443]) && ! str_contains($domain, ':')) {
+            $domain .= ":{$port}";
+        }
+
+        $scheme = request()->getScheme() ?: (app()->environment('local') ? 'http' : 'https');
+
+        return "{$scheme}://{$domain}";
+    }
 }

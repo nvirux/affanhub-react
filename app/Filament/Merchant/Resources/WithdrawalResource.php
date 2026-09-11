@@ -19,13 +19,13 @@ class WithdrawalResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Store Management';
+    protected static string|UnitEnum|null $navigationGroup = 'Finance & Wallet';
 
     protected static ?string $navigationLabel = 'Profit Withdrawals';
 
     protected static ?string $modelLabel = 'Profit Withdrawal';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     public static function table(Table $table): Table
     {

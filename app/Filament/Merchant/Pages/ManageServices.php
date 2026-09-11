@@ -15,13 +15,13 @@ class ManageServices extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Store Management';
+    protected static UnitEnum|string|null $navigationGroup = 'Products & Pricing';
 
     protected static ?string $navigationLabel = 'Services & Layout';
 
     protected static ?string $title = 'Services & Display Layout';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
 
     protected string $view = 'filament.merchant.pages.manage-services';
 

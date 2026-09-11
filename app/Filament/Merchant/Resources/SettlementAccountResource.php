@@ -20,13 +20,13 @@ class SettlementAccountResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingLibrary;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|UnitEnum|null $navigationGroup = 'Finance & Wallet';
 
     protected static ?string $navigationLabel = 'Settlement Banks';
 
     protected static ?string $modelLabel = 'Settlement Bank Account';
 
-    protected static ?int $navigationSort = 15;
+    protected static ?int $navigationSort = 4;
 
     public static function table(Table $table): Table
     {

@@ -24,7 +24,7 @@ class StoreSettings extends Page
 
     protected static ?string $navigationLabel = 'Store Settings';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 1;
 
     protected string $view = 'filament.merchant.pages.store-settings';
 
