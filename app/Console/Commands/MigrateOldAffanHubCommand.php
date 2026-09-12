@@ -57,13 +57,15 @@ class MigrateOldAffanHubCommand extends Command
         $oldTenantUsers = $this->queryOld('SELECT * FROM tenant_user');
         $oldTenantWallets = $this->queryOld('SELECT * FROM tenant_wallets');
         $oldProfitWallets = $this->tableExists('tenant_profit_wallets') ? $this->queryOld('SELECT * FROM tenant_profit_wallets') : [];
+        $oldDomains = $this->tableExists('domains') ? $this->queryOld('SELECT * FROM domains') : [];
         $oldVirtualAccounts = $this->tableExists('customer_virtual_accounts') ? $this->queryOld('SELECT * FROM customer_virtual_accounts') : [];
         $oldTransactions = $this->tableExists('transactions') ? $this->queryOld('SELECT * FROM transactions') : [];
 
         $this->info(sprintf(
-            'Found in old database: %d Admins, %d Tenants/Stores, %d Users, %d Virtual Accounts, %d Transactions.',
+            'Found in old database: %d Admins, %d Tenants/Stores, %d Domains, %d Users, %d Virtual Accounts, %d Transactions.',
             count($oldAdmins),
             count($oldTenants),
+            count($oldDomains),
             count($oldUsers),
             count($oldVirtualAccounts),
             count($oldTransactions)
@@ -170,10 +172,6 @@ class MigrateOldAffanHubCommand extends Command
                     $assignedOwnerId = $defaultOwner ? $defaultOwner->id : 1;
                 }
 
-                // Domain or Slug
-                $slug = Str::slug($t['slug'] ?? $t['name']);
-                $domain = $slug.'.'.(parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost');
-
                 // Upsert Store with exact ID
                 $store = Store::updateOrCreate(
                     ['id' => $tenantId],
@@ -191,30 +189,32 @@ class MigrateOldAffanHubCommand extends Command
                     $store->members()->attach($assignedOwnerId, ['role' => 'owner']);
                 }
 
-                // Attach domain if domains table exists in new DB (Stancl Tenancy uses tenant_id -> stores.id)
-                if (Schema::hasTable('domains')) {
-                    DB::table('domains')->updateOrInsert(
-                        ['domain' => $domain],
-                        [
-                            'tenant_id' => $store->id,
-                            'is_primary' => true,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]
-                    );
-                }
-
                 // D. Store Wallets (Main & Profit Accounting)
                 $oldMainBalance = (float) ($tenantWalletMap[$tenantId]['balance'] ?? 0.00);
                 $oldProfitBalance = (float) ($tenantProfitMap[$tenantId]['balance'] ?? 0.00);
 
-                // Deduct profit from main so money is never duplicated
-                $cleanMainBalance = max(0.00, $oldMainBalance - $oldProfitBalance);
-                $cleanProfitBalance = $oldProfitBalance;
+                // Capped Profit & Balance Calculation:
+                // 1. If cash balance <= 0: Both Main = 0 and Profit = 0 (spent or never funded)
+                // 2. If cash balance > 0 and cash <= profit: Profit = cash, Main = 0 (only available cash is withdrawable)
+                // 3. If cash balance > profit: Profit = profit, Main = cash - profit
+                if ($oldMainBalance <= 0) {
+                    $cleanProfitBalance = 0.00;
+                    $cleanMainBalance = 0.00;
+                } elseif ($oldMainBalance <= $oldProfitBalance) {
+                    $cleanProfitBalance = $oldMainBalance;
+                    $cleanMainBalance = 0.00;
+                } else {
+                    $cleanProfitBalance = $oldProfitBalance;
+                    $cleanMainBalance = round($oldMainBalance - $oldProfitBalance, 2);
+                }
 
                 // 1. Setup Main Wallet
                 $mainWallet = $store->mainWallet();
-                $mainWallet->update(['balance' => $cleanMainBalance]);
+                $mainWallet->update([
+                    'balance' => $cleanMainBalance,
+                    'created_at' => $t['created_at'] ?? now(),
+                    'updated_at' => $t['updated_at'] ?? now(),
+                ]);
 
                 WalletTransaction::updateOrCreate(
                     ['reference' => 'MIG_MAIN_TENANT_'.$tenantId],
@@ -225,17 +225,21 @@ class MigrateOldAffanHubCommand extends Command
                         'amount' => $cleanMainBalance,
                         'balance_before' => 0.00,
                         'balance_after' => $cleanMainBalance,
-                        'description' => "Initial Operating Balance migrated from AffanHub v1 (Total old: ₦{$oldMainBalance}, Profit swept: ₦{$oldProfitBalance})",
+                        'description' => "Initial Operating Balance migrated from AffanHub v1 (Available cash: ₦{$oldMainBalance}, Profit allocated: ₦{$cleanProfitBalance})",
                         'status' => 'success',
-                        'created_at' => now(),
-                        'updated_at' => now(),
+                        'created_at' => $t['created_at'] ?? now(),
+                        'updated_at' => $t['updated_at'] ?? now(),
                     ]
                 );
 
                 // 2. Setup Profit Wallet
                 if ($cleanProfitBalance > 0) {
                     $profitWallet = $store->profitWallet();
-                    $profitWallet->update(['balance' => $cleanProfitBalance]);
+                    $profitWallet->update([
+                        'balance' => $cleanProfitBalance,
+                        'created_at' => $t['created_at'] ?? now(),
+                        'updated_at' => $t['updated_at'] ?? now(),
+                    ]);
 
                     WalletTransaction::updateOrCreate(
                         ['reference' => 'MIG_PRF_TENANT_'.$tenantId],
@@ -248,8 +252,41 @@ class MigrateOldAffanHubCommand extends Command
                             'balance_after' => $cleanProfitBalance,
                             'description' => 'Earned Withdrawable Profit migrated from AffanHub v1',
                             'status' => 'success',
-                            'created_at' => now(),
-                            'updated_at' => now(),
+                            'created_at' => $t['created_at'] ?? now(),
+                            'updated_at' => $t['updated_at'] ?? now(),
+                        ]
+                    );
+                }
+            }
+
+            // D2. Migrate Actual Custom Domains directly from domains table
+            $this->info('Migrating Custom Domains from old database...');
+            if (Schema::hasTable('domains')) {
+                foreach ($oldDomains as $dom) {
+                    $domTenantId = (int) $dom['tenant_id'];
+                    if (! Store::where('id', $domTenantId)->exists()) {
+                        continue;
+                    }
+
+                    $domainName = trim($dom['domain']);
+                    if (empty($domainName)) {
+                        continue;
+                    }
+
+                    DB::table('domains')->updateOrInsert(
+                        ['domain' => $domainName],
+                        [
+                            'tenant_id' => $domTenantId,
+                            'is_primary' => (bool) ($dom['is_primary'] ?? false),
+                            'status' => $dom['status'] ?? 'verified',
+                            'is_verified' => (bool) ($dom['is_verified'] ?? true),
+                            'verified_at' => $dom['verified_at'] ?? $dom['created_at'] ?? now(),
+                            'is_approved' => (bool) ($dom['is_approved'] ?? true),
+                            'approved_at' => $dom['approved_at'] ?? $dom['created_at'] ?? now(),
+                            'is_routing_enabled' => (bool) ($dom['is_routing_enabled'] ?? true),
+                            'verification_token' => $dom['verification_token'] ?? null,
+                            'created_at' => $dom['created_at'] ?? now(),
+                            'updated_at' => $dom['updated_at'] ?? now(),
                         ]
                     );
                 }
@@ -287,7 +324,11 @@ class MigrateOldAffanHubCommand extends Command
                     // Migrate user balance
                     $userBal = (float) ($u['balance'] ?? 0.00);
                     $userWallet = $newUser->wallet('main');
-                    $userWallet->update(['balance' => $userBal]);
+                    $userWallet->update([
+                        'balance' => $userBal,
+                        'created_at' => $u['created_at'] ?? now(),
+                        'updated_at' => $u['updated_at'] ?? now(),
+                    ]);
 
                     if ($userBal > 0) {
                         WalletTransaction::updateOrCreate(
@@ -301,8 +342,8 @@ class MigrateOldAffanHubCommand extends Command
                                 'balance_after' => $userBal,
                                 'description' => 'Initial Customer Balance migrated from AffanHub v1',
                                 'status' => 'success',
-                                'created_at' => now(),
-                                'updated_at' => now(),
+                                'created_at' => $u['created_at'] ?? now(),
+                                'updated_at' => $u['updated_at'] ?? now(),
                             ]
                         );
                     }
