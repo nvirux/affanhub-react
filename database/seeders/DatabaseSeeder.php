@@ -18,9 +18,9 @@ class DatabaseSeeder extends Seeder
             PlanAndFeatureSeeder::class,
             AdminSeeder::class,
             StoreAndDomainSeeder::class,
+            DataSeeder::class,
             AirtimeDiscountSeeder::class,
             ServiceSeeder::class,
-            DataSeeder::class,
         ]);
     }
 }

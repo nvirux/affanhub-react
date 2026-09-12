@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -21,20 +20,20 @@ class WalletController extends Controller
         $wallet = $user ? $user->wallet('main') : null;
         $virtualAccount = $user ? $user->virtualAccounts()->where('status', 'active')->first() : null;
 
-        // Recent wallet transactions
-        $recentTransactions = $user
-            ? Transaction::where('user_id', $user->id)
+        // Recent wallet transactions from ledger
+        $recentTransactions = $wallet
+            ? $wallet->transactions()
                 ->latest()
-                ->take(15)
+                ->take(20)
                 ->get()
                 ->map(fn ($tx) => [
                     'id' => $tx->id,
-                    'reference' => $tx->reference ?? 'TXN-'.$tx->id,
-                    'type' => $tx->type ?? 'deposit',
-                    'title' => $tx->title ?? ($tx->type === 'deposit' ? 'Wallet Funding' : 'Service Payment'),
-                    'description' => $tx->description ?? 'Wallet Transaction',
+                    'reference' => $tx->reference ?? 'WT-'.$tx->id,
+                    'type' => $tx->type === 'credit' ? 'deposit' : 'debit',
+                    'title' => $tx->type === 'credit' ? ($tx->category === 'manual_merchant_credit' ? 'Merchant Credit' : 'Wallet Deposit') : 'Wallet Payment',
+                    'description' => $tx->description ?? ($tx->type === 'credit' ? 'Wallet credited' : 'Wallet debited'),
                     'amount' => (float) ($tx->amount ?? 0),
-                    'status' => $tx->status ?? 'successful',
+                    'status' => in_array($tx->status, ['success', 'successful'], true) ? 'successful' : ($tx->status ?? 'pending'),
                     'created_at' => $tx->created_at?->diffForHumans() ?? 'Just now',
                     'date' => $tx->created_at?->format('M d, Y h:i A') ?? '',
                 ])

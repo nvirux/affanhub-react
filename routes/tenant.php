@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\ForgotPinController;
 use App\Http\Controllers\Auth\TenantAuthController;
 use App\Http\Controllers\Auth\TenantPinSetupController;
 use App\Http\Controllers\Auth\TransactionPinController;
-use App\Http\Controllers\EarnController;
+use App\Http\Controllers\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -19,11 +19,12 @@ use App\Http\Controllers\EarnController;
 |
 */
 
+use App\Http\Controllers\EarnController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VirtualAccountController;
 use App\Http\Controllers\WalletController;
 use App\Http\Middleware\CheckTenantAccess;
-use App\Models\Service;
-use App\Models\StoreService;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -67,49 +68,16 @@ Route::middleware([
 
     // Customer Dashboard
     Route::middleware(['auth', 'verified'])->group(function () {
-        Route::get('dashboard', function () {
-            $tenant = tenant();
-            $allServices = Service::where('is_active', true)->get();
-
-            $enabledServices = [];
-            foreach ($allServices as $service) {
-                $hasAccess = true;
-                if ($service->feature_id && $service->feature) {
-                    $hasAccess = $tenant->hasFeature($service->feature->slug);
-                }
-
-                $setting = StoreService::where('store_id', $tenant->id)
-                    ->where('service_id', $service->id)
-                    ->first();
-
-                $isEnabled = $setting ? (bool) $setting->is_enabled : true;
-                $sortOrder = $setting ? (int) $setting->sort_order : $service->sort_order;
-
-                if ($hasAccess && $isEnabled) {
-                    $enabledServices[] = [
-                        'id' => $service->id,
-                        'name' => $service->name,
-                        'key' => $service->key,
-                        'category' => $service->category,
-                        'icon' => $service->icon,
-                        'description' => $service->description,
-                        'sort_order' => $sortOrder,
-                    ];
-                }
-            }
-
-            usort($enabledServices, fn ($a, $b) => $a['sort_order'] <=> $b['sort_order']);
-
-            return Inertia::render('Storefront/Dashboard', [
-                'store_services' => $enabledServices,
-            ]);
-        })->name('dashboard');
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::post('/virtual-account/generate', [VirtualAccountController::class, 'generate'])
             ->name('virtual-account.generate');
 
         Route::get('/earn', [EarnController::class, 'index'])->name('earn');
         Route::get('/wallet', [WalletController::class, 'index'])->name('wallet');
+
+        Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/transactions/{reference}', [TransactionController::class, 'show'])->name('transactions.show');
 
         require __DIR__.'/vtu.php';
     });

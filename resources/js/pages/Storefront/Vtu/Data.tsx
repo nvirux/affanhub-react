@@ -201,9 +201,18 @@ export default function DataPage() {
 
                 {/* Alert Banners */}
                 {(flash?.error || errors?.data_plan_id || errors?.phone) && (
-                    <div className="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-2xl p-4 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 shrink-0" />
-                        <span>{flash?.error || errors?.data_plan_id || errors?.phone || 'Failed to process transaction.'}</span>
+                    <div className="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-2xl p-4 text-rose-700 dark:text-rose-300 text-xs font-semibold flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                            <span>{flash?.error || errors?.data_plan_id || errors?.phone || 'Failed to process transaction.'}</span>
+                        </div>
+                        <Link
+                            href="/contact"
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-500/20 px-3 py-1.5 rounded-lg hover:bg-rose-200 transition-colors w-fit shrink-0"
+                        >
+                            <Headphones className="w-3.5 h-3.5" />
+                            <span>Contact Support</span>
+                        </Link>
                     </div>
                 )}
                 {flash?.success && (

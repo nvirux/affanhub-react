@@ -22,7 +22,13 @@ return new class extends Migration
             $table->string('referral_code')->nullable()->unique();
             $table->foreignId('referred_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
+            $table->text('two_factor_secret')->nullable();
+            $table->text('two_factor_recovery_codes')->nullable();
+            $table->timestamp('two_factor_confirmed_at')->nullable();
+            $table->string('login_pin_hash')->nullable();
+            $table->boolean('login_pin_enabled')->default(false);
+            $table->string('transaction_pin_hash')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

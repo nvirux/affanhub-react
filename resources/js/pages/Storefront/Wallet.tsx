@@ -166,12 +166,7 @@ export default function WalletPage({
     const displayTransactions: TransactionItem[] = recent_transactions.length > 0 ? recent_transactions : [];
 
     return (
-        <AppLayout
-            breadcrumbs={[
-                { title: 'Dashboard', href: dashboard().url },
-                { title: 'Wallet & Funding', href: '/wallet' },
-            ]}
-        >
+        <>
             <Head title="Wallet & Funding" />
 
             {/* ── MOBILE STICKY HEADER ── */}
@@ -415,7 +410,7 @@ export default function WalletPage({
                     {displayTransactions.length > 0 ? (
                         <div className="divide-y divide-slate-100 dark:divide-slate-800">
                             {displayTransactions.map((tx) => {
-                                const isDeposit = tx.type === 'deposit';
+                                const isDeposit = tx.type === 'deposit' || tx.type === 'credit';
                                 return (
                                     <div
                                         key={tx.id}
@@ -830,6 +825,6 @@ export default function WalletPage({
                     </div>
                 </div>
             )}
-        </AppLayout>
+        </>
     );
 }

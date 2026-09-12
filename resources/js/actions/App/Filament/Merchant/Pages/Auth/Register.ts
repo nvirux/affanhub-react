@@ -1,7 +1,7 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
 /**
-* @see \Filament\Auth\Pages\Register::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/Register.php:7
+* @see \App\Filament\Merchant\Pages\Auth\Register::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/Register.php:7
  * @route '//merchant.localhost/register'
  */
 const Register = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -15,8 +15,8 @@ Register.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \Filament\Auth\Pages\Register::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/Register.php:7
+* @see \App\Filament\Merchant\Pages\Auth\Register::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/Register.php:7
  * @route '//merchant.localhost/register'
  */
 Register.url = (options?: RouteQueryOptions) => {
@@ -24,8 +24,8 @@ Register.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \Filament\Auth\Pages\Register::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/Register.php:7
+* @see \App\Filament\Merchant\Pages\Auth\Register::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/Register.php:7
  * @route '//merchant.localhost/register'
  */
 Register.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -33,8 +33,8 @@ Register.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
-* @see \Filament\Auth\Pages\Register::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/Register.php:7
+* @see \App\Filament\Merchant\Pages\Auth\Register::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/Register.php:7
  * @route '//merchant.localhost/register'
  */
 Register.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -43,8 +43,8 @@ Register.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
-* @see \Filament\Auth\Pages\Register::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/Register.php:7
+* @see \App\Filament\Merchant\Pages\Auth\Register::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/Register.php:7
  * @route '//merchant.localhost/register'
  */
     const RegisterForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -53,8 +53,8 @@ Register.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
-* @see \Filament\Auth\Pages\Register::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/Register.php:7
+* @see \App\Filament\Merchant\Pages\Auth\Register::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/Register.php:7
  * @route '//merchant.localhost/register'
  */
         RegisterForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -62,8 +62,8 @@ Register.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
-* @see \Filament\Auth\Pages\Register::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/Register.php:7
+* @see \App\Filament\Merchant\Pages\Auth\Register::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/Register.php:7
  * @route '//merchant.localhost/register'
  */
         RegisterForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

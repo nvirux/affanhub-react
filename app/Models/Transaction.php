@@ -28,4 +28,12 @@ class Transaction extends Model
     {
         return $this->belongsTo(Store::class);
     }
+
+    /**
+     * Get the service definition associated with this transaction.
+     */
+    public function service(): BelongsTo
+    {
+        return $this->belongsTo(Service::class);
+    }
 }

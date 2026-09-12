@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('data_plan_id')->constrained('data_plans')->cascadeOnDelete();
             $table->decimal('selling_price', 10, 2);
             $table->boolean('is_enabled')->default(true);
+            $table->boolean('is_best_offer')->nullable();
             $table->timestamps();
 
             $table->unique(['store_id', 'data_plan_id']);

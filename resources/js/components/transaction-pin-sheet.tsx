@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Sheet,
     SheetContent,
@@ -33,6 +33,12 @@ export function TransactionPinSheet({
 }: TransactionPinSheetProps) {
     const [pin, setPin] = useState('');
 
+    useEffect(() => {
+        if (error) {
+            setPin('');
+        }
+    }, [error]);
+
     const handlePinComplete = (val: string) => {
         onSubmitPin(val);
     };
@@ -59,8 +65,25 @@ export function TransactionPinSheet({
         >
             <SheetContent
                 side="bottom"
-                className="rounded-t-2xl sm:rounded-t-3xl max-w-sm sm:max-w-md mx-auto p-4 sm:p-5 bg-white dark:bg-[#181826] border-t border-gray-100 dark:border-gray-800 shadow-2xl focus:outline-none"
+                className="overflow-hidden rounded-t-2xl sm:rounded-t-3xl max-w-sm sm:max-w-md mx-auto p-4 sm:p-5 bg-white dark:bg-[#181826] border-t border-gray-100 dark:border-gray-800 shadow-2xl focus:outline-none"
             >
+                {/* Full Processing Loading Overlay */}
+                {isSubmitting && (
+                    <div className="absolute inset-0 bg-white/95 dark:bg-[#181826]/95 backdrop-blur-sm z-50 rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-center p-6 space-y-4 animate-in fade-in duration-200">
+                        <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-lg ring-8 ring-primary/5">
+                            <Loader2 className="w-8 h-8 animate-spin stroke-[2.5]" />
+                        </div>
+                        <div className="text-center space-y-1.5 max-w-xs">
+                            <h4 className="text-base font-bold text-gray-900 dark:text-white tracking-tight">
+                                Processing Payment...
+                            </h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                Authorizing order and dispatching to telecom network. Please do not close or refresh.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 {/* Drag handle */}
                 <div className="w-10 h-1 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-2" />
 

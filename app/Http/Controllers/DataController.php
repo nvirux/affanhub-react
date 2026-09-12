@@ -112,15 +112,15 @@ class DataController extends Controller
         try {
             $result = $dataService->buyDataPlan($user, $storeDataPlan, $validated['phone']);
 
-            if ($request->wantsJson()) {
+            if ($request->wantsJson() && ! $request->header('X-Inertia')) {
                 return response()->json($result);
             }
 
-            if ($result['success']) {
-                return Redirect::back()->with('success', $result['message']);
+            if (! empty($result['reference'])) {
+                return redirect()->route('transactions.show', $result['reference']);
             }
 
-            return Redirect::back()->with('error', $result['message']);
+            return Redirect::back()->with('error', $result['message'] ?? 'Data purchase failed.');
         } catch (\Throwable $e) {
             if ($request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 400);

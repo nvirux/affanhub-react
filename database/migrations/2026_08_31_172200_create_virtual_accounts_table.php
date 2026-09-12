@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('bank_name');
             $table->string('account_number');
             $table->string('account_name');
+            $table->string('email_alias')->nullable()->index();
             $table->string('provider'); // paymint, monnify, etc.
             $table->string('status')->default('active'); // active, inactive
             $table->string('reference')->unique();

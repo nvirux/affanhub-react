@@ -86,6 +86,8 @@ class StaffResource extends Resource
                 ->default('staff'),
             TextInput::make('password')
                 ->password()
+                ->revealable()
+                ->formatStateUsing(fn () => '')
                 ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                 ->dehydrated(fn ($state) => filled($state))
                 ->required(fn (string $operation): bool => $operation === 'create')

@@ -62,8 +62,14 @@ class CustomerResource extends Resource
                 ->required()
                 ->maxLength(255)
                 ->placeholder('e.g. john@example.com'),
+            TextInput::make('phone')
+                ->tel()
+                ->maxLength(20)
+                ->placeholder('e.g. 08012345678'),
             TextInput::make('password')
                 ->password()
+                ->revealable()
+                ->formatStateUsing(fn () => '')
                 ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                 ->dehydrated(fn ($state) => filled($state))
                 ->required(fn (string $operation): bool => $operation === 'create')
@@ -79,15 +85,34 @@ class CustomerResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
+                TextColumn::make('phone')
+                    ->searchable()
+                    ->copyable()
+                    ->placeholder('No phone'),
                 TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('wallet_balance')
-                    ->label('Wallet Balance (₦)')
+                    ->label('Wallet Balance')
                     ->badge()
                     ->color('success')
                     ->state(fn (User $record) => '₦'.number_format((float) ($record->wallet('main')->balance ?? 0), 2)),
+                TextColumn::make('virtual_account')
+                    ->label('Dedicated Virtual Account')
+                    ->state(function (User $record): string {
+                        $va = $record->virtualAccounts()->where('status', 'active')->first();
+
+                        return $va ? "{$va->account_number} ({$va->bank_name})" : 'None';
+                    })
+                    ->badge(fn (string $state) => $state !== 'None')
+                    ->color(fn (string $state) => $state !== 'None' ? 'info' : 'gray'),
+                TextColumn::make('transactions_count')
+                    ->label('Orders')
+                    ->counts('transactions')
+                    ->badge()
+                    ->color('warning'),
                 TextColumn::make('created_at')
+                    ->label('Joined')
                     ->dateTime()
                     ->sortable(),
             ])
@@ -200,6 +225,15 @@ class CustomerResource extends Resource
                 EditAction::make(),
                 DeleteAction::make(),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            CustomerResource\RelationManagers\TransactionsRelationManager::class,
+            CustomerResource\RelationManagers\VirtualAccountsRelationManager::class,
+            CustomerResource\RelationManagers\WalletsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

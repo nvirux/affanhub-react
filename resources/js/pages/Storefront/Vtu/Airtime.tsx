@@ -11,12 +11,12 @@ import { ConfirmPaymentSheet } from '@/components/confirm-payment-sheet';
 import { TransactionPinSheet } from '@/components/transaction-pin-sheet';
 
 const AIRTIME_PRESETS = [
+    { amount: 50, label: '₦50' },
     { amount: 100, label: '₦100' },
     { amount: 200, label: '₦200' },
     { amount: 500, label: '₦500' },
     { amount: 1000, label: '₦1,000' },
     { amount: 2000, label: '₦2,000' },
-    { amount: 5000, label: '₦5,000' },
 ];
 
 export interface NetworkConfig {
@@ -42,7 +42,7 @@ export default function AirtimePage({ networks = [] }: AirtimePageProps) {
     const [phone, setPhone] = useState<string>('');
     const [phoneError, setPhoneError] = useState<string | null>(null);
 
-    const [customAmount, setCustomAmount] = useState<string>('500');
+    const [customAmount, setCustomAmount] = useState<string>('');
     const [amountError, setAmountError] = useState<string | null>(null);
 
     const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
@@ -167,10 +167,7 @@ export default function AirtimePage({ networks = [] }: AirtimePageProps) {
                 onSuccess: () => {
                     setIsPinSheetOpen(false);
                     setPhoneError(null);
-                    setStatusMessage({
-                        type: 'success',
-                        text: `₦${currentAmount.toLocaleString()} Airtime recharge for ${phone} was successful!`,
-                    });
+                    setStatusMessage(null);
                 },
                 onError: (pageErrors: any) => {
                     const msg = pageErrors.message || pageErrors.transaction_pin || pageErrors.amount || pageErrors.phone || 'Airtime recharge failed.';
@@ -233,11 +230,10 @@ export default function AirtimePage({ networks = [] }: AirtimePageProps) {
                 {/* Status Messages */}
                 {statusMessage && (
                     <div
-                        className={`rounded-2xl p-4 text-xs font-semibold flex items-center gap-2 ${
-                            statusMessage.type === 'success'
-                                ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-300'
-                                : 'bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-300'
-                        }`}
+                        className={`rounded-2xl p-4 text-xs font-semibold flex items-center gap-2 ${statusMessage.type === 'success'
+                            ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-300'
+                            : 'bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-300'
+                            }`}
                     >
                         {statusMessage.type === 'success' ? (
                             <CheckCircle className="w-4 h-4 shrink-0" />
@@ -250,9 +246,18 @@ export default function AirtimePage({ networks = [] }: AirtimePageProps) {
 
                 {/* Server Flash & Error Banners */}
                 {(flash?.error || errors?.phone || errors?.amount) && !statusMessage && (
-                    <div className="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-2xl p-4 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 shrink-0" />
-                        <span>{flash?.error || errors?.phone || errors?.amount || 'Failed to process transaction.'}</span>
+                    <div className="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-2xl p-4 text-rose-700 dark:text-rose-300 text-xs font-semibold flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                            <span>{flash?.error || errors?.phone || errors?.amount || 'Failed to process transaction.'}</span>
+                        </div>
+                        <Link
+                            href="/contact"
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-500/20 px-3 py-1.5 rounded-lg hover:bg-rose-200 transition-colors w-fit shrink-0"
+                        >
+                            <Headphones className="w-3.5 h-3.5" />
+                            <span>Contact Support</span>
+                        </Link>
                     </div>
                 )}
                 {flash?.success && !statusMessage && (
@@ -278,7 +283,7 @@ export default function AirtimePage({ networks = [] }: AirtimePageProps) {
 
                     {/* 2. Amount Selection Card (Standalone) */}
                     <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
-                        
+
                         <div className="flex items-center justify-between">
                             <h2 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">
                                 Select Amount
@@ -317,11 +322,10 @@ export default function AirtimePage({ networks = [] }: AirtimePageProps) {
                             <label htmlFor="custom-amount" className="text-xs font-bold text-slate-500 dark:text-slate-400">
                                 Or Enter Custom Amount (₦{minAmount.toLocaleString()} - ₦{maxAmount.toLocaleString()})
                             </label>
-                            <div className={`relative flex items-center bg-gray-50/70 dark:bg-gray-900/70 border rounded-xl pl-3.5 pr-1.5 py-1.5 transition-all ${
-                                amountError
-                                    ? 'border-rose-400 dark:border-rose-500 ring-2 ring-rose-400/20'
-                                    : 'border-gray-200 dark:border-gray-700 focus-within:border-primary'
-                            }`}>
+                            <div className={`relative flex items-center bg-gray-50/70 dark:bg-gray-900/70 border rounded-xl pl-3.5 pr-1.5 py-1.5 transition-all ${amountError
+                                ? 'border-rose-400 dark:border-rose-500 ring-2 ring-rose-400/20'
+                                : 'border-gray-200 dark:border-gray-700 focus-within:border-primary'
+                                }`}>
                                 <span className="text-base font-black text-gray-500 dark:text-gray-400 mr-2">₦</span>
                                 <input
                                     id="custom-amount"

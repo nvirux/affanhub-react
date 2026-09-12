@@ -71,7 +71,7 @@ export default function EarnPage({
     const whatsappUrl = `https://api.whatsapp.com/send?text=${whatsappText}`;
 
     return (
-        <AppLayout breadcrumbs={[{ title: 'Dashboard', href: dashboard().url }, { title: 'Earn & Refer', href: '/earn' }]}>
+        <>
             <Head title="Earn & Refer" />
 
             {/* ── MOBILE STICKY HEADER ── */}
@@ -242,6 +242,6 @@ export default function EarnPage({
                 </div>
 
             </div>
-        </AppLayout>
+        </>
     );
 }

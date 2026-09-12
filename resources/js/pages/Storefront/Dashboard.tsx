@@ -10,6 +10,7 @@ import {
     X, Copy, Check, Building2, ShieldCheck, AlertCircle, CreditCard, Sparkles,
     UserCheck, Fingerprint, Search, Edit3, FileCheck, IdCard
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
     Sheet,
     SheetContent,
@@ -19,7 +20,7 @@ import {
 } from '@/components/ui/sheet';
 
 export default function Dashboard() {
-    const { auth, store, store_services, flash, errors } = usePage<any>().props;
+    const { auth, store, store_services, recent_transactions, flash, errors } = usePage<any>().props;
     const user = auth?.user;
     const { appearance, updateAppearance } = useAppearance();
     const [themeMenuOpen, setThemeMenuOpen] = useState(false);
@@ -126,8 +127,8 @@ export default function Dashboard() {
     // User Dropdown State for Mobile view
     const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-    // Mock data representing recent transactions
-    const transactions = []; // Start empty to match the screenshot "No transactions found yet."
+    // Real recent transactions from backend
+    const transactions = recent_transactions || [];
 
     // Computed user initials
     const getInitials = (name?: string) => {
@@ -398,20 +399,80 @@ export default function Dashboard() {
 
                     {/* Right Column: Real Recent Transactions */}
                     <div className="lg:col-span-5 bg-white dark:bg-[#1e1e2d] rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6 flex flex-col h-full">
-                        <div className="flex justify-between items-center mb-6">
+                        <div className="flex justify-between items-center mb-4">
                             <h2 className="text-[16px] font-bold text-gray-900 dark:text-white">Recent Transactions</h2>
-                            <button className="text-[13px] font-bold text-primary hover:opacity-85">View all</button>
+                            <Link href="/transactions" className="text-[13px] font-bold text-primary hover:opacity-85">View all</Link>
                         </div>
 
-                        <div className="flex flex-col gap-4 flex-1">
+                        <div className="flex flex-col gap-2 flex-1">
                             {transactions.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-10 text-gray-400">
                                     <FileText className="w-10 h-10 mb-2 opacity-40" />
                                     <p className="text-xs font-semibold">No transactions found yet.</p>
                                 </div>
                             ) : (
-                                <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                                    {/* Map transactions here if loaded */}
+                                <div className="divide-y divide-slate-100 dark:divide-slate-800/80">
+                                    {transactions.map((tx: any) => {
+                                        const isSuccess = tx.status === 'successful';
+                                        const isPending = tx.status === 'pending';
+                                        const isAirtime = tx.service_type === 'airtime';
+                                        const isData = tx.service_type === 'data';
+
+                                        return (
+                                            <Link
+                                                key={tx.id || tx.reference}
+                                                href={`/transactions/${tx.reference}`}
+                                                className="flex items-center justify-between py-2.5 px-2 -mx-2 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors group cursor-pointer"
+                                            >
+                                                <div className="flex items-center gap-3 min-w-0">
+                                                    <div
+                                                        className={cn(
+                                                            "w-8 h-8 rounded-xl flex items-center justify-center shrink-0",
+                                                            isAirtime
+                                                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                                                                : isData
+                                                                  ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                                                                  : "bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400"
+                                                        )}
+                                                    >
+                                                        {isAirtime ? (
+                                                            <Smartphone className="w-4 h-4" />
+                                                        ) : isData ? (
+                                                            <Wifi className="w-4 h-4" />
+                                                        ) : (
+                                                            <Wallet className="w-4 h-4" />
+                                                        )}
+                                                    </div>
+                                                    <div className="flex flex-col min-w-0">
+                                                        <span className="text-xs font-bold text-slate-800 dark:text-white capitalize truncate group-hover:text-primary transition-colors">
+                                                            {tx.service_type || 'Order'}
+                                                        </span>
+                                                        <span className="text-[11px] text-slate-400 truncate">
+                                                            {tx.recipient || tx.reference} • {tx.created_at}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-col items-end shrink-0 pl-2">
+                                                    <span className="text-xs font-extrabold text-slate-900 dark:text-white font-mono">
+                                                        ₦{Number(tx.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                                    </span>
+                                                    <span
+                                                        className={cn(
+                                                            "text-[10px] font-bold capitalize mt-0.5",
+                                                            isSuccess
+                                                                ? "text-emerald-600 dark:text-emerald-400"
+                                                                : isPending
+                                                                  ? "text-amber-600 dark:text-amber-400"
+                                                                  : "text-rose-500 dark:text-rose-400"
+                                                        )}
+                                                    >
+                                                        {tx.status}
+                                                    </span>
+                                                </div>
+                                            </Link>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
@@ -580,20 +641,80 @@ export default function Dashboard() {
                 {/* Real Recent Transactions Section (Mobile) */}
                 <div className="px-4 mb-8">
                     <div className="bg-white dark:bg-[#1e1e2d] rounded-xl p-4 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-800">
-                        <div className="flex justify-between items-center mb-4 px-1">
+                        <div className="flex justify-between items-center mb-3 px-1">
                             <h2 className="text-[15px] font-bold text-gray-900 dark:text-white">Recent Transactions</h2>
-                            <button className="text-[12px] font-bold text-primary hover:underline">See all</button>
+                            <Link href="/transactions" className="text-[12px] font-bold text-primary hover:underline">See all</Link>
                         </div>
 
-                        <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-2">
                             {transactions.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-8 text-gray-400">
                                     <FileText className="w-9 h-9 mb-1.5 opacity-40" />
                                     <p className="text-xs font-semibold">No transactions found yet.</p>
                                 </div>
                             ) : (
-                                <div className="flex flex-col gap-3">
-                                    {/* Map transactions here if loaded */}
+                                <div className="divide-y divide-slate-100 dark:divide-slate-800/80">
+                                    {transactions.map((tx: any) => {
+                                        const isSuccess = tx.status === 'successful';
+                                        const isPending = tx.status === 'pending';
+                                        const isAirtime = tx.service_type === 'airtime';
+                                        const isData = tx.service_type === 'data';
+
+                                        return (
+                                            <Link
+                                                key={tx.id || tx.reference}
+                                                href={`/transactions/${tx.reference}`}
+                                                className="flex items-center justify-between py-2.5 px-1 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors group cursor-pointer"
+                                            >
+                                                <div className="flex items-center gap-2.5 min-w-0">
+                                                    <div
+                                                        className={cn(
+                                                            "w-8 h-8 rounded-xl flex items-center justify-center shrink-0",
+                                                            isAirtime
+                                                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                                                                : isData
+                                                                  ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                                                                  : "bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400"
+                                                        )}
+                                                    >
+                                                        {isAirtime ? (
+                                                            <Smartphone className="w-4 h-4" />
+                                                        ) : isData ? (
+                                                            <Wifi className="w-4 h-4" />
+                                                        ) : (
+                                                            <Wallet className="w-4 h-4" />
+                                                        )}
+                                                    </div>
+                                                    <div className="flex flex-col min-w-0">
+                                                        <span className="text-xs font-bold text-slate-800 dark:text-white capitalize truncate group-hover:text-primary transition-colors">
+                                                            {tx.service_type || 'Order'}
+                                                        </span>
+                                                        <span className="text-[11px] text-slate-400 truncate">
+                                                            {tx.recipient || tx.reference} • {tx.created_at}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-col items-end shrink-0 pl-2">
+                                                    <span className="text-xs font-extrabold text-slate-900 dark:text-white font-mono">
+                                                        ₦{Number(tx.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                                    </span>
+                                                    <span
+                                                        className={cn(
+                                                            "text-[10px] font-bold capitalize mt-0.5",
+                                                            isSuccess
+                                                                ? "text-emerald-600 dark:text-emerald-400"
+                                                                : isPending
+                                                                  ? "text-amber-600 dark:text-amber-400"
+                                                                  : "text-rose-500 dark:text-rose-400"
+                                                        )}
+                                                    >
+                                                        {tx.status}
+                                                    </span>
+                                                </div>
+                                            </Link>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>

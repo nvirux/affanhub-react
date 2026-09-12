@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('bvn')->nullable();
             $table->string('nin')->nullable();
             $table->string('avatar')->nullable();
+            $table->unsignedInteger('max_stores')->default(3);
+            $table->text('app_authentication_secret')->nullable();
+            $table->text('app_authentication_recovery_codes')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

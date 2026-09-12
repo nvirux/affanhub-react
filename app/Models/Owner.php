@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthentication;
+use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecovery;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
@@ -10,9 +14,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Collection;
 
-class Owner extends Authenticatable implements FilamentUser, HasTenants
+class Owner extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasTenants
 {
+    use InteractsWithAppAuthentication;
+    use InteractsWithAppAuthenticationRecovery;
+
     protected $guarded = [];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+        'app_authentication_secret',
+        'app_authentication_recovery_codes',
+    ];
 
     protected $casts = [
         'max_stores' => 'integer',

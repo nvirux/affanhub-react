@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -29,6 +30,11 @@ class AdminPanelProvider extends PanelProvider
             ->domain('admin.'.(parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost'))
             ->path('')
             ->login()->profile()
+            ->multiFactorAuthentication([
+                AppAuthentication::make()
+                    ->brandName('AffanHub Admin')
+                    ->recoverable(),
+            ])
             // ->topNavigation()
             ->authGuard('admin')
             ->colors([

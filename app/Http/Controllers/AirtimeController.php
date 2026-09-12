@@ -7,10 +7,10 @@ use App\Models\Network;
 use App\Models\Store;
 use App\Models\StoreAirtimeDiscount;
 use App\Services\Vtu\AirtimeService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -79,7 +79,7 @@ class AirtimeController extends Controller
     /**
      * Handle Airtime Recharge for Storefront Customer.
      */
-    public function purchase(Request $request, AirtimeService $airtimeService): JsonResponse
+    public function purchase(Request $request, AirtimeService $airtimeService): mixed
     {
         $user = Auth::user();
 
@@ -113,17 +113,33 @@ class AirtimeController extends Controller
                 $validated['phone']
             );
 
-            return response()->json($result, $result['success'] ? 200 : 422);
+            if ($request->wantsJson() && ! $request->header('X-Inertia')) {
+                return response()->json($result, $result['success'] ? 200 : 422);
+            }
+
+            if (! empty($result['reference'])) {
+                return redirect()->route('transactions.show', $result['reference']);
+            }
+
+            return Redirect::back()->with('error', $result['message'] ?? 'Airtime recharge failed.');
         } catch (\InvalidArgumentException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 422);
+            if ($request->wantsJson() && ! $request->header('X-Inertia')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return Redirect::back()->with('error', $e->getMessage());
         } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 400);
+            if ($request->wantsJson() && ! $request->header('X-Inertia')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 400);
+            }
+
+            return Redirect::back()->with('error', $e->getMessage());
         }
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Services\Vtu;
 
 use App\Models\DataPlan;
+use App\Models\PlanDataPrice;
+use App\Models\Service;
 use App\Models\Store;
 use App\Models\StoreDataPlan;
 use App\Models\Transaction;
@@ -57,9 +59,26 @@ class DataService
             throw new \Exception('Store context missing for user purchase.');
         }
 
-        $customerRetailPrice = (float) ($storeDataPlan->custom_selling_price ?? $dataPlan->default_retail_price);
-        $resellerWholesaleCost = (float) $storeDataPlan->getWholesaleCostPrice();
-        $profitMargin = max(0, $customerRetailPrice - $resellerWholesaleCost);
+        // Resolve pricing & wholesale ledger
+        $customerRetailPrice = (float) ($storeDataPlan->selling_price ?? $dataPlan->default_retail_price);
+        $facePrice = (float) ($dataPlan->default_retail_price ?? $customerRetailPrice);
+        $discountAmount = max(0, round($facePrice - $customerRetailPrice, 2));
+
+        $subscription = $store->subscription;
+        $tierPrice = null;
+        if ($subscription && $subscription->plan_id) {
+            $tierPrice = PlanDataPrice::where('plan_id', $subscription->plan_id)
+                ->where('data_plan_id', $dataPlan->id)
+                ->first();
+        }
+
+        $resellerWholesaleCost = $tierPrice && $tierPrice->wholesale_price !== null
+            ? (float) $tierPrice->wholesale_price
+            : (float) ($dataPlan->selling_price ?? $dataPlan->cost_price ?? $customerRetailPrice);
+
+        $vendorCost = (float) ($dataPlan->cost_price ?? $resellerWholesaleCost);
+        $profitMargin = max(0, round($customerRetailPrice - $resellerWholesaleCost, 2));
+        $platformProfit = max(0, round($resellerWholesaleCost - $vendorCost, 2));
 
         $customerWallet = $customer->wallet('main');
         if (! $customerWallet || (float) $customerWallet->balance < $customerRetailPrice) {
@@ -68,7 +87,8 @@ class DataService
 
         $storeMainWallet = $store->mainWallet();
         if ((float) $storeMainWallet->balance < $resellerWholesaleCost) {
-            throw new \Exception('Store wholesale balance low. Please contact store support.');
+            Log::warning("Store #{$store->id} ({$store->name}) vending wallet balance low (₦{$storeMainWallet->balance}) for wholesale cost (₦{$resellerWholesaleCost}).");
+            throw new \Exception('Unable to process this order. Please contact store support for assistance.');
         }
 
         // Generate dynamic Store-prefixed reference (e.g. DEMO_STORE_DATA_20260904165120_8FA29X)
@@ -137,23 +157,25 @@ class DataService
         // 5. Check API Result
         if ($apiResult['success'] || $apiResult['pending']) {
             $status = $apiResult['pending'] ? 'pending' : 'successful';
+            $dataServiceId = Service::where('key', 'data')->value('id');
 
-            // Create Transaction audit log
+            // Create Transaction audit log with full financial ledger
             $transaction = Transaction::create([
                 'user_id' => $customer->id,
                 'store_id' => $store->id,
-                'type' => 'data_purchase',
-                'amount' => $customerRetailPrice,
-                'wholesale_cost' => $resellerWholesaleCost,
+                'service_id' => $dataServiceId,
+                'service_type' => 'data',
+                'amount' => $facePrice,
+                'discount' => $discountAmount,
+                'amount_paid' => $customerRetailPrice,
+                'cost_price' => $resellerWholesaleCost,
+                'vendor_cost' => $vendorCost,
                 'profit' => $profitMargin,
+                'platform_profit' => $platformProfit,
+                'recipient' => $phone,
                 'status' => $status,
                 'reference' => $txReference,
-                'meta' => [
-                    'phone' => $phone,
-                    'network' => $networkName,
-                    'plan_name' => $dataPlan->name,
-                    'provider_response' => $apiResult['raw'],
-                ],
+                'api_response' => $apiResult['raw'] ?? [],
             ]);
 
             try {
@@ -210,23 +232,25 @@ class DataService
                 }
             }
 
-            // Log Failed Transaction
+            $dataServiceId = Service::where('key', 'data')->value('id');
+
+            // Log Failed Transaction with full financial ledger
             $transaction = Transaction::create([
                 'user_id' => $customer->id,
                 'store_id' => $store->id,
-                'type' => 'data_purchase',
-                'amount' => $customerRetailPrice,
-                'wholesale_cost' => $resellerWholesaleCost,
+                'service_id' => $dataServiceId,
+                'service_type' => 'data',
+                'amount' => $facePrice,
+                'discount' => $discountAmount,
+                'amount_paid' => $customerRetailPrice,
+                'cost_price' => $resellerWholesaleCost,
+                'vendor_cost' => $vendorCost,
                 'profit' => 0.00,
+                'platform_profit' => 0.00,
+                'recipient' => $phone,
                 'status' => 'failed',
                 'reference' => $txReference,
-                'meta' => [
-                    'phone' => $phone,
-                    'network' => $networkName,
-                    'plan_name' => $dataPlan->name,
-                    'error_reason' => $errorMessage,
-                    'refunded' => true,
-                ],
+                'api_response' => $apiResult['raw'] ?? [],
             ]);
 
             return [

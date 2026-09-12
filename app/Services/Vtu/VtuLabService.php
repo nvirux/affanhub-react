@@ -105,7 +105,7 @@ class VtuLabService
         $endpoint = $this->baseUrl.'/airtime';
 
         $payload = [
-            'network_id' => $networkId,
+            'network' => strtolower((string) $networkId),
             'phone' => (string) $phone,
             'amount' => (float) $amount,
             'reference' => (string) $reference,

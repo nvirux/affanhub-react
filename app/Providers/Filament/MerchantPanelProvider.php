@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Merchant\Pages\Auth\Register;
 use App\Filament\Merchant\Pages\RegisterStore;
 use App\Models\Store;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -31,6 +32,11 @@ class MerchantPanelProvider extends PanelProvider
             ->id('merchant')->domain('merchant.'.(parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost'))
             ->path('')
             ->login()->profile()
+            ->multiFactorAuthentication([
+                AppAuthentication::make()
+                    ->brandName('AffanHub Merchant')
+                    ->recoverable(),
+            ])
             ->registration(Register::class)
             ->authGuard('owner')
             ->tenant(Store::class, slugAttribute: 'public_id')

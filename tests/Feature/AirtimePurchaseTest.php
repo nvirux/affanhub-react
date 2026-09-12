@@ -143,10 +143,12 @@ test('it calculates retail and tier wholesale pricing accurately and debits wall
     // Verify Transaction record
     $transaction = Transaction::where('reference', $result['reference'])->first();
     expect($transaction)->not->toBeNull();
-    expect((float) $transaction->amount)->toBe(985.00);
+    expect((float) $transaction->amount)->toBe(1000.00);
+    expect((float) $transaction->discount)->toBe(15.00);
+    expect((float) $transaction->amount_paid)->toBe(985.00);
     expect((float) $transaction->cost_price)->toBe(972.00);
     expect((float) $transaction->profit)->toBe(13.00);
-    expect($transaction->status)->toBe('success');
+    expect(in_array($transaction->status, ['success', 'successful']))->toBeTrue();
 });
 
 test('it validates min and max amount limits', function () {

@@ -5,6 +5,7 @@ namespace App\Services\Vtu;
 use App\Models\AirtimeDiscount;
 use App\Models\Network;
 use App\Models\PlanAirtimeDiscount;
+use App\Models\Service;
 use App\Models\Store;
 use App\Models\StoreAirtimeDiscount;
 use App\Models\Subscription;
@@ -78,18 +79,26 @@ class AirtimeService
             : ($tierMax ?? $globalMax);
 
         // 5. Calculations
+        $globalBuyDiscount = $global ? (float) $global->buy_discount : 3.00;
+        $vendorCost = round($faceAmount * (1 - ($globalBuyDiscount / 100)), 2);
         $customerRetailPrice = round($faceAmount * (1 - ($effectiveRetailDiscount / 100)), 2);
         $storeWholesaleCost = round($faceAmount * (1 - ($effectiveWholesaleDiscount / 100)), 2);
+        $discountAmount = max(0, round($faceAmount - $customerRetailPrice, 2));
         $profitMargin = max(0, round($customerRetailPrice - $storeWholesaleCost, 2));
+        $platformProfit = max(0, round($storeWholesaleCost - $vendorCost, 2));
 
         return [
             'is_enabled' => $isStoreEnabled && $network->is_active,
             'face_amount' => $faceAmount,
+            'discount' => $discountAmount,
             'retail_discount' => $effectiveRetailDiscount,
             'wholesale_discount' => $effectiveWholesaleDiscount,
+            'vendor_discount' => $globalBuyDiscount,
             'customer_retail_price' => $customerRetailPrice,
             'store_wholesale_cost' => $storeWholesaleCost,
+            'vendor_cost' => $vendorCost,
             'profit_margin' => $profitMargin,
+            'platform_profit' => $platformProfit,
             'min_amount' => $effectiveMin,
             'max_amount' => $effectiveMax,
         ];
@@ -137,6 +146,9 @@ class AirtimeService
         $customerRetailPrice = $pricing['customer_retail_price'];
         $storeWholesaleCost = $pricing['store_wholesale_cost'];
         $profitMargin = $pricing['profit_margin'];
+        $vendorCost = $pricing['vendor_cost'];
+        $platformProfit = $pricing['platform_profit'];
+        $discountAmount = $pricing['discount'];
 
         // 4. Check Wallet Balances
         $customerWallet = $customer->wallet('main');
@@ -146,7 +158,8 @@ class AirtimeService
 
         $storeMainWallet = $store->mainWallet();
         if ((float) $storeMainWallet->balance < $storeWholesaleCost) {
-            throw new \Exception('Store wholesale balance low. Please contact store support.');
+            Log::warning("Store #{$store->id} ({$store->name}) vending wallet balance low (₦{$storeMainWallet->balance}) for wholesale cost (₦{$storeWholesaleCost}).");
+            throw new \Exception('Unable to process this order. Please contact store support for assistance.');
         }
 
         // 5. Generate Reference
@@ -216,14 +229,20 @@ class AirtimeService
         // 7. Check Provider Response
         if ($apiResult['success'] || $apiResult['pending']) {
             $status = $apiResult['pending'] ? 'pending' : 'success';
+            $airtimeServiceId = Service::where('key', 'airtime')->value('id');
 
             $transaction = Transaction::create([
                 'user_id' => $customer->id,
                 'store_id' => $store->id,
+                'service_id' => $airtimeServiceId,
                 'service_type' => 'airtime',
-                'amount' => $customerRetailPrice,
+                'amount' => $faceAmount,
+                'discount' => $discountAmount,
+                'amount_paid' => $customerRetailPrice,
                 'cost_price' => $storeWholesaleCost,
+                'vendor_cost' => $vendorCost,
                 'profit' => $profitMargin,
+                'platform_profit' => $platformProfit,
                 'recipient' => $phone,
                 'status' => $status,
                 'reference' => $txReference,
@@ -287,13 +306,20 @@ class AirtimeService
             Log::critical("Auto-Refund Critical Failure for Airtime Reference {$txReference}: ".$refundError->getMessage());
         }
 
+        $airtimeServiceId = Service::where('key', 'airtime')->value('id');
+
         Transaction::create([
             'user_id' => $customer->id,
             'store_id' => $store->id,
+            'service_id' => $airtimeServiceId,
             'service_type' => 'airtime',
-            'amount' => $customerRetailPrice,
+            'amount' => $faceAmount,
+            'discount' => $discountAmount,
+            'amount_paid' => $customerRetailPrice,
             'cost_price' => $storeWholesaleCost,
+            'vendor_cost' => $vendorCost,
             'profit' => 0.00,
+            'platform_profit' => 0.00,
             'recipient' => $phone,
             'status' => 'failed',
             'reference' => $txReference,
@@ -303,7 +329,7 @@ class AirtimeService
         return [
             'success' => false,
             'status' => 'failed',
-            'message' => $errorMessage,
+            'message' => 'Unable to complete recharge. Your wallet has been automatically refunded. Please contact support.',
             'reference' => $txReference,
         ];
     }

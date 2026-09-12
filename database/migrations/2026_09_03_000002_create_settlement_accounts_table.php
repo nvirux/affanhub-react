@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('account_number');
             $table->string('account_name');
             $table->boolean('is_active')->default(true);
+            $table->string('status')->default('pending'); // pending, approved, rejected
+            $table->text('admin_notes')->nullable();
             $table->timestamps();
         });
     }

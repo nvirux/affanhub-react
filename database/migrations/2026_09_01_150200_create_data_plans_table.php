@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('default_retail_price', 10, 2);
             $table->string('plan_code');
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_best_offer')->default(false);
             $table->timestamps();
         });
     }
