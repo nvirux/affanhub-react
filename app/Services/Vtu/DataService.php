@@ -112,12 +112,12 @@ class DataService
                 $txReference
             );
 
-            // 2. Lock & Debit Store Main Wallet (Wholesale Cost)
+            // 2. Lock & Debit Store Main Wallet for Wholesale Cost only
             $storeMainTx = $this->walletService->debit(
                 $storeMainWallet,
                 $resellerWholesaleCost,
-                'wholesale_data_debit',
-                "Wholesale Data Purchase: {$dataPlan->name} for customer #{$customer->id}",
+                'wholesale_cost',
+                "Wholesale Cost: {$dataPlan->name} for customer #{$customer->id}",
                 [
                     'customer_id' => $customer->id,
                     'phone' => $phone,
@@ -126,23 +126,6 @@ class DataService
                 ],
                 'WS_'.$txReference
             );
-
-            // 3. Credit Store Profit Wallet (Profit Margin)
-            if ($profitMargin > 0) {
-                $storeProfitWallet = $store->profitWallet();
-                $this->walletService->credit(
-                    $storeProfitWallet,
-                    $profitMargin,
-                    'store_data_profit',
-                    "Profit Margin from Data Sale: {$dataPlan->name}",
-                    [
-                        'customer_id' => $customer->id,
-                        'retail_price' => $customerRetailPrice,
-                        'wholesale_cost' => $resellerWholesaleCost,
-                    ],
-                    'PRF_'.$txReference
-                );
-            }
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -158,6 +141,45 @@ class DataService
         if ($apiResult['success'] || $apiResult['pending']) {
             $status = $apiResult['pending'] ? 'pending' : 'successful';
             $dataServiceId = Service::where('key', 'data')->value('id');
+
+            // Profit Allocation: ONLY sweep and credit profit if confirmed successful!
+            // If status is 'pending', the profit remains safely in Store Main Wallet until delivery is confirmed.
+            if ($status === 'successful' && $profitMargin > 0) {
+                try {
+                    // 1. Debit profit sweep from Store Main Wallet
+                    $this->walletService->debit(
+                        $storeMainWallet,
+                        $profitMargin,
+                        'profit_sweep',
+                        "Profit Allocation: {$dataPlan->name} ({$phone})",
+                        [
+                            'customer_id' => $customer->id,
+                            'retail_price' => $customerRetailPrice,
+                            'wholesale_cost' => $resellerWholesaleCost,
+                            'profit_margin' => $profitMargin,
+                        ],
+                        'SWP_'.$txReference
+                    );
+
+                    // 2. Credit Store Profit Wallet (Withdrawable)
+                    $storeProfitWallet = $store->profitWallet();
+                    $this->walletService->credit(
+                        $storeProfitWallet,
+                        $profitMargin,
+                        'earned_profit',
+                        "Earned Profit: {$dataPlan->name} ({$phone})",
+                        [
+                            'customer_id' => $customer->id,
+                            'retail_price' => $customerRetailPrice,
+                            'wholesale_cost' => $resellerWholesaleCost,
+                            'profit_margin' => $profitMargin,
+                        ],
+                        'PRF_'.$txReference
+                    );
+                } catch (\Throwable $profitErr) {
+                    Log::error("Failed to sweep profit for {$txReference}: ".$profitErr->getMessage());
+                }
+            }
 
             // Create Transaction audit log with full financial ledger
             $transaction = Transaction::create([
@@ -207,7 +229,7 @@ class DataService
                 'REF_'.$txReference
             );
 
-            // Auto-Refund Store Main Wallet
+            // Auto-Refund Store Main Wallet (Wholesale Cost)
             $this->walletService->credit(
                 $storeMainWallet,
                 $resellerWholesaleCost,
@@ -216,21 +238,6 @@ class DataService
                 ['failed_reference' => $txReference],
                 'REF_WS_'.$txReference
             );
-
-            // Reverse Store Profit if credited
-            if ($profitMargin > 0) {
-                $storeProfitWallet = $store->profitWallet();
-                if ((float) $storeProfitWallet->balance >= $profitMargin) {
-                    $this->walletService->debit(
-                        $storeProfitWallet,
-                        $profitMargin,
-                        'profit_reversal',
-                        'Reversal Store Profit: Data purchase failed',
-                        ['failed_reference' => $txReference],
-                        'REV_PRF_'.$txReference
-                    );
-                }
-            }
 
             $dataServiceId = Service::where('key', 'data')->value('id');
 

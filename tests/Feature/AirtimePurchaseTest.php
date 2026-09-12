@@ -134,10 +134,11 @@ test('it calculates retail and tier wholesale pricing accurately and debits wall
     expect((float) $customerWallet->fresh()->balance)->toBe(4015.00);
 
     // Store wholesale discount: 2.8% => Wholesale cost is ₦972.00
-    // Starting store balance: 5000 - 972 = 4028.00
-    expect((float) $storeMainWallet->fresh()->balance)->toBe(4028.00);
-
     // Profit margin: 985 - 972 = ₦13.00
+    // Starting store balance: 5000 - 972 (wholesale) - 13 (profit swept to profit wallet) = 4015.00
+    expect((float) $storeMainWallet->fresh()->balance)->toBe(4015.00);
+
+    // Profit wallet received the ₦13.00 withdrawable profit
     expect((float) $storeProfitWallet->fresh()->balance)->toBe(13.00);
 
     // Verify Transaction record

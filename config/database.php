@@ -64,6 +64,20 @@ return [
             ]) : [],
         ],
 
+        'old_affanhub' => [
+            'driver' => 'mysql',
+            'host' => env('OLD_DB_HOST', 'tufetfseqcczcg8boow8kg8l'),
+            'port' => env('OLD_DB_PORT', '3306'),
+            'database' => env('OLD_DB_DATABASE', 'affanhub_database'),
+            'username' => env('OLD_DB_USERNAME', 'affanhub_database_user'),
+            'password' => env('OLD_DB_PASSWORD', 'N6BopWEjU0Qa4oQ4yRigujdM1UXhAqKdzmCdAnhpVq01n9qFrDXDXTZvFEZtXCKc'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),

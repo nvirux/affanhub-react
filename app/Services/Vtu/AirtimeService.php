@@ -183,11 +183,11 @@ class AirtimeService
                 $txReference
             );
 
-            // 2. Debit Store Main Wallet (Wholesale Cost)
+            // 2. Debit Store Main Wallet (Wholesale Cost only)
             $this->walletService->debit(
                 $storeMainWallet,
                 $storeWholesaleCost,
-                'wholesale_airtime_debit',
+                'wholesale_cost',
                 'Wholesale Airtime Purchase: ₦'.number_format($faceAmount)." {$network->name} for customer #{$customer->id}",
                 [
                     'customer_id' => $customer->id,
@@ -197,24 +197,6 @@ class AirtimeService
                 ],
                 'WS_'.$txReference
             );
-
-            // 3. Credit Store Profit Wallet (Profit Margin)
-            if ($profitMargin > 0) {
-                $storeProfitWallet = $store->profitWallet();
-                $this->walletService->credit(
-                    $storeProfitWallet,
-                    $profitMargin,
-                    'store_airtime_profit',
-                    'Profit Margin from Airtime Sale: ₦'.number_format($faceAmount)." {$network->name}",
-                    [
-                        'customer_id' => $customer->id,
-                        'face_amount' => $faceAmount,
-                        'retail_price' => $customerRetailPrice,
-                        'wholesale_cost' => $storeWholesaleCost,
-                    ],
-                    'PRF_'.$txReference
-                );
-            }
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -230,6 +212,47 @@ class AirtimeService
         if ($apiResult['success'] || $apiResult['pending']) {
             $status = $apiResult['pending'] ? 'pending' : 'success';
             $airtimeServiceId = Service::where('key', 'airtime')->value('id');
+
+            // Profit Allocation: ONLY sweep and credit profit if confirmed successful!
+            // If status is 'pending', the profit remains safely in Store Main Wallet until delivery is confirmed.
+            if ($status === 'success' && $profitMargin > 0) {
+                try {
+                    // 1. Debit profit sweep from Store Main Wallet
+                    $this->walletService->debit(
+                        $storeMainWallet,
+                        $profitMargin,
+                        'profit_sweep',
+                        'Profit Allocation: ₦'.number_format($faceAmount)." {$network->name}",
+                        [
+                            'customer_id' => $customer->id,
+                            'face_amount' => $faceAmount,
+                            'retail_price' => $customerRetailPrice,
+                            'wholesale_cost' => $storeWholesaleCost,
+                            'profit_margin' => $profitMargin,
+                        ],
+                        'SWP_'.$txReference
+                    );
+
+                    // 2. Credit Store Profit Wallet (Withdrawable)
+                    $storeProfitWallet = $store->profitWallet();
+                    $this->walletService->credit(
+                        $storeProfitWallet,
+                        $profitMargin,
+                        'earned_profit',
+                        'Earned Profit from Airtime Sale: ₦'.number_format($faceAmount)." {$network->name}",
+                        [
+                            'customer_id' => $customer->id,
+                            'face_amount' => $faceAmount,
+                            'retail_price' => $customerRetailPrice,
+                            'wholesale_cost' => $storeWholesaleCost,
+                            'profit_margin' => $profitMargin,
+                        ],
+                        'PRF_'.$txReference
+                    );
+                } catch (\Throwable $profitErr) {
+                    Log::error("Failed to sweep profit for airtime {$txReference}: ".$profitErr->getMessage());
+                }
+            }
 
             $transaction = Transaction::create([
                 'user_id' => $customer->id,
@@ -278,7 +301,7 @@ class AirtimeService
                 'REF_'.$txReference
             );
 
-            // Refund Store Main Wallet
+            // Refund Store Main Wallet (Wholesale Cost)
             $this->walletService->credit(
                 $storeMainWallet,
                 $storeWholesaleCost,
@@ -287,21 +310,6 @@ class AirtimeService
                 ['failed_reference' => $txReference],
                 'REF_WS_'.$txReference
             );
-
-            // Reverse Store Profit if credited
-            if ($profitMargin > 0) {
-                $storeProfitWallet = $store->profitWallet();
-                if ((float) $storeProfitWallet->balance >= $profitMargin) {
-                    $this->walletService->debit(
-                        $storeProfitWallet,
-                        $profitMargin,
-                        'profit_reversal',
-                        'Profit Reversal: Airtime recharge failed',
-                        ['failed_reference' => $txReference],
-                        'REV_PRF_'.$txReference
-                    );
-                }
-            }
         } catch (\Throwable $refundError) {
             Log::critical("Auto-Refund Critical Failure for Airtime Reference {$txReference}: ".$refundError->getMessage());
         }
