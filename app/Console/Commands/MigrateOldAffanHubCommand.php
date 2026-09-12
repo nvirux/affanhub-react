@@ -191,12 +191,12 @@ class MigrateOldAffanHubCommand extends Command
                     $store->members()->attach($assignedOwnerId, ['role' => 'owner']);
                 }
 
-                // Attach domain if domains table exists in new DB
+                // Attach domain if domains table exists in new DB (Stancl Tenancy uses tenant_id -> stores.id)
                 if (Schema::hasTable('domains')) {
                     DB::table('domains')->updateOrInsert(
-                        ['store_id' => $store->id],
+                        ['domain' => $domain],
                         [
-                            'domain' => $domain,
+                            'tenant_id' => $store->id,
                             'is_primary' => true,
                             'created_at' => now(),
                             'updated_at' => now(),

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('store_id')->nullable()->constrained('stores')->cascadeOnDelete();
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('phone')->unique();
+            $table->string('email');
+            $table->string('phone')->nullable()->index();
             $table->string('bvn')->nullable();
             $table->string('nin')->nullable();
             $table->string('referral_code')->nullable()->unique();
@@ -31,6 +31,9 @@ return new class extends Migration
             $table->string('transaction_pin_hash')->nullable();
             $table->rememberToken();
             $table->timestamps();
+
+            $table->unique(['store_id', 'email']);
+            $table->unique(['store_id', 'phone']);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

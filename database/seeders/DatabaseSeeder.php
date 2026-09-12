@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             PlanAndFeatureSeeder::class,
-            AdminSeeder::class,
-            StoreAndDomainSeeder::class,
+            // AdminSeeder::class,
+            // StoreAndDomainSeeder::class,
             DataSeeder::class,
             AirtimeDiscountSeeder::class,
             ServiceSeeder::class,
