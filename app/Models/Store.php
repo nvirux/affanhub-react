@@ -151,4 +151,57 @@ class Store extends BaseTenant implements TenantWithDatabase
 
         return "{$scheme}://{$domain}";
     }
+
+    /**
+     * Calculate funding fee charged to customer when depositing via virtual account.
+     */
+    public function calculateCustomerDepositFee(float $amount): float
+    {
+        $feeType = $this->customer_funding_fee_type ?? 'free';
+        $feeAmount = (float) ($this->customer_funding_fee_amount ?? 0);
+        $maxCap = (float) ($this->customer_funding_fee_cap ?? 100);
+
+        if ($feeType === 'flat') {
+            return min($amount, $feeAmount);
+        }
+
+        if ($feeType === 'percentage') {
+            $percentFee = ($amount * $feeAmount) / 100;
+
+            return min($amount, min($percentFee, $maxCap));
+        }
+
+        return 0.0;
+    }
+
+    /**
+     * Get customer-facing description of funding fee.
+     */
+    public function getCustomerDepositFeeText(): string
+    {
+        $feeType = $this->customer_funding_fee_type ?? 'free';
+        $feeAmount = (float) ($this->customer_funding_fee_amount ?? 0);
+
+        if ($feeType === 'free' || $feeAmount <= 0) {
+            return '0% Fee (Free Funding)';
+        }
+
+        if ($feeType === 'flat') {
+            return '₦'.number_format($feeAmount, 0).' transfer fee applies';
+        }
+
+        if ($feeType === 'percentage') {
+            return "{$feeAmount}% transfer fee applies";
+        }
+
+        return '0% Fee';
+    }
+
+    /**
+     * Pending staff invitations for this store.
+     */
+    public function staffInvitations()
+    {
+        return $this->hasMany(StaffInvitation::class);
+    }
 }

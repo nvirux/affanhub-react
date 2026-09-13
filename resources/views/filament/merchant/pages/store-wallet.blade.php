@@ -139,6 +139,165 @@
             @endif
         </div>
 
+        <!-- Customer Deposit & Funding Fee Policy Section -->
+        <div style="background-color: white; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 20px; padding: 2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); display: flex; flex-direction: column; gap: 1.5rem;">
+            <div>
+                <h3 style="font-size: 1.125rem; font-weight: 800; color: #111827; margin: 0;">Customer Deposit Fee Policy</h3>
+                <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">
+                    Choose how much to charge your retail customers when they transfer money to their dedicated virtual account. You have 100% control.
+                </p>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0;">
+
+            <form wire:submit.prevent="saveFundingFeeSettings" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <!-- Fee Mode Switcher -->
+                <div>
+                    <label style="font-size: 0.875rem; font-weight: 700; color: #374151; display: block; margin-bottom: 0.5rem;">Customer Fee Mode</label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem;">
+                        <label style="border: 2px solid {{ $customerFeeType === 'free' ? '#d97706' : '#e5e7eb' }}; background-color: {{ $customerFeeType === 'free' ? '#fffbebf' : 'white' }}; padding: 0.875rem 1rem; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s;">
+                            <div>
+                                <span style="font-size: 0.875rem; font-weight: 800; color: {{ $customerFeeType === 'free' ? '#d97706' : '#111827' }}; display: block;">Free (0% Fee)</span>
+                                <span style="font-size: 0.75rem; color: #6b7280;">Promo mode • Customer gets 100%</span>
+                            </div>
+                            <input type="radio" wire:model.live="customerFeeType" value="free" style="accent-color: #d97706;">
+                        </label>
+
+                        <label style="border: 2px solid {{ $customerFeeType === 'flat' ? '#d97706' : '#e5e7eb' }}; background-color: {{ $customerFeeType === 'flat' ? '#fffbebf' : 'white' }}; padding: 0.875rem 1rem; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s;">
+                            <div>
+                                <span style="font-size: 0.875rem; font-weight: 800; color: {{ $customerFeeType === 'flat' ? '#d97706' : '#111827' }}; display: block;">Flat Fee (₦)</span>
+                                <span style="font-size: 0.75rem; color: #6b7280;">Charge fixed amount (e.g. ₦30, ₦50)</span>
+                            </div>
+                            <input type="radio" wire:model.live="customerFeeType" value="flat" style="accent-color: #d97706;">
+                        </label>
+
+                        <label style="border: 2px solid {{ $customerFeeType === 'percentage' ? '#d97706' : '#e5e7eb' }}; background-color: {{ $customerFeeType === 'percentage' ? '#fffbebf' : 'white' }}; padding: 0.875rem 1rem; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s;">
+                            <div>
+                                <span style="font-size: 0.875rem; font-weight: 800; color: {{ $customerFeeType === 'percentage' ? '#d97706' : '#111827' }}; display: block;">Percentage (%)</span>
+                                <span style="font-size: 0.75rem; color: #6b7280;">Charge percentage (e.g. 1.0%, 1.5%)</span>
+                            </div>
+                            <input type="radio" wire:model.live="customerFeeType" value="percentage" style="accent-color: #d97706;">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Inputs if not Free -->
+                @if($customerFeeType === 'flat')
+                    <div style="max-width: 320px;">
+                        <label style="font-size: 0.875rem; font-weight: 700; color: #374151; display: block; margin-bottom: 0.35rem;">Fee Amount Per Deposit (₦)</label>
+                        <div style="position: relative;">
+                            <span style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); font-weight: 800; color: #9ca3af;">₦</span>
+                            <input 
+                                type="number" 
+                                step="1" 
+                                min="0" 
+                                max="100" 
+                                wire:model.live="customerFeeAmount" 
+                                style="width: 100%; padding: 0.65rem 0.85rem; padding-left: 2rem; border-radius: 10px; border: 1px solid #d1d5db; font-size: 0.875rem; font-weight: 700;"
+                                placeholder="50"
+                            >
+                        </div>
+                        <p style="font-size: 0.7rem; color: #9ca3af; margin-top: 0.25rem;">Max allowed fee: ₦100 per deposit</p>
+                    </div>
+                @elseif($customerFeeType === 'percentage')
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; max-width: 480px;">
+                        <div>
+                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151; display: block; margin-bottom: 0.35rem;">Fee Rate (%)</label>
+                            <div style="position: relative;">
+                                <input 
+                                    type="number" 
+                                    step="0.1" 
+                                    min="0" 
+                                    max="5" 
+                                    wire:model.live="customerFeeAmount" 
+                                    style="width: 100%; padding: 0.65rem 0.85rem; padding-right: 2rem; border-radius: 10px; border: 1px solid #d1d5db; font-size: 0.875rem; font-weight: 700;"
+                                    placeholder="1.0"
+                                >
+                                <span style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%); font-weight: 800; color: #9ca3af;">%</span>
+                            </div>
+                            <p style="font-size: 0.7rem; color: #9ca3af; margin-top: 0.25rem;">Max allowed rate: 5%</p>
+                        </div>
+
+                        <div>
+                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151; display: block; margin-bottom: 0.35rem;">Max Fee Cap (₦)</label>
+                            <div style="position: relative;">
+                                <span style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); font-weight: 800; color: #9ca3af;">₦</span>
+                                <input 
+                                    type="number" 
+                                    step="1" 
+                                    min="0" 
+                                    max="200" 
+                                    wire:model.live="customerFeeCap" 
+                                    style="width: 100%; padding: 0.65rem 0.85rem; padding-left: 2rem; border-radius: 10px; border: 1px solid #d1d5db; font-size: 0.875rem; font-weight: 700;"
+                                    placeholder="100"
+                                >
+                            </div>
+                            <p style="font-size: 0.7rem; color: #9ca3af; margin-top: 0.25rem;">Cap fee on large transfers (e.g. ₦100)</p>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Live Profit / Math Breakdown Preview -->
+                @php
+                    $testTransfer = 1000.0;
+                    $adminGatewayRate = (float) \App\Models\PlatformSetting::get('paymint_fee_percent', 1.0);
+                    $adminGatewayCost = ($testTransfer * $adminGatewayRate) / 100;
+                    $storeReceivesWholesale = max(0, $testTransfer - $adminGatewayCost);
+
+                    if ($customerFeeType === 'free') {
+                        $custFeeCharged = 0.0;
+                    } elseif ($customerFeeType === 'flat') {
+                        $custFeeCharged = min($testTransfer, (float) $customerFeeAmount);
+                    } else {
+                        $pFee = ($testTransfer * (float) $customerFeeAmount) / 100;
+                        $custFeeCharged = min($testTransfer, min($pFee, (float) $customerFeeCap));
+                    }
+
+                    $custReceives = max(0, $testTransfer - $custFeeCharged);
+                    $storeDepositProfit = $custFeeCharged - $adminGatewayCost;
+                @endphp
+
+                <div style="background-color: {{ $storeDepositProfit >= 0 ? '#f0fdf4' : '#fffbeb' }}; border: 1px solid {{ $storeDepositProfit >= 0 ? '#bbf7d0' : '#fde68a' }}; border-radius: 14px; padding: 1.25rem;">
+                    <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: {{ $storeDepositProfit >= 0 ? '#166534' : '#92400e' }}; display: block; margin-bottom: 0.5rem;">
+                        Live Simulation on a ₦1,000 Customer Transfer
+                    </span>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; font-size: 0.8rem;">
+                        <div>
+                            <span style="color: #6b7280; display: block;">Customer Sends:</span>
+                            <strong style="color: #111827; font-size: 0.95rem;">₦{{ number_format($testTransfer, 2) }}</strong>
+                        </div>
+                        <div>
+                            <span style="color: #6b7280; display: block;">Fee Deducted:</span>
+                            <strong style="color: {{ $custFeeCharged > 0 ? '#dc2626' : '#15803d' }}; font-size: 0.95rem;">₦{{ number_format($custFeeCharged, 2) }}</strong>
+                        </div>
+                        <div>
+                            <span style="color: #6b7280; display: block;">Customer Gets:</span>
+                            <strong style="color: #111827; font-size: 0.95rem;">₦{{ number_format($custReceives, 2) }}</strong>
+                        </div>
+                        <div>
+                            <span style="color: #6b7280; display: block;">Store Wholesale Gets:</span>
+                            <strong style="color: #15803d; font-size: 0.95rem;">₦{{ number_format($storeReceivesWholesale, 2) }}</strong>
+                        </div>
+                        <div>
+                            <span style="color: #6b7280; display: block;">{{ $storeDepositProfit >= 0 ? 'Your Deposit Profit:' : 'Your Deposit Subsidy:' }}</span>
+                            <strong style="color: {{ $storeDepositProfit >= 0 ? '#15803d' : '#d97706' }}; font-size: 0.95rem;">
+                                {{ $storeDepositProfit >= 0 ? '+₦'.number_format($storeDepositProfit, 2) : '-₦'.number_format(abs($storeDepositProfit), 2) }}
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; padding-top: 0.5rem;">
+                    <button 
+                        type="submit" 
+                        style="background-color: #d97706; color: white; padding: 0.75rem 1.75rem; border-radius: 12px; font-weight: 800; font-size: 0.875rem; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);"
+                    >
+                        Save Customer Fee Policy
+                    </button>
+                </div>
+            </form>
+        </div>
+
         <!-- Recent Store Wallet Transactions Section -->
         <div style="background-color: white; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 20px; padding: 2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); display: flex; flex-direction: column; gap: 1rem;">
             <div>

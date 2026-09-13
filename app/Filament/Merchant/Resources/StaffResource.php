@@ -2,7 +2,6 @@
 
 namespace App\Filament\Merchant\Resources;
 
-use App\Filament\Merchant\Resources\StaffResource\Pages\CreateStaff;
 use App\Filament\Merchant\Resources\StaffResource\Pages\EditStaff;
 use App\Filament\Merchant\Resources\StaffResource\Pages\ListStaff;
 use App\Models\Owner;
@@ -47,9 +46,8 @@ class StaffResource extends Resource
             return false;
         }
 
-        $role = $tenant->members()->where('owner_id', $user->id)->first()?->pivot?->role;
-
-        return in_array($role, ['owner', 'manager']);
+        // Only the actual Store Owner can view and manage staff
+        return $user->id === $tenant->owner_id;
     }
 
     public static function getNavigationBadge(): ?string
@@ -108,8 +106,18 @@ class StaffResource extends Resource
                     ->sortable(),
                 TextColumn::make('phone')
                     ->searchable(),
-                TextColumn::make('pivot.role')
+                TextColumn::make('role')
                     ->label('Role')
+                    ->state(function (Owner $record): string {
+                        $tenant = Filament::getTenant();
+                        if ($record->id === $tenant?->owner_id) {
+                            return 'owner';
+                        }
+
+                        return $record->stores()->where('store_id', $tenant?->id)->first()?->pivot?->role
+                            ?? $record->pivot?->role
+                            ?? 'staff';
+                    })
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'owner' => 'success',
@@ -117,7 +125,12 @@ class StaffResource extends Resource
                         'staff' => 'info',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => ucfirst($state)),
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'owner' => 'Owner',
+                        'manager' => 'Manager',
+                        'staff' => 'Staff',
+                        default => ucfirst($state),
+                    }),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
@@ -151,7 +164,6 @@ class StaffResource extends Resource
     {
         return [
             'index' => ListStaff::route('/'),
-            'create' => CreateStaff::route('/create'),
             'edit' => EditStaff::route('/{record}/edit'),
         ];
     }

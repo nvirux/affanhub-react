@@ -29,16 +29,56 @@ class StoreWallet extends Page
 
     public string $phone = '';
 
+    public string $customerFeeType = 'free'; // 'free', 'flat', 'percentage'
+
+    public float $customerFeeAmount = 0.0;
+
+    public float $customerFeeCap = 100.0;
+
     public function mount()
     {
         $store = Filament::getTenant();
-        if ($store && $store->owner) {
-            $this->phone = $store->owner->phone ?? '';
-            $this->kycNumber = $store->owner->nin ?? $store->owner->bvn ?? '';
-            if (! empty($store->owner->bvn) && empty($store->owner->nin)) {
-                $this->kycType = 'bvn';
+        if ($store) {
+            $this->customerFeeType = $store->customer_funding_fee_type ?? 'free';
+            $this->customerFeeAmount = (float) ($store->customer_funding_fee_amount ?? 0.0);
+            $this->customerFeeCap = (float) ($store->customer_funding_fee_cap ?? 100.0);
+
+            if ($store->owner) {
+                $this->phone = $store->owner->phone ?? '';
+                $this->kycNumber = $store->owner->nin ?? $store->owner->bvn ?? '';
+                if (! empty($store->owner->bvn) && empty($store->owner->nin)) {
+                    $this->kycType = 'bvn';
+                }
             }
         }
+    }
+
+    public function saveFundingFeeSettings(): void
+    {
+        $this->validate([
+            'customerFeeType' => 'required|in:free,flat,percentage',
+            'customerFeeAmount' => 'required|numeric|min:0|max:100',
+            'customerFeeCap' => 'required|numeric|min:0|max:200',
+        ]);
+
+        $store = Filament::getTenant();
+
+        if (! $store) {
+            Notification::make()->title('Store not found.')->danger()->send();
+
+            return;
+        }
+
+        $store->customer_funding_fee_type = $this->customerFeeType;
+        $store->customer_funding_fee_amount = $this->customerFeeType === 'free' ? 0.0 : $this->customerFeeAmount;
+        $store->customer_funding_fee_cap = $this->customerFeeCap;
+        $store->save();
+
+        Notification::make()
+            ->title('Customer Funding Fee Saved!')
+            ->body('Your retail deposit policy has been updated.')
+            ->success()
+            ->send();
     }
 
     public function updatedKycType($value)

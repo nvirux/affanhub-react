@@ -3,63 +3,88 @@
 namespace App\Filament\Merchant\Resources\StaffResource\Pages;
 
 use App\Filament\Merchant\Resources\StaffResource;
+use App\Mail\StaffInvitationMail;
 use App\Models\Owner;
+use App\Models\StaffInvitation;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ListStaff extends ListRecords
 {
     protected static string $resource = StaffResource::class;
 
+    public function mount(): void
+    {
+        $tenant = Filament::getTenant();
+        if (auth()->id() !== $tenant?->owner_id) {
+            abort(403, 'Unauthorized. Only the store owner can access staff management.');
+        }
+
+        parent::mount();
+    }
+
     protected function getHeaderActions(): array
     {
+        $isOwner = fn () => auth()->id() === Filament::getTenant()?->owner_id;
+
         return [
+            Action::make('pendingInvitations')
+                ->visible($isOwner)
+                ->label(function () {
+                    $tenant = Filament::getTenant();
+                    $count = $tenant ? $tenant->staffInvitations()->count() : 0;
+
+                    return $count > 0 ? "Pending Invites ({$count})" : 'Pending Invites';
+                })
+                ->icon('heroicon-o-clock')
+                ->color('gray')
+                ->badge(function () {
+                    $tenant = Filament::getTenant();
+
+                    return $tenant ? ($tenant->staffInvitations()->count() ?: null) : null;
+                })
+                ->modalHeading('Pending Staff Invitations')
+                ->modalDescription('View and manage team invitations waiting for acceptance.')
+                ->modalSubmitAction(false)
+                ->modalCancelActionLabel('Close')
+                ->modalContent(function () {
+                    $tenant = Filament::getTenant();
+
+                    return view('filament.merchant.pages.pending-invitations', [
+                        'invitations' => $tenant ? $tenant->staffInvitations()->latest()->get() : collect(),
+                    ]);
+                }),
+
             Action::make('inviteStaff')
+                ->visible($isOwner)
                 ->label('Invite Staff')
                 ->icon('heroicon-o-paper-airplane')
                 ->color('primary')
                 ->modalHeading('Invite Staff Member')
-                ->modalDescription('Invite an existing AffanHub account or add a new team member to help operate your store.')
-                ->modalSubmitActionLabel('Send Invitation')
+                ->modalDescription('Enter the email address of the person you want to invite. They will receive an invitation email to set up their account and join your team.')
+                ->modalSubmitActionLabel('Send Invitation Email')
                 ->form([
                     TextInput::make('email')
                         ->label('Staff Email Address')
                         ->email()
                         ->required()
                         ->placeholder('e.g. colleague@example.com')
-                        ->helperText('If this user already has an AffanHub account, they will simply be granted access without creating a duplicate account.'),
-
-                    TextInput::make('name')
-                        ->label('Full Name')
-                        ->required()
-                        ->placeholder('e.g. Jane Doe'),
-
-                    TextInput::make('phone')
-                        ->label('Phone Number')
-                        ->tel()
-                        ->placeholder('e.g. 08012345678'),
+                        ->helperText('The invitee will receive an email invitation to accept. If they are already on AffanHub, they can simply log in.'),
 
                     Select::make('role')
                         ->label('Store Role')
                         ->options([
-                            'manager' => 'Manager (Full operational access to catalog, pricing, and orders)',
-                            'staff' => 'Staff (Standard operational and order support)',
+                            'manager' => 'Manager (Operational access to catalog, pricing, and orders)',
+                            'staff' => 'Staff (Standard day-to-day order support and operations)',
                         ])
                         ->default('staff')
                         ->required(),
-
-                    TextInput::make('password')
-                        ->label('Temporary Password (Optional)')
-                        ->password()
-                        ->revealable()
-                        ->placeholder('Leave blank to auto-generate')
-                        ->helperText('Only used when creating a new user account. Existing accounts keep their current password.'),
                 ])
                 ->action(function (array $data) {
                     $tenant = Filament::getTenant();
@@ -68,7 +93,7 @@ class ListStaff extends ListRecords
                         return;
                     }
 
-                    // Check staff quota
+                    // 1. Check staff limit quota
                     $staffLimit = $tenant->getFeatureLimit('staff_limit');
                     $currentStaffCount = $tenant->members()->count();
 
@@ -86,54 +111,110 @@ class ListStaff extends ListRecords
                     $email = strtolower(trim($data['email']));
                     $role = $data['role'] ?? 'staff';
 
-                    // Check if owner already exists
+                    // 2. Check if already an active member of this store
                     $existingOwner = Owner::where('email', $email)->first();
-
-                    if ($existingOwner) {
-                        // Check if already a member of this store
-                        if ($tenant->members()->where('owner_id', $existingOwner->id)->exists()) {
-                            Notification::make()
-                                ->title('Already a Staff Member')
-                                ->body("{$existingOwner->name} ({$email}) is already a staff member of your store.")
-                                ->warning()
-                                ->send();
-
-                            return;
-                        }
-
-                        // Attach existing owner to this store
-                        $tenant->members()->attach($existingOwner->id, ['role' => $role]);
-
+                    if ($existingOwner && $tenant->members()->where('owner_id', $existingOwner->id)->exists()) {
                         Notification::make()
-                            ->title('Staff Member Invited')
-                            ->body("{$existingOwner->name} has been successfully added to your store as a {$role}!")
-                            ->success()
+                            ->title('Already a Staff Member')
+                            ->body("{$existingOwner->name} ({$email}) is already an active member of your store.")
+                            ->warning()
                             ->send();
 
                         return;
                     }
 
-                    // Create new owner account
-                    $generatedPassword = ! empty($data['password']) ? $data['password'] : Str::random(10);
+                    // 3. Create or refresh StaffInvitation
+                    $token = StaffInvitation::generateToken();
+                    $invitation = StaffInvitation::updateOrCreate(
+                        [
+                            'store_id' => $tenant->id,
+                            'email' => $email,
+                        ],
+                        [
+                            'role' => $role,
+                            'token' => $token,
+                            'invited_by' => auth()->id(),
+                            'expires_at' => now()->addDays(7),
+                        ]
+                    );
 
-                    $newOwner = Owner::create([
-                        'name' => $data['name'],
-                        'email' => $email,
-                        'phone' => $data['phone'] ?? null,
-                        'password' => Hash::make($generatedPassword),
-                        'email_verified_at' => now(),
-                        'max_stores' => 3,
-                    ]);
+                    // 4. Send email
+                    try {
+                        Mail::to($email)->send(new StaffInvitationMail($invitation));
 
-                    $tenant->members()->attach($newOwner->id, ['role' => $role]);
+                        Notification::make()
+                            ->title('Invitation Sent!')
+                            ->body("An invitation email has been sent to {$email} with instructions to join as {$role}.")
+                            ->success()
+                            ->send();
+                    } catch (\Throwable $e) {
+                        Log::error('Staff Invitation Email Error: '.$e->getMessage(), ['exception' => $e]);
 
-                    Notification::make()
-                        ->title('Staff Account Created & Invited')
-                        ->body("{$newOwner->name} was added as {$role}! Temporary Password: {$generatedPassword}")
-                        ->success()
-                        ->persistent()
-                        ->send();
+                        Notification::make()
+                            ->title('Invitation Saved')
+                            ->body("Invitation created for {$email}. (Email delivery note: check mailer configuration or copy link from Pending Invites).")
+                            ->warning()
+                            ->send();
+                    }
                 }),
         ];
+    }
+
+    /**
+     * Resend an invitation email with a refreshed token and expiry.
+     */
+    public function resendInvitation(int $id): void
+    {
+        $tenant = Filament::getTenant();
+        $invitation = $tenant?->staffInvitations()->find($id);
+
+        if (! $invitation) {
+            Notification::make()->title('Invitation not found')->danger()->send();
+
+            return;
+        }
+
+        $invitation->update([
+            'token' => StaffInvitation::generateToken(),
+            'expires_at' => now()->addDays(7),
+        ]);
+
+        try {
+            Mail::to($invitation->email)->send(new StaffInvitationMail($invitation));
+
+            Notification::make()
+                ->title('Invitation Resent')
+                ->body("A fresh invitation link was emailed to {$invitation->email}.")
+                ->success()
+                ->send();
+        } catch (\Throwable $e) {
+            Log::error('Staff Invitation Resend Error: '.$e->getMessage());
+
+            Notification::make()
+                ->title('Resend Failed')
+                ->body('Unable to send email. Check mail server logs.')
+                ->danger()
+                ->send();
+        }
+    }
+
+    /**
+     * Revoke and cancel a pending invitation.
+     */
+    public function revokeInvitation(int $id): void
+    {
+        $tenant = Filament::getTenant();
+        $invitation = $tenant?->staffInvitations()->find($id);
+
+        if ($invitation) {
+            $email = $invitation->email;
+            $invitation->delete();
+
+            Notification::make()
+                ->title('Invitation Revoked')
+                ->body("The invitation for {$email} has been cancelled.")
+                ->success()
+                ->send();
+        }
     }
 }

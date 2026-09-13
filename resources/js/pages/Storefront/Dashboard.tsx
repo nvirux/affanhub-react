@@ -836,9 +836,20 @@ export default function Dashboard() {
                                             <p className="text-sm font-black text-slate-900 dark:text-white">{user.virtual_account.bank_name}</p>
                                         </div>
                                     </div>
-                                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-extrabold tracking-wide flex items-center gap-1.5">
+                                    <span className={cn(
+                                        "px-2.5 py-1 rounded-full border text-[10px] font-extrabold tracking-wide flex items-center gap-1.5",
+                                        store?.customer_funding_fee_type === 'flat' && Number(store?.customer_funding_fee_amount) > 0
+                                            ? "bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400"
+                                            : store?.customer_funding_fee_type === 'percentage' && Number(store?.customer_funding_fee_amount) > 0
+                                            ? "bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400"
+                                            : "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                                    )}>
                                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                        24/7 Instant
+                                        {store?.customer_funding_fee_type === 'flat' && Number(store?.customer_funding_fee_amount) > 0
+                                            ? `Instant • ₦${Number(store.customer_funding_fee_amount).toLocaleString()} Fee`
+                                            : store?.customer_funding_fee_type === 'percentage' && Number(store?.customer_funding_fee_amount) > 0
+                                            ? `Instant • ${store.customer_funding_fee_amount}% Fee`
+                                            : 'Instant • 0% Fee'}
                                     </span>
                                 </div>
 
@@ -889,8 +900,24 @@ export default function Dashboard() {
                                     <ShieldCheck className="w-3.5 h-3.5 stroke-[2.2]" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <p className="font-extrabold text-slate-900 dark:text-white text-xs">Automated Instant Credit</p>
-                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
+                                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                                        <p className="font-extrabold text-slate-900 dark:text-white text-xs">Automated Instant Credit</p>
+                                        <span className={cn(
+                                            "text-[10.5px] font-bold px-2 py-0.5 rounded-md",
+                                            store?.customer_funding_fee_type === 'flat' && Number(store?.customer_funding_fee_amount) > 0
+                                                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
+                                                : store?.customer_funding_fee_type === 'percentage' && Number(store?.customer_funding_fee_amount) > 0
+                                                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
+                                                : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                                        )}>
+                                            {store?.customer_funding_fee_type === 'flat' && Number(store?.customer_funding_fee_amount) > 0
+                                                ? `₦${Number(store.customer_funding_fee_amount).toLocaleString()} Transfer Fee`
+                                                : store?.customer_funding_fee_type === 'percentage' && Number(store?.customer_funding_fee_amount) > 0
+                                                ? `${store.customer_funding_fee_amount}% Transfer Fee`
+                                                : '0% Transfer Fee (Free)'}
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-1">
                                         Transfers sent to this dedicated bank account are automatically credited to your wallet in seconds.
                                     </p>
                                 </div>

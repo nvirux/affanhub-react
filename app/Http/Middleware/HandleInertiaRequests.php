@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Store;
 use App\Services\Branding\ColorHelper;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -82,6 +83,10 @@ class HandleInertiaRequests extends Middleware
                 'primary_color' => tenant('primary_color') ?? ColorHelper::DEFAULT_HEX,
                 'primary_foreground_color' => ColorHelper::getContrastForeground(tenant('primary_color') ?? ColorHelper::DEFAULT_HEX),
                 'favicon_url' => tenant('favicon_path') ? global_asset('storage/'.tenant('favicon_path')) : null,
+                'customer_funding_fee_type' => tenant('customer_funding_fee_type') ?? 'free',
+                'customer_funding_fee_amount' => (float) (tenant('customer_funding_fee_amount') ?? 0),
+                'customer_funding_fee_cap' => (float) (tenant('customer_funding_fee_cap') ?? 100),
+                'funding_fee_text' => tenant() instanceof Store ? tenant()->getCustomerDepositFeeText() : '0% Fee (Free Funding)',
             ] : null,
             'auth' => [
                 'user' => fn () => $request->user() ? [

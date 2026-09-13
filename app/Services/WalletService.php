@@ -127,31 +127,35 @@ class WalletService
     }
 
     /**
-     * Auto-credit store main wallet when customer deposits via bank transfer.
+     * Auto-credit customer wallet and store main wallet when customer deposits via bank transfer.
      */
     public function handleCustomerBankDeposit(
         Wallet $customerWallet,
         Wallet $storeMainWallet,
-        float $amount,
+        float $customerAmount,
         string $reference,
-        array $depositMeta = []
+        array $depositMeta = [],
+        ?float $storeAmount = null,
+        ?string $customerDescription = null
     ): array {
-        return DB::transaction(function () use ($customerWallet, $storeMainWallet, $amount, $reference, $depositMeta) {
+        $finalStoreAmount = $storeAmount !== null ? $storeAmount : $customerAmount;
+
+        return DB::transaction(function () use ($customerWallet, $storeMainWallet, $customerAmount, $finalStoreAmount, $reference, $depositMeta, $customerDescription) {
             $custTx = $this->credit(
                 $customerWallet,
-                $amount,
+                $customerAmount,
                 'bank_transfer_deposit',
-                'Customer Bank Transfer Deposit',
-                array_merge($depositMeta, ['channel' => 'virtual_account']),
+                $customerDescription ?? 'Customer Bank Transfer Deposit',
+                array_merge($depositMeta, ['channel' => 'virtual_account', 'credited_amount' => $customerAmount]),
                 'DEP_'.$reference
             );
 
             $storeTx = $this->credit(
                 $storeMainWallet,
-                $amount,
+                $finalStoreAmount,
                 'store_auto_credit',
                 'Automated Customer Deposit Wholesale Pass-through Credit',
-                array_merge($depositMeta, ['channel' => 'store_auto_pass_through']),
+                array_merge($depositMeta, ['channel' => 'store_auto_pass_through', 'credited_amount' => $finalStoreAmount]),
                 'ST_DEP_'.$reference
             );
 

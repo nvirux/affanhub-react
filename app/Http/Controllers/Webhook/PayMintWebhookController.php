@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Webhook;
 
 use App\Http\Controllers\Controller;
+use App\Models\PlatformSetting;
 use App\Models\Store;
 use App\Models\User;
 use App\Models\VirtualAccount;
@@ -121,6 +122,11 @@ class PayMintWebhookController extends Controller
             $senderName = $data['sender']['name'] ?? 'Bank Transfer';
             $senderBank = $data['sender']['bank_name'] ?? 'Bank';
 
+            // 1. Calculate Base Platform Gateway Fee (Set by Super Admin)
+            $adminFeePercent = (float) PlatformSetting::get('paymint_fee_percent', 1.0);
+            $adminFee = round(($amount * $adminFeePercent) / 100, 2);
+            $storeNetAmount = max(0, round($amount - $adminFee, 2));
+
             try {
                 if ($holder instanceof User) {
                     $customerWallet = $holder->wallet('main');
@@ -135,50 +141,84 @@ class PayMintWebhookController extends Controller
 
                     $storeMainWallet = $store ? $store->mainWallet() : null;
 
+                    // 2. Calculate Merchant Customer Deposit Fee Policy
+                    $customerFee = $store ? $store->calculateCustomerDepositFee($amount) : 0.00;
+                    $customerNetAmount = max(0, round($amount - $customerFee, 2));
+
+                    $feeAuditMeta = [
+                        'provider' => $data['provider'] ?? 'paymint',
+                        'virtual_account_id' => $virtualAccount->id,
+                        'bank_name' => $virtualAccount->bank_name,
+                        'account_number' => $virtualAccount->account_number,
+                        'sender_name' => $senderName,
+                        'sender_bank' => $senderBank,
+                        'gross_amount' => $amount,
+                        'platform_fee_percent' => $adminFeePercent,
+                        'platform_fee_deducted' => $adminFee,
+                        'customer_fee_deducted' => $customerFee,
+                        'customer_credited' => $customerNetAmount,
+                        'store_credited' => $storeNetAmount,
+                        'raw_event' => $data,
+                    ];
+
+                    $customerDescription = $customerFee > 0
+                        ? "Bank Deposit from {$senderName} (₦".number_format($amount, 2).' - ₦'.number_format($customerFee, 2).' fee)'
+                        : "Bank Deposit from {$senderName} ({$senderBank}) via {$virtualAccount->bank_name}";
+
                     if ($storeMainWallet) {
                         $result = $walletService->handleCustomerBankDeposit(
                             $customerWallet,
                             $storeMainWallet,
-                            $amount,
+                            $customerNetAmount,
                             $txReference,
-                            [
-                                'provider' => $data['provider'] ?? 'paymint',
-                                'virtual_account_id' => $virtualAccount->id,
-                                'bank_name' => $virtualAccount->bank_name,
-                                'account_number' => $virtualAccount->account_number,
-                                'sender_name' => $senderName,
-                                'sender_bank' => $senderBank,
-                                'raw_event' => $data,
-                            ]
+                            $feeAuditMeta,
+                            $storeNetAmount,
+                            $customerDescription
                         );
                         $walletTx = $result['customer_transaction'];
                     } else {
                         $walletTx = $walletService->credit(
                             $customerWallet,
-                            $amount,
+                            $customerNetAmount,
                             'bank_transfer_deposit',
-                            "Bank Deposit from {$senderName} ({$senderBank}) via {$virtualAccount->bank_name}",
-                            ['provider' => $data['provider'] ?? 'paymint', 'raw_event' => $data],
+                            $customerDescription,
+                            $feeAuditMeta,
                             'DEP_'.$txReference
                         );
                     }
                 } else {
-                    // Holder is Store
+                    // Holder is Store (Merchant direct deposit)
                     /** @var Store $holder */
                     $storeWallet = $holder->mainWallet();
                     $walletTx = $walletService->credit(
                         $storeWallet,
-                        $amount,
+                        $storeNetAmount,
                         'bank_transfer_deposit',
-                        "Store Deposit from {$senderName} ({$senderBank}) via {$virtualAccount->bank_name}",
-                        ['provider' => $data['provider'] ?? 'paymint', 'raw_event' => $data],
+                        $adminFee > 0
+                            ? "Store Deposit from {$senderName} (₦".number_format($amount, 2).' - ₦'.number_format($adminFee, 2).' platform fee)'
+                            : "Store Deposit from {$senderName} ({$senderBank}) via {$virtualAccount->bank_name}",
+                        [
+                            'provider' => $data['provider'] ?? 'paymint',
+                            'virtual_account_id' => $virtualAccount->id,
+                            'bank_name' => $virtualAccount->bank_name,
+                            'account_number' => $virtualAccount->account_number,
+                            'sender_name' => $senderName,
+                            'sender_bank' => $senderBank,
+                            'gross_amount' => $amount,
+                            'platform_fee_percent' => $adminFeePercent,
+                            'platform_fee_deducted' => $adminFee,
+                            'net_credited' => $storeNetAmount,
+                            'raw_event' => $data,
+                        ],
                         'DEP_'.$txReference
                     );
                 }
 
                 Log::info(sprintf(
-                    'PayMint Webhook: Deposit of ₦%s credited successfully via WalletService to Holder #%s (%s)',
+                    'PayMint Webhook: Deposit of ₦%s processed (Store credited: ₦%s, Cust credited: ₦%s) to Holder #%s (%s)',
                     number_format($amount, 2),
+                    number_format($storeNetAmount, 2),
+                    isset($customerNetAmount) ? number_format($customerNetAmount, 2) : 'N/A',
                     $holder->id,
                     $virtualAccount->account_number
                 ));

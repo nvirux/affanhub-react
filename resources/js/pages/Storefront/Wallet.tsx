@@ -288,9 +288,20 @@ export default function WalletPage({
                             </div>
                         </div>
 
-                        <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                        <span className={cn(
+                            "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border",
+                            store?.customer_funding_fee_type === 'flat' && Number(store?.customer_funding_fee_amount) > 0
+                                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
+                                : store?.customer_funding_fee_type === 'percentage' && Number(store?.customer_funding_fee_amount) > 0
+                                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
+                                : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                        )}>
                             <Sparkles className="w-3.5 h-3.5" />
-                            Instant Deposit
+                            {store?.customer_funding_fee_type === 'flat' && Number(store?.customer_funding_fee_amount) > 0
+                                ? `Instant Deposit • ₦${Number(store.customer_funding_fee_amount).toLocaleString()} Fee`
+                                : store?.customer_funding_fee_type === 'percentage' && Number(store?.customer_funding_fee_amount) > 0
+                                ? `Instant Deposit • ${store.customer_funding_fee_amount}% Fee`
+                                : 'Instant Deposit • 0% Fee'}
                         </span>
                     </div>
 
@@ -343,9 +354,25 @@ export default function WalletPage({
                             {/* How It Works Note */}
                             <div className="p-4 rounded-xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 flex flex-col justify-between space-y-3">
                                 <div className="space-y-1.5">
-                                    <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 text-xs font-extrabold uppercase tracking-wider">
-                                        <ShieldCheck className="w-4 h-4" />
-                                        <span>How Automated Deposit Works</span>
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 text-xs font-extrabold uppercase tracking-wider">
+                                            <ShieldCheck className="w-4 h-4" />
+                                            <span>How Automated Deposit Works</span>
+                                        </div>
+                                        <span className={cn(
+                                            "text-[10.5px] font-bold px-2 py-0.5 rounded-md",
+                                            store?.customer_funding_fee_type === 'flat' && Number(store?.customer_funding_fee_amount) > 0
+                                                ? "bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20"
+                                                : store?.customer_funding_fee_type === 'percentage' && Number(store?.customer_funding_fee_amount) > 0
+                                                ? "bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20"
+                                                : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
+                                        )}>
+                                            {store?.customer_funding_fee_type === 'flat' && Number(store?.customer_funding_fee_amount) > 0
+                                                ? `₦${Number(store.customer_funding_fee_amount).toLocaleString()} Transfer Fee`
+                                                : store?.customer_funding_fee_type === 'percentage' && Number(store?.customer_funding_fee_amount) > 0
+                                                ? `${store.customer_funding_fee_amount}% Transfer Fee`
+                                                : '0% Transfer Fee (Free)'}
+                                        </span>
                                     </div>
                                     <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                                         Transfer any amount to your unique account number above from your banking app, USSD, or POS. Your wallet will be credited <strong>automatically in seconds</strong>.

@@ -14,3 +14,10 @@ Route::get('/impersonate/leave', [ImpersonationController::class, 'leave'])->nam
 // PayMint Checkout Callback
 Route::get('/billing/callback/{tenant:public_id}', [BillingCheckoutCallbackController::class, 'handle'])
     ->name('merchant.billing.callback');
+
+// Staff Invitation Acceptance Routes
+use App\Http\Controllers\Merchant\StaffInvitationController;
+
+Route::get('/invitations/{token}', [StaffInvitationController::class, 'show'])->name('merchant.invitation.show');
+Route::post('/invitations/{token}/accept', [StaffInvitationController::class, 'acceptExisting'])->name('merchant.invitation.accept-existing');
+Route::post('/invitations/{token}/register', [StaffInvitationController::class, 'registerAndAccept'])->name('merchant.invitation.register');
