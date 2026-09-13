@@ -4,8 +4,10 @@ namespace App\Console\Commands;
 
 use App\Models\Admin;
 use App\Models\Owner;
+use App\Models\Plan;
 use App\Models\Service;
 use App\Models\Store;
+use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\VirtualAccount;
@@ -153,6 +155,7 @@ class MigrateOldAffanHubCommand extends Command
             $this->info('Migrating Stores (preserving exact IDs)...');
             $tenantProfitMap = collect($oldProfitWallets)->keyBy('tenant_id');
             $tenantWalletMap = collect($oldTenantWallets)->keyBy('tenant_id');
+            $starterPlan = Plan::where('slug', 'starter')->first();
 
             foreach ($oldTenants as $t) {
                 $tenantId = (int) $t['id'];
@@ -189,26 +192,26 @@ class MigrateOldAffanHubCommand extends Command
                     $store->members()->attach($assignedOwnerId, ['role' => 'owner']);
                 }
 
-                // D. Store Wallets (Main & Profit Accounting)
-                $oldMainBalance = (float) ($tenantWalletMap[$tenantId]['balance'] ?? 0.00);
-                $oldProfitBalance = (float) ($tenantProfitMap[$tenantId]['balance'] ?? 0.00);
-
-                // Capped Profit & Balance Calculation:
-                // 1. If cash balance <= 0: Both Main = 0 and Profit = 0 (spent or never funded)
-                // 2. If cash balance > 0 and cash <= profit: Profit = cash, Main = 0 (only available cash is withdrawable)
-                // 3. If cash balance > profit: Profit = profit, Main = cash - profit
-                if ($oldMainBalance <= 0) {
-                    $cleanProfitBalance = 0.00;
-                    $cleanMainBalance = 0.00;
-                } elseif ($oldMainBalance <= $oldProfitBalance) {
-                    $cleanProfitBalance = $oldMainBalance;
-                    $cleanMainBalance = 0.00;
-                } else {
-                    $cleanProfitBalance = $oldProfitBalance;
-                    $cleanMainBalance = round($oldMainBalance - $oldProfitBalance, 2);
+                // Attach Starter Plan Active Subscription
+                if ($starterPlan) {
+                    Subscription::updateOrCreate(
+                        ['store_id' => $store->id],
+                        [
+                            'plan_id' => $starterPlan->id,
+                            'price' => 0.00,
+                            'billing_interval' => 'monthly',
+                            'status' => 'active',
+                            'starts_at' => $t['created_at'] ?? now(),
+                            'ends_at' => null,
+                        ]
+                    );
                 }
 
-                // 1. Setup Main Wallet
+                // D. Store Wallets (Main Operating Wallet & Clean ₦0.00 Profit Wallet)
+                $oldMainBalance = (float) ($tenantWalletMap[$tenantId]['balance'] ?? 0.00);
+                $cleanMainBalance = max(0.00, round($oldMainBalance, 2));
+
+                // 1. Setup Main Wallet (100% of available cash goes to operating balance)
                 $mainWallet = $store->mainWallet();
                 $mainWallet->update([
                     'balance' => $cleanMainBalance,
@@ -225,38 +228,23 @@ class MigrateOldAffanHubCommand extends Command
                         'amount' => $cleanMainBalance,
                         'balance_before' => 0.00,
                         'balance_after' => $cleanMainBalance,
-                        'description' => "Initial Operating Balance migrated from AffanHub v1 (Available cash: ₦{$oldMainBalance}, Profit allocated: ₦{$cleanProfitBalance})",
+                        'description' => "Initial Operating Balance migrated from AffanHub v1 (Available cash: ₦{$oldMainBalance})",
                         'status' => 'success',
                         'created_at' => $t['created_at'] ?? now(),
                         'updated_at' => $t['updated_at'] ?? now(),
                     ]
                 );
 
-                // 2. Setup Profit Wallet
-                if ($cleanProfitBalance > 0) {
-                    $profitWallet = $store->profitWallet();
-                    $profitWallet->update([
-                        'balance' => $cleanProfitBalance,
-                        'created_at' => $t['created_at'] ?? now(),
-                        'updated_at' => $t['updated_at'] ?? now(),
-                    ]);
+                // 2. Setup Profit Wallet to ₦0.00 (profit will accumulate on new sales)
+                $profitWallet = $store->profitWallet();
+                $profitWallet->update([
+                    'balance' => 0.00,
+                    'created_at' => $t['created_at'] ?? now(),
+                    'updated_at' => $t['updated_at'] ?? now(),
+                ]);
 
-                    WalletTransaction::updateOrCreate(
-                        ['reference' => 'MIG_PRF_TENANT_'.$tenantId],
-                        [
-                            'wallet_id' => $profitWallet->id,
-                            'type' => 'credit',
-                            'category' => 'migration_profit',
-                            'amount' => $cleanProfitBalance,
-                            'balance_before' => 0.00,
-                            'balance_after' => $cleanProfitBalance,
-                            'description' => 'Earned Withdrawable Profit migrated from AffanHub v1',
-                            'status' => 'success',
-                            'created_at' => $t['created_at'] ?? now(),
-                            'updated_at' => $t['updated_at'] ?? now(),
-                        ]
-                    );
-                }
+                // Remove any old migration profit transaction if previously created
+                WalletTransaction::where('reference', 'MIG_PRF_TENANT_'.$tenantId)->delete();
             }
 
             // D2. Migrate Actual Custom Domains directly from domains table

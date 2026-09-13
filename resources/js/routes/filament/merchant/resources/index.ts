@@ -3,6 +3,7 @@ import settlementAccounts from './settlement-accounts'
 import staff from './staff'
 import storeAirtimeDiscounts from './store-airtime-discounts'
 import storeDataPlans from './store-data-plans'
+import transactions from './transactions'
 import walletTransactions from './wallet-transactions'
 import withdrawals from './withdrawals'
 const resources = {
@@ -11,6 +12,7 @@ settlementAccounts: Object.assign(settlementAccounts, settlementAccounts),
 staff: Object.assign(staff, staff),
 storeAirtimeDiscounts: Object.assign(storeAirtimeDiscounts, storeAirtimeDiscounts),
 storeDataPlans: Object.assign(storeDataPlans, storeDataPlans),
+transactions: Object.assign(transactions, transactions),
 walletTransactions: Object.assign(walletTransactions, walletTransactions),
 withdrawals: Object.assign(withdrawals, withdrawals),
 }

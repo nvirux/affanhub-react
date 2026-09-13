@@ -2,6 +2,9 @@
 
 namespace App\Filament\Merchant\Widgets;
 
+use App\Models\Transaction;
+use App\Models\User;
+use App\Models\Wallet;
 use Filament\Facades\Filament;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -18,31 +21,63 @@ class StoreStatsOverview extends BaseWidget
             return [];
         }
 
-        $mainBalance = $store->mainWallet()->balance;
-        $profitBalance = $store->profitWallet()->balance;
+        $mainBalance = (float) ($store->mainWallet()->balance ?? 0.00);
+        $profitBalance = (float) ($store->profitWallet()->balance ?? 0.00);
+
+        // Calculate aggregate wallet balance across all customers registered under this store
+        $customerWalletBalance = (float) Wallet::where('holder_type', User::class)
+            ->whereIn('holder_id', $store->users()->select('id'))
+            ->sum('balance');
+
         $customerCount = $store->users()->count();
-        $staffCount = $store->members()->count();
+        $newCustomersThisWeek = $store->users()->where('created_at', '>=', now()->subDays(7))->count();
+
+        // 30-day and today's sales volume
+        $salesToday = (float) Transaction::where('store_id', $store->id)
+            ->where('status', 'success')
+            ->whereDate('created_at', today())
+            ->sum('amount_paid');
+
+        $sales30Days = (float) Transaction::where('store_id', $store->id)
+            ->where('status', 'success')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->sum('amount_paid');
+
+        $totalProfitEarned = (float) Transaction::where('store_id', $store->id)
+            ->where('status', 'success')
+            ->sum('profit');
+
+        // Liquidity coverage calculation
+        $isSolvent = $mainBalance >= $customerWalletBalance;
+        $coverageText = $customerWalletBalance > 0
+            ? round(($mainBalance / $customerWalletBalance) * 100).'% float coverage'
+            : 'Fully covered (0 liabilities)';
 
         return [
-            Stat::make('Main Wallet Balance', '₦'.number_format($mainBalance, 2))
-                ->description('Operating balance for store funding')
+            Stat::make('Main Operating Capital', '₦'.number_format($mainBalance, 2))
+                ->description('Operating balance for store orders')
                 ->descriptionIcon('heroicon-m-wallet')
                 ->color('primary'),
 
             Stat::make('Profit Wallet Balance', '₦'.number_format($profitBalance, 2))
-                ->description('Accumulated profit margin earnings')
+                ->description('Total earned: ₦'.number_format($totalProfitEarned, 2))
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
 
-            Stat::make('Registered Customers', number_format($customerCount))
-                ->description('End-users registered on your store')
-                ->descriptionIcon('heroicon-m-users')
-                ->color('info'),
+            Stat::make('Users Wallet Balance', '₦'.number_format($customerWalletBalance, 2))
+                ->description($isSolvent ? "Healthy ({$coverageText})" : 'Low Capital: user balances exceed main capital')
+                ->descriptionIcon('heroicon-m-credit-card')
+                ->color($isSolvent ? 'info' : 'danger'),
 
-            Stat::make('Staff Members', number_format($staffCount))
-                ->description('Active store admin accounts')
-                ->descriptionIcon('heroicon-m-user-group')
-                ->color('warning'),
+            Stat::make('30-Day Sales Volume', '₦'.number_format($sales30Days, 2))
+                ->description('Today: ₦'.number_format($salesToday, 2))
+                ->descriptionIcon('heroicon-m-arrow-trending-up')
+                ->color('success'),
+
+            Stat::make('Registered Customers', number_format($customerCount))
+                ->description("+{$newCustomersThisWeek} new this week")
+                ->descriptionIcon('heroicon-m-users')
+                ->color('primary'),
         ];
     }
 }

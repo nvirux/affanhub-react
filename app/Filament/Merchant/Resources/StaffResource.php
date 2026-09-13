@@ -70,7 +70,8 @@ class StaffResource extends Resource
                 ->email()
                 ->required()
                 ->maxLength(255)
-                ->placeholder('e.g. jane@example.com'),
+                ->placeholder('e.g. jane@example.com')
+                ->helperText('If the user already has an account, they will be invited without creating a duplicate.'),
             TextInput::make('phone')
                 ->tel()
                 ->maxLength(255)
@@ -88,10 +89,10 @@ class StaffResource extends Resource
                 ->password()
                 ->revealable()
                 ->formatStateUsing(fn () => '')
-                ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
                 ->dehydrated(fn ($state) => filled($state))
-                ->required(fn (string $operation): bool => $operation === 'create')
-                ->placeholder('Leave blank to keep current password'),
+                ->placeholder('Leave blank to auto-generate or keep current')
+                ->helperText('Leave blank to auto-generate for new users. Existing accounts keep their password.'),
         ]);
     }
 

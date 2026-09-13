@@ -11,6 +11,7 @@ import {
     UserCheck, Fingerprint, Search, Edit3, FileCheck, IdCard
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import palmpayIcon from '@/assets/icons/palmpay.png';
 import {
     Sheet,
     SheetContent,
@@ -161,7 +162,7 @@ export default function Dashboard() {
                         <p className="text-[13px] text-gray-500 dark:text-gray-400 mt-0.5">Overview of your {store?.name || 'AffanHub'} account</p>
                     </div>
 
-                    <div className="flex items-center gap-4 bg-white dark:bg-[#1e1e2d] px-4 py-2.5 rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+                    <div className="flex items-center gap-4 bg-white dark:bg-[#1e1e2d] px-5 py-3 rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
                         <div className="flex flex-col pr-4 border-r border-gray-100 dark:border-gray-700">
                             <div className="flex items-center gap-1.5 cursor-pointer select-none" onClick={toggleBalance}>
                                 <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Wallet Balance</span>
@@ -175,11 +176,50 @@ export default function Dashboard() {
                                 {showBalance ? (user?.wallet_balance !== undefined ? `₦${Number(user.wallet_balance).toLocaleString('en-NG', { minimumFractionDigits: 2 })}` : '₦0.00') : '••••••••'}
                             </span>
                         </div>
+
+                        {user?.virtual_account && (
+                            <div className="flex flex-col pr-4 border-r border-gray-100 dark:border-gray-700">
+                                <div className="flex items-center gap-1.5">
+                                    <img src={palmpayIcon} alt="PalmPay" className="w-3.5 h-3.5 rounded-full object-contain shrink-0" />
+                                    <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                                        {user.virtual_account.bank_name}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                    <span className="text-[15px] font-black font-mono text-gray-900 dark:text-white leading-none tracking-wide">
+                                        {user.virtual_account.account_number}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleCopyAccount(user.virtual_account.account_number)}
+                                        className="text-gray-400 hover:text-primary transition-colors cursor-pointer p-0.5"
+                                        title="Copy Account Number"
+                                    >
+                                        {copySuccess ? <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[2.5]" /> : <Copy className="w-3.5 h-3.5 stroke-[2]" />}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="pl-1">
-                            <button onClick={() => setFundModalOpen(true)} className="px-5 py-2.5 rounded-xl bg-primary text-white text-[13px] font-bold flex items-center gap-1.5 shadow-md shadow-primary/20 hover:opacity-90 active:scale-95 transition-all cursor-pointer">
-                                <span>Fund Wallet</span>
-                                <Plus className="w-4 h-4" />
-                            </button>
+                            {user?.virtual_account ? (
+                                <Link
+                                    href="/wallet"
+                                    className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-[13px] font-bold flex items-center gap-1.5 shadow-md shadow-primary/20 hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                                >
+                                    <span>Add Money</span>
+                                    <Plus className="w-4 h-4" />
+                                </Link>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => setFundModalOpen(true)}
+                                    className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-[13px] font-bold flex items-center gap-1.5 shadow-md shadow-primary/20 hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                                >
+                                    <span>Add Money</span>
+                                    <Plus className="w-4 h-4" />
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -566,25 +606,63 @@ export default function Dashboard() {
 
                 {/* Floating Wallet Card */}
                 <div className="px-4 -mt-5 relative z-10 mb-5">
-                    <div className="bg-white dark:bg-[#1e1e2d] rounded-xl p-4 sm:p-5 shadow-[0_10px_25px_-5px_rgba(98,54,255,0.12),0_4px_10px_-2px_rgba(0,0,0,0.04)] border border-gray-100/80 dark:border-gray-800 flex justify-between items-center">
-                        <div className="text-left">
-                            <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-[12px] font-medium cursor-pointer select-none" onClick={toggleBalance}>
+                    <div className="bg-white dark:bg-[#1e1e2d] rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 shadow-[0_10px_25px_-5px_rgba(98,54,255,0.12),0_4px_10px_-2px_rgba(0,0,0,0.04)] border border-gray-100/80 dark:border-gray-800">
+                        {/* Top Line: Wallet Balance Label (Left) & Account Pill (Right) */}
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                            <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-[11.5px] font-medium cursor-pointer select-none" onClick={toggleBalance}>
                                 <span>Wallet Balance</span>
                                 {showBalance ? (
-                                    <Eye className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                                    <Eye className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600" />
                                 ) : (
-                                    <EyeOff className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                                    <EyeOff className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600" />
                                 )}
                             </div>
-                            <div className="text-[22px] font-extrabold text-gray-900 dark:text-white mt-1 tracking-tight leading-none">
+
+                            {user?.virtual_account && (
+                                <button
+                                    type="button"
+                                    onClick={() => handleCopyAccount(user.virtual_account.account_number)}
+                                    className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-gray-50 dark:bg-zinc-800/80 hover:bg-primary/10 border border-gray-200/60 dark:border-gray-700/60 text-[11px] font-medium text-gray-600 dark:text-gray-300 transition-colors cursor-pointer select-none active:scale-95 shrink-0"
+                                    title="Click to copy account number"
+                                >
+                                    <img src={palmpayIcon} alt="PalmPay" className="w-3.5 h-3.5 rounded-full object-contain shrink-0" />
+                                    <span>{user.virtual_account.bank_name}</span>
+                                    <span className="font-mono font-bold text-gray-900 dark:text-white">{user.virtual_account.account_number}</span>
+                                    {copySuccess ? (
+                                        <Check className="w-3 h-3 text-emerald-500 shrink-0" />
+                                    ) : (
+                                        <Copy className="w-3 h-3 text-gray-400 shrink-0" />
+                                    )}
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Bottom Line: Big Balance Amount (Left) & Add Money Button (Right) */}
+                        <div className="flex items-center justify-between gap-2">
+                            <div className="text-[22px] font-extrabold text-gray-900 dark:text-white tracking-tight leading-none">
                                 {showBalance ? (user?.wallet_balance !== undefined ? `₦${Number(user.wallet_balance).toLocaleString('en-NG', { minimumFractionDigits: 2 })}` : '₦0.00') : '••••••••'}
                             </div>
-                        </div>
-                        <div>
-                            <button onClick={() => setFundModalOpen(true)} className="px-3.5 py-2 rounded-xl bg-primary text-white text-[11.5px] font-bold flex items-center gap-1 shadow-sm shadow-primary/20 hover:opacity-90 active:scale-95 transition-all cursor-pointer">
-                                <span>Fund Wallet</span>
-                                <Plus className="w-3.5 h-3.5" />
-                            </button>
+
+                            <div>
+                                {user?.virtual_account ? (
+                                    <Link
+                                        href="/wallet"
+                                        className="px-3.5 py-1.5 rounded-xl bg-primary text-primary-foreground text-[11.5px] font-bold flex items-center gap-1 shadow-sm shadow-primary/20 hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                                    >
+                                        <span>Add Money</span>
+                                        <Plus className="w-3.5 h-3.5" />
+                                    </Link>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => setFundModalOpen(true)}
+                                        className="px-3.5 py-1.5 rounded-xl bg-primary text-primary-foreground text-[11.5px] font-bold flex items-center gap-1 shadow-sm shadow-primary/20 hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                                    >
+                                        <span>Add Money</span>
+                                        <Plus className="w-3.5 h-3.5" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -732,53 +810,63 @@ export default function Dashboard() {
                                 <Wallet className="w-4.5 h-4.5" />
                             </div>
                             <div>
-                                <SheetTitle className="text-base font-bold text-gray-900 dark:text-white leading-tight">Fund Wallet</SheetTitle>
-                                <SheetDescription className="text-[11px] text-gray-500 dark:text-gray-400">Add funds to your account instantly</SheetDescription>
+                                <SheetTitle className="text-base font-bold text-gray-900 dark:text-white leading-tight">
+                                    {user?.virtual_account ? 'Add Money' : 'Activate Dedicated Account'}
+                                </SheetTitle>
+                                <SheetDescription className="text-[11px] text-gray-500 dark:text-gray-400">
+                                    {user?.virtual_account ? 'Add funds to your account instantly' : 'Verify your NIN or BVN to generate your instant bank account'}
+                                </SheetDescription>
                             </div>
                         </div>
                     </SheetHeader>
 
                     {/* STATE 1: VIRTUAL ACCOUNT EXISTS */}
                     {user?.virtual_account ? (
-                        <div className="space-y-4 pt-1">
-                            {/* Premium Virtual Bank Card */}
-                            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 p-4 sm:p-5 text-white shadow-xl shadow-indigo-500/20">
-                                <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none" />
-
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-lg bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20">
-                                            <Building2 className="w-4 h-4 text-white" />
+                        <div className="space-y-3.5 pt-1">
+                            {/* Dedicated Account Card Matching Clean App Design */}
+                            <div className="rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/70 dark:border-zinc-800 p-4 sm:p-5 space-y-4 shadow-xs">
+                                {/* Header: Bank Partner & Status */}
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="w-9 h-9 rounded-xl bg-white dark:bg-zinc-800 border border-slate-200/60 dark:border-zinc-700/60 flex items-center justify-center p-1.5 shadow-xs shrink-0">
+                                            <img src={palmpayIcon} alt="PalmPay" className="w-full h-full object-contain rounded-full" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-medium text-indigo-200 uppercase tracking-wider">Bank Partner</p>
-                                            <p className="text-xs font-black tracking-wide">{user.virtual_account.bank_name}</p>
+                                            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Bank Partner</p>
+                                            <p className="text-sm font-black text-slate-900 dark:text-white">{user.virtual_account.bank_name}</p>
                                         </div>
                                     </div>
-                                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[10px] font-bold tracking-wide flex items-center gap-1">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-extrabold tracking-wide flex items-center gap-1.5">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                         24/7 Instant
                                     </span>
                                 </div>
 
-                                <div className="mb-4">
-                                    <p className="text-[10px] font-medium text-indigo-200 uppercase tracking-wider mb-1">Dedicated Account Number</p>
-                                    <div className="flex items-center justify-between bg-black/20 backdrop-blur-sm rounded-xl px-3.5 py-2.5 border border-white/10">
-                                        <span className="text-xl font-black tracking-widest font-mono text-white">
+                                {/* Account Number Display Box */}
+                                <div>
+                                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Dedicated Account Number</p>
+                                    <div className="flex items-center justify-between bg-white dark:bg-[#181826] rounded-xl px-4 py-3 border border-slate-200/80 dark:border-zinc-800 shadow-2xs">
+                                        <span className="text-xl sm:text-2xl font-black tracking-wider font-mono text-slate-900 dark:text-white">
                                             {user.virtual_account.account_number}
                                         </span>
                                         <button
+                                            type="button"
                                             onClick={() => handleCopyAccount(user.virtual_account.account_number)}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-indigo-900 text-xs font-bold shadow-md hover:bg-indigo-50 active:scale-95 transition-all cursor-pointer"
+                                            className={cn(
+                                                "px-3.5 py-2 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-xs",
+                                                copySuccess
+                                                    ? "bg-emerald-600 text-white"
+                                                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                                            )}
                                         >
                                             {copySuccess ? (
                                                 <>
-                                                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                                    <span className="text-emerald-600">Copied</span>
+                                                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                                                    <span>Copied</span>
                                                 </>
                                             ) : (
                                                 <>
-                                                    <Copy className="w-3.5 h-3.5 text-indigo-700" />
+                                                    <Copy className="w-3.5 h-3.5 stroke-[2.2]" />
                                                     <span>Copy</span>
                                                 </>
                                             )}
@@ -786,19 +874,25 @@ export default function Dashboard() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between text-[11px] pt-2 border-t border-white/10">
-                                    <span className="text-indigo-200 font-medium">Account Name</span>
-                                    <span className="font-bold text-white truncate max-w-[200px]">
+                                {/* Footer: Account Name */}
+                                <div className="flex items-center justify-between text-xs pt-2.5 border-t border-slate-200/60 dark:border-zinc-800/80">
+                                    <span className="text-slate-400 dark:text-slate-500 font-semibold text-[11px] uppercase tracking-wider">Account Name</span>
+                                    <span className="font-black text-slate-800 dark:text-slate-200 text-xs truncate max-w-[210px]">
                                         {user.virtual_account.account_name}
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-3 flex items-start gap-2.5 text-amber-800 dark:text-amber-300 text-[11px]">
-                                <ShieldCheck className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="font-bold">Automated Funding Notice</p>
-                                    <p className="opacity-90 leading-relaxed">Transfers sent to this dedicated bank account are processed via PayMint and automatically credited to your wallet in seconds.</p>
+                            {/* Clean Design System Notice Alert */}
+                            <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 rounded-xl p-3 sm:p-3.5 flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-300 shadow-2xs">
+                                <div className="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                                    <ShieldCheck className="w-3.5 h-3.5 stroke-[2.2]" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="font-extrabold text-slate-900 dark:text-white text-xs">Automated Instant Credit</p>
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
+                                        Transfers sent to this dedicated bank account are automatically credited to your wallet in seconds.
+                                    </p>
                                 </div>
                             </div>
                         </div>

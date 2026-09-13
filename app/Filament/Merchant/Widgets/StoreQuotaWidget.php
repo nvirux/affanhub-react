@@ -2,17 +2,23 @@
 
 namespace App\Filament\Merchant\Widgets;
 
+use App\Models\User;
+use App\Models\Wallet;
 use Filament\Facades\Filament;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StoreQuotaWidget extends BaseWidget
 {
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 5;
 
     protected function getStats(): array
     {
         $tenant = Filament::getTenant();
+
+        if (! $tenant) {
+            return [];
+        }
 
         // 1. Plan Stats
         $subscription = $tenant->activeSubscription;
@@ -58,8 +64,14 @@ class StoreQuotaWidget extends BaseWidget
             $domainColor = 'warning';
         }
 
-        // 4. Customers Count
-        $customersCount = $tenant->users()->count();
+        // 4. Capital Reserve Health
+        $mainBalance = (float) ($tenant->mainWallet()->balance ?? 0.00);
+        $customerWalletBalance = (float) Wallet::where('holder_type', User::class)
+            ->whereIn('holder_id', $tenant->users()->select('id'))
+            ->sum('balance');
+
+        $isSolvent = $mainBalance >= $customerWalletBalance;
+        $solvencyRatio = $customerWalletBalance > 0 ? round(($mainBalance / $customerWalletBalance) * 100).'%' : '100%';
 
         return [
             Stat::make('Current Plan', $planName)
@@ -77,10 +89,10 @@ class StoreQuotaWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-globe-alt')
                 ->color($domainColor),
 
-            Stat::make('Total Customers', number_format($customersCount))
-                ->description('Active store shoppers')
-                ->descriptionIcon('heroicon-m-shopping-bag')
-                ->color('info'),
+            Stat::make('Capital Coverage', $isSolvent ? 'Adequate' : 'Action Needed')
+                ->description($isSolvent ? "{$solvencyRatio} reserve coverage" : 'User funds exceed operating capital')
+                ->descriptionIcon($isSolvent ? 'heroicon-m-shield-check' : 'heroicon-m-exclamation-triangle')
+                ->color($isSolvent ? 'success' : 'danger'),
         ];
     }
 }

@@ -20,6 +20,13 @@ export const NETWORKS_LIST = [
     { slug: '9mobile', name: '9mobile' },
 ];
 
+export interface NetworkItem {
+    id?: number;
+    name: string;
+    slug: string;
+    is_enabled?: boolean;
+}
+
 interface PhoneNetworkCardProps {
     phone: string;
     setPhone: (phone: string) => void;
@@ -31,6 +38,7 @@ interface PhoneNetworkCardProps {
     autoDetect?: boolean;
     onNetworkChange?: (network: string) => void;
     className?: string;
+    networks?: NetworkItem[];
 }
 
 export function PhoneNetworkCard({
@@ -44,8 +52,15 @@ export function PhoneNetworkCard({
     autoDetect = true,
     onNetworkChange,
     className = '',
+    networks,
 }: PhoneNetworkCardProps) {
     const [networkDropdownOpen, setNetworkDropdownOpen] = useState(false);
+
+    const isNetworkEnabled = (slug: string): boolean => {
+        if (!networks || networks.length === 0) return true;
+        const net = networks.find((n) => n.slug.toLowerCase() === slug.toLowerCase());
+        return net ? Boolean(net.is_enabled ?? true) : true;
+    };
 
     // Auto-detect phone network prefix
     useEffect(() => {
@@ -63,11 +78,21 @@ export function PhoneNetworkCard({
             else if (etisalatPrefixes.includes(prefix)) detected = '9mobile';
 
             if (detected && detected !== selectedNetwork) {
-                setSelectedNetwork(detected);
-                onNetworkChange?.(detected);
+                if (isNetworkEnabled(detected)) {
+                    setSelectedNetwork(detected);
+                    onNetworkChange?.(detected);
+                    if (phoneError && phoneError.toLowerCase().includes('unavailable')) {
+                        setPhoneError?.(null);
+                    }
+                } else {
+                    const netName = NETWORKS_LIST.find((n) => n.slug === detected)?.name || detected.toUpperCase();
+                    setPhoneError?.(`${netName} is currently unavailable on this store.`);
+                }
             }
         }
-    }, [phone, autoDetect, selectedNetwork, setSelectedNetwork, onNetworkChange]);
+    }, [phone, autoDetect, selectedNetwork, setSelectedNetwork, onNetworkChange, networks]);
+
+    const isCurrentActive = isNetworkEnabled(selectedNetwork);
 
     return (
         <div className={`space-y-1.5 ${className}`}>
@@ -84,17 +109,27 @@ export function PhoneNetworkCard({
                         onClick={() => setNetworkDropdownOpen(!networkDropdownOpen)}
                         className="flex items-center gap-2 pr-3 border-r border-gray-200 dark:border-gray-700 cursor-pointer"
                     >
-                        {NETWORK_ICONS[selectedNetwork] ? (
-                            <img
-                                src={NETWORK_ICONS[selectedNetwork]}
-                                alt={selectedNetwork}
-                                className="w-8 h-8 rounded-full object-contain p-0.5 bg-white shadow-2xs border border-gray-100 dark:border-gray-700 shrink-0"
-                            />
-                        ) : (
-                            <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black bg-primary text-white shadow-2xs shrink-0">
-                                {selectedNetwork.toUpperCase()}
-                            </span>
-                        )}
+                        <div className="relative">
+                            {NETWORK_ICONS[selectedNetwork] ? (
+                                <img
+                                    src={NETWORK_ICONS[selectedNetwork]}
+                                    alt={selectedNetwork}
+                                    className={`w-8 h-8 rounded-full object-contain p-0.5 bg-white shadow-2xs border border-gray-100 dark:border-gray-700 shrink-0 ${
+                                        !isCurrentActive ? 'grayscale opacity-60' : ''
+                                    }`}
+                                />
+                            ) : (
+                                <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black bg-primary text-white shadow-2xs shrink-0">
+                                    {selectedNetwork.toUpperCase()}
+                                </span>
+                            )}
+                            {!isCurrentActive && (
+                                <span
+                                    className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 border-2 border-white dark:border-[#181826] rounded-full"
+                                    title="Network unavailable on store"
+                                />
+                            )}
+                        </div>
                         <ChevronDown className="w-4 h-4 text-gray-400" />
                     </button>
 
@@ -102,36 +137,54 @@ export function PhoneNetworkCard({
                     {networkDropdownOpen && (
                         <>
                             <div className="fixed inset-0 z-40" onClick={() => setNetworkDropdownOpen(false)} />
-                            <div className="absolute left-0 top-full mt-2 w-48 bg-white dark:bg-[#1c1c28] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 p-2 space-y-1">
-                                {NETWORKS_LIST.map((net) => (
-                                    <button
-                                        key={net.slug}
-                                        type="button"
-                                        onClick={() => {
-                                            setSelectedNetwork(net.slug);
-                                            onNetworkChange?.(net.slug);
-                                            setNetworkDropdownOpen(false);
-                                        }}
-                                        className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                                            selectedNetwork === net.slug
-                                                ? 'bg-primary/10 text-primary'
-                                                : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
-                                        }`}
-                                    >
-                                        {NETWORK_ICONS[net.slug] ? (
-                                            <img
-                                                src={NETWORK_ICONS[net.slug]}
-                                                alt={net.name}
-                                                className="w-6 h-6 rounded-full object-contain p-0.5 bg-white shadow-xs border border-gray-100 dark:border-gray-700 shrink-0"
-                                            />
-                                        ) : (
-                                            <span className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black bg-primary text-white shrink-0">
-                                                {net.name[0]}
-                                            </span>
-                                        )}
-                                        <span>{net.name}</span>
-                                    </button>
-                                ))}
+                            <div className="absolute left-0 top-full mt-2 w-52 bg-white dark:bg-[#1c1c28] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 p-2 space-y-1">
+                                {NETWORKS_LIST.map((net) => {
+                                    const isEnabled = isNetworkEnabled(net.slug);
+
+                                    return (
+                                        <button
+                                            key={net.slug}
+                                            type="button"
+                                            disabled={!isEnabled}
+                                            onClick={() => {
+                                                if (!isEnabled) return;
+                                                setSelectedNetwork(net.slug);
+                                                onNetworkChange?.(net.slug);
+                                                setNetworkDropdownOpen(false);
+                                            }}
+                                            className={`flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-xs font-bold transition-colors ${
+                                                !isEnabled
+                                                    ? 'opacity-40 grayscale cursor-not-allowed bg-gray-50/60 dark:bg-gray-800/40 text-gray-400 dark:text-gray-500'
+                                                    : selectedNetwork === net.slug
+                                                        ? 'bg-primary/10 text-primary cursor-pointer'
+                                                        : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 cursor-pointer'
+                                            }`}
+                                            title={!isEnabled ? `${net.name} is currently disabled on this store` : undefined}
+                                        >
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                {NETWORK_ICONS[net.slug] ? (
+                                                    <img
+                                                        src={NETWORK_ICONS[net.slug]}
+                                                        alt={net.name}
+                                                        className={`w-6 h-6 rounded-full object-contain p-0.5 bg-white shadow-xs border border-gray-100 dark:border-gray-700 shrink-0 ${
+                                                            !isEnabled ? 'grayscale' : ''
+                                                        }`}
+                                                    />
+                                                ) : (
+                                                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black bg-primary text-white shrink-0">
+                                                        {net.name[0]}
+                                                    </span>
+                                                )}
+                                                <span className="truncate">{net.name}</span>
+                                            </div>
+                                            {!isEnabled && (
+                                                <span className="text-[9px] font-semibold text-rose-500 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 px-1.5 py-0.5 rounded shrink-0">
+                                                    Disabled
+                                                </span>
+                                            )}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </>
                     )}

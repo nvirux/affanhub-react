@@ -120,9 +120,11 @@ class AirtimeService
         }
 
         // 2. Resolve store context
-        $store = (method_exists($customer, 'store') ? $customer->store : null)
-            ?? Store::where('owner_id', $customer->id)->first()
-            ?? Store::first();
+        $store = (function_exists('tenant') && tenant())
+            ? tenant()
+            : ((method_exists($customer, 'store') ? $customer->store : null)
+                ?? ($customer ? Store::where('owner_id', $customer->id)->first() : null)
+                ?? Store::first());
 
         if (! $store) {
             throw new \Exception('Store context is missing for airtime purchase.');

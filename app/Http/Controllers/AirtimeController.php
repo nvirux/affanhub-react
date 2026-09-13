@@ -23,9 +23,11 @@ class AirtimeController extends Controller
     public function index(): Response
     {
         $user = Auth::user();
-        $store = (method_exists($user, 'store') ? $user?->store : null)
-            ?? Store::where('owner_id', $user?->id)->first()
-            ?? Store::first();
+        $store = (function_exists('tenant') && tenant())
+            ? tenant()
+            : ((method_exists($user, 'store') ? $user?->store : null)
+                ?? ($user ? Store::where('owner_id', $user->id)->first() : null)
+                ?? Store::first());
 
         $networks = Network::where('is_active', true)
             ->orderBy('sort_order')
@@ -66,7 +68,7 @@ class AirtimeController extends Controller
                 'max_amount' => $maxAmount,
                 'is_enabled' => $isEnabled,
             ];
-        })->filter(fn ($n) => $n['is_enabled'])->values();
+        })->values();
 
         $mainWallet = $user?->wallet('main');
 
@@ -104,6 +106,24 @@ class AirtimeController extends Controller
         }
 
         $network = Network::findOrFail($validated['network_id']);
+
+        $store = (function_exists('tenant') && tenant())
+            ? tenant()
+            : ((method_exists($user, 'store') ? $user?->store : null)
+                ?? ($user ? Store::where('owner_id', $user->id)->first() : null)
+                ?? Store::first());
+
+        if ($store) {
+            $storeDiscount = StoreAirtimeDiscount::where('store_id', $store->id)
+                ->where('network_id', $network->id)
+                ->first();
+
+            if ($storeDiscount && ! $storeDiscount->is_enabled) {
+                throw ValidationException::withMessages([
+                    'network_id' => "Airtime recharge for {$network->name} is currently unavailable on this store.",
+                ]);
+            }
+        }
 
         try {
             $result = $airtimeService->buyAirtime(
