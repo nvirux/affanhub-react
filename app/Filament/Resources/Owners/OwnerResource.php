@@ -21,9 +21,19 @@ class OwnerResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static UnitEnum|string|null $navigationGroup = 'User Management';
+    protected static UnitEnum|string|null $navigationGroup = '🏬 Tenancy & Stores';
 
     protected static ?int $navigationSort = 2;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Owner::count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'primary';
+    }
 
     public static function form(Schema $schema): Schema
     {

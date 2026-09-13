@@ -16,11 +16,16 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             PlanAndFeatureSeeder::class,
-            // AdminSeeder::class,
-            // StoreAndDomainSeeder::class,
-            DataSeeder::class,
             AirtimeDiscountSeeder::class,
             ServiceSeeder::class,
         ]);
+
+        if (app()->isLocal()) {
+            $this->call([
+                AdminSeeder::class,
+                StoreAndDomainSeeder::class,
+                DataSeeder::class,
+            ]);
+        }
     }
 }

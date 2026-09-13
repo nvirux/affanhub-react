@@ -17,13 +17,27 @@ use UnitEnum;
 
 class UserResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $modelLabel = 'Customer';
+
+    protected static ?string $pluralModelLabel = 'Customers';
+
+    protected static ?string $navigationLabel = 'Customers';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
-    protected static UnitEnum|string|null $navigationGroup = 'User Management';
+    protected static UnitEnum|string|null $navigationGroup = '👥 Customers & Accounts';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) User::count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'info';
+    }
 
     public static function form(Schema $schema): Schema
     {

@@ -24,13 +24,25 @@ class SettlementAccountResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingLibrary;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Platform Management';
+    protected static UnitEnum|string|null $navigationGroup = '🏬 Tenancy & Stores';
 
     protected static ?string $navigationLabel = 'Merchant Settlement Banks';
 
     protected static ?string $modelLabel = 'Settlement Bank Account';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 4;
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = SettlementAccount::where('status', 'pending')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
 
     public static function table(Table $table): Table
     {

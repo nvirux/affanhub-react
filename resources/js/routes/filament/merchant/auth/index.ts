@@ -1,4 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import emailVerification from './email-verification'
 /**
 * @see \Filament\Auth\Pages\Login::__invoke
  * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
@@ -293,6 +294,7 @@ const auth = {
 register: Object.assign(register, register),
 logout: Object.assign(logout, logout),
 profile: Object.assign(profile, profile),
+emailVerification: Object.assign(emailVerification, emailVerification),
 }
 
 export default auth

@@ -21,9 +21,9 @@ class ActivityLogResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedListBullet;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Platform Management';
+    protected static UnitEnum|string|null $navigationGroup = '📊 Finance & Platform';
 
-    protected static ?int $navigationSort = 100;
+    protected static ?int $navigationSort = 3;
 
     public static function table(Table $table): Table
     {

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('nin')->nullable();
             $table->string('avatar')->nullable();
             $table->unsignedInteger('max_stores')->default(3);
+            $table->unsignedBigInteger('last_active_store_id')->nullable()->index();
             $table->text('app_authentication_secret')->nullable();
             $table->text('app_authentication_recovery_codes')->nullable();
             $table->timestamp('email_verified_at')->nullable();

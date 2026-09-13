@@ -7,17 +7,21 @@ use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecover
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasDefaultTenant;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 
-class Owner extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasTenants
+class Owner extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasDefaultTenant, HasTenants, MustVerifyEmail
 {
     use InteractsWithAppAuthentication;
     use InteractsWithAppAuthenticationRecovery;
+    use Notifiable;
 
     protected $guarded = [];
 
@@ -56,6 +60,25 @@ class Owner extends Authenticatable implements FilamentUser, HasAppAuthenticatio
     public function getTenants(Panel $panel): array|Collection
     {
         return $this->stores;
+    }
+
+    public function getDefaultTenant(Panel $panel): ?Model
+    {
+        if ($this->last_active_store_id) {
+            $lastStore = $this->stores()->whereKey($this->last_active_store_id)->first();
+            if ($lastStore) {
+                return $lastStore;
+            }
+        }
+
+        return $this->stores()->first();
+    }
+
+    public function recordActiveStore(int|string $storeId): void
+    {
+        if ($this->last_active_store_id != $storeId) {
+            $this->updateQuietly(['last_active_store_id' => $storeId]);
+        }
     }
 
     public function canAccessTenant(Model $tenant): bool

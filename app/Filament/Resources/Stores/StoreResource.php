@@ -21,9 +21,19 @@ class StoreResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Platform Management';
+    protected static UnitEnum|string|null $navigationGroup = '🏬 Tenancy & Stores';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Store::count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'amber';
+    }
 
     public static function form(Schema $schema): Schema
     {

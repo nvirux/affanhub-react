@@ -16,11 +16,21 @@ class TransactionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finance & Audits';
+    protected static string|\UnitEnum|null $navigationGroup = '📊 Finance & Platform';
 
     protected static ?string $navigationLabel = 'Service Transactions';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Transaction::count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'purple';
+    }
 
     public static function table(Table $table): Table
     {

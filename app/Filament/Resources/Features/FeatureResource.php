@@ -21,9 +21,9 @@ class FeatureResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAdjustmentsHorizontal;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Platform Management';
+    protected static UnitEnum|string|null $navigationGroup = '💳 Plans & Monetization';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

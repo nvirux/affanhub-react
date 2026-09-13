@@ -25,6 +25,18 @@ class UserForm
                 ->required()
                 ->unique(ignoreRecord: true)
                 ->maxLength(255),
+            TextInput::make('phone')
+                ->tel()
+                ->maxLength(20),
+            TextInput::make('bvn')
+                ->label('BVN')
+                ->maxLength(11),
+            TextInput::make('nin')
+                ->label('NIN')
+                ->maxLength(11),
+            TextInput::make('referral_code')
+                ->label('Referral Code')
+                ->maxLength(50),
             TextInput::make('password')
                 ->password()
                 ->dehydrated(fn ($state) => filled($state))

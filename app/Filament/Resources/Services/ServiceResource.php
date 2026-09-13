@@ -26,9 +26,9 @@ class ServiceResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Platform Management';
+    protected static UnitEnum|string|null $navigationGroup = '⚡ VTU & Services';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {

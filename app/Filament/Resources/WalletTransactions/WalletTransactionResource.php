@@ -16,9 +16,9 @@ class WalletTransactionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finance & Audits';
+    protected static string|\UnitEnum|null $navigationGroup = '📊 Finance & Platform';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function table(Table $table): Table
     {

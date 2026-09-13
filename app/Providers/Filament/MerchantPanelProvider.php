@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Merchant\Pages\Auth\Register;
 use App\Filament\Merchant\Pages\RegisterStore;
+use App\Http\Middleware\RememberActiveStore;
 use App\Models\Store;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
@@ -38,9 +39,13 @@ class MerchantPanelProvider extends PanelProvider
                     ->recoverable(),
             ])
             ->registration(Register::class)
+            ->emailVerification()
             ->authGuard('owner')
             ->tenant(Store::class, slugAttribute: 'public_id')
             ->tenantRegistration(RegisterStore::class)
+            ->tenantMiddleware([
+                RememberActiveStore::class,
+            ])
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -55,6 +60,10 @@ class MerchantPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn () => view('filament.merchant.components.header-store-switcher')
+            )
             ->renderHook(
                 PanelsRenderHook::PAGE_START,
                 fn () => view('filament.merchant.components.impersonation-banner')

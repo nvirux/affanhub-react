@@ -116,7 +116,7 @@ class MigrateOldAffanHubCommand extends Command
                         'name' => $adm['name'],
                         'password' => $adm['password'],
                         'role' => ($adm['role'] ?? '') === 'super_admin' ? 'superadmin' : 'admin',
-                        'email_verified_at' => $adm['email_verified_at'] ?? now(),
+                        'email_verified_at' => ! empty($adm['email_verified_at']) ? $adm['email_verified_at'] : ($adm['created_at'] ?? now()),
                         'created_at' => $adm['created_at'] ?? now(),
                         'updated_at' => $adm['updated_at'] ?? now(),
                     ]
@@ -137,7 +137,7 @@ class MigrateOldAffanHubCommand extends Command
                             'bvn' => $u['bvn'] ?? null,
                             'nin' => $u['nin'] ?? null,
                             'max_stores' => 5,
-                            'email_verified_at' => $u['email_verified_at'] ?? now(),
+                            'email_verified_at' => ! empty($u['email_verified_at']) ? $u['email_verified_at'] : ($u['created_at'] ?? now()),
                             'created_at' => $u['created_at'] ?? now(),
                             'updated_at' => $u['updated_at'] ?? now(),
                         ]
@@ -313,7 +313,7 @@ class MigrateOldAffanHubCommand extends Command
                             'bvn' => $u['bvn'] ?? null,
                             'nin' => $u['nin'] ?? null,
                             'password' => $u['password'],
-                            'email_verified_at' => $u['email_verified_at'] ?? now(),
+                            'email_verified_at' => ! empty($u['email_verified_at']) ? $u['email_verified_at'] : ($u['created_at'] ?? now()),
                             'created_at' => $u['created_at'] ?? now(),
                             'updated_at' => $u['updated_at'] ?? now(),
                         ]

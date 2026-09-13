@@ -24,11 +24,11 @@ class PlanAirtimeDiscountResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static UnitEnum|string|null $navigationGroup = 'VTU Catalog';
+    protected static UnitEnum|string|null $navigationGroup = '⚡ VTU & Services';
 
     protected static ?string $navigationLabel = 'Tier Airtime Pricing';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 7;
 
     public static function form(Schema $schema): Schema
     {

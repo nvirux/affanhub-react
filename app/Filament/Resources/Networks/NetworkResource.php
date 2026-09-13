@@ -24,9 +24,9 @@ class NetworkResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSignal;
 
-    protected static UnitEnum|string|null $navigationGroup = 'VTU Catalog';
+    protected static UnitEnum|string|null $navigationGroup = '⚡ VTU & Services';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

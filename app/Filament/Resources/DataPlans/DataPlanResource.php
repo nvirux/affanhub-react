@@ -32,9 +32,9 @@ class DataPlanResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCircleStack;
 
-    protected static UnitEnum|string|null $navigationGroup = 'VTU Catalog';
+    protected static UnitEnum|string|null $navigationGroup = '⚡ VTU & Services';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema
     {
