@@ -14,6 +14,12 @@ type Props = {
     errors?: Record<string, string>;
 };
 
+function getXsrfToken(): string {
+    if (typeof document === 'undefined') return '';
+    const match = document.cookie.match(new RegExp('(^|;\\s*)(?:XSRF-TOKEN|X-XSRF-TOKEN)=([^;]*)'));
+    return match ? decodeURIComponent(match[2]) : '';
+}
+
 export default function Register({ errors: serverErrors = {} }: Props) {
     const [step, setStep] = useState<1 | 2>(1);
     const [name, setName] = useState('');
@@ -24,6 +30,7 @@ export default function Register({ errors: serverErrors = {} }: Props) {
 
     // Step 1 Validation
     const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
+    const [isValidating, setIsValidating] = useState(false);
 
     // Step 2 PIN state
     const [pinStage, setPinStage] = useState<'enter' | 'confirm'>('enter');
@@ -46,7 +53,7 @@ export default function Register({ errors: serverErrors = {} }: Props) {
                 if (idParam.includes('@')) {
                     setEmail(idParam);
                 } else {
-                    setPhone(idParam);
+                    setPhone(idParam.replace(/[^0-9]/g, '').slice(0, 11));
                 }
             }
         }
@@ -62,19 +69,68 @@ export default function Register({ errors: serverErrors = {} }: Props) {
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
             errs.email = 'Please enter a valid email address.';
         }
-        if (!phone.trim()) {
+
+        const digitsOnly = phone.replace(/[^0-9]/g, '');
+        if (!digitsOnly) {
             errs.phone = 'Please enter your phone number.';
-        } else if (phone.replace(/[^0-9]/g, '').length < 7) {
-            errs.phone = 'Please enter a valid phone number.';
+        } else if (digitsOnly.length !== 11) {
+            errs.phone = 'Phone number must be exactly 11 digits (e.g. 08012345678).';
         }
 
         setClientErrors(errs);
         return Object.keys(errs).length === 0;
     };
 
-    const handleContinueToPin = (e: React.FormEvent) => {
+    const handleContinueToPin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (validateStep1()) {
+        if (!validateStep1()) {
+            return;
+        }
+
+        setIsValidating(true);
+        setClientErrors({});
+
+        try {
+            const cleanPhone = phone.replace(/[^0-9]/g, '');
+            const response = await fetch('/register/validate-step-1', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-XSRF-TOKEN': getXsrfToken(),
+                },
+                body: JSON.stringify({
+                    name: name.trim(),
+                    email: email.trim(),
+                    phone: cleanPhone,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                if (data.errors) {
+                    const formattedErrs: Record<string, string> = {};
+                    for (const [key, msgs] of Object.entries(data.errors)) {
+                        formattedErrs[key] = Array.isArray(msgs) ? msgs[0] : (msgs as string);
+                    }
+                    setClientErrors(formattedErrs);
+                } else {
+                    setClientErrors({ email: data.message || 'Validation failed. Please check your details.' });
+                }
+                setIsValidating(false);
+                return;
+            }
+
+            setIsValidating(false);
+            setStep(2);
+            setPinStage('enter');
+            setPin('');
+            setPinConfirmation('');
+            setPinError(null);
+        } catch {
+            setIsValidating(false);
+            // If network request failed unexpectedly, let user proceed so form submit handles it
             setStep(2);
             setPinStage('enter');
             setPin('');
@@ -112,7 +168,7 @@ export default function Register({ errors: serverErrors = {} }: Props) {
             {
                 name: name.trim(),
                 email: email.trim(),
-                phone: phone.trim(),
+                phone: phone.replace(/[^0-9]/g, ''),
                 referral_code: referralCode.trim() || undefined,
                 pin,
                 pin_confirmation: confirmVal,
@@ -214,9 +270,11 @@ export default function Register({ errors: serverErrors = {} }: Props) {
                                         required
                                         tabIndex={3}
                                         autoComplete="tel"
+                                        maxLength={11}
                                         value={phone}
                                         onChange={(e) => {
-                                            setPhone(e.target.value);
+                                            const digits = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+                                            setPhone(digits);
                                             if (clientErrors.phone) setClientErrors((prev) => ({ ...prev, phone: '' }));
                                         }}
                                         placeholder="08012345678"
@@ -256,11 +314,21 @@ export default function Register({ errors: serverErrors = {} }: Props) {
 
                             <Button
                                 type="submit"
+                                disabled={isValidating}
                                 className="w-full flex items-center justify-center gap-2 mt-2 cursor-pointer"
                                 tabIndex={5}
                             >
-                                Continue
-                                <ArrowRight className="w-4 h-4" />
+                                {isValidating ? (
+                                    <>
+                                        <Spinner className="w-4 h-4" />
+                                        <span>Validating...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>Continue</span>
+                                        <ArrowRight className="w-4 h-4" />
+                                    </>
+                                )}
                             </Button>
                         </div>
 

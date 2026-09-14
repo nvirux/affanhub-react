@@ -97,3 +97,63 @@ test('registration fails when pin is not 4 digits or does not match confirmation
     $response->assertSessionHasErrors(['pin']);
     expect(User::where('email', 'invalidpin@example.com')->exists())->toBeFalse();
 });
+
+test('registration fails when phone number is not exactly 11 digits', function () {
+    $response = $this->post('http://demo.localhost/register', [
+        'name' => 'Short Phone',
+        'email' => 'shortphone@example.com',
+        'phone' => '080123456',
+        'pin' => '1234',
+        'pin_confirmation' => '1234',
+    ]);
+
+    $response->assertSessionHasErrors(['phone']);
+    expect(User::where('email', 'shortphone@example.com')->exists())->toBeFalse();
+});
+
+test('step 1 validation passes for valid new user details', function () {
+    $response = $this->postJson('http://demo.localhost/register/validate-step-1', [
+        'name' => 'John Doe',
+        'email' => 'john.valid@example.com',
+        'phone' => '08012345678',
+    ]);
+
+    $response->assertOk()
+        ->assertJson(['valid' => true]);
+});
+
+test('step 1 validation fails if email or phone already exists or phone length is invalid', function () {
+    User::create([
+        'name' => 'Existing User',
+        'email' => 'existing@example.com',
+        'phone' => '08011223344',
+        'store_id' => $this->store->id,
+    ]);
+
+    // Test duplicate email
+    $res1 = $this->postJson('http://demo.localhost/register/validate-step-1', [
+        'name' => 'New Guy',
+        'email' => 'existing@example.com',
+        'phone' => '08099887766',
+    ]);
+    $res1->assertStatus(422)
+        ->assertJsonValidationErrors(['email']);
+
+    // Test duplicate phone
+    $res2 = $this->postJson('http://demo.localhost/register/validate-step-1', [
+        'name' => 'New Guy 2',
+        'email' => 'unique@example.com',
+        'phone' => '08011223344',
+    ]);
+    $res2->assertStatus(422)
+        ->assertJsonValidationErrors(['phone']);
+
+    // Test non-11 digit phone
+    $res3 = $this->postJson('http://demo.localhost/register/validate-step-1', [
+        'name' => 'New Guy 3',
+        'email' => 'unique3@example.com',
+        'phone' => '0801234',
+    ]);
+    $res3->assertStatus(422)
+        ->assertJsonValidationErrors(['phone']);
+});

@@ -6,9 +6,61 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class TenantAuthController extends Controller
 {
+    /**
+     * Validate Step 1 of customer registration (name, email, phone).
+     */
+    public function validateRegisterStep1(Request $request): JsonResponse
+    {
+        $tenantId = function_exists('tenant') && tenant() ? tenant('id') : null;
+
+        $input = $request->all();
+        $phone = preg_replace('/[^0-9]/', '', $input['phone'] ?? '');
+        if (str_starts_with($phone, '234') && strlen($phone) === 13) {
+            $phone = '0'.substr($phone, 3);
+        }
+        $input['phone'] = $phone;
+
+        $validator = Validator::make($input, [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique(User::class)->where(fn ($query) => $query->where('store_id', $tenantId)),
+            ],
+            'phone' => [
+                'required',
+                'string',
+                'digits:11',
+                Rule::unique(User::class)->where(fn ($query) => $query->where('store_id', $tenantId)),
+            ],
+        ], [
+            'name.required' => 'Please enter your full name.',
+            'email.required' => 'Please enter your email address.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email address is already registered to an account.',
+            'phone.required' => 'Please enter your phone number.',
+            'phone.digits' => 'Phone number must be exactly 11 digits (e.g. 08012345678).',
+            'phone.unique' => 'This phone number is already registered to an account.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        return response()->json([
+            'valid' => true,
+        ]);
+    }
+
     /**
      * Check if an identifier (email or phone) exists within the active tenant,
      * and return whether login PIN is enabled.

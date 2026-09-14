@@ -42,6 +42,10 @@ Route::middleware([
         ->name('login.check-identifier')
         ->middleware('throttle:30,1');
 
+    Route::post('/register/validate-step-1', [TenantAuthController::class, 'validateRegisterStep1'])
+        ->name('register.validate-step-1')
+        ->middleware('throttle:30,1');
+
     // Forgot / Reset PIN routes
     Route::middleware(['guest'])->group(function () {
         Route::get('/forgot-pin', [ForgotPinController::class, 'create'])->name('pin.request');
