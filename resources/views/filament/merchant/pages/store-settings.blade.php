@@ -2,6 +2,7 @@
     @php
         $tenant = \Filament\Facades\Filament::getTenant();
         $hasCustomBranding = $tenant->hasFeature('custom_branding');
+        $hasCustomEmail = $tenant->hasFeature('custom_email');
     @endphp
 
     <style>
@@ -248,6 +249,15 @@
                 class="settings-tab-btn {{ $activeTab === 'chat' ? 'is-active' : '' }}"
             >
                 <span>💬</span> Live Support
+            </button>
+
+            {{-- Tab 5: Custom Email --}}
+            <button 
+                type="button" 
+                wire:click="setTab('email')" 
+                class="settings-tab-btn {{ $activeTab === 'email' ? 'is-active' : '' }}"
+            >
+                <span>✉️</span> Custom Email
             </button>
 
         </div>
@@ -754,6 +764,128 @@
                             @endif
                         </div>
                     </div>
+                </div>
+            @endif
+
+            {{-- ────────────────────────────────────────────────────────
+                TAB 5: CUSTOM EMAIL (RESEND)
+                ──────────────────────────────────────────────────────── --}}
+            @if ($activeTab === 'email')
+                <div class="settings-card">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                        <div>
+                            <h3 style="font-size: 1.125rem; font-weight: 800; color: #111827; margin: 0;">Custom Email Delivery (Resend)</h3>
+                            <p style="font-size: 0.8125rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">
+                                Send customer password resets, login alerts, and receipts directly from your own domain email address via Resend.
+                            </p>
+                        </div>
+                        @if ($hasCustomEmail && ! empty($resendApiKey) && ! empty($resendFromEmail))
+                            <span style="display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #10b981;"></span>
+                                Active & Connected
+                            </span>
+                        @endif
+                    </div>
+
+                    @if (! $hasCustomEmail)
+                        {{-- Upgrade Prompt for Starter Plan --}}
+                        <div style="background-color: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+                            <div style="display: flex; align-items: flex-start; gap: 0.875rem;">
+                                <div style="width: 2.5rem; height: 2.5rem; border-radius: 10px; background-color: #dbeafe; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+                                    🔒
+                                </div>
+                                <div>
+                                    <h4 style="font-size: 0.9375rem; font-weight: 800; color: #1e3a8a; margin: 0;">Custom Email is a Pro Feature</h4>
+                                    <p style="font-size: 0.8125rem; color: #1e40af; margin-top: 0.25rem; margin-bottom: 0; line-height: 1.4;">
+                                        Your store currently sends customer transactional emails (like password resets) through AffanHub's shared delivery network, branded with your store name. 
+                                        Upgrade to <strong>Pro</strong> or <strong>Enterprise</strong> to connect your own Resend account and send emails directly from your own verified domain (e.g. <code>support@yourdomain.com</code>).
+                                    </p>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: flex-end; border-top: 1px solid #bfdbfe; padding-top: 0.75rem;">
+                                <a href="{{ \App\Filament\Merchant\Pages\Billing::getUrl() }}" style="display: inline-flex; align-items: center; gap: 0.375rem; background-color: #2563eb; color: white; padding: 0.5rem 1.25rem; border-radius: 8px; font-size: 0.8125rem; font-weight: 700; text-decoration: none; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    Upgrade to Pro Plan &rarr;
+                                </a>
+                            </div>
+                        </div>
+                    @else
+                        {{-- Active Configuration for Pro / Enterprise --}}
+                        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; font-size: 0.8125rem; color: #475569; line-height: 1.5;">
+                            <strong>How to set up Resend:</strong>
+                            <ol style="margin: 0.5rem 0 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                                <li>Sign up or log in at <a href="https://resend.com" target="_blank" style="color: #2563eb; font-weight: 600; text-decoration: underline;">resend.com</a>.</li>
+                                <li>Add and verify your custom domain in your Resend Domains dashboard.</li>
+                                <li>Create an API key with <em>"Sending access"</em> and paste it below.</li>
+                            </ol>
+                        </div>
+
+                        <div class="settings-grid-2">
+                            <div style="display: flex; flex-direction: column; gap: 0.375rem; width: 100%;">
+                                <label style="font-size: 0.8125rem; font-weight: 700; color: #374151;">Resend API Key <span style="color: #ef4444;">*</span></label>
+                                <input 
+                                    type="password" 
+                                    wire:model="resendApiKey" 
+                                    placeholder="re_123456789_abcdefg..." 
+                                    class="settings-input"
+                                    autocomplete="off"
+                                />
+                                @error('resendApiKey') <span style="font-size: 0.75rem; color: #ef4444; font-weight: 600;">{{ $message }}</span> @enderror
+                                <span style="font-size: 0.75rem; color: #6b7280;">Stored encrypted at rest in your store database.</span>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 0.375rem; width: 100%;">
+                                <label style="font-size: 0.8125rem; font-weight: 700; color: #374151;">Sender Email Address ("From") <span style="color: #ef4444;">*</span></label>
+                                <input 
+                                    type="email" 
+                                    wire:model="resendFromEmail" 
+                                    placeholder="e.g. support@yourdomain.com" 
+                                    class="settings-input"
+                                />
+                                @error('resendFromEmail') <span style="font-size: 0.75rem; color: #ef4444; font-weight: 600;">{{ $message }}</span> @enderror
+                                <span style="font-size: 0.75rem; color: #6b7280;">Must match a domain that is verified in your Resend dashboard.</span>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 0.375rem; width: 100%;">
+                                <label style="font-size: 0.8125rem; font-weight: 700; color: #374151;">Sender Display Name</label>
+                                <input 
+                                    type="text" 
+                                    wire:model="resendFromName" 
+                                    placeholder="{{ $name }}" 
+                                    class="settings-input"
+                                />
+                                <span style="font-size: 0.75rem; color: #6b7280;">Defaults to your Store Name (<strong>{{ $name }}</strong>) if left blank.</span>
+                            </div>
+                        </div>
+
+                        {{-- Test Connection Card --}}
+                        <div style="background-color: white; border: 1.5px dashed #cbd5e1; border-radius: 14px; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.875rem;">
+                            <div>
+                                <h4 style="font-size: 0.875rem; font-weight: 800; color: #0f172a; margin: 0;">Test Email Connection</h4>
+                                <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; margin-bottom: 0;">
+                                    Send a real-time verification email to ensure your Resend API key and sender address are operating before saving.
+                                </p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                                <input 
+                                    type="email" 
+                                    wire:model="testEmailRecipient" 
+                                    placeholder="your-email@example.com" 
+                                    class="settings-input"
+                                    style="max-width: 320px;"
+                                />
+                                <button 
+                                    type="button" 
+                                    wire:click="sendTestEmail" 
+                                    wire:loading.attr="disabled"
+                                    style="display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.625rem 1.25rem; border-radius: 10px; font-size: 0.8125rem; font-weight: 700; background-color: #0f172a; color: white; border: none; cursor: pointer; transition: all 0.15s ease;"
+                                >
+                                    <span wire:loading.remove wire:target="sendTestEmail">📨 Send Test Email</span>
+                                    <span wire:loading wire:target="sendTestEmail">Sending Test...</span>
+                                </button>
+                            </div>
+                            @error('testEmailRecipient') <span style="font-size: 0.75rem; color: #ef4444; font-weight: 600;">{{ $message }}</span> @enderror
+                        </div>
+                    @endif
                 </div>
             @endif
 

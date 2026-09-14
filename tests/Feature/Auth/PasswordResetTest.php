@@ -1,16 +1,38 @@
 <?php
 
+use App\Models\Owner;
+use App\Models\Store;
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
+use App\Notifications\TenantResetPasswordNotification;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Fortify\Features;
 
+uses(RefreshDatabase::class);
+
 beforeEach(function () {
     $this->skipUnlessFortifyHas(Features::resetPasswords());
+
+    $this->owner = Owner::create([
+        'name' => 'Store Owner',
+        'email' => 'owner@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    $this->store = Store::create([
+        'name' => 'Demo Store',
+        'public_id' => 'str_demo',
+        'owner_id' => $this->owner->id,
+        'status' => 'active',
+    ]);
+
+    $this->store->domains()->create([
+        'domain' => 'demo.localhost',
+    ]);
 });
 
 test('reset password link screen can be rendered', function () {
-    $response = $this->get(route('password.request'));
+    $response = $this->get('http://demo.localhost/forgot-password');
 
     $response->assertOk();
 });
@@ -18,22 +40,22 @@ test('reset password link screen can be rendered', function () {
 test('reset password link can be requested', function () {
     Notification::fake();
 
-    $user = User::factory()->create();
+    $user = User::factory()->create(['store_id' => $this->store->id]);
 
-    $this->post(route('password.email'), ['email' => $user->email]);
+    $this->post('http://demo.localhost/forgot-password', ['email' => $user->email]);
 
-    Notification::assertSentTo($user, ResetPassword::class);
+    Notification::assertSentTo($user, TenantResetPasswordNotification::class);
 });
 
 test('reset password screen can be rendered', function () {
     Notification::fake();
 
-    $user = User::factory()->create();
+    $user = User::factory()->create(['store_id' => $this->store->id]);
 
-    $this->post(route('password.email'), ['email' => $user->email]);
+    $this->post('http://demo.localhost/forgot-password', ['email' => $user->email]);
 
-    Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-        $response = $this->get(route('password.reset', $notification->token));
+    Notification::assertSentTo($user, TenantResetPasswordNotification::class, function ($notification) {
+        $response = $this->get('http://demo.localhost/reset-password/'.$notification->token);
 
         $response->assertOk();
 
@@ -44,30 +66,30 @@ test('reset password screen can be rendered', function () {
 test('password can be reset with valid token', function () {
     Notification::fake();
 
-    $user = User::factory()->create();
+    $user = User::factory()->create(['store_id' => $this->store->id]);
 
-    $this->post(route('password.email'), ['email' => $user->email]);
+    $this->post('http://demo.localhost/forgot-password', ['email' => $user->email]);
 
-    Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-        $response = $this->post(route('password.update'), [
+    Notification::assertSentTo($user, TenantResetPasswordNotification::class, function ($notification) use ($user) {
+        $response = $this->post('http://demo.localhost/reset-password', [
             'token' => $notification->token,
             'email' => $user->email,
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
         ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('login'));
+            ->assertRedirect('http://demo.localhost/login');
 
         return true;
     });
 });
 
 test('password cannot be reset with invalid token', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['store_id' => $this->store->id]);
 
-    $response = $this->post(route('password.update'), [
+    $response = $this->post('http://demo.localhost/reset-password', [
         'token' => 'invalid-token',
         'email' => $user->email,
         'password' => 'newpassword123',

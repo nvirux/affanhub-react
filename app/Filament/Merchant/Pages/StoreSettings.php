@@ -4,6 +4,7 @@ namespace App\Filament\Merchant\Pages;
 
 use App\Services\Audit\ActivityLogger;
 use App\Services\Branding\ColorHelper;
+use App\Services\Mail\TenantMailService;
 use BackedEnum;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
@@ -74,6 +75,15 @@ class StoreSettings extends Page
 
     public ?string $tawkWidgetId = '';
 
+    // Resend Email Integration
+    public ?string $resendApiKey = '';
+
+    public ?string $resendFromEmail = '';
+
+    public ?string $resendFromName = '';
+
+    public ?string $testEmailRecipient = '';
+
     public function mount()
     {
         $store = Filament::getTenant();
@@ -97,6 +107,11 @@ class StoreSettings extends Page
         $this->tawkChatEnabled = (bool) ($store->tawk_chat_enabled ?? false);
         $this->tawkPropertyId = $store->tawk_property_id ?? '';
         $this->tawkWidgetId = $store->tawk_widget_id ?? '';
+
+        $this->resendApiKey = $store->resend_api_key ?? '';
+        $this->resendFromEmail = $store->resend_from_email ?? '';
+        $this->resendFromName = $store->resend_from_name ?? '';
+        $this->testEmailRecipient = $store->contact_email ?? '';
     }
 
     public function setTab(string $tab): void
@@ -232,6 +247,22 @@ class StoreSettings extends Page
             return;
         }
 
+        $hasCustomEmail = $store->hasFeature('custom_email');
+
+        if (! empty($this->resendApiKey) || ! empty($this->resendFromEmail)) {
+            if (! $hasCustomEmail) {
+                $this->addError('resendApiKey', 'Connecting a custom Resend account requires a Pro or Enterprise plan.');
+
+                return;
+            }
+
+            if (empty($this->resendFromEmail) || ! filter_var($this->resendFromEmail, FILTER_VALIDATE_EMAIL)) {
+                $this->addError('resendFromEmail', 'Please enter a valid sender email address (e.g. support@yourdomain.com).');
+
+                return;
+            }
+        }
+
         // Capture original settings for delta/change logging
         $oldValues = [
             'name' => $store->name,
@@ -251,6 +282,8 @@ class StoreSettings extends Page
             'tawk_chat_enabled' => (bool) ($store->tawk_chat_enabled ?? false),
             'tawk_property_id' => $store->tawk_property_id,
             'tawk_widget_id' => $store->tawk_widget_id,
+            'resend_from_email' => $store->resend_from_email,
+            'resend_from_name' => $store->resend_from_name,
         ];
 
         // Handle logo upload
@@ -298,6 +331,11 @@ class StoreSettings extends Page
         $store->tawk_property_id = $this->tawkPropertyId;
         $store->tawk_widget_id = $this->tawkWidgetId;
 
+        // Resend email settings
+        $store->resend_api_key = $this->resendApiKey ?: null;
+        $store->resend_from_email = $this->resendFromEmail ?: null;
+        $store->resend_from_name = $this->resendFromName ?: null;
+
         $store->save();
 
         $newValues = [
@@ -318,6 +356,8 @@ class StoreSettings extends Page
             'tawk_chat_enabled' => (bool) ($store->tawk_chat_enabled ?? false),
             'tawk_property_id' => $store->tawk_property_id,
             'tawk_widget_id' => $store->tawk_widget_id,
+            'resend_from_email' => $store->resend_from_email,
+            'resend_from_name' => $store->resend_from_name,
         ];
 
         // Calculate changes
@@ -347,5 +387,61 @@ class StoreSettings extends Page
             ->body('Your storefront settings and theme have been updated successfully.')
             ->success()
             ->send();
+    }
+
+    public function sendTestEmail(): void
+    {
+        $store = Filament::getTenant();
+
+        if (! $store->hasFeature('custom_email')) {
+            Notification::make()
+                ->title('Plan Upgrade Required')
+                ->body('Custom Email integration requires a Pro or Enterprise plan.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        if (empty($this->resendApiKey)) {
+            $this->addError('resendApiKey', 'Please enter your Resend API Key first.');
+
+            return;
+        }
+
+        if (empty($this->resendFromEmail) || ! filter_var($this->resendFromEmail, FILTER_VALIDATE_EMAIL)) {
+            $this->addError('resendFromEmail', 'Please enter a valid sender email address.');
+
+            return;
+        }
+
+        if (empty($this->testEmailRecipient) || ! filter_var($this->testEmailRecipient, FILTER_VALIDATE_EMAIL)) {
+            $this->addError('testEmailRecipient', 'Please enter a valid email address to receive the test email.');
+
+            return;
+        }
+
+        $mailService = app(TenantMailService::class);
+        $result = $mailService->sendTestEmail(
+            store: $store,
+            apiKey: $this->resendApiKey,
+            fromEmail: $this->resendFromEmail,
+            fromName: $this->resendFromName,
+            recipient: $this->testEmailRecipient
+        );
+
+        if ($result['success']) {
+            Notification::make()
+                ->title('Test Email Sent!')
+                ->body($result['message'])
+                ->success()
+                ->send();
+        } else {
+            Notification::make()
+                ->title('Test Email Failed')
+                ->body($result['error'])
+                ->danger()
+                ->send();
+        }
     }
 }

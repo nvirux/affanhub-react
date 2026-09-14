@@ -5,25 +5,23 @@ namespace App\Notifications;
 use App\Models\Store;
 use App\Notifications\Channels\TenantMailChannel;
 use App\Services\Mail\TenantMailService;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class ResetLoginPinNotification extends Notification
+class TenantResetPasswordNotification extends ResetPassword
 {
     use Queueable;
 
-    /**
-     * Create a notification instance.
-     */
-    public function __construct(public string $token, public string $resetUrl) {}
+    public function __construct($token)
+    {
+        $this->token = $token;
+    }
 
     /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
+     * Determine delivery channels based on whether the store has custom Resend configured.
      */
-    public function via(object $notifiable): array
+    public function via($notifiable)
     {
         $store = $this->getStore($notifiable);
 
@@ -37,47 +35,49 @@ class ResetLoginPinNotification extends Notification
     /**
      * Payload for TenantMailChannel (Resend API).
      */
-    public function toTenantMail(object $notifiable): array
+    public function toTenantMail($notifiable): array
     {
         $store = $this->getStore($notifiable);
         $storeName = $store?->name ?: config('app.name', 'AffanHub');
+        $resetUrl = $this->resetUrl($notifiable);
 
         $mailService = app(TenantMailService::class);
         $html = $mailService->renderBrandedTemplate(
             store: $store,
-            title: "Reset Your 4-Digit Login PIN - {$storeName}",
+            title: "Reset Password - {$storeName}",
             greeting: "Hello {$notifiable->name},",
             lines: [
-                "You are receiving this email because we received a request to reset the 4-digit Login PIN for your account on {$storeName}.",
-                'Click the button below to set a new 4-digit PIN.',
+                "You are receiving this email because we received a password reset request for your account on {$storeName}.",
+                'Click the button below to choose a new secure password.',
             ],
-            actionText: 'Reset Login PIN',
-            actionUrl: $this->resetUrl,
-            subtext: 'This PIN reset link will expire in 60 minutes. If you did not request a PIN reset, please ignore this email or contact support.'
+            actionText: 'Reset Password',
+            actionUrl: $resetUrl,
+            subtext: 'This password reset link will expire in 60 minutes. If you did not request a password reset, no further action is required.'
         );
 
         return [
             'store' => $store,
-            'subject' => "Reset Your 4-Digit Login PIN - {$storeName}",
+            'subject' => "Reset Password - {$storeName}",
             'html' => $html,
         ];
     }
 
     /**
-     * Get the mail representation of the notification.
+     * Build the standard MailMessage (with store branding) for fallback delivery.
      */
-    public function toMail(object $notifiable): MailMessage
+    public function toMail($notifiable): MailMessage
     {
         $store = $this->getStore($notifiable);
         $storeName = $store?->name ?: config('app.name', 'AffanHub');
+        $resetUrl = $this->resetUrl($notifiable);
 
         $mailMessage = (new MailMessage)
-            ->subject("Reset Your 4-Digit Login PIN - {$storeName}")
+            ->subject("Reset Password - {$storeName}")
             ->greeting("Hello {$notifiable->name},")
-            ->line("You are receiving this email because we received a request to reset the 4-digit Login PIN for your account on {$storeName}.")
-            ->action('Reset Login PIN', $this->resetUrl)
-            ->line('This PIN reset link will expire in 60 minutes.')
-            ->line('If you did not request a PIN reset, please ignore this email or contact support if you suspect unauthorized activity.')
+            ->line("You are receiving this email because we received a password reset request for your account on {$storeName}.")
+            ->action('Reset Password', $resetUrl)
+            ->line('This password reset link will expire in 60 minutes.')
+            ->line('If you did not request a password reset, no further action is required.')
             ->salutation("Regards,\n{$storeName}");
 
         if ($store) {
@@ -88,6 +88,14 @@ class ResetLoginPinNotification extends Notification
         }
 
         return $mailMessage;
+    }
+
+    protected function resetUrl($notifiable)
+    {
+        return route('password.reset', [
+            'token' => $this->token,
+            'email' => $notifiable->getEmailForPasswordReset(),
+        ]);
     }
 
     protected function getStore(object $notifiable): ?Store

@@ -214,4 +214,18 @@ class Store extends BaseTenant implements TenantWithDatabase
     {
         return $this->hasMany(StaffInvitation::class);
     }
+
+    protected function casts(): array
+    {
+        return [
+            'resend_api_key' => 'encrypted',
+        ];
+    }
+
+    public function hasCustomEmail(): bool
+    {
+        return $this->hasFeature('custom_email')
+            && ! empty($this->resend_api_key)
+            && ! empty($this->resend_from_email);
+    }
 }

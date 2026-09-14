@@ -55,6 +55,13 @@ class PlanAndFeatureSeeder extends Seeder
                 'default_value' => 'false',
                 'description' => 'Allows custom HEX brand colors, custom favicon upload, and advanced web chat widgets.',
             ],
+            [
+                'name' => 'Custom Email (Resend)',
+                'slug' => 'custom_email',
+                'type' => 'boolean',
+                'default_value' => 'false',
+                'description' => 'Allows connecting a custom Resend account to send emails from the store domain.',
+            ],
         ];
 
         $featureModels = [];
@@ -104,6 +111,7 @@ class PlanAndFeatureSeeder extends Seeder
                 'custom_pricing_margins' => 'false',
                 'referral_system' => 'false',
                 'custom_branding' => 'false',
+                'custom_email' => 'false',
             ],
             'pro' => [
                 'staff_limit' => '10',
@@ -112,6 +120,7 @@ class PlanAndFeatureSeeder extends Seeder
                 'custom_pricing_margins' => 'true',
                 'referral_system' => 'true',
                 'custom_branding' => 'true',
+                'custom_email' => 'true',
             ],
             'enterprise' => [
                 'staff_limit' => '999', // Representation of "unlimited"
@@ -120,6 +129,7 @@ class PlanAndFeatureSeeder extends Seeder
                 'custom_pricing_margins' => 'true',
                 'referral_system' => 'true',
                 'custom_branding' => 'true',
+                'custom_email' => 'true',
             ],
         ];
 
