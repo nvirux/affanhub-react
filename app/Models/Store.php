@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
@@ -37,6 +38,15 @@ class Store extends BaseTenant implements TenantWithDatabase
         static::creating(function (Store $store) {
             if (empty($store->public_id)) {
                 $store->public_id = 'str_'.strtolower(Str::random(10));
+            }
+        });
+
+        static::deleting(function (Store $store) {
+            if ($store->logo_path) {
+                Storage::delete($store->logo_path);
+            }
+            if ($store->favicon_path) {
+                Storage::delete($store->favicon_path);
             }
         });
     }

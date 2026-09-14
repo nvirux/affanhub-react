@@ -275,7 +275,7 @@
                                 <div style="display: flex; align-items: center; gap: 1rem;">
                                     @if ($logoPath)
                                         <div style="position: relative; width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <img src="{{ asset('storage/' . $logoPath) }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                            <img src="{{ \Illuminate\Support\Facades\Storage::url($logoPath) }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                                         </div>
                                         <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                                             <span style="font-size: 0.875rem; font-weight: 600; color: #374151;">Logo uploaded</span>
@@ -520,7 +520,7 @@
                                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                                     @if ($faviconPath)
                                         <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <img src="{{ asset('storage/' . $faviconPath) }}" style="max-width: 32px; max-height: 32px; object-fit: contain;">
+                                            <img src="{{ \Illuminate\Support\Facades\Storage::url($faviconPath) }}" style="max-width: 32px; max-height: 32px; object-fit: contain;">
                                         </div>
                                         <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                                             <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Custom Favicon</span>

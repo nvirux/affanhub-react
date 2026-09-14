@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Store;
 use App\Services\Branding\ColorHelper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -61,7 +62,7 @@ class HandleInertiaRequests extends Middleware
                 'social_instagram' => tenant('social_instagram'),
                 'social_facebook' => tenant('social_facebook'),
                 'social_whatsapp' => tenant('social_whatsapp'),
-                'logo_url' => tenant('logo_path') ? global_asset('storage/'.tenant('logo_path')) : null,
+                'logo_url' => tenant('logo_path') ? Storage::url(tenant('logo_path')) : null,
                 'whatsapp_chat_enabled' => (bool) (tenant('whatsapp_chat_enabled') ?? false),
                 'whatsapp_chat_phone' => (function () {
                     $phone = tenant('whatsapp_chat_phone');

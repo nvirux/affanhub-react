@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class StorefrontController extends Controller
 {
@@ -33,7 +34,7 @@ class StorefrontController extends Controller
         }
 
         if ($store && $store->logo_path) {
-            $storeArray['logo_url'] = global_asset('storage/'.$store->logo_path);
+            $storeArray['logo_url'] = Storage::url($store->logo_path);
         } else {
             $storeArray['logo_url'] = null;
         }

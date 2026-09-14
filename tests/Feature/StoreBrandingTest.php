@@ -16,6 +16,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     Storage::fake('public');
+    Storage::fake(config('filesystems.default'));
 
     $this->owner = Owner::create([
         'name' => 'Merchant Owner',
@@ -178,7 +179,7 @@ test('merchant with pro custom branding can upload favicon and use custom hex', 
     $this->store->refresh();
     expect($this->store->primary_color)->toBe('#123456')
         ->and($this->store->favicon_path)->not->toBeNull();
-    Storage::disk('public')->assertExists($this->store->favicon_path);
+    Storage::disk(config('filesystems.default'))->assertExists($this->store->favicon_path);
 
     // Test removing favicon
     Livewire::test(StoreSettings::class)

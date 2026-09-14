@@ -9,6 +9,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedOnDomainException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -38,4 +39,29 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        $exceptions->render(function (TenantCouldNotBeIdentifiedOnDomainException $e, Request $request) {
+            $scheme = $request->getScheme();
+            $host = $request->getHost();
+            $port = $request->getPort();
+            $portString = ($port && ! in_array($port, [80, 443])) ? ":{$port}" : '';
+
+            $appHost = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
+            if (str_contains($host, 'localhost') || $host === '127.0.0.1') {
+                $centralUrl = "{$scheme}://localhost{$portString}";
+                $merchantRegisterUrl = "{$scheme}://merchant.localhost{$portString}/register";
+                $merchantLoginUrl = "{$scheme}://merchant.localhost{$portString}/login";
+            } else {
+                $centralUrl = "{$scheme}://{$appHost}{$portString}";
+                $merchantRegisterUrl = "{$scheme}://merchant.{$appHost}{$portString}/register";
+                $merchantLoginUrl = "{$scheme}://merchant.{$appHost}{$portString}/login";
+            }
+
+            return response()->view('errors.store-not-found', [
+                'domain' => $host,
+                'centralUrl' => $centralUrl,
+                'merchantRegisterUrl' => $merchantRegisterUrl,
+                'merchantLoginUrl' => $merchantLoginUrl,
+            ], 404);
+        });
     })->create();

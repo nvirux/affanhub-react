@@ -32,8 +32,8 @@
 
         {{-- Tenant Favicon or System Default --}}
         @if(tenant() && tenant('favicon_path'))
-            <link rel="icon" href="{{ global_asset('storage/' . tenant('favicon_path')) }}" sizes="any">
-            <link rel="apple-touch-icon" href="{{ global_asset('storage/' . tenant('favicon_path')) }}">
+            <link rel="icon" href="{{ \Illuminate\Support\Facades\Storage::url(tenant('favicon_path')) }}" sizes="any">
+            <link rel="apple-touch-icon" href="{{ \Illuminate\Support\Facades\Storage::url(tenant('favicon_path')) }}">
         @else
             <link rel="icon" href="/affan-icon.png" type="image/png">
             <link rel="shortcut icon" href="/affan-icon.png" type="image/png">

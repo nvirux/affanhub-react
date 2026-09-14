@@ -114,6 +114,7 @@ class StoreSettings extends Page
         $store = Filament::getTenant();
 
         if ($store->logo_path) {
+            Storage::delete($store->logo_path);
             Storage::disk('public')->delete($store->logo_path);
 
             $oldValues = [
@@ -149,6 +150,7 @@ class StoreSettings extends Page
         $store = Filament::getTenant();
 
         if ($store->favicon_path) {
+            Storage::delete($store->favicon_path);
             Storage::disk('public')->delete($store->favicon_path);
 
             $oldFavicon = $store->favicon_path;
@@ -253,8 +255,12 @@ class StoreSettings extends Page
 
         // Handle logo upload
         if ($this->logo) {
+            if ($store->logo_path) {
+                Storage::delete($store->logo_path);
+                Storage::disk('public')->delete($store->logo_path);
+            }
             $tenantId = $store->id;
-            $path = $this->logo->store("logos/{$tenantId}", 'public');
+            $path = $this->logo->store("logos/{$tenantId}");
             $store->logo_path = $path;
             $this->logoPath = $path;
             $this->logo = null; // Clear livewire file property
@@ -262,8 +268,12 @@ class StoreSettings extends Page
 
         // Handle favicon upload
         if ($this->favicon) {
+            if ($store->favicon_path) {
+                Storage::delete($store->favicon_path);
+                Storage::disk('public')->delete($store->favicon_path);
+            }
             $tenantId = $store->id;
-            $path = $this->favicon->store("favicons/{$tenantId}", 'public');
+            $path = $this->favicon->store("favicons/{$tenantId}");
             $store->favicon_path = $path;
             $this->faviconPath = $path;
             $this->favicon = null; // Clear livewire file property
