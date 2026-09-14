@@ -60,11 +60,13 @@ class MigrateOldAffanHubCommand extends Command
         $oldTenantWallets = $this->queryOld('SELECT * FROM tenant_wallets');
         $oldProfitWallets = $this->tableExists('tenant_profit_wallets') ? $this->queryOld('SELECT * FROM tenant_profit_wallets') : [];
         $oldDomains = $this->tableExists('domains') ? $this->queryOld('SELECT * FROM domains') : [];
-        $oldVirtualAccounts = $this->tableExists('customer_virtual_accounts') ? $this->queryOld('SELECT * FROM customer_virtual_accounts') : [];
+        $oldVirtualAccounts = $this->tableExists('customer_virtual_accounts')
+            ? $this->queryOld("SELECT * FROM customer_virtual_accounts WHERE LOWER(TRIM(provider)) = 'paymint'")
+            : [];
         $oldTransactions = $this->tableExists('transactions') ? $this->queryOld('SELECT * FROM transactions') : [];
 
         $this->info(sprintf(
-            'Found in old database: %d Admins, %d Tenants/Stores, %d Domains, %d Users, %d Virtual Accounts, %d Transactions.',
+            'Found in old database: %d Admins, %d Tenants/Stores, %d Domains, %d Users, %d Virtual Accounts (PayMint), %d Transactions.',
             count($oldAdmins),
             count($oldTenants),
             count($oldDomains),
@@ -89,10 +91,10 @@ class MigrateOldAffanHubCommand extends Command
 
         $dryRunSummary = [
             'Admins to migrate' => count($oldAdmins),
-            'Owners to create' => count($ownerUserIds),
+            'Owners to create (Merchant Panel)' => count($ownerUserIds),
             'Stores to create (tenant_id preserved)' => count($oldTenants),
-            'Customers to migrate' => count($oldUsers) - count($ownerUserIds),
-            'Virtual Accounts to migrate' => count($oldVirtualAccounts),
+            'Users to migrate (exact user_id preserved)' => count($oldUsers),
+            'Virtual Accounts (PayMint only)' => count($oldVirtualAccounts),
             'Transactions to migrate' => count($oldTransactions),
         ];
 
@@ -280,67 +282,72 @@ class MigrateOldAffanHubCommand extends Command
                 }
             }
 
-            // E. Migrate Customers (Users who are not owners)
-            $this->info('Migrating End-Users / Store Customers...');
+            // E. Migrate All Users (Preserving exact original user IDs)
+            $this->info('Migrating Users (preserving exact IDs for all users & owners)...');
             $userIdMap = []; // old user_id => new user_id
             foreach ($oldUsers as $u) {
-                if (! isset($ownerUserIds[$u['id']])) {
-                    $storeId = (int) ($u['tenant_id'] ?? 1);
-                    if (! Store::where('id', $storeId)->exists()) {
-                        $storeId = Store::first()?->id ?? 1;
-                    }
+                $userId = (int) $u['id'];
+                $storeId = (int) ($u['tenant_id'] ?? 1);
+                if (! Store::where('id', $storeId)->exists()) {
+                    $storeId = Store::first()?->id ?? 1;
+                }
 
-                    $phone = $u['phone_number'] ?? $u['phone'] ?? ('080'.rand(10000000, 99999999));
+                $phone = $u['phone_number'] ?? $u['phone'] ?? ('080'.rand(10000000, 99999999));
 
-                    $newUser = User::updateOrCreate(
-                        ['email' => $u['email']],
+                $newUser = User::updateOrCreate(
+                    ['id' => $userId],
+                    [
+                        'store_id' => $storeId,
+                        'name' => $u['name'],
+                        'email' => $u['email'],
+                        'phone' => $phone,
+                        'bvn' => $u['bvn'] ?? null,
+                        'nin' => $u['nin'] ?? null,
+                        'password' => $u['password'],
+                        'email_verified_at' => ! empty($u['email_verified_at']) ? $u['email_verified_at'] : ($u['created_at'] ?? now()),
+                        'created_at' => $u['created_at'] ?? now(),
+                        'updated_at' => $u['updated_at'] ?? now(),
+                    ]
+                );
+
+                $userIdMap[$u['id']] = $newUser->id;
+
+                // Migrate user balance
+                $userBal = (float) ($u['balance'] ?? 0.00);
+                $userWallet = $newUser->wallet('main');
+                $userWallet->update([
+                    'balance' => $userBal,
+                    'created_at' => $u['created_at'] ?? now(),
+                    'updated_at' => $u['updated_at'] ?? now(),
+                ]);
+
+                if ($userBal > 0) {
+                    WalletTransaction::updateOrCreate(
+                        ['reference' => 'MIG_USER_'.$u['id']],
                         [
-                            'store_id' => $storeId,
-                            'name' => $u['name'],
-                            'phone' => $phone,
-                            'bvn' => $u['bvn'] ?? null,
-                            'nin' => $u['nin'] ?? null,
-                            'password' => $u['password'],
-                            'email_verified_at' => ! empty($u['email_verified_at']) ? $u['email_verified_at'] : ($u['created_at'] ?? now()),
+                            'wallet_id' => $userWallet->id,
+                            'type' => 'credit',
+                            'category' => 'migration_balance',
+                            'amount' => $userBal,
+                            'balance_before' => 0.00,
+                            'balance_after' => $userBal,
+                            'description' => 'Initial Customer Balance migrated from AffanHub v1',
+                            'status' => 'success',
                             'created_at' => $u['created_at'] ?? now(),
                             'updated_at' => $u['updated_at'] ?? now(),
                         ]
                     );
-
-                    $userIdMap[$u['id']] = $newUser->id;
-
-                    // Migrate user balance
-                    $userBal = (float) ($u['balance'] ?? 0.00);
-                    $userWallet = $newUser->wallet('main');
-                    $userWallet->update([
-                        'balance' => $userBal,
-                        'created_at' => $u['created_at'] ?? now(),
-                        'updated_at' => $u['updated_at'] ?? now(),
-                    ]);
-
-                    if ($userBal > 0) {
-                        WalletTransaction::updateOrCreate(
-                            ['reference' => 'MIG_USER_'.$u['id']],
-                            [
-                                'wallet_id' => $userWallet->id,
-                                'type' => 'credit',
-                                'category' => 'migration_balance',
-                                'amount' => $userBal,
-                                'balance_before' => 0.00,
-                                'balance_after' => $userBal,
-                                'description' => 'Initial Customer Balance migrated from AffanHub v1',
-                                'status' => 'success',
-                                'created_at' => $u['created_at'] ?? now(),
-                                'updated_at' => $u['updated_at'] ?? now(),
-                            ]
-                        );
-                    }
                 }
             }
 
-            // F. Migrate Virtual Accounts
-            $this->info('Migrating Virtual Accounts...');
+            // F. Migrate Virtual Accounts (PayMint Only)
+            $this->info('Migrating Virtual Accounts (PayMint only)...');
             foreach ($oldVirtualAccounts as $va) {
+                $provider = strtolower(trim((string) ($va['provider'] ?? '')));
+                if ($provider !== 'paymint') {
+                    continue;
+                }
+
                 $mappedUserId = $userIdMap[$va['user_id']] ?? null;
                 if (! $mappedUserId) {
                     continue;
@@ -353,8 +360,8 @@ class MigrateOldAffanHubCommand extends Command
                         'holder_id' => $mappedUserId,
                         'bank_name' => $va['bank_name'] ?? 'Bank',
                         'account_name' => $va['account_name'] ?? $va['customer_name'] ?? 'AffanHub Customer',
-                        'email_alias' => $va['customer_email'] ?? null,
-                        'provider' => $va['provider'] ?? 'paymint',
+                        'email_alias' => $va['customer_email'] ?? $va['email_alias'] ?? null,
+                        'provider' => 'paymint',
                         'status' => $va['status'] ?? 'active',
                         'reference' => $va['account_reference'] ?? ('VA_'.Str::random(12)),
                         'meta' => ! empty($va['meta']) ? json_decode($va['meta'], true) : [],
