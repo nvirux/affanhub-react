@@ -69,6 +69,7 @@ Route::middleware([
     // Customer Dashboard
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/user/dashboard', [DashboardController::class, 'index'])->name('user.dashboard');
 
         Route::post('/virtual-account/generate', [VirtualAccountController::class, 'generate'])
             ->name('virtual-account.generate');
@@ -81,6 +82,10 @@ Route::middleware([
 
         require __DIR__.'/vtu.php';
     });
+
+    // Legacy Auth URL Redirects (for mobile apps pointing to /auth/login
+    Route::redirect('/auth/login', '/login');
+    Route::redirect('/auth/register', '/register');
 
     // Support & Contact Page
     Route::get('/contact', function () {
