@@ -29,7 +29,6 @@ return [
     'central_domains' => array_values(array_unique(array_filter([
         '127.0.0.1',
         $appHost,
-        $appHost ? 'app.'.$appHost : 'app.localhost', // Main App / Platform Portal
         $appHost ? 'merchant.'.$appHost : 'merchant.localhost', // Filament Merchant Panel Domain
         $appHost ? 'admin.'.$appHost : 'admin.localhost', // Filament Admin Panel Domain
     ]))),
