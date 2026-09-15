@@ -129,7 +129,8 @@ class StoreSettings extends Page
         $store = Filament::getTenant();
 
         if ($store->logo_path) {
-            Storage::delete($store->logo_path);
+            $storageDisk = config('filesystems.default');
+            Storage::disk($storageDisk)->delete($store->logo_path);
             Storage::disk('public')->delete($store->logo_path);
 
             $oldValues = [
@@ -165,7 +166,8 @@ class StoreSettings extends Page
         $store = Filament::getTenant();
 
         if ($store->favicon_path) {
-            Storage::delete($store->favicon_path);
+            $storageDisk = config('filesystems.default');
+            Storage::disk($storageDisk)->delete($store->favicon_path);
             Storage::disk('public')->delete($store->favicon_path);
 
             $oldFavicon = $store->favicon_path;
@@ -206,8 +208,8 @@ class StoreSettings extends Page
             'socialWhatsapp' => 'nullable|string',
 
             'primaryColor' => 'required|string',
-            'favicon' => 'nullable|file|mimes:png,ico,svg|max:512',
-            'logo' => 'nullable|image|max:1024', // max 1MB
+            'favicon' => 'nullable|file|mimes:png,ico,svg|max:2048',
+            'logo' => 'nullable|file|mimes:jpeg,jpg,png,webp,svg|max:5120', // max 5MB
             'whatsappChatPhone' => 'nullable|string',
             'whatsappChatMessage' => 'nullable|string|max:200',
             'tawkPropertyId' => 'nullable|string',
@@ -286,14 +288,16 @@ class StoreSettings extends Page
             'resend_from_name' => $store->resend_from_name,
         ];
 
+        $storageDisk = config('filesystems.default');
+
         // Handle logo upload
         if ($this->logo) {
             if ($store->logo_path) {
-                Storage::delete($store->logo_path);
+                Storage::disk($storageDisk)->delete($store->logo_path);
                 Storage::disk('public')->delete($store->logo_path);
             }
             $tenantId = $store->id;
-            $path = $this->logo->store("logos/{$tenantId}");
+            $path = $this->logo->store("logos/{$tenantId}", $storageDisk);
             $store->logo_path = $path;
             $this->logoPath = $path;
             $this->logo = null; // Clear livewire file property
@@ -302,11 +306,11 @@ class StoreSettings extends Page
         // Handle favicon upload
         if ($this->favicon) {
             if ($store->favicon_path) {
-                Storage::delete($store->favicon_path);
+                Storage::disk($storageDisk)->delete($store->favicon_path);
                 Storage::disk('public')->delete($store->favicon_path);
             }
             $tenantId = $store->id;
-            $path = $this->favicon->store("favicons/{$tenantId}");
+            $path = $this->favicon->store("favicons/{$tenantId}", $storageDisk);
             $store->favicon_path = $path;
             $this->faviconPath = $path;
             $this->favicon = null; // Clear livewire file property

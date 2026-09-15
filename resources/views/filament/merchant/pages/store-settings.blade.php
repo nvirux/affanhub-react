@@ -292,12 +292,24 @@
                                             <button type="button" wire:click="removeLogo" style="font-size: 0.75rem; font-weight: 700; color: #dc2626; text-align: left; background: none; border: none; cursor: pointer; padding: 0;">Remove Logo</button>
                                         </div>
                                     @elseif ($logo)
+                                        @php
+                                            $logoPreview = null;
+                                            try {
+                                                $logoPreview = $logo->temporaryUrl();
+                                            } catch (\Throwable) {
+                                                $logoPreview = null;
+                                            }
+                                        @endphp
                                         <div style="position: relative; width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <img src="{{ $logo->temporaryUrl() }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                            @if ($logoPreview)
+                                                <img src="{{ $logoPreview }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                            @else
+                                                <span style="font-size: 1.5rem;">🖼️</span>
+                                            @endif
                                         </div>
                                         <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                            <span style="font-size: 0.875rem; font-weight: 600; color: #374151;">Preview logo</span>
-                                            <span style="font-size: 0.75rem; color: #6b7280;">Ready to save</span>
+                                            <span style="font-size: 0.875rem; font-weight: 600; color: #374151;">New logo selected</span>
+                                            <span style="font-size: 0.75rem; color: #16a34a; font-weight: 600;">Ready to save</span>
                                         </div>
                                     @else
                                         <div style="width: 56px; height: 56px; border-radius: 8px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 1.25rem; font-weight: 800; flex-shrink: 0;">
@@ -305,7 +317,7 @@
                                         </div>
                                         <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                                             <span style="font-size: 0.875rem; font-weight: 600; color: #374151;">No logo</span>
-                                            <span style="font-size: 0.75rem; color: #6b7280;">PNG / JPG (max 1MB)</span>
+                                            <span style="font-size: 0.75rem; color: #6b7280;">PNG / JPG / WEBP (max 5MB)</span>
                                         </div>
                                     @endif
                                 </div>
@@ -537,11 +549,24 @@
                                             <button type="button" wire:click="removeFavicon" style="font-size: 0.75rem; font-weight: 700; color: #dc2626; text-align: left; background: none; border: none; cursor: pointer; padding: 0;">Remove</button>
                                         </div>
                                     @elseif ($favicon)
+                                        @php
+                                            $faviconPreview = null;
+                                            try {
+                                                $faviconPreview = $favicon->temporaryUrl();
+                                            } catch (\Throwable) {
+                                                $faviconPreview = null;
+                                            }
+                                        @endphp
                                         <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <img src="{{ $favicon->temporaryUrl() }}" style="max-width: 32px; max-height: 32px; object-fit: contain;">
+                                            @if ($faviconPreview)
+                                                <img src="{{ $faviconPreview }}" style="max-width: 32px; max-height: 32px; object-fit: contain;">
+                                            @else
+                                                <span style="font-size: 1.25rem;">🌐</span>
+                                            @endif
                                         </div>
                                         <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                            <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Ready to save</span>
+                                            <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">New icon selected</span>
+                                            <span style="font-size: 0.75rem; color: #16a34a; font-weight: 600;">Ready to save</span>
                                         </div>
                                     @else
                                         <div style="width: 44px; height: 44px; border-radius: 8px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 1.125rem; flex-shrink: 0;">

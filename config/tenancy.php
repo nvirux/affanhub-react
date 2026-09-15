@@ -29,6 +29,7 @@ return [
     'central_domains' => array_values(array_unique(array_filter([
         '127.0.0.1',
         $appHost,
+        $appHost ? 'app.'.$appHost : 'app.localhost', // Main App / Platform Portal
         $appHost ? 'merchant.'.$appHost : 'merchant.localhost', // Filament Merchant Panel Domain
         $appHost ? 'admin.'.$appHost : 'admin.localhost', // Filament Admin Panel Domain
     ]))),
@@ -37,7 +38,7 @@ return [
      * A list of slugs that merchants are not allowed to use for their stores.
      */
     'reserved_tenant_ids' => [
-        'admin', 'merchant', 'api', 'app', 'www', 'support', 'help', 'blog', 'billing', 'docs',
+        'admin', 'merchant', 'api', 'app', 'www', 'support', 'help', 'blog', 'billing', 'docs', 'cname', 'mail', 'assets',
     ],
 
     /**
