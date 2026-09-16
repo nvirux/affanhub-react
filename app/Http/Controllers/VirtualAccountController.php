@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Services\Payment\PayMintService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 
 class VirtualAccountController extends Controller
@@ -51,7 +53,13 @@ class VirtualAccountController extends Controller
             );
 
             return Redirect::back()->with('success', 'Virtual account generated successfully! Bank: '.$account->bank_name);
+        } catch (QueryException $e) {
+            Log::error('Virtual Account Generation DB Error: '.$e->getMessage(), ['exception' => $e]);
+
+            return Redirect::back()->with('error', 'A database collision occurred while creating the virtual account. Please contact support.');
         } catch (\Throwable $e) {
+            Log::error('Virtual Account Generation Error: '.$e->getMessage(), ['exception' => $e]);
+
             return Redirect::back()->with('error', $e->getMessage());
         }
     }

@@ -25,8 +25,6 @@ export default function Dashboard() {
     const user = auth?.user;
     const { appearance, updateAppearance } = useAppearance();
     const [themeMenuOpen, setThemeMenuOpen] = useState(false);
-    const [phone, setPhone] = useState(user?.phone || '');
-    const [name, setName] = useState(user?.name || '');
 
     const getIconComponent = (iconName: string, category: string) => {
         const cls = "w-5 h-5 md:w-7 md:h-7 stroke-[1.75]";
@@ -83,8 +81,8 @@ export default function Dashboard() {
         router.post('/virtual-account/generate', {
             type: kycType,
             number: kycNumber,
-            phone: phone || user?.phone,
-            name: name || user?.name,
+            phone: user?.phone,
+            name: user?.name,
         }, {
             onFinish: () => setIsGenerating(false),
             onSuccess: () => {
@@ -963,19 +961,6 @@ export default function Dashboard() {
                                     >
                                         BVN (Bank Verif. No)
                                     </button>
-                                </div>
-
-                                <div>
-                                    <label className="text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1 block">
-                                        Account Holder Full Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        placeholder="Full Name"
-                                        className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary"
-                                    />
                                 </div>
 
                                 <div>
