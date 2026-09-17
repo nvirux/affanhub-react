@@ -13,6 +13,7 @@ interface TransactionItem {
     service_type: string;
     recipient: string;
     amount: number;
+    amount_paid?: number;
     status: 'successful' | 'pending' | 'failed';
     created_at: string;
     date: string;
@@ -198,7 +199,7 @@ export default function TransactionsIndex({
                                         <div className="flex items-center gap-3 shrink-0">
                                             <div className="text-right space-y-1">
                                                 <div className="font-extrabold text-sm text-slate-900 dark:text-white">
-                                                    ₦{Number(tx.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                                    ₦{Number(tx.amount_paid || tx.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                                                 </div>
                                                 <span
                                                     className={cn(

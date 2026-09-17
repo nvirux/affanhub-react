@@ -169,9 +169,9 @@ export default function TransactionShow({
                             {isSuccess ? 'Transaction Successful' : isPending ? 'Processing' : 'Failed'}
                         </span>
 
-                        {/* Face Amount as Hero Display */}
+                        {/* Paid Amount as Hero Display */}
                         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                            ₦{Number(transaction.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                            ₦{Number(transaction.amount_paid || transaction.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                         </h2>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                             {isSuccess
@@ -201,7 +201,7 @@ export default function TransactionShow({
                         <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800">
                             <span className="text-slate-400 dark:text-slate-500 font-medium">Recharge Value</span>
                             <span className="font-bold text-slate-900 dark:text-white">
-                                ₦{Number(transaction.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                ₦{Number(transaction.amount_paid || transaction.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                             </span>
                         </div>
 

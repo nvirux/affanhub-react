@@ -61,8 +61,8 @@ class DataService
 
         // Resolve pricing & wholesale ledger
         $customerRetailPrice = (float) ($storeDataPlan->selling_price ?? $dataPlan->default_retail_price);
-        $facePrice = (float) ($dataPlan->default_retail_price ?? $customerRetailPrice);
-        $discountAmount = max(0, round($facePrice - $customerRetailPrice, 2));
+        $facePrice = $customerRetailPrice;
+        $discountAmount = 0.00;
 
         $subscription = $store->subscription;
         $tierPrice = null;

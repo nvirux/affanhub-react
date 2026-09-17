@@ -61,7 +61,7 @@ class DashboardController extends Controller
                 'reference' => $tx->reference,
                 'service_type' => $tx->service_type,
                 'recipient' => $tx->recipient,
-                'amount' => (float) $tx->amount,
+                'amount' => (float) ($tx->amount_paid > 0 ? $tx->amount_paid : $tx->amount),
                 'discount' => (float) ($tx->discount ?? 0.00),
                 'amount_paid' => (float) ($tx->amount_paid > 0 ? $tx->amount_paid : $tx->amount),
                 'status' => in_array($tx->status, ['success', 'successful', 'completed'], true) ? 'successful' : ($tx->status === 'pending' ? 'pending' : 'failed'),
