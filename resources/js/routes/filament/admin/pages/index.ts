@@ -1,5 +1,83 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
+* @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
+ * @see app/Filament/Pages/PlatformPaymentSettings.php:7
+ * @route '//admin.localhost/platform-payment-settings'
+ */
+export const platformPaymentSettings = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: platformPaymentSettings.url(options),
+    method: 'get',
+})
+
+platformPaymentSettings.definition = {
+    methods: ["get","head"],
+    url: '//admin.localhost/platform-payment-settings',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
+ * @see app/Filament/Pages/PlatformPaymentSettings.php:7
+ * @route '//admin.localhost/platform-payment-settings'
+ */
+platformPaymentSettings.url = (options?: RouteQueryOptions) => {
+    return platformPaymentSettings.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
+ * @see app/Filament/Pages/PlatformPaymentSettings.php:7
+ * @route '//admin.localhost/platform-payment-settings'
+ */
+platformPaymentSettings.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: platformPaymentSettings.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
+ * @see app/Filament/Pages/PlatformPaymentSettings.php:7
+ * @route '//admin.localhost/platform-payment-settings'
+ */
+platformPaymentSettings.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: platformPaymentSettings.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
+ * @see app/Filament/Pages/PlatformPaymentSettings.php:7
+ * @route '//admin.localhost/platform-payment-settings'
+ */
+    const platformPaymentSettingsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: platformPaymentSettings.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
+ * @see app/Filament/Pages/PlatformPaymentSettings.php:7
+ * @route '//admin.localhost/platform-payment-settings'
+ */
+        platformPaymentSettingsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: platformPaymentSettings.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
+ * @see app/Filament/Pages/PlatformPaymentSettings.php:7
+ * @route '//admin.localhost/platform-payment-settings'
+ */
+        platformPaymentSettingsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: platformPaymentSettings.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    platformPaymentSettings.form = platformPaymentSettingsForm
+/**
 * @see \Filament\Pages\Dashboard::__invoke
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//admin.localhost'
@@ -78,7 +156,8 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     dashboard.form = dashboardForm
 const pages = {
-    dashboard: Object.assign(dashboard, dashboard),
+    platformPaymentSettings: Object.assign(platformPaymentSettings, platformPaymentSettings),
+dashboard: Object.assign(dashboard, dashboard),
 }
 
 export default pages

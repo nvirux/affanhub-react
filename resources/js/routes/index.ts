@@ -523,7 +523,7 @@ wallet.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     wallet.form = walletForm
 /**
- * @see routes/tenant.php:86
+ * @see routes/tenant.php:95
  * @route '/contact'
  */
 export const contact = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -537,7 +537,7 @@ contact.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/tenant.php:86
+ * @see routes/tenant.php:95
  * @route '/contact'
  */
 contact.url = (options?: RouteQueryOptions) => {
@@ -545,7 +545,7 @@ contact.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/tenant.php:86
+ * @see routes/tenant.php:95
  * @route '/contact'
  */
 contact.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -553,7 +553,7 @@ contact.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/tenant.php:86
+ * @see routes/tenant.php:95
  * @route '/contact'
  */
 contact.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -562,7 +562,7 @@ contact.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
- * @see routes/tenant.php:86
+ * @see routes/tenant.php:95
  * @route '/contact'
  */
     const contactForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -571,7 +571,7 @@ contact.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
- * @see routes/tenant.php:86
+ * @see routes/tenant.php:95
  * @route '/contact'
  */
         contactForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -579,7 +579,7 @@ contact.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
- * @see routes/tenant.php:86
+ * @see routes/tenant.php:95
  * @route '/contact'
  */
         contactForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

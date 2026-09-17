@@ -1,6 +1,7 @@
 import HomeController from './HomeController'
 import ImpersonationController from './ImpersonationController'
 import BillingCheckoutCallbackController from './BillingCheckoutCallbackController'
+import Merchant from './Merchant'
 import Webhook from './Webhook'
 import Auth from './Auth'
 import DashboardController from './DashboardController'
@@ -15,6 +16,7 @@ const Controllers = {
     HomeController: Object.assign(HomeController, HomeController),
 ImpersonationController: Object.assign(ImpersonationController, ImpersonationController),
 BillingCheckoutCallbackController: Object.assign(BillingCheckoutCallbackController, BillingCheckoutCallbackController),
+Merchant: Object.assign(Merchant, Merchant),
 Webhook: Object.assign(Webhook, Webhook),
 Auth: Object.assign(Auth, Auth),
 DashboardController: Object.assign(DashboardController, DashboardController),

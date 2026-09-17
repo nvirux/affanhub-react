@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:16
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:68
  * @route '/login/check-identifier'
  */
 export const checkIdentifier = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ checkIdentifier.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:16
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:68
  * @route '/login/check-identifier'
  */
 checkIdentifier.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ checkIdentifier.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:16
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:68
  * @route '/login/check-identifier'
  */
 checkIdentifier.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ checkIdentifier.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
 
     /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:16
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:68
  * @route '/login/check-identifier'
  */
     const checkIdentifierForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ checkIdentifier.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
 
             /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:16
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:68
  * @route '/login/check-identifier'
  */
         checkIdentifierForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
