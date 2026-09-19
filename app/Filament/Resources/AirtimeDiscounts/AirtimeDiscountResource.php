@@ -6,6 +6,7 @@ use App\Filament\Resources\AirtimeDiscounts\Pages\ListAirtimeDiscounts;
 use App\Models\AirtimeDiscount;
 use App\Models\Network;
 use BackedEnum;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -107,13 +108,24 @@ class AirtimeDiscountResource extends Resource
                 ToggleColumn::make('is_active')
                     ->label('Active Status'),
             ])
-            ->paginated(false);
+            ->paginated(false)
+            ->recordActions([
+                EditAction::make(),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\PlanAirtimeDiscountsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
     {
         return [
             'index' => ListAirtimeDiscounts::route('/'),
+            'edit' => Pages\EditAirtimeDiscount::route('/{record}/edit'),
         ];
     }
 }

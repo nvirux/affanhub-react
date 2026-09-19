@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
@@ -65,40 +65,4 @@ StoreActivityLogs.head = (args: { tenant: string | number | { public_id: string 
     url: StoreActivityLogs.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
- * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
- */
-    const StoreActivityLogsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: StoreActivityLogs.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
- * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
- */
-        StoreActivityLogsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: StoreActivityLogs.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
- * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
- */
-        StoreActivityLogsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: StoreActivityLogs.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    StoreActivityLogs.form = StoreActivityLogsForm
 export default StoreActivityLogs

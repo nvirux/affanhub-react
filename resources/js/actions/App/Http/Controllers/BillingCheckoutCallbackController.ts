@@ -1,7 +1,7 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\BillingCheckoutCallbackController::handle
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
  * @route '/billing/callback/{tenant}'
  */
 export const handle = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ handle.definition = {
 
 /**
 * @see \App\Http\Controllers\BillingCheckoutCallbackController::handle
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
  * @route '/billing/callback/{tenant}'
  */
 handle.url = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ handle.url = (args: { tenant: string | { public_id: string } } | [tenant: string
 
 /**
 * @see \App\Http\Controllers\BillingCheckoutCallbackController::handle
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
  * @route '/billing/callback/{tenant}'
  */
 handle.get = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -58,49 +58,13 @@ handle.get = (args: { tenant: string | { public_id: string } } | [tenant: string
 })
 /**
 * @see \App\Http\Controllers\BillingCheckoutCallbackController::handle
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
  * @route '/billing/callback/{tenant}'
  */
 handle.head = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: handle.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Http\Controllers\BillingCheckoutCallbackController::handle
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
- * @route '/billing/callback/{tenant}'
- */
-    const handleForm = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: handle.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\BillingCheckoutCallbackController::handle
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
- * @route '/billing/callback/{tenant}'
- */
-        handleForm.get = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: handle.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\BillingCheckoutCallbackController::handle
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
- * @route '/billing/callback/{tenant}'
- */
-        handleForm.head = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: handle.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    handle.form = handleForm
 const BillingCheckoutCallbackController = { handle }
 
 export default BillingCheckoutCallbackController

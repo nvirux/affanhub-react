@@ -1,7 +1,7 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\BillingCheckoutCallbackController::callback
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
  * @route '/billing/callback/{tenant}'
  */
 export const callback = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ callback.definition = {
 
 /**
 * @see \App\Http\Controllers\BillingCheckoutCallbackController::callback
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
  * @route '/billing/callback/{tenant}'
  */
 callback.url = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ callback.url = (args: { tenant: string | { public_id: string } } | [tenant: stri
 
 /**
 * @see \App\Http\Controllers\BillingCheckoutCallbackController::callback
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
  * @route '/billing/callback/{tenant}'
  */
 callback.get = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -58,49 +58,13 @@ callback.get = (args: { tenant: string | { public_id: string } } | [tenant: stri
 })
 /**
 * @see \App\Http\Controllers\BillingCheckoutCallbackController::callback
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
  * @route '/billing/callback/{tenant}'
  */
 callback.head = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: callback.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Http\Controllers\BillingCheckoutCallbackController::callback
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
- * @route '/billing/callback/{tenant}'
- */
-    const callbackForm = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: callback.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\BillingCheckoutCallbackController::callback
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
- * @route '/billing/callback/{tenant}'
- */
-        callbackForm.get = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: callback.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\BillingCheckoutCallbackController::callback
- * @see app/Http/Controllers/BillingCheckoutCallbackController.php:19
- * @route '/billing/callback/{tenant}'
- */
-        callbackForm.head = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: callback.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    callback.form = callbackForm
 const billing = {
     callback: Object.assign(callback, callback),
 }

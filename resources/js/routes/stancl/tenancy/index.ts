@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults, validateParameters } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults, validateParameters } from './../../../wayfinder'
 /**
 * @see \Stancl\Tenancy\Controllers\TenantAssetsController::asset
  * @see vendor/stancl/tenancy/src/Controllers/TenantAssetsController.php:20
@@ -64,42 +64,6 @@ asset.head = (args?: { path?: string | number } | [path: string | number ] | str
     url: asset.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \Stancl\Tenancy\Controllers\TenantAssetsController::asset
- * @see vendor/stancl/tenancy/src/Controllers/TenantAssetsController.php:20
- * @route '/tenancy/assets/{path?}'
- */
-    const assetForm = (args?: { path?: string | number } | [path: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: asset.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \Stancl\Tenancy\Controllers\TenantAssetsController::asset
- * @see vendor/stancl/tenancy/src/Controllers/TenantAssetsController.php:20
- * @route '/tenancy/assets/{path?}'
- */
-        assetForm.get = (args?: { path?: string | number } | [path: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: asset.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \Stancl\Tenancy\Controllers\TenantAssetsController::asset
- * @see vendor/stancl/tenancy/src/Controllers/TenantAssetsController.php:20
- * @route '/tenancy/assets/{path?}'
- */
-        assetForm.head = (args?: { path?: string | number } | [path: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: asset.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    asset.form = assetForm
 const tenancy = {
     asset: Object.assign(asset, asset),
 }

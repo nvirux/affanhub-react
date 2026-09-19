@@ -7,11 +7,10 @@ import domains from './domains'
 import features from './features'
 import networks from './networks'
 import owners from './owners'
-import planAirtimeDiscounts from './plan-airtime-discounts'
-import planDataPrices from './plan-data-prices'
 import plans from './plans'
 import services from './services'
 import settlementAccounts from './settlement-accounts'
+import storeMobileApps from './store-mobile-apps'
 import stores from './stores'
 import subscriptions from './subscriptions'
 import transactions from './transactions'
@@ -29,11 +28,10 @@ domains: Object.assign(domains, domains),
 features: Object.assign(features, features),
 networks: Object.assign(networks, networks),
 owners: Object.assign(owners, owners),
-planAirtimeDiscounts: Object.assign(planAirtimeDiscounts, planAirtimeDiscounts),
-planDataPrices: Object.assign(planDataPrices, planDataPrices),
 plans: Object.assign(plans, plans),
 services: Object.assign(services, services),
 settlementAccounts: Object.assign(settlementAccounts, settlementAccounts),
+storeMobileApps: Object.assign(storeMobileApps, storeMobileApps),
 stores: Object.assign(stores, stores),
 subscriptions: Object.assign(subscriptions, subscriptions),
 transactions: Object.assign(transactions, transactions),

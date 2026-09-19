@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\TransactionResource\Pages\ListTransactions::__invoke
  * @see app/Filament/Merchant/Resources/TransactionResource/Pages/ListTransactions.php:7
@@ -65,42 +65,6 @@ index.head = (args: { tenant: string | number | { public_id: string | number } }
     url: index.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Resources\TransactionResource\Pages\ListTransactions::__invoke
- * @see app/Filament/Merchant/Resources/TransactionResource/Pages/ListTransactions.php:7
- * @route '//merchant.localhost/{tenant}/transactions'
- */
-    const indexForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Resources\TransactionResource\Pages\ListTransactions::__invoke
- * @see app/Filament/Merchant/Resources/TransactionResource/Pages/ListTransactions.php:7
- * @route '//merchant.localhost/{tenant}/transactions'
- */
-        indexForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Resources\TransactionResource\Pages\ListTransactions::__invoke
- * @see app/Filament/Merchant/Resources/TransactionResource/Pages/ListTransactions.php:7
- * @route '//merchant.localhost/{tenant}/transactions'
- */
-        indexForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
 const transactions = {
     index: Object.assign(index, index),
 }

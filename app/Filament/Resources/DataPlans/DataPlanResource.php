@@ -202,10 +202,18 @@ class DataPlanResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\PlanPricesRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListDataPlans::route('/'),
+            'edit' => Pages\EditDataPlan::route('/{record}/edit'),
         ];
     }
 }

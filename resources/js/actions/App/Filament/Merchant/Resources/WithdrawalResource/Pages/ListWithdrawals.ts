@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\WithdrawalResource\Pages\ListWithdrawals::__invoke
  * @see app/Filament/Merchant/Resources/WithdrawalResource/Pages/ListWithdrawals.php:7
@@ -65,40 +65,4 @@ ListWithdrawals.head = (args: { tenant: string | number | { public_id: string | 
     url: ListWithdrawals.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Resources\WithdrawalResource\Pages\ListWithdrawals::__invoke
- * @see app/Filament/Merchant/Resources/WithdrawalResource/Pages/ListWithdrawals.php:7
- * @route '//merchant.localhost/{tenant}/withdrawals'
- */
-    const ListWithdrawalsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: ListWithdrawals.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Resources\WithdrawalResource\Pages\ListWithdrawals::__invoke
- * @see app/Filament/Merchant/Resources/WithdrawalResource/Pages/ListWithdrawals.php:7
- * @route '//merchant.localhost/{tenant}/withdrawals'
- */
-        ListWithdrawalsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ListWithdrawals.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Resources\WithdrawalResource\Pages\ListWithdrawals::__invoke
- * @see app/Filament/Merchant/Resources/WithdrawalResource/Pages/ListWithdrawals.php:7
- * @route '//merchant.localhost/{tenant}/withdrawals'
- */
-        ListWithdrawalsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ListWithdrawals.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    ListWithdrawals.form = ListWithdrawalsForm
 export default ListWithdrawals

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Admins\Pages\ListAdmins::__invoke
  * @see app/Filament/Resources/Admins/Pages/ListAdmins.php:7
@@ -42,41 +42,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Filament\Resources\Admins\Pages\ListAdmins::__invoke
- * @see app/Filament/Resources/Admins/Pages/ListAdmins.php:7
- * @route '//admin.localhost/admins'
- */
-    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\Admins\Pages\ListAdmins::__invoke
- * @see app/Filament/Resources/Admins/Pages/ListAdmins.php:7
- * @route '//admin.localhost/admins'
- */
-        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\Admins\Pages\ListAdmins::__invoke
- * @see app/Filament/Resources/Admins/Pages/ListAdmins.php:7
- * @route '//admin.localhost/admins'
- */
-        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
 /**
 * @see \App\Filament\Resources\Admins\Pages\CreateAdmin::__invoke
  * @see app/Filament/Resources/Admins/Pages/CreateAdmin.php:7
@@ -120,41 +85,6 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Filament\Resources\Admins\Pages\CreateAdmin::__invoke
- * @see app/Filament/Resources/Admins/Pages/CreateAdmin.php:7
- * @route '//admin.localhost/admins/create'
- */
-    const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: create.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\Admins\Pages\CreateAdmin::__invoke
- * @see app/Filament/Resources/Admins/Pages/CreateAdmin.php:7
- * @route '//admin.localhost/admins/create'
- */
-        createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: create.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\Admins\Pages\CreateAdmin::__invoke
- * @see app/Filament/Resources/Admins/Pages/CreateAdmin.php:7
- * @route '//admin.localhost/admins/create'
- */
-        createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: create.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    create.form = createForm
 /**
 * @see \App\Filament\Resources\Admins\Pages\EditAdmin::__invoke
  * @see app/Filament/Resources/Admins/Pages/EditAdmin.php:7
@@ -216,42 +146,6 @@ edit.head = (args: { record: string | number } | [record: string | number ] | st
     url: edit.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Resources\Admins\Pages\EditAdmin::__invoke
- * @see app/Filament/Resources/Admins/Pages/EditAdmin.php:7
- * @route '//admin.localhost/admins/{record}/edit'
- */
-    const editForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: edit.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\Admins\Pages\EditAdmin::__invoke
- * @see app/Filament/Resources/Admins/Pages/EditAdmin.php:7
- * @route '//admin.localhost/admins/{record}/edit'
- */
-        editForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: edit.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\Admins\Pages\EditAdmin::__invoke
- * @see app/Filament/Resources/Admins/Pages/EditAdmin.php:7
- * @route '//admin.localhost/admins/{record}/edit'
- */
-        editForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: edit.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    edit.form = editForm
 const admins = {
     index: Object.assign(index, index),
 create: Object.assign(create, create),

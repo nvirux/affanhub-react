@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\DataPlans\Pages\ListDataPlans::__invoke
  * @see app/Filament/Resources/DataPlans/Pages/ListDataPlans.php:7
@@ -41,40 +41,4 @@ ListDataPlans.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     url: ListDataPlans.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Resources\DataPlans\Pages\ListDataPlans::__invoke
- * @see app/Filament/Resources/DataPlans/Pages/ListDataPlans.php:7
- * @route '//admin.localhost/data-plans'
- */
-    const ListDataPlansForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: ListDataPlans.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\DataPlans\Pages\ListDataPlans::__invoke
- * @see app/Filament/Resources/DataPlans/Pages/ListDataPlans.php:7
- * @route '//admin.localhost/data-plans'
- */
-        ListDataPlansForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ListDataPlans.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\DataPlans\Pages\ListDataPlans::__invoke
- * @see app/Filament/Resources/DataPlans/Pages/ListDataPlans.php:7
- * @route '//admin.localhost/data-plans'
- */
-        ListDataPlansForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ListDataPlans.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    ListDataPlans.form = ListDataPlansForm
 export default ListDataPlans

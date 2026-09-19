@@ -29,4 +29,9 @@ class AirtimeDiscount extends Model
     {
         return $this->belongsTo(Network::class);
     }
+
+    public function planAirtimeDiscounts()
+    {
+        return $this->hasMany(PlanAirtimeDiscount::class, 'network_id', 'network_id');
+    }
 }

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \Filament\Http\Controllers\RedirectToTenantController::__invoke
  * @see vendor/filament/filament/src/Http/Controllers/RedirectToTenantController.php:11
@@ -41,40 +41,4 @@ RedirectToTenantController.head = (options?: RouteQueryOptions): RouteDefinition
     url: RedirectToTenantController.url(options),
     method: 'head',
 })
-
-    /**
-* @see \Filament\Http\Controllers\RedirectToTenantController::__invoke
- * @see vendor/filament/filament/src/Http/Controllers/RedirectToTenantController.php:11
- * @route '//merchant.localhost'
- */
-    const RedirectToTenantControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: RedirectToTenantController.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \Filament\Http\Controllers\RedirectToTenantController::__invoke
- * @see vendor/filament/filament/src/Http/Controllers/RedirectToTenantController.php:11
- * @route '//merchant.localhost'
- */
-        RedirectToTenantControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectToTenantController.url(options),
-            method: 'get',
-        })
-            /**
-* @see \Filament\Http\Controllers\RedirectToTenantController::__invoke
- * @see vendor/filament/filament/src/Http/Controllers/RedirectToTenantController.php:11
- * @route '//merchant.localhost'
- */
-        RedirectToTenantControllerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectToTenantController.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    RedirectToTenantController.form = RedirectToTenantControllerForm
 export default RedirectToTenantController

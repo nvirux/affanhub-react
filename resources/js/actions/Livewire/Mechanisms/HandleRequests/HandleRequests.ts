@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \Livewire\Mechanisms\HandleRequests\HandleRequests::handleUpdate
  * @see vendor/livewire/livewire/src/Mechanisms/HandleRequests/HandleRequests.php:138
@@ -32,28 +32,6 @@ handleUpdate.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: handleUpdate.url(options),
     method: 'post',
 })
-
-    /**
-* @see \Livewire\Mechanisms\HandleRequests\HandleRequests::handleUpdate
- * @see vendor/livewire/livewire/src/Mechanisms/HandleRequests/HandleRequests.php:138
- * @route '/livewire-e961291b/update'
- */
-    const handleUpdateForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: handleUpdate.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \Livewire\Mechanisms\HandleRequests\HandleRequests::handleUpdate
- * @see vendor/livewire/livewire/src/Mechanisms/HandleRequests/HandleRequests.php:138
- * @route '/livewire-e961291b/update'
- */
-        handleUpdateForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: handleUpdate.url(options),
-            method: 'post',
-        })
-    
-    handleUpdate.form = handleUpdateForm
 const HandleRequests = { handleUpdate }
 
 export default HandleRequests

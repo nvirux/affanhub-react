@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
  * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:21
@@ -32,28 +32,6 @@ handle.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: handle.url(options),
     method: 'post',
 })
-
-    /**
-* @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:21
- * @route '/webhooks/paymint'
- */
-    const handleForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: handle.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Webhook\PayMintWebhookController::handle
- * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:21
- * @route '/webhooks/paymint'
- */
-        handleForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: handle.url(options),
-            method: 'post',
-        })
-    
-    handle.form = handleForm
 const PayMintWebhookController = { handle }
 
 export default PayMintWebhookController
