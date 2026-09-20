@@ -43,6 +43,29 @@
         {{-- Dynamic App Name for Inertia Head and Title Resolvers --}}
         <meta name="app-name" content="{{ tenant() ? tenant('name') : config('app.name', 'AffanHub') }}">
 
+        {{-- Mobile App & Browser Theme Color for Dynamic Status Bar --}}
+        @php
+            $storeThemeColor = tenant() && tenant('primary_color') ? tenant('primary_color') : '#10b981';
+        @endphp
+        <meta name="theme-color" content="{{ $storeThemeColor }}">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+        <script>
+            (function() {
+                const storeColor = '{{ $storeThemeColor }}';
+                // Sync with Native Android Status Bar if running inside the AffanHub Native Mobile App
+                if (window.AffanBridge && typeof window.AffanBridge.setStatusBarColor === 'function') {
+                    window.AffanBridge.setStatusBarColor(storeColor);
+                }
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (window.AffanBridge && typeof window.AffanBridge.setStatusBarColor === 'function') {
+                        window.AffanBridge.setStatusBarColor(storeColor);
+                    }
+                });
+            })();
+        </script>
+
         @fonts
 
         @viteReactRefresh

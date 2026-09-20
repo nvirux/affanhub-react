@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
  * @see app/Http/Controllers/Auth/TenantAuthController.php:68
@@ -33,6 +33,27 @@ checkIdentifier.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
     method: 'post',
 })
 
+    /**
+* @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:68
+ * @route '/login/check-identifier'
+ */
+    const checkIdentifierForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: checkIdentifier.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:68
+ * @route '/login/check-identifier'
+ */
+        checkIdentifierForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: checkIdentifier.url(options),
+            method: 'post',
+        })
+    
+    checkIdentifier.form = checkIdentifierForm
 /**
 * @see \Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::store
  * @see vendor/laravel/fortify/src/Http/Controllers/AuthenticatedSessionController.php:58
@@ -66,6 +87,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+    /**
+* @see \Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::store
+ * @see vendor/laravel/fortify/src/Http/Controllers/AuthenticatedSessionController.php:58
+ * @route '/login'
+ */
+    const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: store.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::store
+ * @see vendor/laravel/fortify/src/Http/Controllers/AuthenticatedSessionController.php:58
+ * @route '/login'
+ */
+        storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: store.url(options),
+            method: 'post',
+        })
+    
+    store.form = storeForm
 const login = {
     store: Object.assign(store, store),
 }

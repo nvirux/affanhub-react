@@ -61,6 +61,11 @@ class Store extends BaseTenant implements TenantWithDatabase
         return $this->belongsTo(Owner::class);
     }
 
+    public function mobileApp(): HasOne
+    {
+        return $this->hasOne(StoreMobileApp::class, 'store_id');
+    }
+
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'store_id');

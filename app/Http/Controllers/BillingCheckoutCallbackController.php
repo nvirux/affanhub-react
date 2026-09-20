@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Plan;
 use App\Models\Store;
+use App\Models\StoreMobileApp;
+use App\Services\MobileAppBuilderService;
 use Filament\Notifications\Notification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,8 +34,12 @@ class BillingCheckoutCallbackController extends Controller
             return redirect()->to($billingUrl);
         }
 
-        // Retrieve checkout metadata from cache
-        $checkoutData = Cache::get("billing_checkout_{$reference}");
+        // Check if this checkout was for Mobile App compilation
+        $mobileAppData = Cache::get("mobile_app_checkout_{$reference}");
+        $isMobileApp = ! empty($mobileAppData) || str_starts_with($reference, 'APP_');
+        $targetUrl = $isMobileApp
+            ? route('filament.merchant.pages.mobile-app-manager', ['tenant' => $tenant->public_id])
+            : $billingUrl;
 
         try {
             // Verify payment with PayMint SDK
@@ -53,7 +59,50 @@ class BillingCheckoutCallbackController extends Controller
                     ->danger()
                     ->send();
 
-                return redirect()->to($billingUrl);
+                return redirect()->to($targetUrl);
+            }
+
+            if ($isMobileApp) {
+                $appName = $mobileAppData['app_name'] ?? $tenant->name;
+                $packageId = $mobileAppData['package_id'] ?? StoreMobileApp::generateUniquePackageId($appName, $tenant->id);
+                $iconPath = $mobileAppData['icon_path'] ?? null;
+                $pricePaid = (float) ($mobileAppData['price'] ?? ($verification['data']['amount'] ?? 15000.00));
+
+                $includePlaystore = ! empty($mobileAppData['include_playstore']);
+                $playstoreFee = (float) ($mobileAppData['playstore_fee'] ?? 0.00);
+
+                $app = StoreMobileApp::updateOrCreate(
+                    ['store_id' => $tenant->id],
+                    [
+                        'app_name' => $appName,
+                        'package_id' => $packageId,
+                        'app_icon_path' => $iconPath,
+                        'price_paid' => $pricePaid,
+                        'include_playstore' => $includePlaystore,
+                        'playstore_status' => $includePlaystore ? 'pending_submission' : 'not_requested',
+                        'playstore_paid' => $includePlaystore ? $playstoreFee : 0.00,
+                        'status' => 'building',
+                        'version_code' => 1,
+                        'version_name' => '1.0.0',
+                    ]
+                );
+
+                Cache::forget("mobile_app_checkout_{$reference}");
+
+                $primaryDomain = $tenant->domains()->first();
+                $storeUrl = $primaryDomain ? "https://{$primaryDomain->domain}" : url('/');
+
+                /** @var MobileAppBuilderService $builder */
+                $builder = app(MobileAppBuilderService::class);
+                $builder->dispatchBuild($app, $storeUrl);
+
+                Notification::make()
+                    ->title('Payment Successful & Build Started!')
+                    ->body('₦'.number_format($pricePaid, 2)." received via PayMint. Your {$appName} Android app is now compiling in the cloud!")
+                    ->success()
+                    ->send();
+
+                return redirect()->to($targetUrl);
             }
 
             // Determine plan to activate

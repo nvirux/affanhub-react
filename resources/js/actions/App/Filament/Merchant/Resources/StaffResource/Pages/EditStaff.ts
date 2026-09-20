@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\StaffResource\Pages\EditStaff::__invoke
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
@@ -60,4 +60,40 @@ EditStaff.head = (args: { tenant: string | number | { public_id: string | number
     url: EditStaff.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Merchant\Resources\StaffResource\Pages\EditStaff::__invoke
+ * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
+ * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
+ */
+    const EditStaffForm = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: EditStaff.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Resources\StaffResource\Pages\EditStaff::__invoke
+ * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
+ * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
+ */
+        EditStaffForm.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditStaff.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Resources\StaffResource\Pages\EditStaff::__invoke
+ * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
+ * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
+ */
+        EditStaffForm.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditStaff.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    EditStaff.form = EditStaffForm
 export default EditStaff

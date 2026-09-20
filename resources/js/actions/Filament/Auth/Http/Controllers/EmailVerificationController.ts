@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \Filament\Auth\Http\Controllers\EmailVerificationController::__invoke
  * @see vendor/filament/filament/src/Auth/Http/Controllers/EmailVerificationController.php:10
@@ -58,4 +58,40 @@ EmailVerificationController.head = (args: { id: string | number, hash: string | 
     url: EmailVerificationController.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \Filament\Auth\Http\Controllers\EmailVerificationController::__invoke
+ * @see vendor/filament/filament/src/Auth/Http/Controllers/EmailVerificationController.php:10
+ * @route '//merchant.localhost/email-verification/verify/{id}/{hash}'
+ */
+    const EmailVerificationControllerForm = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: EmailVerificationController.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \Filament\Auth\Http\Controllers\EmailVerificationController::__invoke
+ * @see vendor/filament/filament/src/Auth/Http/Controllers/EmailVerificationController.php:10
+ * @route '//merchant.localhost/email-verification/verify/{id}/{hash}'
+ */
+        EmailVerificationControllerForm.get = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EmailVerificationController.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \Filament\Auth\Http\Controllers\EmailVerificationController::__invoke
+ * @see vendor/filament/filament/src/Auth/Http/Controllers/EmailVerificationController.php:10
+ * @route '//merchant.localhost/email-verification/verify/{id}/{hash}'
+ */
+        EmailVerificationControllerForm.head = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EmailVerificationController.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    EmailVerificationController.form = EmailVerificationControllerForm
 export default EmailVerificationController

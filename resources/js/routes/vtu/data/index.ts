@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DataController::plans
  * @see app/Http/Controllers/DataController.php:30
@@ -42,6 +42,41 @@ plans.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
+    /**
+* @see \App\Http\Controllers\DataController::plans
+ * @see app/Http/Controllers/DataController.php:30
+ * @route '/vtu/data/plans'
+ */
+    const plansForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: plans.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\DataController::plans
+ * @see app/Http/Controllers/DataController.php:30
+ * @route '/vtu/data/plans'
+ */
+        plansForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: plans.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\DataController::plans
+ * @see app/Http/Controllers/DataController.php:30
+ * @route '/vtu/data/plans'
+ */
+        plansForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: plans.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    plans.form = plansForm
 /**
 * @see \App\Http\Controllers\DataController::purchase
  * @see app/Http/Controllers/DataController.php:76
@@ -75,6 +110,28 @@ purchase.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: purchase.url(options),
     method: 'post',
 })
+
+    /**
+* @see \App\Http\Controllers\DataController::purchase
+ * @see app/Http/Controllers/DataController.php:76
+ * @route '/vtu/data/purchase'
+ */
+    const purchaseForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: purchase.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\DataController::purchase
+ * @see app/Http/Controllers/DataController.php:76
+ * @route '/vtu/data/purchase'
+ */
+        purchaseForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: purchase.url(options),
+            method: 'post',
+        })
+    
+    purchase.form = purchaseForm
 const data = {
     plans: Object.assign(plans, plans),
 purchase: Object.assign(purchase, purchase),

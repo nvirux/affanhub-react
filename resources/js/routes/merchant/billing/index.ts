@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\BillingCheckoutCallbackController::callback
  * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
@@ -65,6 +65,42 @@ callback.head = (args: { tenant: string | { public_id: string } } | [tenant: str
     url: callback.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Http\Controllers\BillingCheckoutCallbackController::callback
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
+ * @route '/billing/callback/{tenant}'
+ */
+    const callbackForm = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: callback.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\BillingCheckoutCallbackController::callback
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
+ * @route '/billing/callback/{tenant}'
+ */
+        callbackForm.get = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: callback.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\BillingCheckoutCallbackController::callback
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
+ * @route '/billing/callback/{tenant}'
+ */
+        callbackForm.head = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: callback.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    callback.form = callbackForm
 const billing = {
     callback: Object.assign(callback, callback),
 }

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \Filament\Auth\Pages\EditProfile::__invoke
  * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
@@ -45,6 +45,41 @@ EditProfile4faad6f7502c7c068965f34b577f9c5c.head = (options?: RouteQueryOptions)
     /**
 * @see \Filament\Auth\Pages\EditProfile::__invoke
  * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+ * @route '//admin.localhost/profile'
+ */
+    const EditProfile4faad6f7502c7c068965f34b577f9c5cForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: EditProfile4faad6f7502c7c068965f34b577f9c5c.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \Filament\Auth\Pages\EditProfile::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+ * @route '//admin.localhost/profile'
+ */
+        EditProfile4faad6f7502c7c068965f34b577f9c5cForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditProfile4faad6f7502c7c068965f34b577f9c5c.url(options),
+            method: 'get',
+        })
+            /**
+* @see \Filament\Auth\Pages\EditProfile::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+ * @route '//admin.localhost/profile'
+ */
+        EditProfile4faad6f7502c7c068965f34b577f9c5cForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditProfile4faad6f7502c7c068965f34b577f9c5c.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    EditProfile4faad6f7502c7c068965f34b577f9c5c.form = EditProfile4faad6f7502c7c068965f34b577f9c5cForm
+    /**
+* @see \Filament\Auth\Pages\EditProfile::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
  * @route '//merchant.localhost/profile'
  */
 const EditProfile603b054feeed5ca5752d91f466d183ce = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -84,6 +119,42 @@ EditProfile603b054feeed5ca5752d91f466d183ce.head = (options?: RouteQueryOptions)
     url: EditProfile603b054feeed5ca5752d91f466d183ce.url(options),
     method: 'head',
 })
+
+    /**
+* @see \Filament\Auth\Pages\EditProfile::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+ * @route '//merchant.localhost/profile'
+ */
+    const EditProfile603b054feeed5ca5752d91f466d183ceForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: EditProfile603b054feeed5ca5752d91f466d183ce.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \Filament\Auth\Pages\EditProfile::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+ * @route '//merchant.localhost/profile'
+ */
+        EditProfile603b054feeed5ca5752d91f466d183ceForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditProfile603b054feeed5ca5752d91f466d183ce.url(options),
+            method: 'get',
+        })
+            /**
+* @see \Filament\Auth\Pages\EditProfile::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+ * @route '//merchant.localhost/profile'
+ */
+        EditProfile603b054feeed5ca5752d91f466d183ceForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditProfile603b054feeed5ca5752d91f466d183ce.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    EditProfile603b054feeed5ca5752d91f466d183ce.form = EditProfile603b054feeed5ca5752d91f466d183ceForm
 
 /**
 * Multiple routes resolve to \Filament\Auth\Pages\EditProfile::EditProfile, so this export is a

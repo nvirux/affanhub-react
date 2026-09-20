@@ -40,4 +40,9 @@ return [
         'api_key' => env('VTULAB_API_KEY'),
         'is_sandbox' => env('VTULAB_IS_SANDBOX', true),
     ],
+
+    'github_app_builder' => [
+        'token' => env('GITHUB_APP_TOKEN'),
+        'repo' => env('GITHUB_APP_REPO', 'nvirux/affanhub-mobile-template'),
+    ],
 ];

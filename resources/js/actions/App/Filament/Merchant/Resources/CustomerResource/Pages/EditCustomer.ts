@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\CustomerResource\Pages\EditCustomer::__invoke
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
@@ -60,4 +60,40 @@ EditCustomer.head = (args: { tenant: string | number | { public_id: string | num
     url: EditCustomer.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\EditCustomer::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
+ * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
+ */
+    const EditCustomerForm = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: EditCustomer.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\EditCustomer::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
+ * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
+ */
+        EditCustomerForm.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditCustomer.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\EditCustomer::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
+ * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
+ */
+        EditCustomerForm.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditCustomer.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    EditCustomer.form = EditCustomerForm
 export default EditCustomer

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Plans\Pages\EditPlan::__invoke
  * @see app/Filament/Resources/Plans/Pages/EditPlan.php:7
@@ -60,4 +60,40 @@ EditPlan.head = (args: { record: string | number } | [record: string | number ] 
     url: EditPlan.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\Plans\Pages\EditPlan::__invoke
+ * @see app/Filament/Resources/Plans/Pages/EditPlan.php:7
+ * @route '//admin.localhost/plans/{record}/edit'
+ */
+    const EditPlanForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: EditPlan.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\Plans\Pages\EditPlan::__invoke
+ * @see app/Filament/Resources/Plans/Pages/EditPlan.php:7
+ * @route '//admin.localhost/plans/{record}/edit'
+ */
+        EditPlanForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditPlan.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\Plans\Pages\EditPlan::__invoke
+ * @see app/Filament/Resources/Plans/Pages/EditPlan.php:7
+ * @route '//admin.localhost/plans/{record}/edit'
+ */
+        EditPlanForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditPlan.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    EditPlan.form = EditPlanForm
 export default EditPlan

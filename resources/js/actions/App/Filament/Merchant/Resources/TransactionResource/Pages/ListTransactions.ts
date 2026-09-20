@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\TransactionResource\Pages\ListTransactions::__invoke
  * @see app/Filament/Merchant/Resources/TransactionResource/Pages/ListTransactions.php:7
@@ -65,4 +65,40 @@ ListTransactions.head = (args: { tenant: string | number | { public_id: string |
     url: ListTransactions.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Merchant\Resources\TransactionResource\Pages\ListTransactions::__invoke
+ * @see app/Filament/Merchant/Resources/TransactionResource/Pages/ListTransactions.php:7
+ * @route '//merchant.localhost/{tenant}/transactions'
+ */
+    const ListTransactionsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ListTransactions.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Resources\TransactionResource\Pages\ListTransactions::__invoke
+ * @see app/Filament/Merchant/Resources/TransactionResource/Pages/ListTransactions.php:7
+ * @route '//merchant.localhost/{tenant}/transactions'
+ */
+        ListTransactionsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListTransactions.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Resources\TransactionResource\Pages\ListTransactions::__invoke
+ * @see app/Filament/Merchant/Resources/TransactionResource/Pages/ListTransactions.php:7
+ * @route '//merchant.localhost/{tenant}/transactions'
+ */
+        ListTransactionsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListTransactions.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ListTransactions.form = ListTransactionsForm
 export default ListTransactions

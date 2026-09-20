@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Stores\Pages\EditStore::__invoke
  * @see app/Filament/Resources/Stores/Pages/EditStore.php:7
@@ -60,4 +60,40 @@ EditStore.head = (args: { record: string | number } | [record: string | number ]
     url: EditStore.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\Stores\Pages\EditStore::__invoke
+ * @see app/Filament/Resources/Stores/Pages/EditStore.php:7
+ * @route '//admin.localhost/stores/{record}/edit'
+ */
+    const EditStoreForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: EditStore.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\Stores\Pages\EditStore::__invoke
+ * @see app/Filament/Resources/Stores/Pages/EditStore.php:7
+ * @route '//admin.localhost/stores/{record}/edit'
+ */
+        EditStoreForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditStore.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\Stores\Pages\EditStore::__invoke
+ * @see app/Filament/Resources/Stores/Pages/EditStore.php:7
+ * @route '//admin.localhost/stores/{record}/edit'
+ */
+        EditStoreForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditStore.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    EditStore.form = EditStoreForm
 export default EditStore

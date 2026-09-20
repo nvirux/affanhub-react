@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Withdrawals\Pages\ListWithdrawals::__invoke
  * @see app/Filament/Resources/Withdrawals/Pages/ListWithdrawals.php:7
@@ -41,4 +41,40 @@ ListWithdrawals.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
     url: ListWithdrawals.url(options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\Withdrawals\Pages\ListWithdrawals::__invoke
+ * @see app/Filament/Resources/Withdrawals/Pages/ListWithdrawals.php:7
+ * @route '//admin.localhost/withdrawals'
+ */
+    const ListWithdrawalsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ListWithdrawals.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\Withdrawals\Pages\ListWithdrawals::__invoke
+ * @see app/Filament/Resources/Withdrawals/Pages/ListWithdrawals.php:7
+ * @route '//admin.localhost/withdrawals'
+ */
+        ListWithdrawalsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListWithdrawals.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\Withdrawals\Pages\ListWithdrawals::__invoke
+ * @see app/Filament/Resources/Withdrawals/Pages/ListWithdrawals.php:7
+ * @route '//admin.localhost/withdrawals'
+ */
+        ListWithdrawalsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListWithdrawals.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ListWithdrawals.form = ListWithdrawalsForm
 export default ListWithdrawals

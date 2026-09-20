@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
  * @see app/Http/Controllers/Auth/TenantAuthController.php:68
@@ -33,6 +33,27 @@ checkIdentifier.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
     method: 'post',
 })
 
+    /**
+* @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:68
+ * @route '/login/check-identifier'
+ */
+    const checkIdentifierForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: checkIdentifier.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:68
+ * @route '/login/check-identifier'
+ */
+        checkIdentifierForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: checkIdentifier.url(options),
+            method: 'post',
+        })
+    
+    checkIdentifier.form = checkIdentifierForm
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::validateRegisterStep1
  * @see app/Http/Controllers/Auth/TenantAuthController.php:17
@@ -66,6 +87,28 @@ validateRegisterStep1.post = (options?: RouteQueryOptions): RouteDefinition<'pos
     url: validateRegisterStep1.url(options),
     method: 'post',
 })
+
+    /**
+* @see \App\Http\Controllers\Auth\TenantAuthController::validateRegisterStep1
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:17
+ * @route '/register/validate-step-1'
+ */
+    const validateRegisterStep1Form = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: validateRegisterStep1.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Auth\TenantAuthController::validateRegisterStep1
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:17
+ * @route '/register/validate-step-1'
+ */
+        validateRegisterStep1Form.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: validateRegisterStep1.url(options),
+            method: 'post',
+        })
+    
+    validateRegisterStep1.form = validateRegisterStep1Form
 const TenantAuthController = { checkIdentifier, validateRegisterStep1 }
 
 export default TenantAuthController

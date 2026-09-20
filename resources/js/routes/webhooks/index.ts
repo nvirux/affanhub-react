@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\Webhook\PayMintWebhookController::paymint
  * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:21
@@ -32,6 +32,28 @@ paymint.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: paymint.url(options),
     method: 'post',
 })
+
+    /**
+* @see \App\Http\Controllers\Webhook\PayMintWebhookController::paymint
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:21
+ * @route '/webhooks/paymint'
+ */
+    const paymintForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: paymint.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Webhook\PayMintWebhookController::paymint
+ * @see app/Http/Controllers/Webhook/PayMintWebhookController.php:21
+ * @route '/webhooks/paymint'
+ */
+        paymintForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: paymint.url(options),
+            method: 'post',
+        })
+    
+    paymint.form = paymintForm
 const webhooks = {
     paymint: Object.assign(paymint, paymint),
 }

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Pages\Billing::__invoke
  * @see app/Filament/Merchant/Pages/Billing.php:7
@@ -65,4 +65,40 @@ Billing.head = (args: { tenant: string | number | { public_id: string | number }
     url: Billing.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Merchant\Pages\Billing::__invoke
+ * @see app/Filament/Merchant/Pages/Billing.php:7
+ * @route '//merchant.localhost/{tenant}/billing'
+ */
+    const BillingForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: Billing.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Pages\Billing::__invoke
+ * @see app/Filament/Merchant/Pages/Billing.php:7
+ * @route '//merchant.localhost/{tenant}/billing'
+ */
+        BillingForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: Billing.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Pages\Billing::__invoke
+ * @see app/Filament/Merchant/Pages/Billing.php:7
+ * @route '//merchant.localhost/{tenant}/billing'
+ */
+        BillingForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: Billing.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    Billing.form = BillingForm
 export default Billing
