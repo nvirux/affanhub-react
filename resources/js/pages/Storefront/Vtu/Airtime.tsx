@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Head, usePage, Link, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import {
     ChevronLeft, Headphones, MoreVertical, Smartphone,
@@ -342,124 +341,122 @@ export default function AirtimePage({ networks = [] }: AirtimePageProps) {
                 ) : (
                     <div className="space-y-4 animate-in fade-in duration-300">
 
-                    {/* 1. Phone & Network Selector Card (Reusable Component) */}
-                    <PhoneNetworkCard
-                        phone={phone}
-                        setPhone={setPhone}
-                        selectedNetwork={selectedNetwork}
-                        setSelectedNetwork={setSelectedNetwork}
-                        phoneError={phoneError}
-                        setPhoneError={setPhoneError}
-                        userPhone={user?.phone}
-                        onNetworkChange={() => setStatusMessage(null)}
-                        networks={networks}
-                    />
+                        {/* 1. Phone & Network Selector Card (Reusable Component) */}
+                        <PhoneNetworkCard
+                            phone={phone}
+                            setPhone={setPhone}
+                            selectedNetwork={selectedNetwork}
+                            setSelectedNetwork={setSelectedNetwork}
+                            phoneError={phoneError}
+                            setPhoneError={setPhoneError}
+                            userPhone={user?.phone}
+                            onNetworkChange={() => setStatusMessage(null)}
+                            networks={networks}
+                        />
 
-                    {/* Network Unavailable Alert Banner */}
-                    {isCurrentNetworkDisabled && (
-                        <div className="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-2xl p-4 text-rose-800 dark:text-rose-200 text-xs font-semibold flex items-center gap-2.5 shadow-2xs">
-                            <AlertCircle className="w-5 h-5 shrink-0 text-rose-500" />
-                            <div>
-                                <p className="font-bold">{currentNetworkObj.name} Airtime is Unavailable</p>
-                                <p className="text-[11px] text-rose-700 dark:text-rose-300 font-normal mt-0.5">
-                                    Recharge for {currentNetworkObj.name} is currently disabled on this store. Please select another network.
-                                </p>
+                        {/* Network Unavailable Alert Banner */}
+                        {isCurrentNetworkDisabled && (
+                            <div className="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-2xl p-4 text-rose-800 dark:text-rose-200 text-xs font-semibold flex items-center gap-2.5 shadow-2xs">
+                                <AlertCircle className="w-5 h-5 shrink-0 text-rose-500" />
+                                <div>
+                                    <p className="font-bold">{currentNetworkObj.name} Airtime is Unavailable</p>
+                                    <p className="text-[11px] text-rose-700 dark:text-rose-300 font-normal mt-0.5">
+                                        Recharge for {currentNetworkObj.name} is currently disabled on this store. Please select another network.
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* 2. Amount Selection Card (Standalone) */}
-                    <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+                        {/* 2. Amount Selection Card (Standalone) */}
+                        <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
 
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">
-                                Select Amount
-                            </h2>
-                            {discountPercent > 0 && (
-                                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                                    {discountPercent}% Discount
-                                </span>
-                            )}
-                        </div>
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">
+                                    Select Amount
+                                </h2>
+                                {discountPercent > 0 && (
+                                    <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                                        {discountPercent}% Discount
+                                    </span>
+                                )}
+                            </div>
 
-                        {/* Quick Presets 3x2 Grid (Tapping immediately validates phone & opens Confirm to Pay modal) */}
-                        <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
-                            {AIRTIME_PRESETS.map((item) => {
-                                const discounted = item.amount - (item.amount * discountPercent) / 100;
-                                return (
-                                    <button
-                                        key={item.amount}
-                                        type="button"
+                            {/* Quick Presets 3x2 Grid (Tapping immediately validates phone & opens Confirm to Pay modal) */}
+                            <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                                {AIRTIME_PRESETS.map((item) => {
+                                    const discounted = item.amount - (item.amount * discountPercent) / 100;
+                                    return (
+                                        <button
+                                            key={item.amount}
+                                            type="button"
+                                            disabled={isCurrentNetworkDisabled}
+                                            onClick={() => {
+                                                if (isCurrentNetworkDisabled) return;
+                                                handleSelectPreset(item.amount);
+                                            }}
+                                            className={`p-3 rounded-xl border transition-all flex flex-col items-center justify-center ${isCurrentNetworkDisabled
+                                                    ? 'opacity-40 cursor-not-allowed bg-gray-50 dark:bg-gray-800/40 border-gray-100 dark:border-gray-800 text-gray-400'
+                                                    : 'border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-primary/40 text-gray-900 dark:text-white cursor-pointer'
+                                                }`}
+                                        >
+                                            <span className="text-base sm:text-lg font-black leading-tight">
+                                                {item.label}
+                                            </span>
+                                            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5">
+                                                Pay ₦{discounted.toLocaleString()}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Custom Amount Input Field with Small Action Button */}
+                            <div className="space-y-1.5 pt-1">
+                                <label htmlFor="custom-amount" className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                                    Or Enter Custom Amount (₦{minAmount.toLocaleString()} - ₦{maxAmount.toLocaleString()})
+                                </label>
+                                <div className={`relative flex items-center bg-gray-50/70 dark:bg-gray-900/70 border rounded-xl pl-3.5 pr-1.5 py-1.5 transition-all ${amountError
+                                    ? 'border-rose-400 dark:border-rose-500 ring-2 ring-rose-400/20'
+                                    : 'border-gray-200 dark:border-gray-700 focus-within:border-primary'
+                                    }`}>
+                                    <span className="text-base font-black text-gray-500 dark:text-gray-400 mr-2">₦</span>
+                                    <input
+                                        id="custom-amount"
+                                        type="text"
+                                        inputMode="numeric"
                                         disabled={isCurrentNetworkDisabled}
-                                        onClick={() => {
-                                            if (isCurrentNetworkDisabled) return;
-                                            handleSelectPreset(item.amount);
+                                        value={customAmount}
+                                        onChange={handleCustomAmountChange}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                handleCustomSubmit();
+                                            }
                                         }}
-                                        className={`p-3 rounded-xl border transition-all flex flex-col items-center justify-center ${
-                                            isCurrentNetworkDisabled
-                                                ? 'opacity-40 cursor-not-allowed bg-gray-50 dark:bg-gray-800/40 border-gray-100 dark:border-gray-800 text-gray-400'
-                                                : 'border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-primary/40 text-gray-900 dark:text-white cursor-pointer'
-                                        }`}
+                                        placeholder="500"
+                                        className={`w-full bg-transparent text-base font-bold text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none tracking-wide ${isCurrentNetworkDisabled ? 'cursor-not-allowed opacity-50' : ''
+                                            }`}
+                                    />
+
+                                    {/* Small Action Button close to the custom input */}
+                                    <button
+                                        type="button"
+                                        onClick={handleCustomSubmit}
+                                        disabled={isCurrentNetworkDisabled || !currentAmount || currentAmount < minAmount || currentAmount > maxAmount}
+                                        className="shrink-0 px-3.5 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-extrabold flex items-center gap-1 shadow-xs transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                                     >
-                                        <span className="text-base sm:text-lg font-black leading-tight">
-                                            {item.label}
-                                        </span>
-                                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5">
-                                            Pay ₦{discounted.toLocaleString()}
-                                        </span>
+                                        <Zap className="w-3.5 h-3.5 fill-white" />
+                                        <span>Pay</span>
                                     </button>
-                                );
-                            })}
-                        </div>
+                                </div>
 
-                        {/* Custom Amount Input Field with Small Action Button */}
-                        <div className="space-y-1.5 pt-1">
-                            <label htmlFor="custom-amount" className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                                Or Enter Custom Amount (₦{minAmount.toLocaleString()} - ₦{maxAmount.toLocaleString()})
-                            </label>
-                            <div className={`relative flex items-center bg-gray-50/70 dark:bg-gray-900/70 border rounded-xl pl-3.5 pr-1.5 py-1.5 transition-all ${amountError
-                                ? 'border-rose-400 dark:border-rose-500 ring-2 ring-rose-400/20'
-                                : 'border-gray-200 dark:border-gray-700 focus-within:border-primary'
-                                }`}>
-                                <span className="text-base font-black text-gray-500 dark:text-gray-400 mr-2">₦</span>
-                                <input
-                                    id="custom-amount"
-                                    type="text"
-                                    inputMode="numeric"
-                                    disabled={isCurrentNetworkDisabled}
-                                    value={customAmount}
-                                    onChange={handleCustomAmountChange}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            handleCustomSubmit();
-                                        }
-                                    }}
-                                    placeholder="500"
-                                    className={`w-full bg-transparent text-base font-bold text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none tracking-wide ${
-                                        isCurrentNetworkDisabled ? 'cursor-not-allowed opacity-50' : ''
-                                    }`}
-                                />
-
-                                {/* Small Action Button close to the custom input */}
-                                <button
-                                    type="button"
-                                    onClick={handleCustomSubmit}
-                                    disabled={isCurrentNetworkDisabled || !currentAmount || currentAmount < minAmount || currentAmount > maxAmount}
-                                    className="shrink-0 px-3.5 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-extrabold flex items-center gap-1 shadow-xs transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                                >
-                                    <Zap className="w-3.5 h-3.5 fill-white" />
-                                    <span>Pay</span>
-                                </button>
+                                {amountError && (
+                                    <p className="text-xs font-bold text-rose-500 dark:text-rose-400 flex items-center gap-1 px-1">
+                                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                                        <span>{amountError}</span>
+                                    </p>
+                                )}
                             </div>
-
-                            {amountError && (
-                                <p className="text-xs font-bold text-rose-500 dark:text-rose-400 flex items-center gap-1 px-1">
-                                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                                    <span>{amountError}</span>
-                                </p>
-                            )}
                         </div>
-                    </div>
 
                     </div>
                 )}

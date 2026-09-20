@@ -1,10 +1,36 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, User, AlertCircle, Smartphone } from 'lucide-react';
+import { ChevronDown, BookUser, AlertCircle, Smartphone } from 'lucide-react';
 import { PatternFormat } from 'react-number-format';
 import mtnIcon from '@/assets/icons/mtn.png';
 import airtelIcon from '@/assets/icons/airtel.png';
 import gloIcon from '@/assets/icons/glo.png';
 import nineMobileIcon from '@/assets/icons/9mobile.png';
+
+/**
+ * Universal Nigerian Phone Number Normalizer
+ * Handles +234, 234, leading 0, spaces, dashes, brackets, and international formats.
+ * e.g., '+234 803 123 4567' -> '08031234567'
+ */
+export const normalizeNigerianPhone = (raw: string): string => {
+    if (!raw) return '';
+    // Strip non-digits
+    let digits = raw.replace(/\D/g, '');
+
+    // Convert 234... to 0...
+    if (digits.startsWith('234') && digits.length >= 12) {
+        digits = '0' + digits.slice(3);
+    } else if (digits.startsWith('234') && digits.length === 11) {
+        // e.g. 23480312345 (missing leading 0)
+        digits = '0' + digits.slice(3);
+    }
+
+    // 10 digits without leading 0 (e.g. 8031234567) -> add 0
+    if (digits.length === 10 && (digits.startsWith('7') || digits.startsWith('8') || digits.startsWith('9'))) {
+        digits = '0' + digits;
+    }
+
+    return digits.slice(0, 11);
+};
 
 export const NETWORK_ICONS: Record<string, string> = {
     mtn: mtnIcon,
@@ -94,6 +120,77 @@ export function PhoneNetworkCard({
 
     const isCurrentActive = isNetworkEnabled(selectedNetwork);
 
+    // Contact picker listener (Android Native Bridge & Custom Events)
+    useEffect(() => {
+        const handleContactReceived = (event: any) => {
+            const rawPhone = event.detail?.phone || event;
+            if (rawPhone && typeof rawPhone === 'string') {
+                const normalized = normalizeNigerianPhone(rawPhone);
+                if (normalized) {
+                    setPhone(normalized);
+                    if (normalized.length === 11 && setPhoneError) {
+                        setPhoneError(null);
+                    }
+                }
+            }
+        };
+
+        if (typeof window !== 'undefined') {
+            (window as any).onAffanContactPicked = (phoneStr: string) => {
+                handleContactReceived({ detail: { phone: phoneStr } });
+            };
+            window.addEventListener('affan:contact-picked', handleContactReceived);
+        }
+
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.removeEventListener('affan:contact-picked', handleContactReceived);
+                delete (window as any).onAffanContactPicked;
+            }
+        };
+    }, [setPhone, setPhoneError]);
+
+    // Handle Contact Picker: Native Android Bridge -> Browser Contact Picker -> Logged-in User Phone
+    const handlePickContact = async () => {
+        // 1. Android Native App Bridge
+        if (typeof window !== 'undefined' && (window as any).AffanBridge && typeof (window as any).AffanBridge.pickContact === 'function') {
+            try {
+                (window as any).AffanBridge.pickContact();
+                return;
+            } catch (err) {
+                console.warn('AffanBridge.pickContact error:', err);
+            }
+        }
+
+        // 2. Mobile Browser Contact Picker API (Chrome Android, Edge, etc.)
+        if (typeof navigator !== 'undefined' && 'contacts' in navigator && 'ContactsManager' in window) {
+            try {
+                const props = ['tel'];
+                const contacts = await (navigator as any).contacts.select(props, { multiple: false });
+                if (contacts && contacts.length > 0 && contacts[0].tel && contacts[0].tel.length > 0) {
+                    const selected = contacts[0].tel[0];
+                    const normalized = normalizeNigerianPhone(selected);
+                    setPhone(normalized);
+                    if (normalized.length === 11 && setPhoneError) {
+                        setPhoneError(null);
+                    }
+                    return;
+                }
+            } catch (e) {
+                console.log('Mobile browser contact picker cancelled/error:', e);
+            }
+        }
+
+        // 3. Fallback: Quick auto-fill logged-in user phone
+        if (userPhone) {
+            const normalized = normalizeNigerianPhone(userPhone);
+            setPhone(normalized);
+            if (normalized.length === 11 && setPhoneError) {
+                setPhoneError(null);
+            }
+        }
+    };
+
     return (
         <div className={`space-y-1.5 ${className}`}>
             <div className={`relative flex items-center bg-white dark:bg-[#181826] border rounded-2xl px-3.5 py-2.5 sm:py-3 shadow-xs transition-all ${
@@ -133,14 +230,16 @@ export function PhoneNetworkCard({
                         <ChevronDown className="w-4 h-4 text-gray-400" />
                     </button>
 
-                    {/* Network Popup Dropdown */}
+                    {/* Network Dropdown Menu */}
                     {networkDropdownOpen && (
                         <>
-                            <div className="fixed inset-0 z-40" onClick={() => setNetworkDropdownOpen(false)} />
-                            <div className="absolute left-0 top-full mt-2 w-52 bg-white dark:bg-[#1c1c28] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 p-2 space-y-1">
+                            <div
+                                className="fixed inset-0 z-40"
+                                onClick={() => setNetworkDropdownOpen(false)}
+                            />
+                            <div className="absolute top-full left-0 mt-1.5 w-44 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-xl z-50 p-1 space-y-0.5 animate-in fade-in zoom-in-95 duration-100">
                                 {NETWORKS_LIST.map((net) => {
                                     const isEnabled = isNetworkEnabled(net.slug);
-
                                     return (
                                         <button
                                             key={net.slug}
@@ -151,31 +250,25 @@ export function PhoneNetworkCard({
                                                 setSelectedNetwork(net.slug);
                                                 onNetworkChange?.(net.slug);
                                                 setNetworkDropdownOpen(false);
+                                                if (phoneError && phoneError.toLowerCase().includes('unavailable')) {
+                                                    setPhoneError?.(null);
+                                                }
                                             }}
-                                            className={`flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-xs font-bold transition-colors ${
-                                                !isEnabled
-                                                    ? 'opacity-40 grayscale cursor-not-allowed bg-gray-50/60 dark:bg-gray-800/40 text-gray-400 dark:text-gray-500'
-                                                    : selectedNetwork === net.slug
-                                                        ? 'bg-primary/10 text-primary cursor-pointer'
-                                                        : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 cursor-pointer'
+                                            className={`w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg text-left transition-colors ${
+                                                selectedNetwork === net.slug
+                                                    ? 'bg-primary/10 text-primary font-bold'
+                                                    : isEnabled
+                                                    ? 'hover:bg-gray-50 dark:hover:bg-gray-700/50 text-gray-700 dark:text-gray-300 font-medium cursor-pointer'
+                                                    : 'opacity-40 cursor-not-allowed text-gray-400 dark:text-gray-500'
                                             }`}
-                                            title={!isEnabled ? `${net.name} is currently disabled on this store` : undefined}
                                         >
-                                            <div className="flex items-center gap-3 min-w-0">
-                                                {NETWORK_ICONS[net.slug] ? (
-                                                    <img
-                                                        src={NETWORK_ICONS[net.slug]}
-                                                        alt={net.name}
-                                                        className={`w-6 h-6 rounded-full object-contain p-0.5 bg-white shadow-xs border border-gray-100 dark:border-gray-700 shrink-0 ${
-                                                            !isEnabled ? 'grayscale' : ''
-                                                        }`}
-                                                    />
-                                                ) : (
-                                                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black bg-primary text-white shrink-0">
-                                                        {net.name[0]}
-                                                    </span>
-                                                )}
-                                                <span className="truncate">{net.name}</span>
+                                            <div className="flex items-center gap-2">
+                                                <img
+                                                    src={NETWORK_ICONS[net.slug]}
+                                                    alt={net.name}
+                                                    className="w-5 h-5 rounded-full object-cover shrink-0"
+                                                />
+                                                <span className="text-xs font-bold">{net.name}</span>
                                             </div>
                                             {!isEnabled && (
                                                 <span className="text-[9px] font-semibold text-rose-500 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 px-1.5 py-0.5 rounded shrink-0">
@@ -190,18 +283,23 @@ export function PhoneNetworkCard({
                     )}
                 </div>
 
-                {/* Phone Input with PatternFormat */}
+                {/* Phone Input with PatternFormat & Paste Normalizer */}
                 <PatternFormat
                     id="phone-input"
                     format="### #### ####"
                     type="tel"
                     value={phone}
-                    onValueChange={(values) => {
-                        let clean = values.value;
-                        if (clean.startsWith('234') && clean.length > 10) {
-                            clean = '0' + clean.slice(3);
+                    onPaste={(e: React.ClipboardEvent<HTMLInputElement>) => {
+                        e.preventDefault();
+                        const text = e.clipboardData.getData('text');
+                        const clean = normalizeNigerianPhone(text);
+                        setPhone(clean);
+                        if (clean.length === 11 && setPhoneError) {
+                            setPhoneError(null);
                         }
-                        clean = clean.slice(0, 11);
+                    }}
+                    onValueChange={(values) => {
+                        let clean = normalizeNigerianPhone(values.value);
                         setPhone(clean);
                         if (clean.length === 11 && setPhoneError) {
                             setPhoneError(null);
@@ -211,24 +309,14 @@ export function PhoneNetworkCard({
                     className="w-full bg-transparent px-3 py-1 text-base font-bold text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none tracking-wide font-mono"
                 />
 
-                {/* Beneficiary Round Icon */}
+                {/* Contact Picker Button */}
                 <button
                     type="button"
-                    onClick={() => {
-                        let val = (userPhone || '09025293759').replace(/\D/g, '');
-                        if (val.startsWith('234') && val.length > 10) {
-                            val = '0' + val.slice(3);
-                        }
-                        val = val.slice(0, 11);
-                        setPhone(val);
-                        if (val.length === 11 && setPhoneError) {
-                            setPhoneError(null);
-                        }
-                    }}
-                    className="w-9 h-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center justify-center shrink-0 cursor-pointer"
-                    title="Auto-fill phone number"
+                    onClick={handlePickContact}
+                    className="w-9 h-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-all flex items-center justify-center shrink-0 cursor-pointer active:scale-95"
+                    title="Pick contact from phone address book"
                 >
-                    <User className="w-5 h-5" />
+                    <BookUser className="w-4.5 h-4.5" />
                 </button>
             </div>
 
