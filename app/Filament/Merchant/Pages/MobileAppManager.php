@@ -73,6 +73,99 @@ class MobileAppManager extends Page
         return $total;
     }
 
+    public function isBuilderEnabled(): bool
+    {
+        return (bool) PlatformSetting::get('mobile_app_builder_enabled', true);
+    }
+
+    public function requireCustomDomain(): bool
+    {
+        return (bool) PlatformSetting::get('mobile_app_require_custom_domain', false);
+    }
+
+    public function hasVerifiedCustomDomain(): bool
+    {
+        $tenant = Filament::getTenant();
+        if (! $tenant) {
+            return false;
+        }
+
+        return $tenant->domains()->get()->contains(function ($domain) {
+            return $domain->isCustom() && $domain->isHealthy();
+        });
+    }
+
+    public function isPlanAllowed(): bool
+    {
+        $allowedPlans = (string) PlatformSetting::get('mobile_app_allowed_plans', 'all');
+        if ($allowedPlans === 'all') {
+            return true;
+        }
+
+        $tenant = Filament::getTenant();
+        $sub = $tenant?->activeSubscription;
+        $planSlug = $sub?->plan?->slug;
+
+        if ($allowedPlans === 'pro_and_above') {
+            return in_array($planSlug, ['pro', 'enterprise'], true);
+        }
+
+        if ($allowedPlans === 'enterprise_only') {
+            return $planSlug === 'enterprise';
+        }
+
+        return true;
+    }
+
+    public function canCreateOrRebuildApp(): bool
+    {
+        return $this->isBuilderEnabled()
+            && (! $this->requireCustomDomain() || $this->hasVerifiedCustomDomain())
+            && $this->isPlanAllowed();
+    }
+
+    public function getEligibilityBlockReason(): ?string
+    {
+        if (! $this->isBuilderEnabled()) {
+            return 'Mobile app compilation is temporarily paused by platform administrators.';
+        }
+
+        if ($this->requireCustomDomain() && ! $this->hasVerifiedCustomDomain()) {
+            return 'Your store must connect and verify a custom domain (e.g. yourbrand.com) before building a mobile app.';
+        }
+
+        if (! $this->isPlanAllowed()) {
+            $allowedPlans = (string) PlatformSetting::get('mobile_app_allowed_plans', 'all');
+            $tier = $allowedPlans === 'enterprise_only' ? 'Enterprise' : 'Pro or Enterprise';
+
+            return "Your current plan does not include mobile app compilation. Please upgrade to the {$tier} plan.";
+        }
+
+        return null;
+    }
+
+    public function getResolvedStoreUrl(): string
+    {
+        $tenant = Filament::getTenant();
+        if (! $tenant) {
+            return url('/');
+        }
+
+        // 1. Prefer verified custom domain if available
+        $customDomain = $tenant->domains()->get()->first(fn ($d) => $d->isCustom() && $d->isHealthy());
+        if ($customDomain) {
+            return "https://{$customDomain->domain}";
+        }
+
+        // 2. Primary domain
+        $primaryDomain = $tenant->domains()->where('is_primary', true)->first() ?? $tenant->domains()->first();
+        if ($primaryDomain) {
+            return "https://{$primaryDomain->domain}";
+        }
+
+        return $tenant->getStoreUrl();
+    }
+
     public function setBuildType(string $type): void
     {
         $this->buildType = $type;
@@ -157,6 +250,16 @@ class MobileAppManager extends Page
      */
     public function payWithPayMint(MobileAppBuilderService $builder): mixed
     {
+        if (! $this->canCreateOrRebuildApp()) {
+            Notification::make()
+                ->title('App Creation Unavailable')
+                ->body($this->getEligibilityBlockReason() ?? 'Mobile app creation is not available.')
+                ->danger()
+                ->send();
+
+            return null;
+        }
+
         $tenant = Filament::getTenant();
 
         $rules = [
@@ -241,6 +344,16 @@ class MobileAppManager extends Page
      */
     public function orderWithBalance(MobileAppBuilderService $builder): void
     {
+        if (! $this->canCreateOrRebuildApp()) {
+            Notification::make()
+                ->title('App Creation Unavailable')
+                ->body($this->getEligibilityBlockReason() ?? 'Mobile app creation is not available.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
         $tenant = Filament::getTenant();
 
         $rules = [
@@ -303,8 +416,7 @@ class MobileAppManager extends Page
 
         $this->mobileApp = $app;
 
-        $primaryDomain = $tenant->domains()->first();
-        $storeUrl = $primaryDomain ? "https://{$primaryDomain->domain}" : url('/');
+        $storeUrl = $this->getResolvedStoreUrl();
 
         $result = $builder->dispatchBuild($app, $storeUrl, $this->buildType);
 
@@ -378,6 +490,16 @@ class MobileAppManager extends Page
             return;
         }
 
+        if (! $this->canCreateOrRebuildApp()) {
+            Notification::make()
+                ->title('App Updates Unavailable')
+                ->body($this->getEligibilityBlockReason() ?? 'Mobile app compilation is not available.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
         $this->validate([
             'appName' => 'required|string|min:2|max:30',
             'appIcon' => 'nullable|image|max:3072',
@@ -399,8 +521,7 @@ class MobileAppManager extends Page
         $this->mobileApp->status = 'building';
         $this->mobileApp->save();
 
-        $primaryDomain = $tenant->domains()->first();
-        $storeUrl = $primaryDomain ? "https://{$primaryDomain->domain}" : url('/');
+        $storeUrl = $this->getResolvedStoreUrl();
 
         $result = $builder->dispatchBuild($this->mobileApp, $storeUrl, $this->buildType);
 

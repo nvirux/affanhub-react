@@ -252,6 +252,51 @@
             @endif
         </div>
 
+        {{-- Platform Eligibility & Availability Banners --}}
+        @if(! $this->isBuilderEnabled())
+            <div style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 16px; padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; gap: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                <div style="font-size: 1.75rem;">⏸️</div>
+                <div>
+                    <h4 style="font-size: 0.95rem; font-weight: 800; color: #991b1b; margin: 0;">Mobile App Creation Temporarily Paused</h4>
+                    <p style="font-size: 0.8125rem; color: #b91c1c; margin-top: 0.35rem; margin-bottom: 0; line-height: 1.4;">
+                        The platform administrators have temporarily paused new mobile app compilations. Previously compiled apps remain fully downloadable below.
+                    </p>
+                </div>
+            </div>
+        @elseif($this->requireCustomDomain() && ! $this->hasVerifiedCustomDomain())
+            <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 16px; padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="font-size: 1.75rem;">🌐</div>
+                    <div>
+                        <h4 style="font-size: 0.95rem; font-weight: 800; color: #1e40af; margin: 0;">Verified Custom Domain Required</h4>
+                        <p style="font-size: 0.8125rem; color: #1d4ed8; margin-top: 0.35rem; margin-bottom: 0; line-height: 1.4;">
+                            To build your branded native Android app, your store must have a connected and verified custom domain (e.g. <code>yourbrand.com</code>).
+                        </p>
+                    </div>
+                </div>
+                <a href="{{ route('filament.merchant.resources.domains.index', ['tenant' => $tenant->public_id]) }}" 
+                   style="background: #2563eb; color: white; padding: 0.65rem 1.25rem; border-radius: 10px; font-size: 0.8125rem; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; align-self: center;">
+                    Connect Custom Domain &rarr;
+                </a>
+            </div>
+        @elseif(! $this->isPlanAllowed())
+            <div style="background: #fdf4ff; border: 1.5px solid #f0abfc; border-radius: 16px; padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="font-size: 1.75rem;">⭐</div>
+                    <div>
+                        <h4 style="font-size: 0.95rem; font-weight: 800; color: #86198f; margin: 0;">Subscription Plan Upgrade Required</h4>
+                        <p style="font-size: 0.8125rem; color: #a21caf; margin-top: 0.35rem; margin-bottom: 0; line-height: 1.4;">
+                            {{ $this->getEligibilityBlockReason() }}
+                        </p>
+                    </div>
+                </div>
+                <a href="{{ route('filament.merchant.pages.billing', ['tenant' => $tenant->public_id]) }}" 
+                   style="background: #9333ea; color: white; padding: 0.65rem 1.25rem; border-radius: 10px; font-size: 0.8125rem; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; align-self: center;">
+                    Upgrade Plan &rarr;
+                </a>
+            </div>
+        @endif
+
         {{-- Main 2-Column Grid --}}
         <div class="app-main-grid">
             
@@ -439,20 +484,31 @@
                                     </div>
                                 </div>
                             @else
-                                <button wire:click="requestUpdate" 
-                                        wire:loading.attr="disabled"
-                                        type="button"
-                                        style="background: #0f172a; color: white; font-weight: 800; font-size: 0.9rem; padding: 0.85rem 1.75rem; border: none; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);">
-                                    <span wire:loading.remove wire:target="requestUpdate">
-                                        🔄 Rebuild {{ $buildType === 'release' ? 'Production Release' : 'Test APK' }} (v{{ $app->version_code + 1 }}.0)
+                                @if(! $this->canCreateOrRebuildApp())
+                                    <button disabled
+                                            type="button"
+                                            style="background: #94a3b8; color: white; font-weight: 800; font-size: 0.9rem; padding: 0.85rem 1.75rem; border: none; border-radius: 12px; cursor: not-allowed; display: inline-flex; align-items: center; gap: 0.5rem; opacity: 0.75;">
+                                        🔒 Rebuild Locked
+                                    </button>
+                                    <span style="font-size: 0.75rem; color: #dc2626; display: block; margin-top: 0.45rem;">
+                                        {{ $this->getEligibilityBlockReason() }}
                                     </span>
-                                    <span wire:loading wire:target="requestUpdate">
-                                        Dispatching Cloud Rebuild...
+                                @else
+                                    <button wire:click="requestUpdate" 
+                                            wire:loading.attr="disabled"
+                                            type="button"
+                                            style="background: #0f172a; color: white; font-weight: 800; font-size: 0.9rem; padding: 0.85rem 1.75rem; border: none; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);">
+                                        <span wire:loading.remove wire:target="requestUpdate">
+                                            🔄 Rebuild {{ $buildType === 'release' ? 'Production Release' : 'Test APK' }} (v{{ $app->version_code + 1 }}.0)
+                                        </span>
+                                        <span wire:loading wire:target="requestUpdate">
+                                            Dispatching Cloud Rebuild...
+                                        </span>
+                                    </button>
+                                    <span style="font-size: 0.75rem; color: #64748b; display: block; margin-top: 0.45rem;">
+                                        Rebuilds are free. The build version will automatically increment to v{{ $app->version_code + 1 }}.0.
                                     </span>
-                                </button>
-                                <span style="font-size: 0.75rem; color: #64748b; display: block; margin-top: 0.45rem;">
-                                    Rebuilds are free. The build version will automatically increment to v{{ $app->version_code + 1 }}.0.
-                                </span>
+                                @endif
                             @endif
                         </div>
                     @endif
@@ -537,7 +593,17 @@
                         </div>
 
                         {{-- Action Buttons --}}
-                        @if($paymentMethod === 'paymint')
+                        @if(! $this->canCreateOrRebuildApp())
+                            <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1rem; text-align: center;">
+                                <div style="font-size: 0.875rem; font-weight: 800; color: #64748b; display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
+                                    <span>🔒</span>
+                                    <span>Ordering Currently Unavailable</span>
+                                </div>
+                                <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.35rem; display: block; line-height: 1.4;">
+                                    {{ $this->getEligibilityBlockReason() }}
+                                </span>
+                            </div>
+                        @elseif($paymentMethod === 'paymint')
                             <button wire:click="payWithPayMint" 
                                     wire:loading.attr="disabled"
                                     type="button" 

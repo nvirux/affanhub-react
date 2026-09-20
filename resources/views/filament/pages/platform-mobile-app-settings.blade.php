@@ -1,7 +1,82 @@
 <x-filament-panels::page>
     <form wire:submit.prevent="save" style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 760px;">
         
-        <!-- Pricing Configuration Card -->
+        <!-- 1. Master Builder Control Card -->
+        <div style="background-color: white; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 20px; padding: 1.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3 style="font-size: 1.125rem; font-weight: 800; color: #111827; margin: 0;">App Builder Service Availability</h3>
+                    <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">
+                        Master switch to turn the mobile app creation feature on or off across all stores.
+                    </p>
+                </div>
+                <label style="position: relative; display: inline-flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" wire:model.live="builderEnabled" style="sr-only: true; width: 2.75rem; height: 1.5rem; accent-color: #10b981; cursor: pointer;">
+                    <span style="margin-left: 0.75rem; font-size: 0.875rem; font-weight: 800; color: {{ $builderEnabled ? '#059669' : '#dc2626' }};">
+                        {{ $builderEnabled ? 'ACTIVE / OPEN' : 'PAUSED / OFF' }}
+                    </span>
+                </label>
+            </div>
+            @if(! $builderEnabled)
+                <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.8125rem; color: #991b1b; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>⚠️</span>
+                    <span>When paused, merchants cannot order or compile new mobile apps. Existing compiled APK/AAB files will still remain downloadable.</span>
+                </div>
+            @endif
+        </div>
+
+        <!-- 2. Store Requirements & Access Restrictions Card -->
+        <div style="background-color: white; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 20px; padding: 1.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); display: flex; flex-direction: column; gap: 1.25rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3 style="font-size: 1.125rem; font-weight: 800; color: #111827; margin: 0;">Eligibility & Store Requirements</h3>
+                    <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">
+                        Specify which stores and plans are allowed to request a mobile app.
+                    </p>
+                </div>
+                <div style="font-size: 1.75rem;">🛡️</div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0;">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <!-- Custom Domain Requirement -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label style="font-size: 0.875rem; font-weight: 800; color: #1e293b; margin: 0;">Require Custom Domain</label>
+                            <input type="checkbox" wire:model="requireCustomDomain" style="width: 1.25rem; height: 1.25rem; accent-color: #10b981; cursor: pointer;">
+                        </div>
+                        <p style="font-size: 0.75rem; color: #64748b; line-height: 1.4; margin: 0;">
+                            When enabled, only stores that have mapped and verified their own custom domain (e.g. <code>store.com</code>) can create an app.
+                        </p>
+                    </div>
+                    <span style="font-size: 0.75rem; font-weight: 700; margin-top: 0.75rem; color: {{ $requireCustomDomain ? '#2563eb' : '#64748b' }};">
+                        {{ $requireCustomDomain ? '✓ Custom domain mandatory' : '○ Allows subdomains (affanhub.com)' }}
+                    </span>
+                </div>
+
+                <!-- Allowed Subscription Plans -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <label style="font-size: 0.875rem; font-weight: 800; color: #1e293b; margin: 0; display: block; margin-bottom: 0.5rem;">Minimum Subscription Plan</label>
+                        <p style="font-size: 0.75rem; color: #64748b; line-height: 1.4; margin-bottom: 0.75rem;">
+                            Restrict app creation to higher tier plans or allow all active stores.
+                        </p>
+                    </div>
+                    <select 
+                        wire:model="allowedPlans" 
+                        style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 0.875rem; font-weight: 700; color: #0f172a; background: white;"
+                    >
+                        <option value="all">All Plans (Starter, Pro, Enterprise)</option>
+                        <option value="pro_and_above">Pro & Enterprise Plans Only</option>
+                        <option value="enterprise_only">Enterprise Plan Only</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Pricing Configuration Card -->
         <div style="background-color: white; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 20px; padding: 2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); display: flex; flex-direction: column; gap: 1.5rem;">
             
             <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -11,7 +86,7 @@
                         Control how much merchants pay for their branded Android APK and Google Play Store submission.
                     </p>
                 </div>
-                <div style="font-size: 2rem;">📱</div>
+                <div style="font-size: 2rem;">💳</div>
             </div>
 
             <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0;">
@@ -79,7 +154,7 @@
                     type="submit" 
                     style="background: #10b981; color: white; padding: 0.75rem 1.75rem; border-radius: 10px; font-weight: 800; font-size: 0.875rem; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);"
                 >
-                    <span wire:loading.remove>Save Price Settings</span>
+                    <span wire:loading.remove>Save All Settings</span>
                     <span wire:loading>Saving...</span>
                 </button>
             </div>
