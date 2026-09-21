@@ -3,14 +3,12 @@
 namespace App\Filament\Merchant\Resources;
 
 use App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans;
-use App\Models\PlanDataPrice;
 use App\Models\StoreDataPlan;
-use App\Models\Subscription;
 use BackedEnum;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
-use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -86,27 +84,7 @@ class StoreDataPlanResource extends Resource
                     ->label('Your Cost (₦)')
                     ->badge()
                     ->color('purple')
-                    ->state(function (StoreDataPlan $record) {
-                        $store = Filament::getTenant();
-                        $subscription = Subscription::where('store_id', $store?->id)
-                            ->whereIn('status', ['active', 'trialing'])
-                            ->latest()
-                            ->first();
-
-                        if ($subscription && $subscription->plan_id) {
-                            $planPrice = PlanDataPrice::where('plan_id', $subscription->plan_id)
-                                ->where('data_plan_id', $record->data_plan_id)
-                                ->first();
-
-                            if ($planPrice && $planPrice->wholesale_price !== null) {
-                                return '₦'.number_format((float) $planPrice->wholesale_price, 2);
-                            }
-                        }
-
-                        $baseWholesale = $record->dataPlan->selling_price ?? $record->dataPlan->default_retail_price;
-
-                        return '₦'.number_format((float) $baseWholesale, 2);
-                    }),
+                    ->state(fn (StoreDataPlan $record) => '₦'.number_format($record->getWholesaleCost(), 2)),
                 TextInputColumn::make('selling_price')
                     ->label('Your Store Price (₦)')
                     ->rules(['required', 'numeric', 'min:0'])
@@ -115,29 +93,7 @@ class StoreDataPlanResource extends Resource
                     ->label('Est. Profit (₦)')
                     ->badge()
                     ->color('success')
-                    ->state(function (StoreDataPlan $record) {
-                        $store = Filament::getTenant();
-                        $subscription = Subscription::where('store_id', $store?->id)
-                            ->whereIn('status', ['active', 'trialing'])
-                            ->latest()
-                            ->first();
-
-                        $wholesaleCost = (float) ($record->dataPlan->selling_price ?? $record->dataPlan->default_retail_price);
-
-                        if ($subscription && $subscription->plan_id) {
-                            $planPrice = PlanDataPrice::where('plan_id', $subscription->plan_id)
-                                ->where('data_plan_id', $record->data_plan_id)
-                                ->first();
-
-                            if ($planPrice && $planPrice->wholesale_price !== null) {
-                                $wholesaleCost = (float) $planPrice->wholesale_price;
-                            }
-                        }
-
-                        $profit = (float) $record->selling_price - $wholesaleCost;
-
-                        return '₦'.number_format($profit, 2);
-                    }),
+                    ->state(fn (StoreDataPlan $record) => '₦'.number_format((float) $record->selling_price - $record->getWholesaleCost(), 2)),
                 ToggleColumn::make('is_best_offer')
                     ->label('HOT 🔥 Best Offer'),
                 ToggleColumn::make('is_enabled')
@@ -160,6 +116,87 @@ class StoreDataPlanResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('bulk_set_profit')
+                        ->label('⚡ Set Profit on Selected (+₦)')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->color('success')
+                        ->form([
+                            TextInput::make('profit_amount')
+                                ->label('Profit Margin (+₦ on Wholesale Cost)')
+                                ->numeric()
+                                ->prefix('₦')
+                                ->default(50.00)
+                                ->required(),
+                            Select::make('round_to')
+                                ->label('Price Rounding')
+                                ->options([
+                                    'none' => 'Exact Decimals',
+                                    '5' => 'Nearest ₦5 (e.g. ₦285, ₦290)',
+                                    '10' => 'Nearest ₦10 (e.g. ₦280, ₦290)',
+                                ])
+                                ->default('5')
+                                ->required(),
+                        ])
+                        ->action(function ($records, array $data): void {
+                            $profit = (float) $data['profit_amount'];
+                            $roundTo = $data['round_to'];
+                            $count = 0;
+
+                            foreach ($records as $record) {
+                                $cost = $record->getWholesaleCost();
+                                $newPrice = $cost + $profit;
+
+                                if ($roundTo === '5') {
+                                    $newPrice = round($newPrice / 5) * 5;
+                                } elseif ($roundTo === '10') {
+                                    $newPrice = round($newPrice / 10) * 10;
+                                }
+
+                                $record->update([
+                                    'selling_price' => round($newPrice, 2),
+                                ]);
+                                $count++;
+                            }
+
+                            Notification::make()
+                                ->title('Profit Applied')
+                                ->body("Updated prices for {$count} selected store plans.")
+                                ->success()
+                                ->send();
+                        }),
+
+                    BulkAction::make('bulk_adjust_selling_price')
+                        ->label('Adjust Store Price by +/- ₦')
+                        ->icon('heroicon-o-arrows-up-down')
+                        ->color('info')
+                        ->form([
+                            TextInput::make('adjust_amount')
+                                ->label('Adjust Customer Price by (+/- ₦)')
+                                ->numeric()
+                                ->default(0.00)
+                                ->helperText('Enter positive (e.g. 20) to increase, negative (e.g. -20) to decrease')
+                                ->required(),
+                        ])
+                        ->action(function ($records, array $data): void {
+                            $adjust = (float) $data['adjust_amount'];
+                            $count = 0;
+
+                            foreach ($records as $record) {
+                                $newPrice = max(0, (float) $record->selling_price + $adjust);
+
+                                $record->update([
+                                    'selling_price' => round($newPrice, 2),
+                                ]);
+                                $count++;
+                            }
+
+                            Notification::make()
+                                ->title('Prices Adjusted')
+                                ->body("Adjusted customer prices for {$count} selected store plans.")
+                                ->success()
+                                ->send();
+                        }),
+
                     BulkAction::make('mark_best_offer')
                         ->label('Set as HOT 🔥 Best Offer')
                         ->icon('heroicon-o-fire')

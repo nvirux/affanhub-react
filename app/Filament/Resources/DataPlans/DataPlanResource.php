@@ -153,6 +153,107 @@ class DataPlanResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('bulk_set_margins')
+                        ->label('⚡ Set Profit Margins on Selected')
+                        ->icon('heroicon-o-calculator')
+                        ->color('warning')
+                        ->form([
+                            TextInput::make('wholesale_margin')
+                                ->label('Wholesale Margin (+₦ on Provider Cost)')
+                                ->numeric()
+                                ->prefix('₦')
+                                ->default(10.00)
+                                ->required(),
+                            TextInput::make('retail_margin')
+                                ->label('Default Retail Margin (+₦ on Provider Cost)')
+                                ->numeric()
+                                ->prefix('₦')
+                                ->default(35.00)
+                                ->required(),
+                            Select::make('round_to')
+                                ->label('Price Rounding')
+                                ->options([
+                                    'none' => 'Exact Decimals',
+                                    '5' => 'Nearest ₦5 (e.g. ₦235, ₦240)',
+                                    '10' => 'Nearest ₦10 (e.g. ₦240, ₦250)',
+                                ])
+                                ->default('5')
+                                ->required(),
+                        ])
+                        ->action(function ($records, array $data): void {
+                            $roundTo = $data['round_to'];
+                            $wMargin = (float) $data['wholesale_margin'];
+                            $rMargin = (float) $data['retail_margin'];
+                            $count = 0;
+
+                            foreach ($records as $record) {
+                                $cost = (float) $record->cost_price;
+                                $newWholesale = $cost + $wMargin;
+                                $newRetail = $cost + $rMargin;
+
+                                if ($roundTo === '5') {
+                                    $newWholesale = round($newWholesale / 5) * 5;
+                                    $newRetail = round($newRetail / 5) * 5;
+                                } elseif ($roundTo === '10') {
+                                    $newWholesale = round($newWholesale / 10) * 10;
+                                    $newRetail = round($newRetail / 10) * 10;
+                                }
+
+                                $record->update([
+                                    'selling_price' => round($newWholesale, 2),
+                                    'default_retail_price' => round($newRetail, 2),
+                                ]);
+                                $count++;
+                            }
+
+                            Notification::make()
+                                ->title('Margins Applied')
+                                ->body("Updated prices for {$count} selected data plans.")
+                                ->success()
+                                ->send();
+                        }),
+
+                    BulkAction::make('bulk_adjust_prices')
+                        ->label('Adjust Prices by +/- ₦')
+                        ->icon('heroicon-o-arrows-up-down')
+                        ->color('info')
+                        ->form([
+                            TextInput::make('wholesale_adjust')
+                                ->label('Adjust Wholesale Price by (+/- ₦)')
+                                ->numeric()
+                                ->default(0.00)
+                                ->helperText('Enter positive (e.g. 10) to increase, negative (e.g. -10) to decrease')
+                                ->required(),
+                            TextInput::make('retail_adjust')
+                                ->label('Adjust Retail Price by (+/- ₦)')
+                                ->numeric()
+                                ->default(0.00)
+                                ->helperText('Enter positive (e.g. 20) to increase, negative (e.g. -20) to decrease')
+                                ->required(),
+                        ])
+                        ->action(function ($records, array $data): void {
+                            $wAdjust = (float) $data['wholesale_adjust'];
+                            $rAdjust = (float) $data['retail_adjust'];
+                            $count = 0;
+
+                            foreach ($records as $record) {
+                                $newWholesale = max(0, (float) $record->selling_price + $wAdjust);
+                                $newRetail = max(0, (float) $record->default_retail_price + $rAdjust);
+
+                                $record->update([
+                                    'selling_price' => round($newWholesale, 2),
+                                    'default_retail_price' => round($newRetail, 2),
+                                ]);
+                                $count++;
+                            }
+
+                            Notification::make()
+                                ->title('Prices Adjusted')
+                                ->body("Adjusted prices for {$count} selected data plans.")
+                                ->success()
+                                ->send();
+                        }),
+
                     BulkAction::make('mark_best_offer')
                         ->label('Set as HOT 🔥 Best Offer')
                         ->icon('heroicon-o-fire')

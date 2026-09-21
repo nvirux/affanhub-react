@@ -32,4 +32,30 @@ class StoreDataPlan extends Model
     {
         return $this->belongsTo(DataPlan::class);
     }
+
+    /**
+     * Resolve the store's exact wholesale purchase cost based on their subscription tier or base selling price.
+     */
+    public function getWholesaleCost(): float
+    {
+        $store = $this->store;
+        if ($store) {
+            $subscription = Subscription::where('store_id', $store->id)
+                ->whereIn('status', ['active', 'trialing'])
+                ->latest()
+                ->first();
+
+            if ($subscription && $subscription->plan_id) {
+                $planPrice = PlanDataPrice::where('plan_id', $subscription->plan_id)
+                    ->where('data_plan_id', $this->data_plan_id)
+                    ->first();
+
+                if ($planPrice && $planPrice->wholesale_price !== null) {
+                    return (float) $planPrice->wholesale_price;
+                }
+            }
+        }
+
+        return (float) ($this->dataPlan?->selling_price ?? $this->dataPlan?->default_retail_price ?? 0.0);
+    }
 }
