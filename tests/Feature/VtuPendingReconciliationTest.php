@@ -174,3 +174,44 @@ test('vtu:reconcile-pending command reconciles pending orders via CLI', function
     $transaction->refresh();
     expect($transaction->status)->toBe('successful');
 });
+
+test('markAsDelivered re-debits customer and store and sweeps profit for delivered failed transactions', function () {
+    $walletService = app(WalletService::class);
+
+    // Initial balances: customer has ₦500, store has ₦1000
+    $walletService->credit($this->customerWallet, 500.00, 'deposit', 'Customer funds');
+    $walletService->credit($this->storeMainWallet, 1000.00, 'deposit', 'Store wholesale funds');
+
+    $transaction = Transaction::create([
+        'user_id' => $this->user->id,
+        'store_id' => $this->store->id,
+        'service_type' => 'data',
+        'amount' => 500.00,
+        'amount_paid' => 500.00,
+        'cost_price' => 450.00,
+        'profit' => 50.00,
+        'recipient' => '08012345678',
+        'status' => 'failed',
+        'reference' => 'TXN_MANUAL_DELIVER_1',
+    ]);
+
+    $reconciliation = app(VtuReconciliationService::class);
+    $result = $reconciliation->markAsDelivered($transaction, true);
+
+    expect($result['success'])->toBeTrue();
+
+    $transaction->refresh();
+    expect($transaction->status)->toBe('successful');
+
+    // Customer wallet should be re-debited ₦500 (balance goes from 500 to 0)
+    $this->customerWallet->refresh();
+    expect((float) $this->customerWallet->balance)->toBe(0.00);
+
+    // Store main wallet should be re-debited ₦450 wholesale cost + ₦50 profit sweep = -₦500
+    $this->storeMainWallet->refresh();
+    expect((float) $this->storeMainWallet->balance)->toBe(500.00);
+
+    // Store profit wallet should receive ₦50 profit
+    $this->storeProfitWallet->refresh();
+    expect((float) $this->storeProfitWallet->balance)->toBe(50.00);
+});

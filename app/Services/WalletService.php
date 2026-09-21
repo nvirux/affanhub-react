@@ -88,15 +88,16 @@ class WalletService
         string $category,
         string $description,
         ?array $meta = [],
-        ?string $reference = null
+        ?string $reference = null,
+        bool $allowNegative = false
     ): WalletTransaction {
-        return DB::transaction(function () use ($wallet, $amount, $category, $description, $meta, $reference) {
+        return DB::transaction(function () use ($wallet, $amount, $category, $description, $meta, $reference, $allowNegative) {
             /** @var Wallet $lockedWallet */
             $lockedWallet = Wallet::where('id', $wallet->id)->lockForUpdate()->firstOrFail();
 
             $balanceBefore = (float) $lockedWallet->balance;
 
-            if ($balanceBefore < $amount) {
+            if (! $allowNegative && $balanceBefore < $amount) {
                 throw new \InvalidArgumentException(sprintf(
                     'Insufficient wallet balance. Available: ₦%s, Required: ₦%s.',
                     number_format($balanceBefore, 2),

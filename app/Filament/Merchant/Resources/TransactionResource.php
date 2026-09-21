@@ -8,7 +8,6 @@ use App\Services\Vtu\VtuReconciliationService;
 use BackedEnum;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -187,12 +186,6 @@ class TransactionResource extends Resource
                             ->disabled(),
                         TextInput::make('status')->label('Status')->disabled(),
                         TextInput::make('created_at')->label('Timestamp')->disabled(),
-                        Textarea::make('api_response')
-                            ->label('Provider / API Response')
-                            ->formatStateUsing(fn ($state) => is_array($state) ? json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : $state)
-                            ->rows(4)
-                            ->columnSpanFull()
-                            ->disabled(),
                     ]),
             ])
             ->defaultSort('created_at', 'desc');

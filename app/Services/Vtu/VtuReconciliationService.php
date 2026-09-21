@@ -201,4 +201,122 @@ class VtuReconciliationService
             ];
         });
     }
+
+    /**
+     * Administratively mark a previously failed transaction as delivered and re-debit both customer and store.
+     *
+     * @return array ['success' => bool, 'message' => string]
+     */
+    public function markAsDelivered(Transaction $transaction, bool $forceAllowNegative = true): array
+    {
+        if (in_array(strtolower($transaction->status), ['successful', 'completed'])) {
+            return [
+                'success' => false,
+                'message' => 'Transaction is already marked as successful.',
+            ];
+        }
+
+        return DB::transaction(function () use ($transaction, $forceAllowNegative) {
+            $customer = $transaction->user;
+            $store = $transaction->store;
+            $rdbCustomerRef = 'RDB_'.$transaction->reference;
+            $rdbStoreRef = 'RDB_WS_'.$transaction->reference;
+
+            // 1. Re-debit customer wallet if previously refunded
+            if ($customer && (float) $transaction->amount_paid > 0) {
+                $alreadyDebited = WalletTransaction::where('reference', $rdbCustomerRef)->exists();
+                if (! $alreadyDebited) {
+                    $customerWallet = $customer->wallet('main');
+                    $this->walletService->debit(
+                        $customerWallet,
+                        (float) $transaction->amount_paid,
+                        'manual_adjustment',
+                        "Manual Settlement: Re-debit for delivered {$transaction->service_type} ({$transaction->recipient})",
+                        ['transaction_id' => $transaction->id, 'reference' => $transaction->reference],
+                        $rdbCustomerRef,
+                        $forceAllowNegative
+                    );
+                }
+            }
+
+            // 2. Re-debit store main wallet for wholesale cost if previously refunded
+            if ($store && (float) $transaction->cost_price > 0) {
+                $alreadyStoreDebited = WalletTransaction::where('reference', $rdbStoreRef)->exists();
+                if (! $alreadyStoreDebited) {
+                    $storeMainWallet = $store->mainWallet();
+                    if ($storeMainWallet) {
+                        $this->walletService->debit(
+                            $storeMainWallet,
+                            (float) $transaction->cost_price,
+                            'wholesale_charge',
+                            "Manual Settlement: Wholesale cost for delivered {$transaction->service_type} ({$transaction->recipient})",
+                            ['transaction_id' => $transaction->id, 'reference' => $transaction->reference],
+                            $rdbStoreRef,
+                            $forceAllowNegative
+                        );
+                    }
+                }
+            }
+
+            // 3. Allocate store profit if not yet swept
+            $profitMargin = (float) $transaction->profit;
+            $swpRef = 'SWP_'.$transaction->reference;
+            $alreadySwept = WalletTransaction::where('reference', $swpRef)->exists();
+
+            if (! $alreadySwept && $profitMargin > 0 && $store) {
+                try {
+                    $storeMainWallet = $store->mainWallet();
+                    $storeProfitWallet = $store->profitWallet();
+
+                    if ($storeMainWallet && $storeProfitWallet) {
+                        $this->walletService->debit(
+                            $storeMainWallet,
+                            $profitMargin,
+                            'profit_sweep',
+                            "Profit Allocation: {$transaction->service_type} ({$transaction->recipient})",
+                            [
+                                'customer_id' => $transaction->user_id,
+                                'amount_paid' => $transaction->amount_paid,
+                                'cost_price' => $transaction->cost_price,
+                                'profit_margin' => $profitMargin,
+                            ],
+                            $swpRef,
+                            $forceAllowNegative
+                        );
+
+                        $this->walletService->credit(
+                            $storeProfitWallet,
+                            $profitMargin,
+                            'earned_profit',
+                            "Earned Profit: {$transaction->service_type} ({$transaction->recipient})",
+                            [
+                                'customer_id' => $transaction->user_id,
+                                'amount_paid' => $transaction->amount_paid,
+                                'cost_price' => $transaction->cost_price,
+                                'profit_margin' => $profitMargin,
+                            ],
+                            'PRF_'.$transaction->reference
+                        );
+                    }
+                } catch (\Throwable $profitErr) {
+                    Log::error("Failed to sweep profit on manual mark as delivered for {$transaction->reference}: ".$profitErr->getMessage());
+                }
+            }
+
+            // 4. Update transaction status
+            $existingApiResponse = is_array($transaction->api_response) ? $transaction->api_response : [];
+            $existingApiResponse['manual_settlement_at'] = now()->toIso8601String();
+            $existingApiResponse['manual_settlement_by'] = auth()->id() ?? 'Admin';
+
+            $transaction->update([
+                'status' => 'successful',
+                'api_response' => $existingApiResponse,
+            ]);
+
+            return [
+                'success' => true,
+                'message' => 'Transaction successfully marked as delivered. Customer and store debited, profit allocated.',
+            ];
+        });
+    }
 }

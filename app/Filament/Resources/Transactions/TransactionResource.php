@@ -5,10 +5,13 @@ namespace App\Filament\Resources\Transactions;
 use App\Models\Transaction;
 use App\Services\Vtu\VtuReconciliationService;
 use BackedEnum;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -89,6 +92,38 @@ class TransactionResource extends Resource
                     ]),
             ])
             ->actions([
+                ViewAction::make()
+                    ->form([
+                        TextInput::make('reference')->label('Reference Code')->disabled(),
+                        TextInput::make('store.name')->label('Storefront')->placeholder('Platform Level')->disabled(),
+                        TextInput::make('user.name')->label('Customer')->placeholder('Direct / System')->disabled(),
+                        TextInput::make('service_type')->label('Service Type')->disabled(),
+                        TextInput::make('recipient')->label('Recipient (Phone / Account)')->disabled(),
+                        TextInput::make('amount_paid')
+                            ->label('Customer Paid (₦)')
+                            ->formatStateUsing(fn ($state) => '₦'.number_format((float) $state, 2))
+                            ->disabled(),
+                        TextInput::make('cost_price')
+                            ->label('Store Wholesale Cost (₦)')
+                            ->formatStateUsing(fn ($state) => '₦'.number_format((float) $state, 2))
+                            ->disabled(),
+                        TextInput::make('profit')
+                            ->label('Store Profit (₦)')
+                            ->formatStateUsing(fn ($state) => '₦'.number_format((float) $state, 2))
+                            ->disabled(),
+                        TextInput::make('platform_profit')
+                            ->label('Platform Profit (₦)')
+                            ->formatStateUsing(fn ($state) => '₦'.number_format((float) $state, 2))
+                            ->disabled(),
+                        TextInput::make('status')->label('Status')->disabled(),
+                        TextInput::make('created_at')->label('Created At')->disabled(),
+                        Textarea::make('api_response')
+                            ->label('Upstream Provider / Raw API Response (Super Admin)')
+                            ->formatStateUsing(fn ($state) => is_array($state) ? json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : $state)
+                            ->rows(6)
+                            ->columnSpanFull()
+                            ->disabled(),
+                    ]),
                 Action::make('check_status')
                     ->label('Check Status')
                     ->icon('heroicon-o-arrow-path')
@@ -113,6 +148,30 @@ class TransactionResource extends Resource
                                 ->title('Still Pending')
                                 ->body($result['message'] ?? 'Transaction is still processing at provider.')
                                 ->warning()
+                                ->send();
+                        }
+                    }),
+                Action::make('mark_as_delivered')
+                    ->label('Mark Delivered & Debit')
+                    ->icon('heroicon-o-check-badge')
+                    ->color('success')
+                    ->visible(fn (Transaction $record): bool => in_array(strtolower($record->status), ['failed', 'cancelled']))
+                    ->requiresConfirmation()
+                    ->modalHeading('Mark Transaction as Delivered & Recover Funds')
+                    ->modalDescription(fn (Transaction $record) => "Are you sure this {$record->service_type} was actually delivered to {$record->recipient}? This will re-debit the customer's wallet (₦".number_format((float) $record->amount_paid, 2).') and store wholesale wallet (₦'.number_format((float) $record->cost_price, 2).'), sweep merchant profit, and update status to Successful.')
+                    ->action(function (Transaction $record, VtuReconciliationService $service) {
+                        $result = $service->markAsDelivered($record, true);
+                        if ($result['success']) {
+                            Notification::make()
+                                ->title('Transaction Settled')
+                                ->body($result['message'])
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Settlement Failed')
+                                ->body($result['message'])
+                                ->danger()
                                 ->send();
                         }
                     }),
