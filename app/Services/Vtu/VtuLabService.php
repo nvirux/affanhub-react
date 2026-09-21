@@ -45,24 +45,35 @@ class VtuLabService
                 'Content-Type' => 'application/json',
             ])->timeout(30)->post($endpoint, $payload);
 
+            $statusCode = $response->status();
             $resData = $response->json() ?? [];
 
             Log::info('VTULab Data Response:', [
-                'status_code' => $response->status(),
+                'status_code' => $statusCode,
                 'response' => $resData,
             ]);
 
-            $isApiSuccess = ($resData['success'] ?? false) === true || ($resData['code'] ?? '') === 'SUCCESS';
-            $innerStatus = strtolower($resData['data']['status'] ?? '');
-            $isSuccessful = $isApiSuccess && in_array($innerStatus, ['successful', 'success', 'completed']);
-            $isPending = $isApiSuccess && in_array($innerStatus, ['pending', 'processing']);
+            $isAcceptedHttp = in_array($statusCode, [200, 201, 202]);
+            $apiCode = strtoupper((string) ($resData['code'] ?? ''));
+            $apiSuccessFlag = ($resData['success'] ?? false) === true || ($resData['success'] ?? '') === 'true' || ($resData['success'] ?? 0) == 1;
+            $innerStatus = strtolower((string) ($resData['data']['status'] ?? $resData['status'] ?? ''));
+
+            $isPending = $isAcceptedHttp && (
+                in_array($innerStatus, ['pending', 'processing', 'accepted'])
+                || $apiCode === 'ACCEPTED'
+                || $statusCode === 202
+            );
+
+            $isSuccessful = ($apiSuccessFlag || $apiCode === 'SUCCESS' || $statusCode === 200)
+                && in_array($innerStatus, ['successful', 'success', 'completed'])
+                && ! $isPending;
 
             if ($isSuccessful || $isPending) {
                 return [
                     'success' => true,
                     'pending' => $isPending,
                     'status' => $isPending ? 'pending' : 'successful',
-                    'message' => $resData['message'] ?? 'Data purchase successful.',
+                    'message' => $resData['message'] ?? ($isPending ? 'Data purchase accepted and is processing.' : 'Data purchase successful.'),
                     'reference' => $resData['data']['reference'] ?? $reference,
                     'raw' => $resData,
                 ];
@@ -133,24 +144,35 @@ class VtuLabService
                 'Content-Type' => 'application/json',
             ])->timeout(30)->post($endpoint, $payload);
 
+            $statusCode = $response->status();
             $resData = $response->json() ?? [];
 
             Log::info('VTULab Airtime Response:', [
-                'status_code' => $response->status(),
+                'status_code' => $statusCode,
                 'response' => $resData,
             ]);
 
-            $isApiSuccess = ($resData['success'] ?? false) === true || ($resData['code'] ?? '') === 'SUCCESS';
-            $innerStatus = strtolower($resData['data']['status'] ?? '');
-            $isSuccessful = $isApiSuccess && in_array($innerStatus, ['successful', 'success', 'completed']);
-            $isPending = $isApiSuccess && in_array($innerStatus, ['pending', 'processing']);
+            $isAcceptedHttp = in_array($statusCode, [200, 201, 202]);
+            $apiCode = strtoupper((string) ($resData['code'] ?? ''));
+            $apiSuccessFlag = ($resData['success'] ?? false) === true || ($resData['success'] ?? '') === 'true' || ($resData['success'] ?? 0) == 1;
+            $innerStatus = strtolower((string) ($resData['data']['status'] ?? $resData['status'] ?? ''));
+
+            $isPending = $isAcceptedHttp && (
+                in_array($innerStatus, ['pending', 'processing', 'accepted'])
+                || $apiCode === 'ACCEPTED'
+                || $statusCode === 202
+            );
+
+            $isSuccessful = ($apiSuccessFlag || $apiCode === 'SUCCESS' || $statusCode === 200)
+                && in_array($innerStatus, ['successful', 'success', 'completed'])
+                && ! $isPending;
 
             if ($isSuccessful || $isPending) {
                 return [
                     'success' => true,
                     'pending' => $isPending,
                     'status' => $isPending ? 'pending' : 'successful',
-                    'message' => $resData['message'] ?? 'Airtime purchase successful.',
+                    'message' => $resData['message'] ?? ($isPending ? 'Airtime purchase accepted and is processing.' : 'Airtime purchase successful.'),
                     'reference' => $resData['data']['reference'] ?? $reference,
                     'raw' => $resData,
                 ];
@@ -172,6 +194,75 @@ class VtuLabService
                 'pending' => false,
                 'status' => 'failed',
                 'message' => 'Connection timeout or gateway error: '.$e->getMessage(),
+                'reference' => $reference,
+                'raw' => [],
+            ];
+        }
+    }
+
+    /**
+     * Query a transaction status by reference from VTULab API:
+     * GET https://vtulab.com/api/v1/transactions/{reference}
+     *
+     * @param  string  $reference  (Unique transaction reference)
+     * @return array Standardized status array ['success' => bool, 'status' => 'successful'|'pending'|'failed', ...]
+     */
+    public function queryTransaction(string $reference): array
+    {
+        $endpoint = $this->baseUrl.'/transactions/'.$reference;
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.$this->apiKey,
+                'Accept' => 'application/json',
+            ])->timeout(15)->get($endpoint);
+
+            $statusCode = $response->status();
+            $resData = $response->json() ?? [];
+
+            Log::info('VTULab Query Transaction Response:', [
+                'reference' => $reference,
+                'status_code' => $statusCode,
+                'response' => $resData,
+            ]);
+
+            if ($statusCode === 404) {
+                return [
+                    'success' => false,
+                    'status' => 'not_found',
+                    'message' => $resData['message'] ?? 'Transaction not found on provider.',
+                    'reference' => $reference,
+                    'raw' => $resData,
+                ];
+            }
+
+            $rawStatus = strtolower((string) ($resData['data']['status'] ?? $resData['status'] ?? ''));
+
+            if (in_array($rawStatus, ['successful', 'success', 'completed'])) {
+                $status = 'successful';
+            } elseif (in_array($rawStatus, ['failed', 'refunded', 'cancelled', 'rejected'])) {
+                $status = 'failed';
+            } elseif (in_array($rawStatus, ['pending', 'processing', 'accepted'])) {
+                $status = 'pending';
+            } else {
+                $status = 'unknown';
+            }
+
+            return [
+                'success' => $response->successful() && ($resData['success'] ?? true),
+                'status' => $status,
+                'message' => $resData['message'] ?? 'Transaction status retrieved.',
+                'reference' => $resData['data']['reference'] ?? $reference,
+                'data' => $resData['data'] ?? [],
+                'raw' => $resData,
+            ];
+        } catch (\Throwable $e) {
+            Log::error('VTULab Query Transaction Exception: '.$e->getMessage(), ['reference' => $reference]);
+
+            return [
+                'success' => false,
+                'status' => 'error',
+                'message' => 'Connection error: '.$e->getMessage(),
                 'reference' => $reference,
                 'raw' => [],
             ];

@@ -4,13 +4,16 @@ namespace App\Filament\Merchant\Resources;
 
 use App\Filament\Merchant\Resources\TransactionResource\Pages\ListTransactions;
 use App\Models\Transaction;
+use App\Services\Vtu\VtuReconciliationService;
 use BackedEnum;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -138,6 +141,33 @@ class TransactionResource extends Resource
                     ]),
             ])
             ->actions([
+                Action::make('check_status')
+                    ->label('Check Status')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('warning')
+                    ->visible(fn (Transaction $record): bool => in_array(strtolower($record->status), ['pending', 'processing']))
+                    ->action(function (Transaction $record, VtuReconciliationService $service) {
+                        $result = $service->reconcile($record);
+                        if ($result['status'] === 'successful') {
+                            Notification::make()
+                                ->title('Transaction Successful')
+                                ->body('Order verified and completed. Your profit has been credited to your Profit Wallet.')
+                                ->success()
+                                ->send();
+                        } elseif ($result['status'] === 'failed') {
+                            Notification::make()
+                                ->title('Transaction Failed')
+                                ->body('Provider reported failure. Customer wallet has been refunded.')
+                                ->danger()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Still Pending')
+                                ->body($result['message'] ?? 'Transaction is still processing at provider.')
+                                ->warning()
+                                ->send();
+                        }
+                    }),
                 ViewAction::make()
                     ->form([
                         TextInput::make('reference')->label('Reference Code')->disabled(),

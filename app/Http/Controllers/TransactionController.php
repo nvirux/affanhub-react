@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Services\Vtu\VtuReconciliationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -76,6 +77,15 @@ class TransactionController extends Controller
         $transaction = Transaction::where('reference', $reference)
             ->where('user_id', $user->id)
             ->firstOrFail();
+
+        if (in_array(strtolower($transaction->status), ['pending', 'processing'])) {
+            try {
+                app(VtuReconciliationService::class)->reconcile($transaction);
+                $transaction->refresh();
+            } catch (\Throwable $e) {
+                // Keep existing status if provider connection temporarily fails
+            }
+        }
 
         $mainWallet = $user->wallet('main');
 

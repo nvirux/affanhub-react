@@ -3,9 +3,12 @@
 namespace App\Filament\Resources\Transactions;
 
 use App\Models\Transaction;
+use App\Services\Vtu\VtuReconciliationService;
 use BackedEnum;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -84,6 +87,35 @@ class TransactionResource extends Resource
                         'failed' => 'Failed',
                         'pending' => 'Pending',
                     ]),
+            ])
+            ->actions([
+                Action::make('check_status')
+                    ->label('Check Status')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('warning')
+                    ->visible(fn (Transaction $record): bool => in_array(strtolower($record->status), ['pending', 'processing']))
+                    ->action(function (Transaction $record, VtuReconciliationService $service) {
+                        $result = $service->reconcile($record);
+                        if ($result['status'] === 'successful') {
+                            Notification::make()
+                                ->title('Transaction Successful')
+                                ->body('Order has been verified and marked as successful.')
+                                ->success()
+                                ->send();
+                        } elseif ($result['status'] === 'failed') {
+                            Notification::make()
+                                ->title('Transaction Failed')
+                                ->body('Provider reported failure. Customer wallet auto-refunded.')
+                                ->danger()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Still Pending')
+                                ->body($result['message'] ?? 'Transaction is still processing at provider.')
+                                ->warning()
+                                ->send();
+                        }
+                    }),
             ])
             ->defaultSort('created_at', 'desc');
     }
