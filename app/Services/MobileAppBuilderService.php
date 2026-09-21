@@ -21,17 +21,18 @@ class MobileAppBuilderService
     }
 
     /**
-     * Resolve the most professional public URL for the store (custom domain first, then primary subdomain).
+     * Resolve the most professional public URL for the store (custom domain first, then primary subdomain)
+     * pointing directly to the /dashboard page for native app authentication and dashboard access.
      */
     public function resolveStorefrontUrl(StoreMobileApp $mobileApp, ?string $storefrontUrl = null): string
     {
         if (! empty($storefrontUrl)) {
-            return $storefrontUrl;
+            return $this->formatDashboardUrl($storefrontUrl);
         }
 
         $store = $mobileApp->store;
         if (! $store) {
-            return url('/');
+            return url('/dashboard');
         }
 
         // 1. Prefer verified/healthy custom domain (e.g. adeolavtu.com)
@@ -39,7 +40,7 @@ class MobileAppBuilderService
         if ($customDomain) {
             $scheme = str_contains($customDomain->domain, 'localhost') ? 'http' : 'https';
 
-            return "{$scheme}://{$customDomain->domain}";
+            return "{$scheme}://{$customDomain->domain}/dashboard";
         }
 
         // 2. Primary domain (e.g. adeola.affanhub.com)
@@ -47,10 +48,20 @@ class MobileAppBuilderService
         if ($primaryDomain) {
             $scheme = str_contains($primaryDomain->domain, 'localhost') ? 'http' : 'https';
 
-            return "{$scheme}://{$primaryDomain->domain}";
+            return "{$scheme}://{$primaryDomain->domain}/dashboard";
         }
 
-        return $store->getStoreUrl();
+        return rtrim($store->getStoreUrl(), '/').'/dashboard';
+    }
+
+    protected function formatDashboardUrl(string $url): string
+    {
+        $trimmed = rtrim($url, '/');
+        if (str_ends_with($trimmed, '/dashboard')) {
+            return $trimmed;
+        }
+
+        return "{$trimmed}/dashboard";
     }
 
     /**

@@ -89,14 +89,9 @@ class BillingCheckoutCallbackController extends Controller
 
                 Cache::forget("mobile_app_checkout_{$reference}");
 
-                $customDomain = $tenant->domains()->get()->first(fn ($d) => $d->isCustom() && $d->isHealthy());
-                $primaryDomain = $tenant->domains()->where('is_primary', true)->first() ?? $tenant->domains()->first();
-                $resolvedDomain = $customDomain?->domain ?? $primaryDomain?->domain;
-                $storeUrl = $resolvedDomain ? "https://{$resolvedDomain}" : $tenant->getStoreUrl();
-
                 /** @var MobileAppBuilderService $builder */
                 $builder = app(MobileAppBuilderService::class);
-                $builder->dispatchBuild($app, $storeUrl);
+                $builder->dispatchBuild($app);
 
                 Notification::make()
                     ->title('Payment Successful & Build Started!')

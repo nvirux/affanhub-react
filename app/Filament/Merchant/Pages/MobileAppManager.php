@@ -148,22 +148,26 @@ class MobileAppManager extends Page
     {
         $tenant = Filament::getTenant();
         if (! $tenant) {
-            return url('/');
+            return url('/dashboard');
         }
 
         // 1. Prefer verified custom domain if available
         $customDomain = $tenant->domains()->get()->first(fn ($d) => $d->isCustom() && $d->isHealthy());
         if ($customDomain) {
-            return "https://{$customDomain->domain}";
+            $scheme = str_contains($customDomain->domain, 'localhost') ? 'http' : 'https';
+
+            return "{$scheme}://{$customDomain->domain}/dashboard";
         }
 
         // 2. Primary domain
         $primaryDomain = $tenant->domains()->where('is_primary', true)->first() ?? $tenant->domains()->first();
         if ($primaryDomain) {
-            return "https://{$primaryDomain->domain}";
+            $scheme = str_contains($primaryDomain->domain, 'localhost') ? 'http' : 'https';
+
+            return "{$scheme}://{$primaryDomain->domain}/dashboard";
         }
 
-        return $tenant->getStoreUrl();
+        return rtrim($tenant->getStoreUrl(), '/').'/dashboard';
     }
 
     public function setBuildType(string $type): void
