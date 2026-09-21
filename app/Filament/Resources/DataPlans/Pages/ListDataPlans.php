@@ -6,6 +6,8 @@ use App\Filament\Resources\DataPlans\DataPlanResource;
 use App\Models\DataPlan;
 use App\Models\DataType;
 use App\Models\Network;
+use App\Models\Plan;
+use App\Models\PlanDataPrice;
 use App\Services\Vtu\DataPlanSyncService;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
@@ -159,10 +161,10 @@ class ListDataPlans extends ListRecords
                         }
 
                         // Rounding
-                        if ($roundTo === '5') {
+                        if ((string) $roundTo === '5') {
                             $newWholesale = round($newWholesale / 5) * 5;
                             $newRetail = round($newRetail / 5) * 5;
-                        } elseif ($roundTo === '10') {
+                        } elseif ((string) $roundTo === '10') {
                             $newWholesale = round($newWholesale / 10) * 10;
                             $newRetail = round($newRetail / 10) * 10;
                         }
@@ -178,6 +180,159 @@ class ListDataPlans extends ListRecords
                     Notification::make()
                         ->title('Bulk Pricing Applied!')
                         ->body("Successfully updated prices across {$count} data plans.")
+                        ->success()
+                        ->send();
+                }),
+
+            Action::make('bulk_tier_pricing_generator')
+                ->label('⚡ Tier Pricing Matrix (Starter / Pro / Enterprise)')
+                ->icon('heroicon-o-table-cells')
+                ->color('info')
+                ->modalHeading('⚡ Subscription Tier Wholesale Price Matrix')
+                ->modalDescription('Automatically generate wholesale prices for Starter, Pro, Enterprise, and all membership tiers across data plans in 1 click.')
+                ->modalSubmitActionLabel('Apply All Tier Prices')
+                ->form(function () {
+                    $activePlans = Plan::where('is_active', true)->orderBy('price_monthly', 'asc')->get();
+
+                    $fields = [
+                        Select::make('network_id')
+                            ->label('Target Network')
+                            ->options(['all' => '🌐 All Networks'] + Network::where('is_active', true)->pluck('name', 'id')->toArray())
+                            ->default('all')
+                            ->required(),
+
+                        Select::make('data_type_id')
+                            ->label('Target Data Type')
+                            ->options(['all' => '📁 All Data Types'] + DataType::where('is_active', true)->pluck('name', 'id')->toArray())
+                            ->default('all')
+                            ->required(),
+
+                        Radio::make('pricing_strategy')
+                            ->label('Tier Pricing Strategy')
+                            ->options([
+                                'per_gb_rate' => 'Target Rate Per 1.0 GB by Tier (e.g. Starter: ₦230, Pro: ₦224, Enterprise: ₦218)',
+                                'margin_on_cost' => 'Profit Margin on Provider Cost by Tier (+₦ on Cost)',
+                                'discount_from_base' => 'Discount off Base Wholesale Price by Tier (-₦ from Base)',
+                            ])
+                            ->default('per_gb_rate')
+                            ->live()
+                            ->required(),
+                    ];
+
+                    foreach ($activePlans as $index => $plan) {
+                        $defaultGbRate = match ($index) {
+                            0 => 230.00,
+                            1 => 224.00,
+                            default => 218.00,
+                        };
+                        $defaultMargin = match ($index) {
+                            0 => 15.00,
+                            1 => 10.00,
+                            default => 5.00,
+                        };
+                        $defaultDiscount = match ($index) {
+                            0 => 0.00,
+                            1 => 3.00,
+                            default => 6.00,
+                        };
+
+                        $fields[] = TextInput::make("rate_plan_{$plan->id}")
+                            ->label("{$plan->name} Tier Rate Per 1.0 GB (₦)")
+                            ->numeric()
+                            ->prefix('₦')
+                            ->default($defaultGbRate)
+                            ->visible(fn ($get) => $get('pricing_strategy') === 'per_gb_rate')
+                            ->helperText("Stores subscribed to {$plan->name} will purchase at this rate scaled by plan size")
+                            ->required(fn ($get) => $get('pricing_strategy') === 'per_gb_rate');
+
+                        $fields[] = TextInput::make("margin_plan_{$plan->id}")
+                            ->label("{$plan->name} Margin (+₦ on Provider Cost)")
+                            ->numeric()
+                            ->prefix('₦')
+                            ->default($defaultMargin)
+                            ->visible(fn ($get) => $get('pricing_strategy') === 'margin_on_cost')
+                            ->required(fn ($get) => $get('pricing_strategy') === 'margin_on_cost');
+
+                        $fields[] = TextInput::make("discount_plan_{$plan->id}")
+                            ->label("{$plan->name} Discount off Base Wholesale (-₦)")
+                            ->numeric()
+                            ->prefix('₦')
+                            ->default($defaultDiscount)
+                            ->visible(fn ($get) => $get('pricing_strategy') === 'discount_from_base')
+                            ->required(fn ($get) => $get('pricing_strategy') === 'discount_from_base');
+                    }
+
+                    $fields[] = Select::make('round_to')
+                        ->label('Price Rounding')
+                        ->options([
+                            'none' => 'Exact Amount (No Rounding)',
+                            '5' => 'Round to Nearest ₦5 (e.g. ₦220, ₦225)',
+                            '10' => 'Round to Nearest ₦10 (e.g. ₦220, ₦230)',
+                        ])
+                        ->default('5')
+                        ->required();
+
+                    return $fields;
+                })
+                ->action(function (array $data): void {
+                    $activePlans = Plan::where('is_active', true)->get();
+                    $query = DataPlan::query();
+
+                    if ($data['network_id'] !== 'all') {
+                        $query->where('network_id', $data['network_id']);
+                    }
+
+                    if ($data['data_type_id'] !== 'all') {
+                        $query->where('data_type_id', $data['data_type_id']);
+                    }
+
+                    $dataPlans = $query->get();
+                    $strategy = $data['pricing_strategy'];
+                    $roundTo = $data['round_to'];
+                    $updatedCount = 0;
+
+                    foreach ($dataPlans as $dataPlan) {
+                        $sizeGb = $dataPlan->size_mb > 0 ? ((float) $dataPlan->size_mb / 1024) : 1.0;
+                        $cost = (float) $dataPlan->cost_price;
+                        $baseWholesale = (float) ($dataPlan->selling_price ?? $dataPlan->default_retail_price ?? 0.0);
+
+                        foreach ($activePlans as $plan) {
+                            $tierPrice = 0.0;
+
+                            if ($strategy === 'per_gb_rate') {
+                                $rate = (float) ($data["rate_plan_{$plan->id}"] ?? 230.00);
+                                $tierPrice = $sizeGb * $rate;
+                            } elseif ($strategy === 'margin_on_cost') {
+                                $margin = (float) ($data["margin_plan_{$plan->id}"] ?? 10.00);
+                                $tierPrice = $cost + $margin;
+                            } elseif ($strategy === 'discount_from_base') {
+                                $discount = (float) ($data["discount_plan_{$plan->id}"] ?? 0.00);
+                                $tierPrice = max($cost, $baseWholesale - $discount);
+                            }
+
+                            if ((string) $roundTo === '5') {
+                                $tierPrice = round($tierPrice / 5) * 5;
+                            } elseif ((string) $roundTo === '10') {
+                                $tierPrice = round($tierPrice / 10) * 10;
+                            }
+
+                            PlanDataPrice::updateOrCreate(
+                                [
+                                    'plan_id' => $plan->id,
+                                    'data_plan_id' => $dataPlan->id,
+                                ],
+                                [
+                                    'wholesale_price' => round($tierPrice, 2),
+                                ]
+                            );
+
+                            $updatedCount++;
+                        }
+                    }
+
+                    Notification::make()
+                        ->title('⚡ Tier Wholesale Prices Generated!')
+                        ->body("Successfully updated {$updatedCount} tier prices across {$dataPlans->count()} data plans and {$activePlans->count()} membership tiers.")
                         ->success()
                         ->send();
                 }),

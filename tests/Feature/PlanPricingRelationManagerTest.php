@@ -3,7 +3,9 @@
 use App\Filament\Resources\AirtimeDiscounts\Pages\EditAirtimeDiscount;
 use App\Filament\Resources\AirtimeDiscounts\RelationManagers\PlanAirtimeDiscountsRelationManager;
 use App\Filament\Resources\DataPlans\Pages\EditDataPlan;
+use App\Filament\Resources\DataPlans\Pages\ListDataPlans;
 use App\Filament\Resources\DataPlans\RelationManagers\PlanPricesRelationManager;
+use App\Filament\Resources\Plans\Pages\ListPlans;
 use App\Models\Admin;
 use App\Models\AirtimeDiscount;
 use App\Models\DataPlan;
@@ -141,4 +143,91 @@ test('can view edit airtime discount page and manage plan airtime discounts rela
         ->assertHasNoTableActionErrors();
 
     expect(PlanAirtimeDiscount::where('network_id', $this->network->id)->count())->toBe(2);
+});
+
+test('bulk_tier_pricing_generator calculates and updates wholesale prices across all membership tiers', function () {
+    $plan1 = DataPlan::create([
+        'network_id' => $this->network->id,
+        'data_type_id' => $this->dataType->id,
+        'name' => '1.0 GB SME',
+        'plan_code' => 'MTN_SME_1GB',
+        'size_mb' => 1024,
+        'validity' => '30 Days',
+        'cost_price' => 210.00,
+        'selling_price' => 230.00,
+        'default_retail_price' => 260.00,
+        'is_active' => true,
+    ]);
+
+    $plan2 = DataPlan::create([
+        'network_id' => $this->network->id,
+        'data_type_id' => $this->dataType->id,
+        'name' => '2.0 GB SME',
+        'plan_code' => 'MTN_SME_2GB',
+        'size_mb' => 2048,
+        'validity' => '30 Days',
+        'cost_price' => 420.00,
+        'selling_price' => 460.00,
+        'default_retail_price' => 520.00,
+        'is_active' => true,
+    ]);
+
+    Livewire::test(ListDataPlans::class)
+        ->assertSuccessful()
+        ->callAction('bulk_tier_pricing_generator', data: [
+            'network_id' => 'all',
+            'data_type_id' => 'all',
+            'pricing_strategy' => 'per_gb_rate',
+            "rate_plan_{$this->starterPlan->id}" => 225.00,
+            "rate_plan_{$this->proPlan->id}" => 218.00,
+            'round_to' => '5',
+        ])
+        ->assertHasNoActionErrors();
+
+    // 1GB: Starter = 225, Pro = 220 (218 rounded to nearest 5)
+    $starterP1 = PlanDataPrice::where('data_plan_id', $plan1->id)->where('plan_id', $this->starterPlan->id)->first();
+    $proP1 = PlanDataPrice::where('data_plan_id', $plan1->id)->where('plan_id', $this->proPlan->id)->first();
+
+    expect((float) $starterP1->wholesale_price)->toBe(225.00);
+    expect((float) $proP1->wholesale_price)->toBe(220.00);
+
+    // 2GB: Starter = 450, Pro = 435 (218 * 2 = 436, rounded to nearest 5 = 435)
+    $starterP2 = PlanDataPrice::where('data_plan_id', $plan2->id)->where('plan_id', $this->starterPlan->id)->first();
+    $proP2 = PlanDataPrice::where('data_plan_id', $plan2->id)->where('plan_id', $this->proPlan->id)->first();
+
+    expect((float) $starterP2->wholesale_price)->toBe(450.00);
+    expect((float) $proP2->wholesale_price)->toBe(435.00);
+});
+
+test('PlansTable set_data_prices action sets wholesale prices for a specific tier', function () {
+    $plan = DataPlan::create([
+        'network_id' => $this->network->id,
+        'data_type_id' => $this->dataType->id,
+        'name' => '1.0 GB SME',
+        'plan_code' => 'MTN_SME_1GB_TEST',
+        'size_mb' => 1024,
+        'validity' => '30 Days',
+        'cost_price' => 210.00,
+        'selling_price' => 230.00,
+        'default_retail_price' => 260.00,
+        'is_active' => true,
+    ]);
+
+    Livewire::test(ListPlans::class)
+        ->assertSuccessful()
+        ->callTableAction('set_data_prices', $this->proPlan, data: [
+            'network_id' => 'all',
+            'data_type_id' => 'all',
+            'pricing_mode' => 'per_gb_rate',
+            'rate_per_gb' => 215.00,
+            'round_to' => '5',
+        ])
+        ->assertHasNoTableActionErrors();
+
+    $tierPrice = PlanDataPrice::where('data_plan_id', $plan->id)
+        ->where('plan_id', $this->proPlan->id)
+        ->first();
+
+    expect($tierPrice)->not->toBeNull()
+        ->and((float) $tierPrice->wholesale_price)->toBe(215.00);
 });
