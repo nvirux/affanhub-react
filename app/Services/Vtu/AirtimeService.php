@@ -13,6 +13,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Services\ReferralService;
 use App\Services\WalletService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -164,6 +165,12 @@ class AirtimeService
             throw new \Exception('Unable to process this order. Please contact store support for assistance.');
         }
 
+        // Concurrency protection: Prevent rapid double-clicking / duplicate order submissions
+        $cooldownKey = "purchase_cooldown:user:{$customer->id}:airtime:{$phone}";
+        if (! Cache::add($cooldownKey, true, 4)) {
+            throw new \Exception('A transaction for this recipient is already in progress. Please wait a few seconds before trying again.');
+        }
+
         // 5. Generate Reference
         $storePrefix = strtoupper(Str::slug($store->name ?? 'AFF', '_'));
         $txReference = $storePrefix.'_AIRTIME_'.date('YmdHis').'_'.strtoupper(Str::random(6));
@@ -203,6 +210,7 @@ class AirtimeService
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
+            Cache::forget($cooldownKey);
             Log::error('Airtime Purchase Wallet Debit Error: '.$e->getMessage());
             throw new \Exception('Failed to process wallet transaction: '.$e->getMessage());
         }
@@ -212,12 +220,12 @@ class AirtimeService
 
         // 7. Check Provider Response
         if ($apiResult['success'] || $apiResult['pending']) {
-            $status = $apiResult['pending'] ? 'pending' : 'success';
+            $status = $apiResult['pending'] ? 'pending' : 'successful';
             $airtimeServiceId = Service::where('key', 'airtime')->value('id');
 
             // Profit Allocation: ONLY sweep and credit profit if confirmed successful!
             // If status is 'pending', the profit remains safely in Store Main Wallet until delivery is confirmed.
-            if ($status === 'success' && $profitMargin > 0) {
+            if ($status === 'successful' && $profitMargin > 0) {
                 try {
                     // 1. Debit profit sweep from Store Main Wallet
                     $this->walletService->debit(

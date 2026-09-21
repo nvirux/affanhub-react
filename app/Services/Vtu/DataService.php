@@ -11,6 +11,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Services\ReferralService;
 use App\Services\WalletService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -91,6 +92,12 @@ class DataService
             throw new \Exception('Unable to process this order. Please contact store support for assistance.');
         }
 
+        // Concurrency protection: Prevent rapid double-clicking / duplicate order submissions
+        $cooldownKey = "purchase_cooldown:user:{$customer->id}:data:{$phone}:{$dataPlan->id}";
+        if (! Cache::add($cooldownKey, true, 4)) {
+            throw new \Exception('A transaction for this recipient is already in progress. Please wait a few seconds before trying again.');
+        }
+
         // Generate dynamic Store-prefixed reference (e.g. DEMO_STORE_DATA_20260904165120_8FA29X)
         $storePrefix = strtoupper(Str::slug($store->name ?? 'AFF', '_'));
         $txReference = $storePrefix.'_DATA_'.date('YmdHis').'_'.strtoupper(Str::random(6));
@@ -130,6 +137,7 @@ class DataService
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
+            Cache::forget($cooldownKey);
             Log::error('Data Purchase Wallet Debit Error: '.$e->getMessage());
             throw new \Exception('Failed to process wallet transaction: '.$e->getMessage());
         }

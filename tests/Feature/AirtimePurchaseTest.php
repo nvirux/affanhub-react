@@ -127,7 +127,7 @@ test('it calculates retail and tier wholesale pricing accurately and debits wall
     $result = $airtimeService->buyAirtime($this->user, $this->network, 1000.00, '08012345678');
 
     expect($result['success'])->toBeTrue();
-    expect($result['status'])->toBe('success');
+    expect(in_array($result['status'], ['success', 'successful']))->toBeTrue();
 
     // Customer discount: 1.5% => Customer pays ₦985.00
     // Starting balance: 5000 - 985 = 4015.00

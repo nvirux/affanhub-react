@@ -9,7 +9,9 @@ use App\Models\User;
 use App\Models\VirtualAccount;
 use App\Models\WalletTransaction;
 use App\Services\WalletService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use PayMint\Laravel\Facades\PayMint;
 
@@ -99,35 +101,43 @@ class PayMintWebhookController extends Controller
                 return response()->json(['status' => 'not_found', 'message' => 'Virtual account not found.'], 404);
             }
 
-            // Idempotency check: verify if transaction reference was already processed
-            $alreadyProcessed = WalletTransaction::where('reference', 'DEP_'.$txReference)
-                ->orWhere('reference', $txReference)
-                ->exists();
+            // Concurrency lock: Prevent simultaneous webhook delivery collisions
+            $lock = Cache::lock("paymint_webhook:{$txReference}", 15);
+            if (! $lock->get()) {
+                Log::info('PayMint Webhook: Duplicate concurrent delivery detected for reference.', ['reference' => $txReference]);
 
-            if ($alreadyProcessed) {
-                Log::info('PayMint Webhook: Deposit reference already processed.', ['reference' => $txReference]);
-
-                return response()->json(['status' => 'duplicate', 'message' => 'Already processed.'], 200);
+                return response()->json(['status' => 'duplicate', 'message' => 'Already being processed.'], 200);
             }
-
-            // Retrieve holder & wallet
-            $holder = $virtualAccount->holder;
-
-            if (! $holder) {
-                Log::error('PayMint Webhook: VirtualAccount has no associated holder.', ['va_id' => $virtualAccount->id]);
-
-                return response()->json(['status' => 'error', 'message' => 'Account holder missing.'], 500);
-            }
-
-            $senderName = $data['sender']['name'] ?? 'Bank Transfer';
-            $senderBank = $data['sender']['bank_name'] ?? 'Bank';
-
-            // 1. Calculate Base Platform Gateway Fee (Set by Super Admin)
-            $adminFeePercent = (float) PlatformSetting::get('paymint_fee_percent', 1.0);
-            $adminFee = round(($amount * $adminFeePercent) / 100, 2);
-            $storeNetAmount = max(0, round($amount - $adminFee, 2));
 
             try {
+                // Idempotency check: verify if transaction reference was already processed
+                $alreadyProcessed = WalletTransaction::where('reference', 'DEP_'.$txReference)
+                    ->orWhere('reference', $txReference)
+                    ->exists();
+
+                if ($alreadyProcessed) {
+                    Log::info('PayMint Webhook: Deposit reference already processed.', ['reference' => $txReference]);
+
+                    return response()->json(['status' => 'duplicate', 'message' => 'Already processed.'], 200);
+                }
+
+                // Retrieve holder & wallet
+                $holder = $virtualAccount->holder;
+
+                if (! $holder) {
+                    Log::error('PayMint Webhook: VirtualAccount has no associated holder.', ['va_id' => $virtualAccount->id]);
+
+                    return response()->json(['status' => 'error', 'message' => 'Account holder missing.'], 500);
+                }
+
+                $senderName = $data['sender']['name'] ?? 'Bank Transfer';
+                $senderBank = $data['sender']['bank_name'] ?? 'Bank';
+
+                // 1. Calculate Base Platform Gateway Fee (Set by Super Admin)
+                $adminFeePercent = (float) PlatformSetting::get('paymint_fee_percent', 1.0);
+                $adminFee = round(($amount * $adminFeePercent) / 100, 2);
+                $storeNetAmount = max(0, round($amount - $adminFee, 2));
+
                 if ($holder instanceof User) {
                     $customerWallet = $holder->wallet('main');
                     if (! $customerWallet) {
@@ -228,10 +238,23 @@ class PayMintWebhookController extends Controller
                     'transaction_id' => $walletTx->id,
                     'reference' => $txReference,
                 ]);
+            } catch (QueryException $qe) {
+                // Duplicate entry caught by DB unique constraint
+                if ($qe->getCode() == 23000 || str_contains($qe->getMessage(), 'Duplicate entry')) {
+                    Log::info("PayMint Webhook: Duplicate deposit reference caught by database constraint: {$txReference}");
+
+                    return response()->json(['status' => 'duplicate', 'message' => 'Already processed.'], 200);
+                }
+
+                Log::error('PayMint Webhook Database Error: '.$qe->getMessage(), ['exception' => $qe]);
+
+                return response()->json(['status' => 'error', 'message' => $qe->getMessage()], 500);
             } catch (\Throwable $e) {
                 Log::error('PayMint Webhook Crediting Failed: '.$e->getMessage(), ['exception' => $e]);
 
                 return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+            } finally {
+                $lock->release();
             }
         }
 
