@@ -126,10 +126,7 @@ class StoreMobileAppsTable
                         $record->status = 'building';
                         $record->save();
 
-                        $primaryDomain = $record->store?->domains()->first();
-                        $storeUrl = $primaryDomain ? "https://{$primaryDomain->domain}" : url('/');
-
-                        $res = $builder->dispatchBuild($record, $storeUrl);
+                        $res = $builder->dispatchBuild($record);
 
                         if ($res['success']) {
                             Notification::make()

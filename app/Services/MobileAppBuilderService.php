@@ -21,11 +21,45 @@ class MobileAppBuilderService
     }
 
     /**
+     * Resolve the most professional public URL for the store (custom domain first, then primary subdomain).
+     */
+    public function resolveStorefrontUrl(StoreMobileApp $mobileApp, ?string $storefrontUrl = null): string
+    {
+        if (! empty($storefrontUrl)) {
+            return $storefrontUrl;
+        }
+
+        $store = $mobileApp->store;
+        if (! $store) {
+            return url('/');
+        }
+
+        // 1. Prefer verified/healthy custom domain (e.g. adeolavtu.com)
+        $customDomain = $store->domains()->get()->first(fn ($d) => $d->isCustom() && $d->isHealthy());
+        if ($customDomain) {
+            $scheme = str_contains($customDomain->domain, 'localhost') ? 'http' : 'https';
+
+            return "{$scheme}://{$customDomain->domain}";
+        }
+
+        // 2. Primary domain (e.g. adeola.affanhub.com)
+        $primaryDomain = $store->domains()->where('is_primary', true)->first() ?? $store->domains()->first();
+        if ($primaryDomain) {
+            $scheme = str_contains($primaryDomain->domain, 'localhost') ? 'http' : 'https';
+
+            return "{$scheme}://{$primaryDomain->domain}";
+        }
+
+        return $store->getStoreUrl();
+    }
+
+    /**
      * Dispatch the GitHub Actions cloud build workflow for a merchant store app.
      */
-    public function dispatchBuild(StoreMobileApp $mobileApp, string $storefrontUrl, string $buildType = 'release'): array
+    public function dispatchBuild(StoreMobileApp $mobileApp, ?string $storefrontUrl = null, string $buildType = 'release'): array
     {
         $store = $mobileApp->store;
+        $resolvedStoreUrl = $this->resolveStorefrontUrl($mobileApp, $storefrontUrl);
         $iconUrl = $mobileApp->app_icon_path ? Storage::url($mobileApp->app_icon_path) : null;
 
         if ($iconUrl && ! str_starts_with($iconUrl, 'http')) {
@@ -44,7 +78,7 @@ class MobileAppBuilderService
 
         $inputs = [
             'app_name' => $mobileApp->app_name,
-            'store_url' => $storefrontUrl,
+            'store_url' => $resolvedStoreUrl,
             'package_id' => $mobileApp->package_id,
             'icon_url' => $iconUrl ?? '',
             'version_code' => (string) $mobileApp->version_code,
@@ -188,7 +222,9 @@ class MobileAppBuilderService
             return;
         }
 
-        $storageDisk = config('filesystems.default'); // 'r2'
+        $storageDisk = ! empty(config('filesystems.disks.r2.bucket'))
+            ? 'r2'
+            : (! empty(config('filesystems.disks.s3.bucket')) ? 's3' : config('filesystems.default'));
         $cleanName = preg_replace('/[^a-zA-Z0-9_-]/', '', str_replace(' ', '-', $mobileApp->app_name)) ?: 'app';
         $apkFileName = "{$cleanName}-v{$mobileApp->version_name}.apk";
         $aabFileName = "{$cleanName}-v{$mobileApp->version_name}.aab";

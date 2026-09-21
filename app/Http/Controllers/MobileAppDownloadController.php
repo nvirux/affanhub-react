@@ -25,7 +25,9 @@ class MobileAppDownloadController extends Controller
 
         $cleanName = preg_replace('/[^a-zA-Z0-9_-]/', '', str_replace(' ', '-', $app->app_name));
         $fileName = ($cleanName ?: 'app')."-v{$app->version_name}.apk";
-        $storageDisk = config('filesystems.default');
+        $storageDisk = ! empty(config('filesystems.disks.r2.bucket'))
+            ? 'r2'
+            : (! empty(config('filesystems.disks.s3.bucket')) ? 's3' : config('filesystems.default'));
         $storedRelativePath = "apps/{$store->id}/{$fileName}";
 
         // 1. If the extracted .apk is already cached on storage, download it directly
