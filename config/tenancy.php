@@ -48,7 +48,7 @@ return [
      */
     'bootstrappers' => [
         // Stancl\Tenancy\Bootstrappers\DatabaseTenancyBootstrapper::class,
-        CacheTenancyBootstrapper::class,
+        // CacheTenancyBootstrapper::class, // Disabled because database/file cache drivers do not support tagging. Keys are already scoped.
         FilesystemTenancyBootstrapper::class,
         QueueTenancyBootstrapper::class,
         // Stancl\Tenancy\Bootstrappers\RedisTenancyBootstrapper::class, // Note: phpredis is needed
