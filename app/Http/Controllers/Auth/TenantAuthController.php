@@ -96,6 +96,13 @@ class TenantAuthController extends Controller
             ], 404);
         }
 
+        if ($user->is_active === false) {
+            return response()->json([
+                'status' => 'suspended',
+                'message' => 'Your account has been suspended. Please contact store support.',
+            ], 403);
+        }
+
         $masked = $rawIdentifier;
         if (filter_var($rawIdentifier, FILTER_VALIDATE_EMAIL)) {
             $parts = explode('@', $rawIdentifier);

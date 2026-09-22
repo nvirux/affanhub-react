@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\Users\Tables;
 
 use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -89,6 +91,16 @@ class UsersTable
                         default => 'gray',
                     }),
 
+                TextColumn::make('is_active')
+                    ->label('Status')
+                    ->badge()
+                    ->state(fn (User $record): string => $record->is_active !== false ? 'Active' : 'Suspended')
+                    ->color(fn (string $state): string => match ($state) {
+                        'Active' => 'success',
+                        'Suspended' => 'danger',
+                        default => 'gray',
+                    }),
+
                 TextColumn::make('created_at')
                     ->label('Joined Date')
                     ->dateTime('M d, Y H:i')
@@ -96,6 +108,15 @@ class UsersTable
                     ->toggleable(),
             ])
             ->filters([
+                TernaryFilter::make('is_active')
+                    ->label('Account Status')
+                    ->trueLabel('Active Only')
+                    ->falseLabel('Suspended Only')
+                    ->queries(
+                        true: fn (Builder $query) => $query->where('is_active', true),
+                        false: fn (Builder $query) => $query->where('is_active', false),
+                    ),
+
                 SelectFilter::make('store_id')
                     ->label('Filter by Store')
                     ->relationship('store', 'name')
@@ -114,6 +135,40 @@ class UsersTable
                     ->query(fn (Builder $query) => $query->whereHas('wallets', fn ($q) => $q->where('type', 'main')->where('balance', '>', 0))),
             ])
             ->recordActions([
+                Action::make('suspend')
+                    ->label('Ban / Suspend')
+                    ->icon('heroicon-o-no-symbol')
+                    ->color('danger')
+                    ->visible(fn (User $record): bool => $record->is_active !== false)
+                    ->requiresConfirmation()
+                    ->modalHeading(fn (User $record): string => "Suspend {$record->name}")
+                    ->modalDescription('Are you sure you want to suspend this user? They will be immediately logged out, active browser sessions will be terminated, and all purchases/logins blocked.')
+                    ->action(function (User $record): void {
+                        $record->ban('Suspended by Super Admin');
+
+                        Notification::make()
+                            ->title("User {$record->name} has been suspended and sessions terminated.")
+                            ->danger()
+                            ->send();
+                    }),
+
+                Action::make('activate')
+                    ->label('Activate')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn (User $record): bool => $record->is_active === false)
+                    ->requiresConfirmation()
+                    ->modalHeading(fn (User $record): string => "Reactivate {$record->name}")
+                    ->modalDescription('Are you sure you want to restore access for this user?')
+                    ->action(function (User $record): void {
+                        $record->activate();
+
+                        Notification::make()
+                            ->title("User {$record->name} has been reactivated.")
+                            ->success()
+                            ->send();
+                    }),
+
                 ViewAction::make()
                     ->slideOver(),
                 EditAction::make(),

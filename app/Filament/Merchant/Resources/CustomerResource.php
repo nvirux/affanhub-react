@@ -111,6 +111,15 @@ class CustomerResource extends Resource
                     ->counts('transactions')
                     ->badge()
                     ->color('warning'),
+                TextColumn::make('is_active')
+                    ->label('Status')
+                    ->badge()
+                    ->state(fn (User $record): string => $record->is_active !== false ? 'Active' : 'Suspended')
+                    ->color(fn (string $state): string => match ($state) {
+                        'Active' => 'success',
+                        'Suspended' => 'danger',
+                        default => 'gray',
+                    }),
                 TextColumn::make('created_at')
                     ->label('Joined')
                     ->dateTime()
@@ -221,6 +230,38 @@ class CustomerResource extends Resource
                                 ->danger()
                                 ->send();
                         }
+                    }),
+                Action::make('suspend')
+                    ->label('Ban Customer')
+                    ->icon('heroicon-o-no-symbol')
+                    ->color('danger')
+                    ->visible(fn (User $record): bool => $record->is_active !== false)
+                    ->requiresConfirmation()
+                    ->modalHeading(fn (User $record): string => "Suspend {$record->name}")
+                    ->modalDescription('Are you sure you want to suspend this customer? They will be immediately logged out and blocked from logging in or making any purchases.')
+                    ->action(function (User $record): void {
+                        $record->ban('Suspended by Store Merchant');
+
+                        Notification::make()
+                            ->title("Customer {$record->name} has been suspended.")
+                            ->danger()
+                            ->send();
+                    }),
+                Action::make('activate')
+                    ->label('Reactivate')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn (User $record): bool => $record->is_active === false)
+                    ->requiresConfirmation()
+                    ->modalHeading(fn (User $record): string => "Reactivate {$record->name}")
+                    ->modalDescription('Are you sure you want to restore access for this customer?')
+                    ->action(function (User $record): void {
+                        $record->activate();
+
+                        Notification::make()
+                            ->title("Customer {$record->name} has been reactivated.")
+                            ->success()
+                            ->send();
                     }),
                 EditAction::make(),
                 DeleteAction::make(),

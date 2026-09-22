@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
@@ -39,7 +41,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['id', 'name', 'email', 'phone', 'bvn', 'nin', 'referral_code', 'referred_by', 'password', 'login_pin_hash', 'login_pin_enabled', 'transaction_pin_hash', 'store_id'])]
+#[Fillable(['id', 'name', 'email', 'phone', 'bvn', 'nin', 'referral_code', 'referred_by', 'password', 'login_pin_hash', 'login_pin_enabled', 'transaction_pin_hash', 'store_id', 'is_active'])]
 #[Hidden(['password', 'login_pin_hash', 'transaction_pin_hash', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -60,7 +62,28 @@ class User extends Authenticatable
             'login_pin_enabled' => 'boolean',
             'transaction_pin_hash' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'is_active' => 'boolean',
         ];
+    }
+
+    public function ban(?string $reason = null): void
+    {
+        $this->update(['is_active' => false]);
+
+        // Instantly destroy all active browser sessions for this user
+        if (Schema::hasTable('sessions')) {
+            DB::table('sessions')->where('user_id', $this->id)->delete();
+        }
+    }
+
+    public function activate(): void
+    {
+        $this->update(['is_active' => true]);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->is_active !== false;
     }
 
     public function hasLoginPin(): bool

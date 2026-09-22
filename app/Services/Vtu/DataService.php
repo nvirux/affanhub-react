@@ -35,6 +35,10 @@ class DataService
      */
     public function buyDataPlan(User $customer, StoreDataPlan $storeDataPlan, string $phoneNumber): array
     {
+        if ($customer->is_active === false) {
+            throw new \Exception('Your account has been suspended. Please contact store support.');
+        }
+
         // Normalize phone number
         $phone = preg_replace('/\D+/', '', $phoneNumber);
         if (strlen($phone) !== 11) {

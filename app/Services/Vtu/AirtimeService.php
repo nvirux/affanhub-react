@@ -110,6 +110,10 @@ class AirtimeService
      */
     public function buyAirtime(User $customer, Network $network, float $faceAmount, string $phoneNumber): array
     {
+        if ($customer->is_active === false) {
+            throw new \Exception('Your account has been suspended. Please contact store support.');
+        }
+
         // 1. Normalize phone number
         $phone = preg_replace('/\D+/', '', $phoneNumber);
         if (strlen($phone) !== 11) {

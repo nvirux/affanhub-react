@@ -5,9 +5,12 @@ namespace App\Actions\Fortify;
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
 use App\Models\User;
+use App\Rules\NotDisposableEmail;
 use App\Services\ReferralService;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
@@ -21,6 +24,19 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
+        // 1. Enforce IP-based registration rate limiting (Max 3 accounts per IP per hour)
+        $ip = request()->ip() ?? '127.0.0.1';
+        $rateLimitKey = 'register_ip:'.$ip;
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 3)) {
+            $seconds = RateLimiter::availableIn($rateLimitKey);
+            $minutes = ceil($seconds / 60);
+
+            throw ValidationException::withMessages([
+                'email' => ["Too many accounts registered from this network. Please try again in {$minutes} minutes."],
+            ]);
+        }
+
         $tenantId = (function_exists('tenant') && tenant()) ? tenant('id') : ($input['store_id'] ?? null);
 
         // Normalize phone to 11 digits
@@ -37,6 +53,7 @@ class CreateNewUser implements CreatesNewUsers
                 'string',
                 'email',
                 'max:255',
+                new NotDisposableEmail,
                 Rule::unique(User::class)->where(fn ($q) => $q->where('store_id', $tenantId)),
             ],
             'phone' => [
@@ -78,6 +95,9 @@ class CreateNewUser implements CreatesNewUsers
         ]);
 
         $user->ensureReferralCode();
+
+        // Increment registration counter for this IP (1 hour expiry)
+        RateLimiter::hit($rateLimitKey, 3600);
 
         $refCode = $input['ref'] ?? $input['referral_code'] ?? request('ref') ?? request('referral_code');
         if (! empty($refCode)) {

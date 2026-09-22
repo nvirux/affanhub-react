@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Features;
@@ -86,6 +87,12 @@ class FortifyServiceProvider extends ServiceProvider
 
             if (! $user) {
                 return null;
+            }
+
+            if ($user->is_active === false) {
+                throw ValidationException::withMessages([
+                    'email' => ['Your account has been suspended. Please contact store support.'],
+                ]);
             }
 
             $credential = (string) ($request->input('pin') ?? $request->input('login_pin') ?? $request->input('password'));
