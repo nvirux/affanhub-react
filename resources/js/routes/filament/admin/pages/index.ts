@@ -1,5 +1,83 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
+* @see \App\Filament\Pages\PlatformMobileAppSettings::__invoke
+ * @see app/Filament/Pages/PlatformMobileAppSettings.php:7
+ * @route '//admin.localhost/platform-mobile-app-settings'
+ */
+export const platformMobileAppSettings = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: platformMobileAppSettings.url(options),
+    method: 'get',
+})
+
+platformMobileAppSettings.definition = {
+    methods: ["get","head"],
+    url: '//admin.localhost/platform-mobile-app-settings',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Filament\Pages\PlatformMobileAppSettings::__invoke
+ * @see app/Filament/Pages/PlatformMobileAppSettings.php:7
+ * @route '//admin.localhost/platform-mobile-app-settings'
+ */
+platformMobileAppSettings.url = (options?: RouteQueryOptions) => {
+    return platformMobileAppSettings.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Filament\Pages\PlatformMobileAppSettings::__invoke
+ * @see app/Filament/Pages/PlatformMobileAppSettings.php:7
+ * @route '//admin.localhost/platform-mobile-app-settings'
+ */
+platformMobileAppSettings.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: platformMobileAppSettings.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Filament\Pages\PlatformMobileAppSettings::__invoke
+ * @see app/Filament/Pages/PlatformMobileAppSettings.php:7
+ * @route '//admin.localhost/platform-mobile-app-settings'
+ */
+platformMobileAppSettings.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: platformMobileAppSettings.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Filament\Pages\PlatformMobileAppSettings::__invoke
+ * @see app/Filament/Pages/PlatformMobileAppSettings.php:7
+ * @route '//admin.localhost/platform-mobile-app-settings'
+ */
+    const platformMobileAppSettingsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: platformMobileAppSettings.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Pages\PlatformMobileAppSettings::__invoke
+ * @see app/Filament/Pages/PlatformMobileAppSettings.php:7
+ * @route '//admin.localhost/platform-mobile-app-settings'
+ */
+        platformMobileAppSettingsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: platformMobileAppSettings.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Pages\PlatformMobileAppSettings::__invoke
+ * @see app/Filament/Pages/PlatformMobileAppSettings.php:7
+ * @route '//admin.localhost/platform-mobile-app-settings'
+ */
+        platformMobileAppSettingsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: platformMobileAppSettings.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    platformMobileAppSettings.form = platformMobileAppSettingsForm
+/**
 * @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
  * @see app/Filament/Pages/PlatformPaymentSettings.php:7
  * @route '//admin.localhost/platform-payment-settings'
@@ -156,7 +234,8 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     dashboard.form = dashboardForm
 const pages = {
-    platformPaymentSettings: Object.assign(platformPaymentSettings, platformPaymentSettings),
+    platformMobileAppSettings: Object.assign(platformMobileAppSettings, platformMobileAppSettings),
+platformPaymentSettings: Object.assign(platformPaymentSettings, platformPaymentSettings),
 dashboard: Object.assign(dashboard, dashboard),
 }
 

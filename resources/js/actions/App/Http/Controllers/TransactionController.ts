@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\TransactionController::index
- * @see app/Http/Controllers/TransactionController.php:18
+ * @see app/Http/Controllers/TransactionController.php:19
  * @route '/transactions'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\TransactionController::index
- * @see app/Http/Controllers/TransactionController.php:18
+ * @see app/Http/Controllers/TransactionController.php:19
  * @route '/transactions'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\TransactionController::index
- * @see app/Http/Controllers/TransactionController.php:18
+ * @see app/Http/Controllers/TransactionController.php:19
  * @route '/transactions'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\TransactionController::index
- * @see app/Http/Controllers/TransactionController.php:18
+ * @see app/Http/Controllers/TransactionController.php:19
  * @route '/transactions'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\TransactionController::index
- * @see app/Http/Controllers/TransactionController.php:18
+ * @see app/Http/Controllers/TransactionController.php:19
  * @route '/transactions'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\TransactionController::index
- * @see app/Http/Controllers/TransactionController.php:18
+ * @see app/Http/Controllers/TransactionController.php:19
  * @route '/transactions'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\TransactionController::index
- * @see app/Http/Controllers/TransactionController.php:18
+ * @see app/Http/Controllers/TransactionController.php:19
  * @route '/transactions'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:71
+ * @see app/Http/Controllers/TransactionController.php:72
  * @route '/transactions/{reference}'
  */
 export const show = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:71
+ * @see app/Http/Controllers/TransactionController.php:72
  * @route '/transactions/{reference}'
  */
 show.url = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -122,7 +122,7 @@ show.url = (args: { reference: string | number } | [reference: string | number ]
 
 /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:71
+ * @see app/Http/Controllers/TransactionController.php:72
  * @route '/transactions/{reference}'
  */
 show.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -131,7 +131,7 @@ show.get = (args: { reference: string | number } | [reference: string | number ]
 })
 /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:71
+ * @see app/Http/Controllers/TransactionController.php:72
  * @route '/transactions/{reference}'
  */
 show.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -141,7 +141,7 @@ show.head = (args: { reference: string | number } | [reference: string | number 
 
     /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:71
+ * @see app/Http/Controllers/TransactionController.php:72
  * @route '/transactions/{reference}'
  */
     const showForm = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -151,7 +151,7 @@ show.head = (args: { reference: string | number } | [reference: string | number 
 
             /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:71
+ * @see app/Http/Controllers/TransactionController.php:72
  * @route '/transactions/{reference}'
  */
         showForm.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -160,7 +160,7 @@ show.head = (args: { reference: string | number } | [reference: string | number 
         })
             /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:71
+ * @see app/Http/Controllers/TransactionController.php:72
  * @route '/transactions/{reference}'
  */
         showForm.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

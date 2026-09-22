@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Merchant\Pages\Auth\Register;
 use App\Filament\Merchant\Pages\RegisterStore;
+use App\Http\Middleware\EnsureMerchantHasPhone;
 use App\Http\Middleware\RememberActiveStore;
 use App\Models\Store;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
@@ -68,6 +69,14 @@ class MerchantPanelProvider extends PanelProvider
                 PanelsRenderHook::PAGE_START,
                 fn () => view('filament.merchant.components.impersonation-banner')
             )
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+                fn () => view('filament.merchant.components.social-login-buttons')
+            )
+            ->renderHook(
+                PanelsRenderHook::AUTH_REGISTER_FORM_AFTER,
+                fn () => view('filament.merchant.components.social-login-buttons')
+            )
             ->discoverWidgets(in: app_path('Filament/Merchant/Widgets'), for: 'App\Filament\Merchant\Widgets')
             ->widgets([
                 // AccountWidget::class,
@@ -86,6 +95,7 @@ class MerchantPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                EnsureMerchantHasPhone::class,
             ]);
     }
 }

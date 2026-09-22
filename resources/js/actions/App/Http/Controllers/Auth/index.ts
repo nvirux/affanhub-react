@@ -1,9 +1,13 @@
+import MerchantGoogleAuthController from './MerchantGoogleAuthController'
+import MerchantPhoneCompletionController from './MerchantPhoneCompletionController'
 import TenantAuthController from './TenantAuthController'
 import ForgotPinController from './ForgotPinController'
 import TenantPinSetupController from './TenantPinSetupController'
 import TransactionPinController from './TransactionPinController'
 const Auth = {
-    TenantAuthController: Object.assign(TenantAuthController, TenantAuthController),
+    MerchantGoogleAuthController: Object.assign(MerchantGoogleAuthController, MerchantGoogleAuthController),
+MerchantPhoneCompletionController: Object.assign(MerchantPhoneCompletionController, MerchantPhoneCompletionController),
+TenantAuthController: Object.assign(TenantAuthController, TenantAuthController),
 ForgotPinController: Object.assign(ForgotPinController, ForgotPinController),
 TenantPinSetupController: Object.assign(TenantPinSetupController, TenantPinSetupController),
 TransactionPinController: Object.assign(TransactionPinController, TransactionPinController),

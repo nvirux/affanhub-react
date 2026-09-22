@@ -1,9 +1,10 @@
 import HomeController from './HomeController'
 import ImpersonationController from './ImpersonationController'
 import BillingCheckoutCallbackController from './BillingCheckoutCallbackController'
+import MobileAppDownloadController from './MobileAppDownloadController'
 import Merchant from './Merchant'
-import Webhook from './Webhook'
 import Auth from './Auth'
+import Webhook from './Webhook'
 import DashboardController from './DashboardController'
 import VirtualAccountController from './VirtualAccountController'
 import EarnController from './EarnController'
@@ -16,9 +17,10 @@ const Controllers = {
     HomeController: Object.assign(HomeController, HomeController),
 ImpersonationController: Object.assign(ImpersonationController, ImpersonationController),
 BillingCheckoutCallbackController: Object.assign(BillingCheckoutCallbackController, BillingCheckoutCallbackController),
+MobileAppDownloadController: Object.assign(MobileAppDownloadController, MobileAppDownloadController),
 Merchant: Object.assign(Merchant, Merchant),
-Webhook: Object.assign(Webhook, Webhook),
 Auth: Object.assign(Auth, Auth),
+Webhook: Object.assign(Webhook, Webhook),
 DashboardController: Object.assign(DashboardController, DashboardController),
 VirtualAccountController: Object.assign(VirtualAccountController, VirtualAccountController),
 EarnController: Object.assign(EarnController, EarnController),

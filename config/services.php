@@ -45,4 +45,10 @@ return [
         'token' => env('GITHUB_APP_TOKEN'),
         'repo' => env('GITHUB_APP_REPO', 'nvirux/affanhub-mobile-template'),
     ],
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', 'https://merchant.affanhub.com/auth/google/callback'),
+    ],
 ];

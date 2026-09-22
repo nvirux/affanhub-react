@@ -34,6 +34,7 @@ class Owner extends Authenticatable implements FilamentUser, HasAppAuthenticatio
 
     protected $casts = [
         'max_stores' => 'integer',
+        'email_verified_at' => 'datetime',
     ];
 
     // The stores this owner actually founded and owns (excludes stores where they are only staff)

@@ -34,9 +34,12 @@ class Register extends BaseRegister
             ->components([
                 // Invisible Anti-Bot Honeypot Field
                 TextInput::make('website_url')
-                    ->label('')
+                    ->hiddenLabel()
                     ->placeholder('')
                     ->rule('prohibited')
+                    ->extraFieldWrapperAttributes([
+                        'style' => 'display:none !important; position:absolute; left:-9999px; height:0; width:0; overflow:hidden;',
+                    ])
                     ->extraAttributes([
                         'style' => 'display:none !important; position:absolute; left:-9999px;',
                         'tabindex' => '-1',

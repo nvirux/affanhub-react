@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MobileAppDownloadController::download
  * @see app/Http/Controllers/MobileAppDownloadController.php:18
@@ -101,8 +101,6 @@ download.head = (args: { store: string | { public_id: string } } | [store: strin
         })
     
     download.form = downloadForm
-const mobileApp = {
-    download: Object.assign(download, download),
-}
+const MobileAppDownloadController = { download }
 
-export default mobileApp
+export default MobileAppDownloadController
