@@ -130,17 +130,17 @@ class TransactionResource extends Resource
                     ->color('warning')
                     ->visible(fn (Transaction $record): bool => in_array(strtolower($record->status), ['pending', 'processing']))
                     ->action(function (Transaction $record, VtuReconciliationService $service) {
-                        $result = $service->reconcile($record);
+                        $result = $service->reconcile($record, forceFailOnNotFound: true);
                         if ($result['status'] === 'successful') {
                             Notification::make()
                                 ->title('Transaction Successful')
-                                ->body('Order has been verified and marked as successful.')
+                                ->body('Order has been verified on provider and marked as successful.')
                                 ->success()
                                 ->send();
                         } elseif ($result['status'] === 'failed') {
                             Notification::make()
-                                ->title('Transaction Failed')
-                                ->body('Provider reported failure. Customer wallet auto-refunded.')
+                                ->title('Transaction Failed & Refunded')
+                                ->body('Provider reported failure or 404 Not Found (request never reached gateway). Customer wallet auto-refunded.')
                                 ->danger()
                                 ->send();
                         } else {
@@ -148,6 +148,35 @@ class TransactionResource extends Resource
                                 ->title('Still Pending')
                                 ->body($result['message'] ?? 'Transaction is still processing at provider.')
                                 ->warning()
+                                ->send();
+                        }
+                    }),
+                Action::make('cancel_and_refund')
+                    ->label('Cancel & Refund')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->visible(fn (Transaction $record): bool => in_array(strtolower($record->status), ['pending', 'processing']))
+                    ->requiresConfirmation()
+                    ->modalHeading('Cancel Order & Refund Customer')
+                    ->modalDescription(fn (Transaction $record) => "Are you sure you want to cancel this pending transaction ({$record->reference})? This will mark the transaction as Failed, immediately refund ₦".number_format((float) $record->amount_paid, 2).' to '.($record->user?->name ?? 'the customer')."'s wallet, and refund the wholesale cost to the store.")
+                    ->action(function (Transaction $record, VtuReconciliationService $service) {
+                        $result = $service->failAndRefund(
+                            $record,
+                            'Cancelled and refunded by Administrator',
+                            ['cancelled_by' => 'admin', 'admin_id' => auth()->id()]
+                        );
+
+                        if ($result['success']) {
+                            Notification::make()
+                                ->title('Transaction Cancelled & Refunded')
+                                ->body('Order marked as failed. Customer has been refunded ₦'.number_format((float) $record->amount_paid, 2).'.')
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Operation Failed')
+                                ->body($result['message'] ?? 'Unable to refund transaction.')
+                                ->danger()
                                 ->send();
                         }
                     }),

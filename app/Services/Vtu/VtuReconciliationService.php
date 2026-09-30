@@ -21,7 +21,7 @@ class VtuReconciliationService
      *
      * @return array ['success' => bool, 'status' => string, 'message' => string]
      */
-    public function reconcile(Transaction $transaction): array
+    public function reconcile(Transaction $transaction, bool $forceFailOnNotFound = false): array
     {
         $lock = Cache::lock("reconcile:transaction:{$transaction->id}", 15);
         if (! $lock->get()) {
@@ -47,6 +47,23 @@ class VtuReconciliationService
             $result = $this->vtuLabService->queryTransaction($transaction->reference);
 
             if (! $result['success'] && ($result['status'] ?? '') === 'not_found') {
+                // If force-failed (e.g. Admin Check Status) or aged > 10 minutes,
+                // the purchase request never arrived at the provider. Finalize as failed and auto-refund.
+                $isAged = $transaction->created_at && $transaction->created_at <= now()->subMinutes(10);
+
+                if ($forceFailOnNotFound || $isAged) {
+                    $reason = 'Telecom network timeout: Order was not received by the gateway.';
+
+                    return $this->finalizeFailure(
+                        $transaction,
+                        $reason,
+                        array_merge($result['raw'] ?? [], [
+                            'auto_failed_reason' => $forceFailOnNotFound ? 'admin_checked_404' : 'cron_aged_404',
+                            'internal_admin_note' => 'Provider returned 404 Not Found. Initial purchase request timed out before reaching VTULab servers.',
+                        ])
+                    );
+                }
+
                 return [
                     'success' => false,
                     'status' => 'pending',
@@ -227,6 +244,39 @@ class VtuReconciliationService
                 'message' => 'Transaction marked as failed and wallet refunded.',
             ];
         });
+    }
+
+    /**
+     * Administratively cancel a pending/processing transaction, mark as failed, and refund wallets.
+     *
+     * @return array ['success' => bool, 'status' => string, 'message' => string]
+     */
+    public function failAndRefund(Transaction $transaction, string $reason = 'Cancelled by Administrator', array $meta = []): array
+    {
+        $lock = Cache::lock("reconcile:transaction:{$transaction->id}", 15);
+        if (! $lock->get()) {
+            return [
+                'success' => false,
+                'status' => $transaction->status,
+                'message' => 'Transaction is currently being processed by another worker.',
+            ];
+        }
+
+        try {
+            $transaction->refresh();
+
+            if (! in_array(strtolower($transaction->status), ['pending', 'processing'])) {
+                return [
+                    'success' => false,
+                    'status' => $transaction->status,
+                    'message' => "Transaction is already {$transaction->status} and cannot be cancelled.",
+                ];
+            }
+
+            return $this->finalizeFailure($transaction, $reason, $meta);
+        } finally {
+            $lock->release();
+        }
     }
 
     /**

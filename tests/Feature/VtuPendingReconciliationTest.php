@@ -215,3 +215,146 @@ test('markAsDelivered re-debits customer and store and sweeps profit for deliver
     $this->storeProfitWallet->refresh();
     expect((float) $this->storeProfitWallet->balance)->toBe(50.00);
 });
+
+test('aged 404 not found transaction is automatically failed and refunded by reconciliation service', function () {
+    // Transaction created 15 minutes ago that timed out before reaching VTULab
+    $transaction = Transaction::create([
+        'user_id' => $this->user->id,
+        'store_id' => $this->store->id,
+        'service_type' => 'data',
+        'amount' => 500.00,
+        'amount_paid' => 500.00,
+        'cost_price' => 450.00,
+        'profit' => 50.00,
+        'recipient' => '08012345678',
+        'status' => 'pending',
+        'reference' => 'TXN_AGED_404_1',
+        'created_at' => now()->subMinutes(15),
+    ]);
+
+    // VTULab returns 404 Not Found
+    Http::fake([
+        '*/transactions/TXN_AGED_404_1' => Http::response([
+            'success' => false,
+            'code' => 'NOT_FOUND',
+            'message' => 'Transaction not found.',
+        ], 404),
+    ]);
+
+    $reconciliation = app(VtuReconciliationService::class);
+    $res = $reconciliation->reconcile($transaction);
+
+    expect($res['status'])->toBe('failed');
+
+    $transaction->refresh();
+    expect($transaction->status)->toBe('failed');
+
+    // Customer wallet auto-refunded
+    $this->customerWallet->refresh();
+    expect((float) $this->customerWallet->balance)->toBe(500.00);
+
+    // Store wholesale wallet refunded
+    $this->storeMainWallet->refresh();
+    expect((float) $this->storeMainWallet->balance)->toBe(450.00);
+});
+
+test('young 404 not found transaction remains pending for recheck', function () {
+    // Transaction created only 2 minutes ago
+    $transaction = Transaction::create([
+        'user_id' => $this->user->id,
+        'store_id' => $this->store->id,
+        'service_type' => 'data',
+        'amount' => 500.00,
+        'amount_paid' => 500.00,
+        'cost_price' => 450.00,
+        'profit' => 50.00,
+        'recipient' => '08012345678',
+        'status' => 'pending',
+        'reference' => 'TXN_YOUNG_404_1',
+        'created_at' => now()->subMinutes(2),
+    ]);
+
+    Http::fake([
+        '*/transactions/TXN_YOUNG_404_1' => Http::response([
+            'success' => false,
+            'code' => 'NOT_FOUND',
+            'message' => 'Transaction not found.',
+        ], 404),
+    ]);
+
+    $reconciliation = app(VtuReconciliationService::class);
+    $res = $reconciliation->reconcile($transaction, forceFailOnNotFound: false);
+
+    expect($res['status'])->toBe('pending');
+
+    $transaction->refresh();
+    expect($transaction->status)->toBe('pending');
+});
+
+test('admin check status with forceFailOnNotFound immediately fails and refunds 404 transaction', function () {
+    // Even if recently created (e.g. 1 minute ago), an explicit Admin check resolves 404
+    $transaction = Transaction::create([
+        'user_id' => $this->user->id,
+        'store_id' => $this->store->id,
+        'service_type' => 'data',
+        'amount' => 500.00,
+        'amount_paid' => 500.00,
+        'cost_price' => 450.00,
+        'profit' => 50.00,
+        'recipient' => '08012345678',
+        'status' => 'pending',
+        'reference' => 'TXN_ADMIN_CHECK_404',
+        'created_at' => now()->subMinute(),
+    ]);
+
+    Http::fake([
+        '*/transactions/TXN_ADMIN_CHECK_404' => Http::response([
+            'success' => false,
+            'code' => 'NOT_FOUND',
+            'message' => 'Transaction not found.',
+        ], 404),
+    ]);
+
+    $reconciliation = app(VtuReconciliationService::class);
+    $res = $reconciliation->reconcile($transaction, forceFailOnNotFound: true);
+
+    expect($res['status'])->toBe('failed');
+
+    $transaction->refresh();
+    expect($transaction->status)->toBe('failed');
+
+    $this->customerWallet->refresh();
+    expect((float) $this->customerWallet->balance)->toBe(500.00);
+});
+
+test('failAndRefund administratively cancels pending transaction and refunds customer and store', function () {
+    $transaction = Transaction::create([
+        'user_id' => $this->user->id,
+        'store_id' => $this->store->id,
+        'service_type' => 'airtime',
+        'amount' => 200.00,
+        'amount_paid' => 200.00,
+        'cost_price' => 194.00,
+        'profit' => 6.00,
+        'recipient' => '08012345678',
+        'status' => 'pending',
+        'reference' => 'TXN_ADMIN_MANUAL_CANCEL',
+    ]);
+
+    $reconciliation = app(VtuReconciliationService::class);
+    $res = $reconciliation->failAndRefund($transaction, 'Cancelled by Super Admin');
+
+    expect($res['success'])->toBeTrue()
+        ->and($res['status'])->toBe('failed');
+
+    $transaction->refresh();
+    expect($transaction->status)->toBe('failed');
+
+    // Customer refunded ₦200
+    $this->customerWallet->refresh();
+    expect((float) $this->customerWallet->balance)->toBe(200.00);
+
+    // Store refunded wholesale ₦194
+    $this->storeMainWallet->refresh();
+    expect((float) $this->storeMainWallet->balance)->toBe(194.00);
+});

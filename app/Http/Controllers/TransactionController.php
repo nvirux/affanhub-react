@@ -100,7 +100,9 @@ class TransactionController extends Controller
                 'amount_paid' => (float) ($transaction->amount_paid > 0 ? $transaction->amount_paid : $transaction->amount),
                 'status' => in_array($transaction->status, ['success', 'successful', 'completed'], true) ? 'successful' : ($transaction->status === 'pending' ? 'pending' : 'failed'),
                 'created_at' => $transaction->created_at?->format('M d, Y · h:i A') ?? '',
-                'api_response' => $transaction->api_response,
+                'failure_note' => in_array($transaction->status, ['failed', 'cancelled'], true)
+                    ? 'The telecom network gateway experienced a temporary timeout. Your payment has been automatically credited back to your wallet.'
+                    : null,
             ],
             'wallet_balance' => (float) ($mainWallet?->balance ?? 0.00),
             'store_support' => [

@@ -146,7 +146,7 @@ class TransactionResource extends Resource
                     ->color('warning')
                     ->visible(fn (Transaction $record): bool => in_array(strtolower($record->status), ['pending', 'processing']))
                     ->action(function (Transaction $record, VtuReconciliationService $service) {
-                        $result = $service->reconcile($record);
+                        $result = $service->reconcile($record, forceFailOnNotFound: true);
                         if ($result['status'] === 'successful') {
                             Notification::make()
                                 ->title('Transaction Successful')
@@ -155,14 +155,14 @@ class TransactionResource extends Resource
                                 ->send();
                         } elseif ($result['status'] === 'failed') {
                             Notification::make()
-                                ->title('Transaction Failed')
-                                ->body('Provider reported failure. Customer wallet has been refunded.')
+                                ->title('Order Failed & Refunded')
+                                ->body('Telecom network gateway reported failure or timeout. Customer wallet has been refunded.')
                                 ->danger()
                                 ->send();
                         } else {
                             Notification::make()
-                                ->title('Still Pending')
-                                ->body($result['message'] ?? 'Transaction is still processing at provider.')
+                                ->title('Still Processing')
+                                ->body('Order is currently being processed by the telecom network.')
                                 ->warning()
                                 ->send();
                         }

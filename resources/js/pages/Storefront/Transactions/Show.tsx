@@ -18,7 +18,7 @@ interface TransactionShowProps {
         amount_paid?: number;
         status: 'successful' | 'pending' | 'failed';
         created_at: string;
-        api_response?: any;
+        failure_note?: string | null;
     };
     wallet_balance: number;
     store_support: {
@@ -254,6 +254,18 @@ export default function TransactionShow({
                                 ₦{Number(wallet_balance).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                             </span>
                         </div>
+
+                        {isFailed && (
+                            <div className="mt-3 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 text-rose-800 dark:text-rose-300">
+                                <p className="font-bold flex items-center gap-1.5 text-xs">
+                                    <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                                    <span>Refund Confirmation</span>
+                                </p>
+                                <p className="text-xs text-rose-700 dark:text-rose-400 mt-1 leading-relaxed">
+                                    {transaction.failure_note || 'The telecom network gateway experienced a temporary timeout. Your full payment has been automatically refunded to your wallet.'}
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Action Buttons (Hidden on Print) */}
