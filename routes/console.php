@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('vtu:reconcile-pending')->everyMinute();
+Schedule::command('vtu:sync-plans')->everySixHours()->withoutOverlapping();

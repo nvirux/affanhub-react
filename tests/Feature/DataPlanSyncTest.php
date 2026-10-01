@@ -143,3 +143,64 @@ test('it handles live API HTTP response structure', function () {
     expect($result['success'])->toBeTrue();
     expect($result['count'])->toBe(1);
 });
+
+test('it deletes stale data plans that are no longer returned by the provider', function () {
+    /** @var DataPlanSyncService $syncService */
+    $syncService = app(DataPlanSyncService::class);
+
+    // Initial sync with 2 MTN plans
+    $initialData = [
+        [
+            'id' => 5,
+            'name' => '500MB',
+            'network' => ['name' => 'MTN', 'code' => 'mtn'],
+            'type' => 'data share',
+            'size_mb' => 500,
+            'price' => 230,
+            'regular_price' => 245,
+            'validity' => '7 days',
+            'is_best_offer' => true,
+            'is_available' => true,
+        ],
+        [
+            'id' => 6,
+            'name' => '1GB',
+            'network' => ['name' => 'MTN', 'code' => 'mtn'],
+            'type' => 'data share',
+            'size_mb' => 1024,
+            'price' => 280,
+            'regular_price' => 300,
+            'validity' => '30 days',
+            'is_best_offer' => false,
+            'is_available' => true,
+        ],
+    ];
+
+    $syncService->sync($initialData);
+    expect(DataPlan::count())->toBe(2);
+
+    // Re-sync where plan 6 was deleted by VTULab (only plan 5 returned)
+    $updatedData = [
+        [
+            'id' => 5,
+            'name' => '500MB',
+            'network' => ['name' => 'MTN', 'code' => 'mtn'],
+            'type' => 'data share',
+            'size_mb' => 500,
+            'price' => 230,
+            'regular_price' => 245,
+            'validity' => '7 days',
+            'is_best_offer' => true,
+            'is_available' => true,
+        ],
+    ];
+
+    $resync = $syncService->sync($updatedData);
+
+    expect($resync['success'])->toBeTrue();
+    expect($resync['count'])->toBe(1);
+    expect($resync['deleted'])->toBe(1);
+    expect(DataPlan::count())->toBe(1);
+    expect(DataPlan::where('plan_code', '6')->exists())->toBeFalse();
+    expect(DataPlan::where('plan_code', '5')->exists())->toBeTrue();
+});

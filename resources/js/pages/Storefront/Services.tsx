@@ -85,39 +85,37 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
         <>
             <Head title="All Services" />
 
-            {/* STICKY HEADER FOR MOBILE & DESKTOP */}
-            <div className="sticky top-0 z-30 bg-white/95 dark:bg-[#181826]/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 py-3.5 px-4 shadow-2xs">
-                <div className="max-w-4xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-3 min-w-0">
-                        <Link
-                            href={dashboard().url}
-                            className="p-1.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer shrink-0"
-                            title="Back to Dashboard"
-                        >
-                            <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
-                        </Link>
-                        <div className="min-w-0">
-                            <h1 className="font-extrabold text-base sm:text-lg text-gray-900 dark:text-white tracking-tight leading-tight flex items-center gap-2">
-                                All Services
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                                    {services.length}
-                                </span>
-                            </h1>
-                            <p className="text-xs text-slate-400 dark:text-slate-400 font-normal truncate mt-0.5">
-                                Select a service to get started
-                            </p>
-                        </div>
+            {/* MOBILE VIEW STICKY HEADER (hidden on desktop) */}
+            <div className="sticky top-0 z-30 bg-white/95 dark:bg-[#181826]/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 py-3.5 px-4 flex md:hidden items-center justify-between shadow-2xs">
+                <div className="flex items-center gap-3 min-w-0">
+                    <Link
+                        href={dashboard().url}
+                        className="p-1.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer shrink-0"
+                        title="Back to Dashboard"
+                    >
+                        <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
+                    </Link>
+                    <div className="min-w-0">
+                        <h1 className="font-extrabold text-base text-gray-900 dark:text-white tracking-tight leading-tight flex items-center gap-2">
+                            All Services
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                                {services.length}
+                            </span>
+                        </h1>
+                        <p className="text-xs text-slate-400 dark:text-slate-400 font-normal truncate mt-0.5">
+                            Select a service to get started
+                        </p>
                     </div>
+                </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                        <Link
-                            href="/contact"
-                            className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                            title="Customer Support"
-                        >
-                            <Headphones className="w-5 h-5 stroke-[1.8]" />
-                        </Link>
-                    </div>
+                <div className="flex items-center gap-2 shrink-0">
+                    <Link
+                        href="/contact"
+                        className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                        title="Customer Support"
+                    >
+                        <Headphones className="w-5 h-5 stroke-[1.8]" />
+                    </Link>
                 </div>
             </div>
 
@@ -198,7 +196,7 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
                         {filteredServices.map((service) => {
                             const isId = service.category === 'identity';
                             return (
@@ -206,16 +204,16 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
                                     key={service.id || service.key}
                                     onClick={() => handleServiceClick(service)}
                                     className={cn(
-                                        "group relative bg-white dark:bg-[#181826] border rounded-2xl p-4 transition-all duration-200 cursor-pointer flex flex-col justify-between shadow-xs hover:shadow-md hover:-translate-y-0.5",
+                                        "group relative bg-white dark:bg-[#181826] border rounded-2xl p-3 sm:p-4 transition-all duration-200 cursor-pointer flex flex-col justify-between shadow-xs hover:shadow-md hover:-translate-y-0.5 select-none",
                                         service.is_available
                                             ? "border-gray-100 dark:border-gray-800 hover:border-primary/40 dark:hover:border-primary/40"
-                                            : "border-gray-100/60 dark:border-gray-800/60 opacity-90"
+                                            : "border-gray-100/60 dark:border-gray-800/60 opacity-80"
                                     )}
                                 >
-                                    <div className="space-y-3">
+                                    <div className="space-y-2 sm:space-y-3">
                                         <div className="flex items-center justify-between">
                                             <div className={cn(
-                                                "w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105",
+                                                "w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0",
                                                 isId
                                                     ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                                                     : "bg-primary/10 text-primary"
@@ -224,32 +222,32 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
                                             </div>
 
                                             {service.is_available ? (
-                                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                                                <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                                    Available
+                                                    <span className="hidden xs:inline">Available</span>
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                                                <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
                                                     <Lock className="w-2.5 h-2.5" />
-                                                    Unavailable
+                                                    <span className="hidden xs:inline">Unavailable</span>
                                                 </span>
                                             )}
                                         </div>
 
                                         <div>
-                                            <h3 className="font-extrabold text-sm text-gray-900 dark:text-white group-hover:text-primary transition-colors flex items-center justify-between">
-                                                {service.name}
-                                                <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                                            <h3 className="font-extrabold text-xs sm:text-sm text-gray-900 dark:text-white group-hover:text-primary transition-colors flex items-center justify-between gap-1 leading-snug">
+                                                <span className="truncate">{service.name}</span>
+                                                <ArrowRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 hidden sm:block" />
                                             </h3>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
-                                                {service.description || (isId ? 'Official verification and document service' : 'Instant automated telecom transaction')}
+                                            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-snug sm:leading-relaxed">
+                                                {service.description || (isId ? 'Official verification & slip service' : 'Instant automated telecom service')}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="pt-3 mt-3 border-t border-gray-50 dark:border-gray-800/60 flex items-center justify-between text-[11px] font-medium text-slate-400">
-                                        <span className="capitalize">{service.category === 'vtu' ? 'VTU Utility' : 'Identity'}</span>
-                                        <span className="text-primary font-bold group-hover:underline">Open service →</span>
+                                    <div className="pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-gray-100 dark:border-gray-800/60 flex items-center justify-between text-[10px] sm:text-[11px] font-medium text-slate-400">
+                                        <span className="capitalize truncate">{service.category === 'vtu' ? 'VTU' : 'Identity'}</span>
+                                        <span className="text-primary font-bold group-hover:underline">Open →</span>
                                     </div>
                                 </div>
                             );

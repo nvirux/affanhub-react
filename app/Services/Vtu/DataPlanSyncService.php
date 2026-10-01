@@ -54,9 +54,11 @@ class DataPlanSyncService
         }
 
         $syncedCount = 0;
+        $deletedCount = 0;
         $networkIds = [];
+        $syncedPlanIds = [];
 
-        DB::transaction(function () use ($data, &$syncedCount, &$networkIds) {
+        DB::transaction(function () use ($data, &$syncedCount, &$deletedCount, &$networkIds, &$syncedPlanIds) {
             foreach ($data as $item) {
                 if (empty($item['id']) || empty($item['network']['name'])) {
                     continue;
@@ -102,7 +104,7 @@ class DataPlanSyncService
                 $retailPrice = (float) ($item['regular_price'] ?? $costPrice);
 
                 // 5. Update or Create DataPlan
-                DataPlan::updateOrCreate(
+                $dataPlan = DataPlan::updateOrCreate(
                     [
                         'network_id' => $network->id,
                         'plan_code' => (string) $item['id'],
@@ -120,15 +122,30 @@ class DataPlanSyncService
                     ]
                 );
 
+                $syncedPlanIds[] = $dataPlan->id;
                 $syncedCount++;
             }
+
+            // 6. Delete stale plans that are no longer returned by the provider
+            if (! empty($networkIds) && ! empty($syncedPlanIds)) {
+                $deletedCount = DataPlan::query()
+                    ->whereIn('network_id', array_keys($networkIds))
+                    ->whereNotIn('id', $syncedPlanIds)
+                    ->delete();
+            }
         });
+
+        $message = "Successfully synced {$syncedCount} data plans across ".count($networkIds).' networks.';
+        if ($deletedCount > 0) {
+            $message .= " Removed {$deletedCount} stale plans no longer offered by VTULab.";
+        }
 
         return [
             'success' => true,
             'count' => $syncedCount,
+            'deleted' => $deletedCount,
             'networks' => count($networkIds),
-            'message' => "Successfully synced {$syncedCount} data plans across ".count($networkIds).' networks.',
+            'message' => $message,
         ];
     }
 }
