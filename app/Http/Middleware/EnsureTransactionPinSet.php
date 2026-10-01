@@ -21,7 +21,7 @@ class EnsureTransactionPinSet
             return $next($request);
         }
 
-        if (! $user->hasTransactionPin()) {
+        if (method_exists($user, 'hasTransactionPin') && ! $user->hasTransactionPin()) {
             if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,

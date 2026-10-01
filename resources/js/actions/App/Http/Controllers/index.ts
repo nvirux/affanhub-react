@@ -12,6 +12,8 @@ import WalletController from './WalletController'
 import TransactionController from './TransactionController'
 import AirtimeController from './AirtimeController'
 import DataController from './DataController'
+import NinVerificationController from './NinVerificationController'
+import BvnVerificationController from './BvnVerificationController'
 import Settings from './Settings'
 const Controllers = {
     HomeController: Object.assign(HomeController, HomeController),
@@ -28,6 +30,8 @@ WalletController: Object.assign(WalletController, WalletController),
 TransactionController: Object.assign(TransactionController, TransactionController),
 AirtimeController: Object.assign(AirtimeController, AirtimeController),
 DataController: Object.assign(DataController, DataController),
+NinVerificationController: Object.assign(NinVerificationController, NinVerificationController),
+BvnVerificationController: Object.assign(BvnVerificationController, BvnVerificationController),
 Settings: Object.assign(Settings, Settings),
 }
 

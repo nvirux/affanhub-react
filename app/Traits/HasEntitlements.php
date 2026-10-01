@@ -127,13 +127,13 @@ trait HasEntitlements
 
         // Find plans that enable this feature
         $plansWithFeature = PlanFeature::where('feature_id', $feature->id)
-            ->where(function ($query) {
-                $query->where('value', 'true')
-                    ->orWhere('value', '1')
-                    ->orWhereRaw('CAST(value AS INTEGER) > 0');
-            })
             ->with('plan')
             ->get()
+            ->filter(function ($pf) {
+                $val = strtolower(trim((string) $pf->value));
+
+                return $val === 'true' || $val === '1' || (is_numeric($val) && (float) $val > 0);
+            })
             ->sortBy(fn ($pf) => $pf->plan?->price_monthly ?? 999999);
 
         if ($plansWithFeature->isEmpty()) {

@@ -91,4 +91,14 @@ class Owner extends Authenticatable implements FilamentUser, HasAppAuthenticatio
     {
         return true;
     }
+
+    public function hasTransactionPin(): bool
+    {
+        return true;
+    }
+
+    public function wallet(?string $name = 'main')
+    {
+        return $this->stores()->first()?->mainWallet();
+    }
 }

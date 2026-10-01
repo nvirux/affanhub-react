@@ -90,16 +90,33 @@ class HandleInertiaRequests extends Middleware
                 'funding_fee_text' => tenant() instanceof Store ? tenant()->getCustomerDepositFeeText() : '0% Fee (Free Funding)',
             ] : null,
             'auth' => [
-                'user' => fn () => $request->user() ? [
-                    'id' => $request->user()->id,
-                    'name' => $request->user()->name,
-                    'email' => $request->user()->email,
-                    'phone' => $request->user()->phone,
-                    'nin' => $request->user()->nin,
-                    'bvn' => $request->user()->bvn,
-                    'wallet_balance' => $request->user()->wallet('main')->balance,
-                    'virtual_account' => $request->user()->virtualAccounts()->where('status', 'active')->first(),
-                ] : null,
+                'user' => function () use ($request) {
+                    $user = $request->user();
+                    if (! $user) {
+                        return null;
+                    }
+
+                    $walletBalance = 0.00;
+                    if (method_exists($user, 'wallet')) {
+                        $walletBalance = (float) ($user->wallet('main')?->balance ?? 0.00);
+                    }
+
+                    $virtualAccount = null;
+                    if (method_exists($user, 'virtualAccounts')) {
+                        $virtualAccount = $user->virtualAccounts()->where('status', 'active')->first();
+                    }
+
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'phone' => $user->phone ?? null,
+                        'nin' => $user->nin ?? null,
+                        'bvn' => $user->bvn ?? null,
+                        'wallet_balance' => $walletBalance,
+                        'virtual_account' => $virtualAccount,
+                    ];
+                },
             ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),

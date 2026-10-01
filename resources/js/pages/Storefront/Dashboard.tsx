@@ -56,6 +56,7 @@ export default function Dashboard() {
     const [kycNumber, setKycNumber] = useState(user?.nin || '');
     const [isGenerating, setIsGenerating] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
+    const [showAllServices, setShowAllServices] = useState(false);
 
     useEffect(() => {
         if (kycType === 'nin' && user?.nin) {
@@ -96,6 +97,10 @@ export default function Dashboard() {
             router.get('/vtu/data');
         } else if (key === 'airtime') {
             router.get('/vtu/airtime');
+        } else if (key === 'nin_verification' || key === 'nin') {
+            router.get('/identity/nin');
+        } else if (key === 'bvn_verification' || key === 'bvn') {
+            router.get('/identity/bvn');
         }
     };
 
@@ -291,39 +296,61 @@ export default function Dashboard() {
                         <div className="bg-white dark:bg-[#1e1e2d] rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6">
                             <div className="flex justify-between items-center mb-5">
                                 <h2 className="text-[16px] font-bold text-gray-900 dark:text-white">Quick Services</h2>
-                                <button className="text-[13px] font-bold text-primary hover:opacity-80 cursor-pointer">View all</button>
+                                <button
+                                    onClick={() => setShowAllServices(!showAllServices)}
+                                    className="text-[13px] font-bold text-primary hover:opacity-80 cursor-pointer transition-opacity"
+                                >
+                                    {showAllServices ? 'Show less' : 'View all'}
+                                </button>
                             </div>
 
                             <div className="grid grid-cols-4 gap-2 md:gap-4">
-                                {((store_services && store_services.length > 0) ? store_services.slice(0, 7) : [
-                                    { key: 'airtime', name: 'Airtime', description: 'Top up airtime', icon: 'Smartphone', category: 'vtu' },
-                                    { key: 'data', name: 'Data', description: 'Buy data plans', icon: 'Wifi', category: 'vtu' },
-                                    { key: 'cable', name: 'Cable TV', description: 'Pay for TV', icon: 'Tv', category: 'vtu' },
-                                    { key: 'electricity', name: 'Electricity', description: 'Buy electricity', icon: 'Zap', category: 'vtu' },
-                                    { key: 'exam_pins', name: 'Exam PINs', description: 'Buy exam pins', icon: 'GraduationCap', category: 'vtu' },
-                                    { key: 'airtime_cash', name: 'Airtime to Cash', description: 'Convert to cash', icon: 'RefreshCw', category: 'vtu' },
-                                    { key: 'bulk_sms', name: 'Bulk SMS', description: 'Send messages', icon: 'MessageSquare', category: 'vtu' },
-                                ]).map((svc: any) => (
-                                    <ServiceItem
-                                        key={svc.key || svc.id}
-                                        icon={getIconComponent(svc.icon, svc.category)}
-                                        title={svc.name}
-                                        subtitle={svc.description || 'Quick service'}
-                                        color={getColorClass(svc.key, svc.category)}
-                                        onClick={() => handleServiceClick(svc.key)}
-                                    />
-                                ))}
+                                {(() => {
+                                    const defaultServices = [
+                                        { key: 'airtime', name: 'Airtime', description: 'Top up airtime', icon: 'Smartphone', category: 'vtu' },
+                                        { key: 'data', name: 'Data', description: 'Buy data plans', icon: 'Wifi', category: 'vtu' },
+                                        { key: 'nin_verification', name: 'NIN Verify', description: 'Verify & print slips', icon: 'IdCard', category: 'identity' },
+                                        { key: 'cable', name: 'Cable TV', description: 'Pay for TV', icon: 'Tv', category: 'vtu' },
+                                        { key: 'electricity', name: 'Electricity', description: 'Buy electricity', icon: 'Zap', category: 'vtu' },
+                                        { key: 'exam_pins', name: 'Exam PINs', description: 'Buy exam pins', icon: 'GraduationCap', category: 'vtu' },
+                                        { key: 'airtime_cash', name: 'Airtime to Cash', description: 'Convert to cash', icon: 'RefreshCw', category: 'vtu' },
+                                        { key: 'bulk_sms', name: 'Bulk SMS', description: 'Send messages', icon: 'MessageSquare', category: 'vtu' },
+                                    ];
 
-                                <button className="group flex flex-col items-center p-2 md:p-4 rounded-[1rem] md:rounded-2xl bg-primary/5 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 transition-all duration-300 w-full text-center cursor-pointer">
-                                    <div className="w-10 h-10 md:w-12 md:h-12 mb-2 md:mb-3 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <div className="grid grid-cols-2 gap-1 w-5 h-5 md:w-6 md:h-6 text-primary group-hover:text-gray-600 transition-colors">
-                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
-                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
-                                        </div>
-                                    </div>
-                                    <span className="text-[9px] md:text-[13px] font-bold text-gray-900 dark:text-gray-100 text-center leading-tight">More</span>
-                                    <span className="text-[8px] md:text-[10px] text-gray-400 mt-0.5 md:mt-1 text-center font-medium hidden sm:block">View all</span>
-                                </button>
+                                    const serviceList = (store_services && store_services.length > 0) ? store_services : defaultServices;
+                                    const visibleServices = showAllServices ? serviceList : serviceList.slice(0, 7);
+
+                                    return (
+                                        <>
+                                            {visibleServices.map((svc: any) => (
+                                                <ServiceItem
+                                                    key={svc.key || svc.id}
+                                                    icon={getIconComponent(svc.icon, svc.category)}
+                                                    title={svc.name}
+                                                    subtitle={svc.description || 'Quick service'}
+                                                    color={getColorClass(svc.key, svc.category)}
+                                                    onClick={() => handleServiceClick(svc.key)}
+                                                />
+                                            ))}
+
+                                            {!showAllServices && serviceList.length > 7 && (
+                                                <button
+                                                    onClick={() => setShowAllServices(true)}
+                                                    className="group flex flex-col items-center p-2 md:p-4 rounded-[1rem] md:rounded-2xl bg-primary/5 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 transition-all duration-300 w-full text-center cursor-pointer"
+                                                >
+                                                    <div className="w-10 h-10 md:w-12 md:h-12 mb-2 md:mb-3 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                                                        <div className="grid grid-cols-2 gap-1 w-5 h-5 md:w-6 md:h-6 text-primary group-hover:text-gray-600 transition-colors">
+                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                        </div>
+                                                    </div>
+                                                    <span className="text-[9px] md:text-[13px] font-bold text-gray-900 dark:text-gray-100 text-center leading-tight">More</span>
+                                                    <span className="text-[8px] md:text-[10px] text-gray-400 mt-0.5 md:mt-1 text-center font-medium hidden sm:block">View all</span>
+                                                </button>
+                                            )}
+                                        </>
+                                    );
+                                })()}
                             </div>
                         </div>
 

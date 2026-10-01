@@ -85,6 +85,7 @@ Route::middleware([
         Route::get('/transactions/{reference}', [TransactionController::class, 'show'])->name('transactions.show');
 
         require __DIR__.'/vtu.php';
+        require __DIR__.'/identity.php';
     });
 
     // Legacy Auth URL Redirects (for mobile apps pointing to /auth/login

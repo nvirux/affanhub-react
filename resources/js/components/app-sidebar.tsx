@@ -132,17 +132,13 @@ const navGroups: NavGroup[] = [
         items: [
             {
                 title: 'NIN Verification',
-                href: '#',
+                href: '/identity/nin',
                 icon: Fingerprint,
-                badge: 'Soon',
-                disabled: true,
             },
             {
                 title: 'BVN Verification',
-                href: '#',
+                href: '/identity/bvn',
                 icon: IdCard,
-                badge: 'Soon',
-                disabled: true,
             },
             {
                 title: 'NIN Modification',

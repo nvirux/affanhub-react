@@ -1,20 +1,22 @@
 <x-filament-panels::page>
     @php
-        $enabledCount = collect($serviceSettings)->filter(fn($i) => $i['has_access'] && $i['is_enabled'])->count();
-        $lockedCount = collect($serviceSettings)->filter(fn($i) => !$i['has_access'])->count();
-        $vtuCount = collect($serviceSettings)->filter(fn($i) => $i['category'] === 'vtu')->count();
-        $identityCount = collect($serviceSettings)->filter(fn($i) => $i['category'] === 'identity')->count();
+        $enabledCount = collect($serviceSettings)->filter(fn($i) => ($i['has_access'] ?? false) && ($i['is_enabled'] ?? false))->count();
+        $lockedCount = collect($serviceSettings)->filter(fn($i) => !($i['has_access'] ?? false))->count();
+        $vtuCount = collect($serviceSettings)->filter(fn($i) => ($i['category'] ?? '') === 'vtu')->count();
+        $identityCount = collect($serviceSettings)->filter(fn($i) => ($i['category'] ?? '') === 'identity')->count();
+        $identityLockedCount = collect($serviceSettings)->filter(fn($i) => ($i['category'] ?? '') === 'identity' && !($i['has_access'] ?? false))->count();
+        $identityAvailableCount = max(0, $identityCount - $identityLockedCount);
 
         $filteredServices = collect($serviceSettings)->filter(function($item) use ($categoryFilter, $searchQuery) {
-            if ($categoryFilter !== 'all' && $item['category'] !== $categoryFilter) {
+            if ($categoryFilter !== 'all' && ($item['category'] ?? '') !== $categoryFilter) {
                 return false;
             }
-            if (!empty($searchQuery) && strpos(strtolower($item['name']), strtolower($searchQuery)) === false) {
+            if (!empty($searchQuery) && strpos(strtolower($item['name'] ?? ''), strtolower($searchQuery)) === false) {
                 return false;
             }
             return true;
         })->sortBy([
-            fn($a, $b) => ($b['has_access'] ? 1 : 0) <=> ($a['has_access'] ? 1 : 0),
+            fn($a, $b) => (($b['has_access'] ?? false) ? 1 : 0) <=> (($a['has_access'] ?? false) ? 1 : 0),
             ['sort_order', 'asc'],
         ]);
     @endphp
@@ -69,8 +71,8 @@
                             <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Identity Services</span>
                             <span style="font-size: 0.6875rem; color: #9ca3af;">NIN, BVN, IPE</span>
                         </div>
-                        <span style="padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 600; {{ $lockedCount > 0 ? 'background-color: #fef3c7; color: #92400e;' : 'background-color: #d1fae5; color: #065f46;' }}">
-                            {{ $identityCount - $lockedCount }} / {{ $identityCount }}
+                        <span style="padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 600; {{ $identityLockedCount > 0 ? 'background-color: #fef3c7; color: #92400e;' : 'background-color: #d1fae5; color: #065f46;' }}">
+                            {{ $identityAvailableCount }} / {{ $identityCount }}
                         </span>
                     </div>
                 </div>

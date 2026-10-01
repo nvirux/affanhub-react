@@ -48,18 +48,24 @@ class ManageServices extends Page
             return;
         }
 
-        $allServices = Service::orderBy('sort_order', 'asc')->get();
+        $allServices = Service::with('feature')->orderBy('sort_order', 'asc')->get();
 
         foreach ($allServices as $service) {
             $hasAccess = true;
             $requiredPlanName = 'Enterprise Plan or Contact Support';
 
             if ($service->feature_id && $service->feature) {
-                $hasAccess = $tenant->hasFeature($service->feature->slug);
+                try {
+                    $hasAccess = (bool) $tenant->hasFeature($service->feature->slug);
 
-                $requiredPlanName = method_exists($tenant, 'getFeatureUpgradeRequirement')
-                    ? $tenant->getFeatureUpgradeRequirement($service->feature->slug)
-                    : 'Enterprise Plan';
+                    $requiredPlanName = method_exists($tenant, 'getFeatureUpgradeRequirement')
+                        ? $tenant->getFeatureUpgradeRequirement($service->feature->slug)
+                        : 'Enterprise Plan';
+                } catch (\Throwable $e) {
+                    report($e);
+                    $hasAccess = false;
+                    $requiredPlanName = 'Enterprise Plan or Contact Support';
+                }
             }
 
             $setting = StoreService::where('store_id', $tenant->id)
@@ -70,15 +76,15 @@ class ManageServices extends Page
                 'id' => $service->id,
                 'name' => $service->name,
                 'key' => $service->key,
-                'category' => $service->category,
-                'description' => $service->description,
+                'category' => $service->category ?? 'vtu',
+                'description' => $service->description ?? '',
                 'icon' => $service->icon,
                 'is_active' => (bool) $service->is_active,
                 'has_access' => $hasAccess,
                 'required_plan' => $requiredPlanName,
                 'feature_name' => $service->feature?->name,
                 'is_enabled' => $setting ? (bool) $setting->is_enabled : true,
-                'sort_order' => $setting ? (int) $setting->sort_order : $service->sort_order,
+                'sort_order' => $setting ? (int) $setting->sort_order : (int) $service->sort_order,
             ];
         }
     }
