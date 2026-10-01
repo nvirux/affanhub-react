@@ -51,6 +51,7 @@ export interface RecentVerification {
 }
 
 interface NinPageProps {
+    is_available?: boolean;
     slips: SlipTemplate[];
     wallet_balance: number;
     recent_verifications: RecentVerification[];
@@ -61,6 +62,7 @@ interface NinPageProps {
 }
 
 export default function NinVerificationPage({
+    is_available = true,
     slips = [],
     wallet_balance = 0,
     recent_verifications = [],
@@ -271,8 +273,40 @@ export default function NinVerificationPage({
                     </div>
                 )}
 
-                {/* ACTIVE VIEW: VERIFIED RESULT CARD OR SEARCH FORM */}
-                {verifiedData ? (
+                {/* SERVICE UNAVAILABLE CARD */}
+                {!is_available ? (
+                    <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-8 sm:p-10 text-center shadow-xs flex flex-col items-center justify-center space-y-4">
+                        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 dark:bg-amber-400/10 flex items-center justify-center text-amber-500">
+                            <AlertCircle className="w-8 h-8 stroke-[1.75]" />
+                        </div>
+                        <div className="space-y-1.5 max-w-md">
+                            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                                Service Currently Unavailable
+                            </h2>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                This service is currently unavailable. Please contact support to get access or check back later.
+                            </p>
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-center gap-3 pt-2 w-full sm:w-auto">
+                            <Link
+                                href="/contact"
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-all shadow-xs"
+                            >
+                                <Headphones className="w-4 h-4" />
+                                Contact Support
+                            </Link>
+                            <Link
+                                href={dashboard().url}
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                            >
+                                Back to Dashboard
+                            </Link>
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        {/* ACTIVE VIEW: VERIFIED RESULT CARD OR SEARCH FORM */}
+                        {verifiedData ? (
                     /* VERIFIED RECORD DISPLAY & SLIP PREVIEW */
                     <div className="space-y-4 animate-in zoom-in-95 duration-200">
                         {/* Status Card Header */}
@@ -759,6 +793,8 @@ export default function NinVerificationPage({
                             ))}
                         </div>
                     </div>
+                )}
+                    </>
                 )}
 
                 {/* DATA PRIVACY & COMPLIANCE FOOTER */}

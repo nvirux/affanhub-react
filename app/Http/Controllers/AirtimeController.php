@@ -120,7 +120,7 @@ class AirtimeController extends Controller
 
             if ($storeDiscount && ! $storeDiscount->is_enabled) {
                 throw ValidationException::withMessages([
-                    'network_id' => "Airtime recharge for {$network->name} is currently unavailable on this store.",
+                    'network_id' => "Airtime recharge for {$network->name} is currently unavailable. Please contact support.",
                 ]);
             }
         }

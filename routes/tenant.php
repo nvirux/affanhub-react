@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\TenantAuthController;
 use App\Http\Controllers\Auth\TenantPinSetupController;
 use App\Http\Controllers\Auth\TransactionPinController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EarnController;
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -19,7 +20,7 @@ use App\Http\Controllers\DashboardController;
 |
 */
 
-use App\Http\Controllers\EarnController;
+use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VirtualAccountController;
 use App\Http\Controllers\WalletController;
@@ -74,6 +75,7 @@ Route::middleware([
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/user/dashboard', [DashboardController::class, 'index'])->name('user.dashboard');
+        Route::get('/services', [ServicesController::class, 'index'])->name('services.index');
 
         Route::post('/virtual-account/generate', [VirtualAccountController::class, 'generate'])
             ->name('virtual-account.generate');

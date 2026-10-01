@@ -3,7 +3,7 @@ import ninBd9d09 from './nin'
 import bvnC51c8d from './bvn'
 /**
 * @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:16
+ * @see app/Http/Controllers/NinVerificationController.php:18
  * @route '/identity/nin'
  */
 export const nin = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -18,7 +18,7 @@ nin.definition = {
 
 /**
 * @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:16
+ * @see app/Http/Controllers/NinVerificationController.php:18
  * @route '/identity/nin'
  */
 nin.url = (options?: RouteQueryOptions) => {
@@ -27,7 +27,7 @@ nin.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:16
+ * @see app/Http/Controllers/NinVerificationController.php:18
  * @route '/identity/nin'
  */
 nin.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -36,7 +36,7 @@ nin.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:16
+ * @see app/Http/Controllers/NinVerificationController.php:18
  * @route '/identity/nin'
  */
 nin.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -46,7 +46,7 @@ nin.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:16
+ * @see app/Http/Controllers/NinVerificationController.php:18
  * @route '/identity/nin'
  */
     const ninForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -56,7 +56,7 @@ nin.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:16
+ * @see app/Http/Controllers/NinVerificationController.php:18
  * @route '/identity/nin'
  */
         ninForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ nin.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:16
+ * @see app/Http/Controllers/NinVerificationController.php:18
  * @route '/identity/nin'
  */
         ninForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -81,7 +81,7 @@ nin.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     nin.form = ninForm
 /**
 * @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:16
+ * @see app/Http/Controllers/BvnVerificationController.php:18
  * @route '/identity/bvn'
  */
 export const bvn = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -96,7 +96,7 @@ bvn.definition = {
 
 /**
 * @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:16
+ * @see app/Http/Controllers/BvnVerificationController.php:18
  * @route '/identity/bvn'
  */
 bvn.url = (options?: RouteQueryOptions) => {
@@ -105,7 +105,7 @@ bvn.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:16
+ * @see app/Http/Controllers/BvnVerificationController.php:18
  * @route '/identity/bvn'
  */
 bvn.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -114,7 +114,7 @@ bvn.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:16
+ * @see app/Http/Controllers/BvnVerificationController.php:18
  * @route '/identity/bvn'
  */
 bvn.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -124,7 +124,7 @@ bvn.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:16
+ * @see app/Http/Controllers/BvnVerificationController.php:18
  * @route '/identity/bvn'
  */
     const bvnForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -134,7 +134,7 @@ bvn.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:16
+ * @see app/Http/Controllers/BvnVerificationController.php:18
  * @route '/identity/bvn'
  */
         bvnForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -143,7 +143,7 @@ bvn.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:16
+ * @see app/Http/Controllers/BvnVerificationController.php:18
  * @route '/identity/bvn'
  */
         bvnForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

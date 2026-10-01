@@ -112,7 +112,7 @@ export function PhoneNetworkCard({
                     }
                 } else {
                     const netName = NETWORKS_LIST.find((n) => n.slug === detected)?.name || detected.toUpperCase();
-                    setPhoneError?.(`${netName} is currently unavailable on this store.`);
+                    setPhoneError?.(`${netName} is currently unavailable.`);
                 }
             }
         }

@@ -205,108 +205,6 @@ domains.head = (args: { tenant: string | number | { public_id: string | number }
     
     domains.form = domainsForm
 /**
-* @see \App\Filament\Merchant\Pages\ManageServices::__invoke
- * @see app/Filament/Merchant/Pages/ManageServices.php:7
- * @route '//merchant.localhost/{tenant}/manage-services'
- */
-export const manageServices = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: manageServices.url(args, options),
-    method: 'get',
-})
-
-manageServices.definition = {
-    methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/manage-services',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Filament\Merchant\Pages\ManageServices::__invoke
- * @see app/Filament/Merchant/Pages/ManageServices.php:7
- * @route '//merchant.localhost/{tenant}/manage-services'
- */
-manageServices.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { tenant: args }
-    }
-
-            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
-            args = { tenant: args.public_id }
-        }
-    
-    if (Array.isArray(args)) {
-        args = {
-                    tenant: args[0],
-                }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-                        tenant: typeof args.tenant === 'object'
-                ? args.tenant.public_id
-                : args.tenant,
-                }
-
-    return manageServices.definition.url
-            .replace('{tenant}', parsedArgs.tenant.toString())
-            .replace(/\/+$/, '') + queryParams(options)
-}
-
-/**
-* @see \App\Filament\Merchant\Pages\ManageServices::__invoke
- * @see app/Filament/Merchant/Pages/ManageServices.php:7
- * @route '//merchant.localhost/{tenant}/manage-services'
- */
-manageServices.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: manageServices.url(args, options),
-    method: 'get',
-})
-/**
-* @see \App\Filament\Merchant\Pages\ManageServices::__invoke
- * @see app/Filament/Merchant/Pages/ManageServices.php:7
- * @route '//merchant.localhost/{tenant}/manage-services'
- */
-manageServices.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: manageServices.url(args, options),
-    method: 'head',
-})
-
-    /**
-* @see \App\Filament\Merchant\Pages\ManageServices::__invoke
- * @see app/Filament/Merchant/Pages/ManageServices.php:7
- * @route '//merchant.localhost/{tenant}/manage-services'
- */
-    const manageServicesForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: manageServices.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Pages\ManageServices::__invoke
- * @see app/Filament/Merchant/Pages/ManageServices.php:7
- * @route '//merchant.localhost/{tenant}/manage-services'
- */
-        manageServicesForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: manageServices.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Pages\ManageServices::__invoke
- * @see app/Filament/Merchant/Pages/ManageServices.php:7
- * @route '//merchant.localhost/{tenant}/manage-services'
- */
-        manageServicesForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: manageServices.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    manageServices.form = manageServicesForm
-/**
 * @see \App\Filament\Merchant\Pages\MobileAppManager::__invoke
  * @see app/Filament/Merchant/Pages/MobileAppManager.php:7
  * @route '//merchant.localhost/{tenant}/mobile-app-manager'
@@ -921,7 +819,6 @@ dashboard.head = (args: { tenant: string | number | { public_id: string | number
 const pages = {
     billing: Object.assign(billing, billing),
 domains: Object.assign(domains, domains),
-manageServices: Object.assign(manageServices, manageServices),
 mobileAppManager: Object.assign(mobileAppManager, mobileAppManager),
 onboarding: Object.assign(onboarding, onboarding),
 referralProgram: Object.assign(referralProgram, referralProgram),

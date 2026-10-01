@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Service;
+use App\Models\StoreService;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -73,12 +75,27 @@ class BvnVerificationController extends Controller
                 'created_at' => $tx->created_at?->format('M d, Y · h:i A') ?? '',
             ]);
 
+        // Service Availability check
+        $service = Service::where('key', 'bvn_verification')->first();
+        $hasAccess = true;
+        if ($service?->feature_id && $service?->feature) {
+            try {
+                $hasAccess = (bool) $store->hasFeature($service->feature->slug);
+            } catch (\Throwable) {
+                $hasAccess = false;
+            }
+        }
+        $storeService = $service ? StoreService::where('store_id', $store->id)->where('service_id', $service->id)->first() : null;
+        $isEnabled = $storeService ? (bool) $storeService->is_enabled : $hasAccess;
+        $isAvailable = $hasAccess && $isEnabled;
+
         return Inertia::render('Storefront/Identity/Bvn', [
+            'is_available' => $isAvailable,
             'slips' => $slips,
             'wallet_balance' => $walletBalance,
             'recent_verifications' => $recentVerifications,
             'store_support' => [
-                'name' => $store?->name ?? 'Store Support',
+                'name' => $store?->name ?? 'Support',
                 'whatsapp' => $store?->whatsapp_chat_phone ?? null,
             ],
         ]);
@@ -97,6 +114,26 @@ class BvnVerificationController extends Controller
         ], [
             'search_value.regex' => 'The '.($request->search_type === 'phone' ? 'phone number' : 'BVN').' must be exactly 11 numeric digits.',
         ]);
+
+        $store = tenant();
+        $service = Service::where('key', 'bvn_verification')->first();
+        $hasAccess = true;
+        if ($service?->feature_id && $service?->feature) {
+            try {
+                $hasAccess = (bool) $store->hasFeature($service->feature->slug);
+            } catch (\Throwable) {
+                $hasAccess = false;
+            }
+        }
+        $storeService = $service ? StoreService::where('store_id', $store->id)->where('service_id', $service->id)->first() : null;
+        $isEnabled = $storeService ? (bool) $storeService->is_enabled : $hasAccess;
+
+        if (! $hasAccess || ! $isEnabled) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This service is currently unavailable. Please contact support.',
+            ], 403);
+        }
 
         $user = $request->user();
 

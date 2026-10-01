@@ -2,7 +2,6 @@ import Auth from './Auth'
 import RegisterStore from './RegisterStore'
 import Billing from './Billing'
 import Domains from './Domains'
-import ManageServices from './ManageServices'
 import MobileAppManager from './MobileAppManager'
 import OnboardingPlan from './OnboardingPlan'
 import ReferralProgram from './ReferralProgram'
@@ -14,7 +13,6 @@ const Pages = {
 RegisterStore: Object.assign(RegisterStore, RegisterStore),
 Billing: Object.assign(Billing, Billing),
 Domains: Object.assign(Domains, Domains),
-ManageServices: Object.assign(ManageServices, ManageServices),
 MobileAppManager: Object.assign(MobileAppManager, MobileAppManager),
 OnboardingPlan: Object.assign(OnboardingPlan, OnboardingPlan),
 ReferralProgram: Object.assign(ReferralProgram, ReferralProgram),

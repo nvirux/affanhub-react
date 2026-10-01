@@ -56,7 +56,6 @@ export default function Dashboard() {
     const [kycNumber, setKycNumber] = useState(user?.nin || '');
     const [isGenerating, setIsGenerating] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
-    const [showAllServices, setShowAllServices] = useState(false);
 
     useEffect(() => {
         if (kycType === 'nin' && user?.nin) {
@@ -296,12 +295,12 @@ export default function Dashboard() {
                         <div className="bg-white dark:bg-[#1e1e2d] rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6">
                             <div className="flex justify-between items-center mb-5">
                                 <h2 className="text-[16px] font-bold text-gray-900 dark:text-white">Quick Services</h2>
-                                <button
-                                    onClick={() => setShowAllServices(!showAllServices)}
+                                <Link
+                                    href="/services"
                                     className="text-[13px] font-bold text-primary hover:opacity-80 cursor-pointer transition-opacity"
                                 >
-                                    {showAllServices ? 'Show less' : 'View all'}
-                                </button>
+                                    View all
+                                </Link>
                             </div>
 
                             <div className="grid grid-cols-4 gap-2 md:gap-4">
@@ -318,7 +317,7 @@ export default function Dashboard() {
                                     ];
 
                                     const serviceList = (store_services && store_services.length > 0) ? store_services : defaultServices;
-                                    const visibleServices = showAllServices ? serviceList : serviceList.slice(0, 7);
+                                    const visibleServices = serviceList.slice(0, 7);
 
                                     return (
                                         <>
@@ -333,21 +332,19 @@ export default function Dashboard() {
                                                 />
                                             ))}
 
-                                            {!showAllServices && serviceList.length > 7 && (
-                                                <button
-                                                    onClick={() => setShowAllServices(true)}
-                                                    className="group flex flex-col items-center p-2 md:p-4 rounded-[1rem] md:rounded-2xl bg-primary/5 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 transition-all duration-300 w-full text-center cursor-pointer"
-                                                >
-                                                    <div className="w-10 h-10 md:w-12 md:h-12 mb-2 md:mb-3 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                        <div className="grid grid-cols-2 gap-1 w-5 h-5 md:w-6 md:h-6 text-primary group-hover:text-gray-600 transition-colors">
-                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
-                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
-                                                        </div>
+                                            <Link
+                                                href="/services"
+                                                className="group flex flex-col items-center p-2 md:p-4 rounded-[1rem] md:rounded-2xl bg-primary/5 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 transition-all duration-300 w-full text-center cursor-pointer"
+                                            >
+                                                <div className="w-10 h-10 md:w-12 md:h-12 mb-2 md:mb-3 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                                                    <div className="grid grid-cols-2 gap-1 w-5 h-5 md:w-6 md:h-6 text-primary group-hover:text-gray-600 transition-colors">
+                                                        <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                        <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
                                                     </div>
-                                                    <span className="text-[9px] md:text-[13px] font-bold text-gray-900 dark:text-gray-100 text-center leading-tight">More</span>
-                                                    <span className="text-[8px] md:text-[10px] text-gray-400 mt-0.5 md:mt-1 text-center font-medium hidden sm:block">View all</span>
-                                                </button>
-                                            )}
+                                                </div>
+                                                <span className="text-[9px] md:text-[13px] font-bold text-gray-900 dark:text-gray-100 text-center leading-tight">More</span>
+                                                <span className="text-[8px] md:text-[10px] text-gray-400 mt-0.5 md:mt-1 text-center font-medium hidden sm:block">View all</span>
+                                            </Link>
                                         </>
                                     );
                                 })()}
@@ -697,7 +694,7 @@ export default function Dashboard() {
                     <div className="bg-white dark:bg-[#1e1e2d] rounded-xl p-4 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-800">
                         <div className="flex justify-between items-center mb-4 px-1">
                             <h2 className="text-[15px] font-bold text-gray-900 dark:text-white">Quick Actions</h2>
-                            <button className="text-[12px] font-bold text-primary hover:underline">See all</button>
+                            <Link href="/services" className="text-[12px] font-bold text-primary hover:underline">See all</Link>
                         </div>
 
                         <div className="grid grid-cols-4 gap-y-5 gap-x-2 text-center">
@@ -728,7 +725,7 @@ export default function Dashboard() {
                             })}
 
                             {/* More Services Link (8th Slot) */}
-                            <button className="flex flex-col items-center group w-full cursor-pointer">
+                            <Link href="/services" className="flex flex-col items-center group w-full cursor-pointer">
                                 <div className="w-12 h-12 rounded-2xl bg-primary/5 dark:bg-primary/10 text-primary flex items-center justify-center mb-1.5 group-active:scale-95 transition-transform">
                                     <div className="grid grid-cols-2 gap-0.5 w-4 h-4 text-primary">
                                         <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
@@ -736,7 +733,7 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                                 <span className="text-[11px] font-bold text-gray-800 dark:text-gray-200 leading-tight">More</span>
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

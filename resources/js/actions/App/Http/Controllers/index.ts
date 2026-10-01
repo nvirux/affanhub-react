@@ -6,6 +6,7 @@ import Merchant from './Merchant'
 import Auth from './Auth'
 import Webhook from './Webhook'
 import DashboardController from './DashboardController'
+import ServicesController from './ServicesController'
 import VirtualAccountController from './VirtualAccountController'
 import EarnController from './EarnController'
 import WalletController from './WalletController'
@@ -24,6 +25,7 @@ Merchant: Object.assign(Merchant, Merchant),
 Auth: Object.assign(Auth, Auth),
 Webhook: Object.assign(Webhook, Webhook),
 DashboardController: Object.assign(DashboardController, DashboardController),
+ServicesController: Object.assign(ServicesController, ServicesController),
 VirtualAccountController: Object.assign(VirtualAccountController, VirtualAccountController),
 EarnController: Object.assign(EarnController, EarnController),
 WalletController: Object.assign(WalletController, WalletController),

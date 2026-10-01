@@ -6,16 +6,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use App\Models\StoreService;
-use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class DashboardController extends Controller
+class ServicesController extends Controller
 {
     /**
-     * Display the customer storefront dashboard with enabled services & recent transactions.
+     * Display all available storefront services.
      */
     public function index(Request $request): Response
     {
@@ -50,27 +48,8 @@ class DashboardController extends Controller
 
         usort($services, fn ($a, $b) => $a['sort_order'] <=> $b['sort_order']);
 
-        $recentTransactions = Transaction::query()
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->take(8)
-            ->get()
-            ->map(fn ($tx) => [
-                'id' => $tx->id,
-                'reference' => $tx->reference,
-                'service_type' => $tx->service_type,
-                'recipient' => $tx->recipient,
-                'amount' => (float) ($tx->amount_paid > 0 ? $tx->amount_paid : $tx->amount),
-                'discount' => (float) ($tx->discount ?? 0.00),
-                'amount_paid' => (float) ($tx->amount_paid > 0 ? $tx->amount_paid : $tx->amount),
-                'status' => in_array($tx->status, ['success', 'successful', 'completed'], true) ? 'successful' : ($tx->status === 'pending' ? 'pending' : 'failed'),
-                'created_at' => $tx->created_at?->diffForHumans() ?? 'Just now',
-                'date' => $tx->created_at?->format('M d, Y') ?? '',
-            ]);
-
-        return Inertia::render('Storefront/Dashboard', [
-            'store_services' => $services,
-            'recent_transactions' => $recentTransactions,
+        return Inertia::render('Storefront/Services', [
+            'services' => $services,
         ]);
     }
 }

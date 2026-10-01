@@ -1,6 +1,6 @@
 <?php
 
-use App\Filament\Merchant\Pages\ManageServices;
+use App\Filament\Merchant\Resources\StoreServiceResource\Pages\ListStoreServices;
 use App\Models\Feature;
 use App\Models\Owner;
 use App\Models\Plan;
@@ -33,7 +33,7 @@ beforeEach(function () {
     Filament::setTenant($this->store);
 });
 
-test('manage services page loads cleanly for merchant tenant', function () {
+test('store services resource list page loads cleanly with tabs', function () {
     $service = Service::create([
         'name' => 'Airtime Topup',
         'key' => 'airtime',
@@ -42,10 +42,29 @@ test('manage services page loads cleanly for merchant tenant', function () {
         'sort_order' => 1,
     ]);
 
-    Livewire::test(ManageServices::class)
+    Livewire::test(ListStoreServices::class)
         ->assertSuccessful()
         ->assertSee('Airtime Topup')
-        ->assertSee('Storefront Layout Status');
+        ->assertSee('All Services')
+        ->assertSee('VTU Utilities')
+        ->assertSee('Identity Services');
+});
+
+test('store services resource auto-populates store_services records for tenant', function () {
+    Service::create([
+        'name' => 'Data Bundle',
+        'key' => 'data',
+        'category' => 'vtu',
+        'is_active' => true,
+        'sort_order' => 2,
+    ]);
+
+    expect(StoreService::where('store_id', $this->store->id)->count())->toBe(0);
+
+    Livewire::test(ListStoreServices::class)
+        ->assertSuccessful();
+
+    expect(StoreService::where('store_id', $this->store->id)->count())->toBe(1);
 });
 
 test('manage services resolves upgrade requirements for locked features without SQL cast errors', function () {
@@ -79,55 +98,8 @@ test('manage services resolves upgrade requirements for locked features without 
         'sort_order' => 6,
     ]);
 
-    // Store is on starter plan (default), so airtime to cash is locked and requires Pro Plan
-    Livewire::test(ManageServices::class)
+    Livewire::test(ListStoreServices::class)
         ->assertSuccessful()
         ->assertSee('Airtime to Cash')
         ->assertSee('Pro Plan');
-});
-
-test('merchant can toggle enabled state for accessible services', function () {
-    $service = Service::create([
-        'name' => 'Data Bundle',
-        'key' => 'data',
-        'category' => 'vtu',
-        'is_active' => true,
-        'sort_order' => 2,
-    ]);
-
-    Livewire::test(ManageServices::class)
-        ->call('toggleService', $service->id);
-
-    expect(StoreService::where('store_id', $this->store->id)
-        ->where('service_id', $service->id)
-        ->value('is_enabled')
-    )->toBeFalse();
-});
-
-test('merchant cannot toggle locked service and receives warning notification', function () {
-    $feature = Feature::create([
-        'name' => 'IPE Clearance',
-        'slug' => 'id_ipe_clearance',
-        'type' => 'boolean',
-        'default_value' => 'false',
-    ]);
-
-    $service = Service::create([
-        'name' => 'IPE Clearance',
-        'key' => 'ipe_clearance',
-        'category' => 'identity',
-        'feature_id' => $feature->id,
-        'is_active' => true,
-        'sort_order' => 13,
-    ]);
-
-    Livewire::test(ManageServices::class)
-        ->call('toggleService', $service->id)
-        ->assertNotified('Feature Locked');
-
-    // Should not create or set enabled in store_services
-    expect(StoreService::where('store_id', $this->store->id)
-        ->where('service_id', $service->id)
-        ->exists()
-    )->toBeFalse();
 });

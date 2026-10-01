@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:101
+ * @see app/Http/Controllers/NinVerificationController.php:118
  * @route '/identity/nin/verify'
  */
 export const verify = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ verify.definition = {
 
 /**
 * @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:101
+ * @see app/Http/Controllers/NinVerificationController.php:118
  * @route '/identity/nin/verify'
  */
 verify.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ verify.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:101
+ * @see app/Http/Controllers/NinVerificationController.php:118
  * @route '/identity/nin/verify'
  */
 verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:101
+ * @see app/Http/Controllers/NinVerificationController.php:118
  * @route '/identity/nin/verify'
  */
     const verifyForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:101
+ * @see app/Http/Controllers/NinVerificationController.php:118
  * @route '/identity/nin/verify'
  */
         verifyForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
