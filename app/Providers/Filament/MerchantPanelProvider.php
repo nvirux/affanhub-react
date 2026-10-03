@@ -78,6 +78,10 @@ class MerchantPanelProvider extends PanelProvider
                 PanelsRenderHook::AUTH_REGISTER_FORM_AFTER,
                 fn () => view('filament.merchant.components.social-login-buttons')
             )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn () => view('filament.merchant.components.tawk-chat')
+            )
             ->discoverWidgets(in: app_path('Filament/Merchant/Widgets'), for: 'App\Filament\Merchant\Widgets')
             ->widgets([
                 // AccountWidget::class,

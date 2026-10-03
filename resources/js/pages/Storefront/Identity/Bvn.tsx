@@ -84,6 +84,7 @@ export default function BvnVerificationPage({
 
     // Sample Image Lightbox Dialog State
     const [sampleModalImg, setSampleModalImg] = useState<{ title: string; src: string } | null>(null);
+    const [previewStageSlipId, setPreviewStageSlipId] = useState<string | null>(null);
 
     // Verified Result State
     const [verifiedData, setVerifiedData] = useState<any | null>(null);
@@ -640,7 +641,10 @@ export default function BvnVerificationPage({
                                     return (
                                         <div
                                             key={slip.id}
-                                            onClick={() => setSelectedSlipId(slip.id)}
+                                            onClick={() => {
+                                                setSelectedSlipId(slip.id);
+                                                setPreviewStageSlipId(null);
+                                            }}
                                             className={`relative rounded-2xl p-2.5 sm:p-3.5 transition-all duration-200 cursor-pointer border flex flex-col justify-between group ${
                                                 isSelected
                                                     ? 'bg-primary/5 dark:bg-primary/10 border-primary ring-2 ring-primary/20 shadow-md'
@@ -673,13 +677,25 @@ export default function BvnVerificationPage({
 
                                             {/* REAL SAMPLE PREVIEW THUMBNAIL */}
                                             <div
-                                                className="relative w-full h-24 sm:h-28 rounded-xl bg-slate-50 dark:bg-gray-900/80 border border-gray-100 dark:border-gray-800/80 p-1 flex items-center justify-center overflow-hidden mb-2.5"
+                                                className="relative w-full h-24 sm:h-28 rounded-xl bg-slate-50 dark:bg-gray-900/80 border border-gray-100 dark:border-gray-800/80 p-1 flex items-center justify-center overflow-hidden mb-2.5 cursor-pointer"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    setSelectedSlipId(slip.id);
-                                                    setSampleModalImg({ title: `${slip.name} BVN Slip Sample`, src: sampleSrc });
+                                                    if (!isSelected) {
+                                                        // 1st click on unselected: only select the slip
+                                                        setSelectedSlipId(slip.id);
+                                                        setPreviewStageSlipId(null);
+                                                    } else if (previewStageSlipId !== slip.id) {
+                                                        // 2nd click on selected: show preview prompt in center
+                                                        setPreviewStageSlipId(slip.id);
+                                                    } else {
+                                                        // 3rd click: open the sample modal
+                                                        setSampleModalImg({
+                                                            title: `${slip.name.endsWith('Slip') ? slip.name : `${slip.name} Slip`} Sample`,
+                                                            src: sampleSrc,
+                                                        });
+                                                        setPreviewStageSlipId(null);
+                                                    }
                                                 }}
-                                                title="Click to view full sample"
                                             >
                                                 <img
                                                     src={sampleSrc}
@@ -687,11 +703,14 @@ export default function BvnVerificationPage({
                                                     className="max-h-full max-w-full object-contain rounded-md shadow-2xs group-hover:scale-105 transition-transform duration-200"
                                                     loading="lazy"
                                                 />
-                                                <div className="absolute inset-0 bg-black/0 hover:bg-black/15 transition-colors rounded-xl flex items-end justify-center pb-1">
-                                                    <span className="text-[8px] font-bold text-gray-500 dark:text-gray-300 bg-white/90 dark:bg-gray-800/90 px-1.5 py-0.5 rounded shadow-2xs flex items-center gap-0.5">
-                                                        <ZoomIn className="w-2.5 h-2.5" /> Sample
-                                                    </span>
-                                                </div>
+                                                {isSelected && previewStageSlipId === slip.id && (
+                                                    <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] transition-all rounded-xl flex items-center justify-center p-2 animate-in fade-in zoom-in-95 duration-150">
+                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-primary-foreground text-[11px] font-black shadow-lg">
+                                                            <ZoomIn className="w-3.5 h-3.5" />
+                                                            <span>Preview</span>
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             {/* Title & Description */}
