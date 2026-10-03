@@ -737,30 +737,8 @@ export default function BvnVerificationPage({
                             )}
                         </div>
 
-                        {/* 4. SUMMARY & ACTION BUTTON */}
-                        <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-5 shadow-xs space-y-3.5">
-                            <div className="flex items-center justify-between text-xs pb-2.5 border-b border-gray-100 dark:border-gray-800">
-                                <span className="text-slate-500">Selected Slip</span>
-                                <span className="font-extrabold text-gray-900 dark:text-white">
-                                    {slips.length > 0 ? selectedSlip.name : 'None available'}
-                                </span>
-                            </div>
-
-                            <div className="flex items-center justify-between text-xs pb-2.5 border-b border-gray-100 dark:border-gray-800">
-                                <span className="text-slate-500">Service Fee</span>
-                                <span className="font-mono font-black text-base text-primary">
-                                    ₦{slips.length > 0 ? Number(selectedSlip.price).toFixed(2) : '0.00'}
-                                </span>
-                            </div>
-
-                            <div className="flex items-center justify-between text-xs">
-                                <span className="text-slate-500">Balance After Transaction</span>
-                                <span className="font-mono font-bold text-gray-700 dark:text-gray-300">
-                                    ₦{Math.max(0, wallet_balance - (slips.length > 0 ? selectedSlip.price : 0)).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
-                                </span>
-                            </div>
-
-                            {/* Submit Button */}
+                        {/* 4. ACTION BUTTON */}
+                        <div>
                             <button
                                 type="button"
                                 disabled={!isInputValid || isVerifying || isInsufficientBalance || slips.length === 0}

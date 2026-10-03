@@ -25,7 +25,7 @@ class IdentityVerification extends Model
         'status',
         'recipient_name',
         'tracking_id',
-        'photo_url',
+        'photo',
         'slip_download_url',
         'slip_file_path',
         'data_payload',

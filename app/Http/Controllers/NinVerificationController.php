@@ -393,7 +393,7 @@ class NinVerificationController extends Controller
             'status' => 'successful',
             'recipient_name' => $fullName ?: $validated['search_value'],
             'tracking_id' => $verifiedRecord['tracking_id'],
-            'photo_url' => $verifiedRecord['photo'],
+            'photo' => $verifiedRecord['photo'],
             'slip_download_url' => $downloadUrl,
             'data_payload' => $verifiedRecord,
             'fee_charged' => $retailPrice,
@@ -430,6 +430,11 @@ class NinVerificationController extends Controller
         $serviceKey = $verification->service?->key ?? 'nin_verification';
         $isBvn = $serviceKey === 'bvn_verification';
 
+        $dataPayload = $verification->data_payload ?? [];
+        if (empty($dataPayload['photo']) && ! empty($verification->photo)) {
+            $dataPayload['photo'] = $verification->photo;
+        }
+
         return Inertia::render('Storefront/Identity/Show', [
             'verification' => [
                 'id' => $verification->id,
@@ -441,10 +446,11 @@ class NinVerificationController extends Controller
                 'search_value' => $verification->search_value,
                 'recipient_name' => $verification->recipient_name,
                 'tracking_id' => $verification->tracking_id,
+                'photo' => $verification->photo ?? ($dataPayload['photo'] ?? null),
                 'status' => $verification->status,
                 'fee_charged' => (float) $verification->fee_charged,
                 'slip_name' => $verification->slip?->name ?? ($verification->data_payload['slip_name'] ?? 'Official Slip'),
-                'data' => $verification->data_payload ?? [],
+                'data' => $dataPayload,
                 'preview_url' => route('identity.verifications.download-slip', ['reference' => $verification->reference, 'mode' => 'inline']),
                 'download_url' => route('identity.verifications.download-slip', ['reference' => $verification->reference, 'mode' => 'download']),
                 'new_search_url' => $isBvn ? route('identity.bvn') : route('identity.nin'),

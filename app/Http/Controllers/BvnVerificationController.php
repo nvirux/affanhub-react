@@ -394,7 +394,7 @@ class BvnVerificationController extends Controller
             'status' => 'successful',
             'recipient_name' => $fullName ?: $validated['search_value'],
             'tracking_id' => $verifiedRecord['tracking_id'],
-            'photo_url' => $verifiedRecord['photo'],
+            'photo' => $verifiedRecord['photo'],
             'slip_download_url' => $downloadUrl,
             'data_payload' => $verifiedRecord,
             'fee_charged' => $retailPrice,

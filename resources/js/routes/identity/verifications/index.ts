@@ -98,7 +98,7 @@ show.head = (args: { reference: string | number } | [reference: string | number 
     show.form = showForm
 /**
 * @see \App\Http\Controllers\NinVerificationController::downloadSlip
- * @see app/Http/Controllers/NinVerificationController.php:463
+ * @see app/Http/Controllers/NinVerificationController.php:469
  * @route '/identity/verifications/{reference}/download-slip'
  */
 export const downloadSlip = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -113,7 +113,7 @@ downloadSlip.definition = {
 
 /**
 * @see \App\Http\Controllers\NinVerificationController::downloadSlip
- * @see app/Http/Controllers/NinVerificationController.php:463
+ * @see app/Http/Controllers/NinVerificationController.php:469
  * @route '/identity/verifications/{reference}/download-slip'
  */
 downloadSlip.url = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -141,7 +141,7 @@ downloadSlip.url = (args: { reference: string | number } | [reference: string | 
 
 /**
 * @see \App\Http\Controllers\NinVerificationController::downloadSlip
- * @see app/Http/Controllers/NinVerificationController.php:463
+ * @see app/Http/Controllers/NinVerificationController.php:469
  * @route '/identity/verifications/{reference}/download-slip'
  */
 downloadSlip.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -150,7 +150,7 @@ downloadSlip.get = (args: { reference: string | number } | [reference: string | 
 })
 /**
 * @see \App\Http\Controllers\NinVerificationController::downloadSlip
- * @see app/Http/Controllers/NinVerificationController.php:463
+ * @see app/Http/Controllers/NinVerificationController.php:469
  * @route '/identity/verifications/{reference}/download-slip'
  */
 downloadSlip.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -160,7 +160,7 @@ downloadSlip.head = (args: { reference: string | number } | [reference: string |
 
     /**
 * @see \App\Http\Controllers\NinVerificationController::downloadSlip
- * @see app/Http/Controllers/NinVerificationController.php:463
+ * @see app/Http/Controllers/NinVerificationController.php:469
  * @route '/identity/verifications/{reference}/download-slip'
  */
     const downloadSlipForm = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -170,7 +170,7 @@ downloadSlip.head = (args: { reference: string | number } | [reference: string |
 
             /**
 * @see \App\Http\Controllers\NinVerificationController::downloadSlip
- * @see app/Http/Controllers/NinVerificationController.php:463
+ * @see app/Http/Controllers/NinVerificationController.php:469
  * @route '/identity/verifications/{reference}/download-slip'
  */
         downloadSlipForm.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -179,7 +179,7 @@ downloadSlip.head = (args: { reference: string | number } | [reference: string |
         })
             /**
 * @see \App\Http\Controllers\NinVerificationController::downloadSlip
- * @see app/Http/Controllers/NinVerificationController.php:463
+ * @see app/Http/Controllers/NinVerificationController.php:469
  * @route '/identity/verifications/{reference}/download-slip'
  */
         downloadSlipForm.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

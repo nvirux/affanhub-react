@@ -17,6 +17,7 @@ interface VerificationShowProps {
         search_value: string;
         recipient_name?: string | null;
         tracking_id?: string | null;
+        photo?: string | null;
         status: string;
         fee_charged: number;
         slip_name: string;
@@ -32,6 +33,32 @@ interface VerificationShowProps {
     };
 }
 
+/**
+ * Format base64 photo safely as a Data URI so the browser never treats raw base64 as a relative URL.
+ */
+function formatPhotoBase64(rawPhoto?: string | null): string | null {
+    if (!rawPhoto) return null;
+    const trimmed = String(rawPhoto).trim();
+    if (!trimmed || trimmed === 'null' || trimmed === 'undefined') return null;
+
+    // Already a complete data URI
+    if (trimmed.startsWith('data:image/')) {
+        return trimmed;
+    }
+
+    // Clean any accidental surrounding quotes
+    const clean = trimmed.replace(/^["']|["']$/g, '');
+
+    // In case it is an absolute http/https URL
+    if (clean.startsWith('http://') || clean.startsWith('https://')) {
+        return clean;
+    }
+
+    // It's raw base64 (e.g. /9j/... for JPEG, iVBORw... for PNG)
+    const mime = clean.startsWith('iVBORw') ? 'image/png' : 'image/jpeg';
+    return `data:${mime};base64,${clean}`;
+}
+
 export default function IdentityVerificationShow({
     verification,
     store_support,
@@ -42,6 +69,7 @@ export default function IdentityVerificationShow({
 
     const isBvn = verification.service_type === 'bvn';
     const cData = verification.data || {};
+    const photoSrc = formatPhotoBase64(verification.photo || cData.photo || cData.image);
 
     const primaryNumber = isBvn
         ? (cData.bvn || verification.search_value)
@@ -177,11 +205,11 @@ export default function IdentityVerificationShow({
                         </div>
 
                         {/* Citizen Portrait Photo & Name Header (Flex on Mobile & Desktop) */}
-                        {cData.photo ? (
+                        {photoSrc ? (
                             <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/80 dark:bg-gray-900/50 border border-slate-100 dark:border-slate-800/80">
                                 <div className="relative shrink-0 p-1 rounded-xl border-2 border-primary/20 bg-white dark:bg-gray-800 shadow-xs">
                                     <img
-                                        src={cData.photo}
+                                        src={photoSrc}
                                         alt="Citizen Portrait"
                                         className="w-16 h-20 sm:w-20 sm:h-24 object-cover rounded-lg shadow-xs"
                                     />
@@ -208,7 +236,7 @@ export default function IdentityVerificationShow({
 
                         {/* Bio-Data Grid (Flex / 2 Columns on Mobile & Desktop) */}
                         <div className="grid grid-cols-2 gap-2 sm:gap-3 text-xs">
-                            {!cData.photo && (
+                            {!photoSrc && (
                                 <div className="col-span-2 space-y-1 p-2.5 rounded-xl bg-slate-50/70 dark:bg-gray-900/40">
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                                         Full Legal Name
