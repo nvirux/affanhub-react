@@ -127,6 +127,16 @@ class Store extends BaseTenant implements TenantWithDatabase
         return $this->hasMany(StoreAirtimeDiscount::class);
     }
 
+    public function storeSlips(): HasMany
+    {
+        return $this->hasMany(StoreSlip::class);
+    }
+
+    public function identityVerifications(): HasMany
+    {
+        return $this->hasMany(IdentityVerification::class);
+    }
+
     public function settlementAccount(): HasOne
     {
         return $this->hasOne(SettlementAccount::class, 'store_id')->where('is_active', true);

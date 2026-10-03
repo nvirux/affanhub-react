@@ -132,6 +132,11 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class);
     }
 
+    public function identityVerifications(): HasMany
+    {
+        return $this->hasMany(IdentityVerification::class);
+    }
+
     public function referrer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'referred_by');

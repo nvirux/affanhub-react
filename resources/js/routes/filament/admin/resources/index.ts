@@ -10,6 +10,7 @@ import owners from './owners'
 import plans from './plans'
 import services from './services'
 import settlementAccounts from './settlement-accounts'
+import slips from './slips'
 import storeMobileApps from './store-mobile-apps'
 import stores from './stores'
 import subscriptions from './subscriptions'
@@ -31,6 +32,7 @@ owners: Object.assign(owners, owners),
 plans: Object.assign(plans, plans),
 services: Object.assign(services, services),
 settlementAccounts: Object.assign(settlementAccounts, settlementAccounts),
+slips: Object.assign(slips, slips),
 storeMobileApps: Object.assign(storeMobileApps, storeMobileApps),
 stores: Object.assign(stores, stores),
 subscriptions: Object.assign(subscriptions, subscriptions),

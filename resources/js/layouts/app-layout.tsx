@@ -17,12 +17,14 @@ export default function AppLayout({
     const url = usePage().url;
 
     const isDashboardActive = url.startsWith('/dashboard');
+    const isWalletActive = url.startsWith('/wallet');
     const isEarnActive = url.startsWith('/earn');
+    const isHistoryActive = url.startsWith('/transactions');
     const isProfileActive = url.startsWith('/settings');
 
     return (
         <AppLayoutTemplate breadcrumbs={breadcrumbs}>
-            <div className="pb-20 md:pb-0 min-h-screen flex flex-col flex-1 bg-[#f8f7fc] dark:bg-zinc-900">
+            <div className="pb-20 md:pb-0 min-h-screen flex flex-col flex-1 bg-[#f8f7fc] dark:bg-zinc-900 w-full min-w-0">
                 {children}
             </div>
 
@@ -38,8 +40,10 @@ export default function AppLayout({
                     <span className="text-[10px] font-bold">Home</span>
                 </Link>
                 <Link
-                    href="#"
-                    className="flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                    href="/wallet"
+                    className={`flex flex-col items-center justify-center gap-1 transition-colors ${
+                        isWalletActive ? 'text-primary font-bold' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                    }`}
                 >
                     <Wallet className="w-5 h-5 stroke-[1.8]" />
                     <span className="text-[10px] font-bold">Wallet</span>
@@ -76,8 +80,10 @@ export default function AppLayout({
                 </Link>
 
                 <Link
-                    href="#"
-                    className="flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                    href="/transactions"
+                    className={`flex flex-col items-center justify-center gap-1 transition-colors ${
+                        isHistoryActive ? 'text-primary font-bold' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                    }`}
                 >
                     <History className="w-5 h-5 stroke-[1.8]" />
                     <span className="text-[10px] font-bold">History</span>

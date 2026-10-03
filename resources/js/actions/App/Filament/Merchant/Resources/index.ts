@@ -4,6 +4,7 @@ import StaffResource from './StaffResource'
 import StoreAirtimeDiscountResource from './StoreAirtimeDiscountResource'
 import StoreDataPlanResource from './StoreDataPlanResource'
 import StoreServiceResource from './StoreServiceResource'
+import StoreSlipResource from './StoreSlipResource'
 import TransactionResource from './TransactionResource'
 import WalletTransactionResource from './WalletTransactionResource'
 import WithdrawalResource from './WithdrawalResource'
@@ -14,6 +15,7 @@ StaffResource: Object.assign(StaffResource, StaffResource),
 StoreAirtimeDiscountResource: Object.assign(StoreAirtimeDiscountResource, StoreAirtimeDiscountResource),
 StoreDataPlanResource: Object.assign(StoreDataPlanResource, StoreDataPlanResource),
 StoreServiceResource: Object.assign(StoreServiceResource, StoreServiceResource),
+StoreSlipResource: Object.assign(StoreSlipResource, StoreSlipResource),
 TransactionResource: Object.assign(TransactionResource, TransactionResource),
 WalletTransactionResource: Object.assign(WalletTransactionResource, WalletTransactionResource),
 WithdrawalResource: Object.assign(WithdrawalResource, WithdrawalResource),

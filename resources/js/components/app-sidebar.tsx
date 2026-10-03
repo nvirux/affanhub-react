@@ -20,6 +20,7 @@ import {
     ShieldCheck,
     User,
     Wallet,
+    History,
     type LucideIcon,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
@@ -69,6 +70,11 @@ const navGroups: NavGroup[] = [
                 title: 'Wallet & Funding',
                 href: '/wallet',
                 icon: Wallet,
+            },
+            {
+                title: 'Orders & History',
+                href: '/transactions',
+                icon: History,
             },
             {
                 title: 'Earn & Refer',

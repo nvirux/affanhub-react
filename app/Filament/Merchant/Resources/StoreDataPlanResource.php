@@ -29,7 +29,7 @@ class StoreDataPlanResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCircleStack;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Products & Pricing';
+    protected static string|UnitEnum|null $navigationGroup = 'VTU Services';
 
     protected static ?string $navigationLabel = 'Data Plan Pricing';
 

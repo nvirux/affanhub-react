@@ -1,9 +1,12 @@
 <?php
 
 use App\Models\Owner;
+use App\Models\Slip;
 use App\Models\Store;
+use App\Models\StoreSlip;
 use App\Models\User;
 use App\Services\WalletService;
+use Database\Seeders\SlipSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
@@ -38,6 +41,9 @@ beforeEach(function () {
         'type' => 'main',
         'balance' => 0.00,
     ]);
+
+    $this->seed(SlipSeeder::class);
+    config()->set('services.idcore.api_key', null);
 });
 
 test('guests are redirected to login on identity nin route', function () {
@@ -177,5 +183,99 @@ test('verification succeeds and returns verified identity payload for both nin a
             'surname' => 'BELLO',
             'slip_type' => 'standard',
         ],
+    ]);
+
+    $this->assertDatabaseHas('identity_verifications', [
+        'store_id' => $this->store->id,
+        'user_id' => $this->user->id,
+        'search_type' => 'nin',
+        'search_value' => '12345678901',
+        'status' => 'successful',
+    ]);
+});
+
+test('store custom slip selling price overrides default retail price', function () {
+    $this->walletService->credit(
+        $this->mainWallet,
+        2000.00,
+        'deposit',
+        'Wallet Funding',
+        ['type' => 'test'],
+        'REF-TEST-OVERRIDE'
+    );
+
+    // Find standard slip and create store slip override with custom price ₦450
+    $standardSlip = Slip::where('slug', 'standard')->firstOrFail();
+    StoreSlip::create([
+        'store_id' => $this->store->id,
+        'slip_id' => $standardSlip->id,
+        'selling_price' => 450.00,
+        'is_enabled' => true,
+    ]);
+
+    $this->actingAs($this->user);
+
+    // Verify storefront page returns 450.00 for standard slip
+    $pageResponse = $this->get('http://demo.localhost/identity/nin');
+    $pageResponse->assertOk();
+    $pageResponse->assertInertia(fn ($page) => $page
+        ->where('slips.2.id', 'standard')
+        ->where('slips.2.price', fn ($val) => (float) $val === 450.0)
+    );
+
+    // Perform verification with standard slip
+    $response = $this->postJson('http://demo.localhost/identity/nin/verify', [
+        'search_type' => 'nin',
+        'search_value' => '12345678901',
+        'slip_type' => 'standard',
+        'pin' => '1234',
+    ]);
+
+    $response->assertOk();
+
+    // Check customer wallet was debited 450 (2000 - 450 = 1550)
+    expect((float) $this->mainWallet->fresh()->balance)->toBe(1550.0);
+
+    // Check identity verification record stores fee_charged = 450 and profit = 450 - merchant_price (150) = 300
+    $this->assertDatabaseHas('identity_verifications', [
+        'store_id' => $this->store->id,
+        'user_id' => $this->user->id,
+        'slip_id' => $standardSlip->id,
+        'fee_charged' => 450.00,
+        'merchant_cost' => 150.00,
+        'profit' => 300.00,
+    ]);
+
+    // Check full 4-part financial ledger in wallet_transactions:
+    // 1. Customer retail debit
+    $this->assertDatabaseHas('wallet_transactions', [
+        'wallet_id' => $this->mainWallet->id,
+        'type' => 'debit',
+        'category' => 'nin_verification',
+        'amount' => 450.00,
+    ]);
+
+    // 2. Store main wholesale debit
+    $this->assertDatabaseHas('wallet_transactions', [
+        'wallet_id' => $this->store->mainWallet()->id,
+        'type' => 'debit',
+        'category' => 'wholesale_cost',
+        'amount' => 150.00,
+    ]);
+
+    // 3. Store profit sweep debit
+    $this->assertDatabaseHas('wallet_transactions', [
+        'wallet_id' => $this->store->mainWallet()->id,
+        'type' => 'debit',
+        'category' => 'profit_sweep',
+        'amount' => 300.00,
+    ]);
+
+    // 4. Store profit wallet credit
+    $this->assertDatabaseHas('wallet_transactions', [
+        'wallet_id' => $this->store->profitWallet()->id,
+        'type' => 'credit',
+        'category' => 'earned_profit',
+        'amount' => 300.00,
     ]);
 });

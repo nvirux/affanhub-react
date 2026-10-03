@@ -51,4 +51,9 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI', 'https://merchant.affanhub.com/auth/google/callback'),
     ],
+
+    'idcore' => [
+        'base_url' => env('IDCORE_BASE_URL', 'https://api.idcore.africa/v1'),
+        'api_key' => env('IDCORE_API_KEY'),
+    ],
 ];

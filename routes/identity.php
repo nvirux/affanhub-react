@@ -12,4 +12,10 @@ Route::middleware(['auth', 'verified', 'transaction_pin'])->group(function () {
     // BVN Verification & Slip Search
     Route::get('/identity/bvn', [BvnVerificationController::class, 'index'])->name('identity.bvn');
     Route::post('/identity/bvn/verify', [BvnVerificationController::class, 'verify'])->name('identity.bvn.verify');
+
+    // View Verification Record & Slip Details
+    Route::get('/identity/verifications/{reference}', [NinVerificationController::class, 'show'])->name('identity.verifications.show');
+
+    // Download Verification Slip
+    Route::get('/identity/verifications/{reference}/download-slip', [NinVerificationController::class, 'downloadSlip'])->name('identity.verifications.download-slip');
 });

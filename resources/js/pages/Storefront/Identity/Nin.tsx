@@ -8,7 +8,6 @@ import {
     BadgeCheck, Lock, Layers, ZoomIn, X
 } from 'lucide-react';
 import { ConfirmPaymentSheet, PaymentDetailItem } from '@/components/confirm-payment-sheet';
-import { TransactionPinSheet } from '@/components/transaction-pin-sheet';
 import {
     Dialog,
     DialogContent,
@@ -33,7 +32,6 @@ export interface SlipTemplate {
     id: string;
     name: string;
     badge: string;
-    format: string;
     price: number;
     description: string;
     features: string[];
@@ -47,6 +45,7 @@ export interface RecentVerification {
     recipient: string;
     amount_paid: number;
     status: string;
+    slip_download_url?: string | null;
     created_at: string;
 }
 
@@ -79,7 +78,6 @@ export default function NinVerificationPage({
 
     // Sheets & Verification States
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-    const [isPinOpen, setIsPinOpen] = useState(false);
     const [isVerifying, setIsVerifying] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -140,13 +138,7 @@ export default function NinVerificationPage({
         setIsConfirmOpen(true);
     };
 
-    const handleConfirmPayment = () => {
-        setIsConfirmOpen(false);
-        setIsPinOpen(true);
-    };
-
-    const handlePinSubmit = async (pin: string) => {
-        setIsPinOpen(false);
+    const handleConfirmVerification = async () => {
         setIsVerifying(true);
         setErrorMessage(null);
 
@@ -162,22 +154,30 @@ export default function NinVerificationPage({
                     search_type: searchMode,
                     search_value: searchValue,
                     slip_type: selectedSlip.id,
-                    pin: pin,
                 }),
             });
 
             const data = await response.json();
 
             if (!response.ok || !data.success) {
-                setErrorMessage(data.message || 'Verification failed. Please check the details and try again.');
+                const msg = data.message || 'Verification failed. Please check the details and try again.';
+                setErrorMessage(msg);
+                setIsConfirmOpen(false);
                 setIsVerifying(false);
                 return;
             }
 
+            setIsConfirmOpen(false);
+            if (data.redirect_url) {
+                window.location.href = data.redirect_url;
+                return;
+            }
             setVerifiedData(data.data);
             setIsVerifying(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (err: any) {
             setIsVerifying(false);
+            setIsConfirmOpen(false);
             setErrorMessage('Network connection error. Please try again.');
         }
     };
@@ -210,7 +210,7 @@ export default function NinVerificationPage({
         },
         {
             label: 'Slip Format',
-            value: <span className="font-medium text-primary">{selectedSlip.name} Slip</span>,
+            value: <span className="font-medium text-primary">{selectedSlip.name.endsWith('Slip') ? selectedSlip.name : `${selectedSlip.name} Slip`}</span>,
         },
         {
             label: 'Processing Fee',
@@ -471,7 +471,13 @@ export default function NinVerificationPage({
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-1">
                                 <button
                                     type="button"
-                                    onClick={() => alert('PDF generation is ready! Upstream document streaming will download the high-resolution official slip.')}
+                                    onClick={() => {
+                                        if (verifiedData.slip_download_url) {
+                                            window.open(verifiedData.slip_download_url, '_blank');
+                                        } else {
+                                            window.print();
+                                        }
+                                    }}
                                     className="w-full py-3 px-4 rounded-xl bg-primary text-white font-extrabold text-xs shadow-md shadow-primary/20 hover:opacity-90 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
                                 >
                                     <Download className="w-4 h-4" />
@@ -599,21 +605,34 @@ export default function NinVerificationPage({
                             </p>
                         </div>
 
-                        {/* 3. SLIP FORMAT SELECTION (4 SLIPS: INFORMATION, REGULAR, STANDARD, PREMIUM IN A 2-COLUMN GRID ON MOBILE) */}
+                        {/* 3. SLIP SELECTION (4 SLIPS: INFORMATION, REGULAR, STANDARD, PREMIUM IN A 2-COLUMN GRID ON MOBILE) */}
                         <div className="space-y-2.5">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Layers className="w-4 h-4 text-primary" />
                                     <h2 className="font-extrabold text-sm text-gray-900 dark:text-white">
-                                        Select Slip Format
+                                        Select Slip Type
                                     </h2>
                                 </div>
                                 <span className="text-xs text-slate-400">Charged per slip</span>
                             </div>
 
                             {/* 2-Column Grid on Mobile (2 per row), 4-Column on Desktop */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
-                                {slips.map((slip) => {
+                            {slips.length === 0 ? (
+                                <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-8 text-center bg-gray-50/50 dark:bg-gray-900/40">
+                                    <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto mb-3">
+                                        <AlertCircle className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="font-extrabold text-sm text-gray-900 dark:text-white">
+                                        No Verification Slips Available
+                                    </h3>
+                                    <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                                        There are currently no verification slips configured or active for this store. Please check back later or contact store support.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
+                                    {slips.map((slip) => {
                                     const isSelected = selectedSlipId === slip.id;
                                     const sampleSrc = SLIP_SAMPLE_IMAGES[slip.id] || `/images/slips/nin-${slip.id}.png`;
 
@@ -657,7 +676,7 @@ export default function NinVerificationPage({
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setSelectedSlipId(slip.id);
-                                                    setSampleModalImg({ title: `${slip.name} Slip Sample`, src: sampleSrc });
+                                                    setSampleModalImg({ title: `${slip.name.endsWith('Slip') ? slip.name : `${slip.name} Slip`} Sample`, src: sampleSrc });
                                                 }}
                                                 title="Click to view full sample"
                                             >
@@ -694,44 +713,50 @@ export default function NinVerificationPage({
                                         </div>
                                     );
                                 })}
-                            </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* 4. SUMMARY & ACTION BUTTON */}
                         <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-5 shadow-xs space-y-3.5">
                             <div className="flex items-center justify-between text-xs pb-2.5 border-b border-gray-100 dark:border-gray-800">
-                                <span className="text-slate-500">Selected Format</span>
+                                <span className="text-slate-500">Selected Slip</span>
                                 <span className="font-extrabold text-gray-900 dark:text-white">
-                                    {selectedSlip.name} Slip
+                                    {slips.length > 0 ? selectedSlip.name : 'None available'}
                                 </span>
                             </div>
 
                             <div className="flex items-center justify-between text-xs pb-2.5 border-b border-gray-100 dark:border-gray-800">
                                 <span className="text-slate-500">Service Fee</span>
                                 <span className="font-mono font-black text-base text-primary">
-                                    ₦{Number(selectedSlip.price).toFixed(2)}
+                                    ₦{slips.length > 0 ? Number(selectedSlip.price).toFixed(2) : '0.00'}
                                 </span>
                             </div>
 
                             <div className="flex items-center justify-between text-xs">
                                 <span className="text-slate-500">Balance After Transaction</span>
                                 <span className="font-mono font-bold text-gray-700 dark:text-gray-300">
-                                    ₦{Math.max(0, wallet_balance - selectedSlip.price).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                    ₦{Math.max(0, wallet_balance - (slips.length > 0 ? selectedSlip.price : 0)).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                                 </span>
                             </div>
 
                             {/* Submit Button */}
                             <button
                                 type="button"
-                                disabled={!isInputValid || isVerifying || isInsufficientBalance}
+                                disabled={!isInputValid || isVerifying || isInsufficientBalance || slips.length === 0}
                                 onClick={handleInitiateVerification}
                                 className={`w-full py-3.5 sm:py-4 px-6 rounded-xl font-extrabold text-sm tracking-wide shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                                    isInputValid && !isInsufficientBalance
+                                    isInputValid && !isInsufficientBalance && slips.length > 0
                                         ? 'bg-primary text-white shadow-primary/25 hover:opacity-95 active:scale-98'
                                         : 'bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed shadow-none'
                                 }`}
                             >
-                                {isVerifying ? (
+                                {slips.length === 0 ? (
+                                    <>
+                                        <AlertCircle className="w-4 h-4" />
+                                        <span>No Slips Available</span>
+                                    </>
+                                ) : isVerifying ? (
                                     <>
                                         <RefreshCw className="w-4 h-4 animate-spin" />
                                         <span>Querying Database...</span>
@@ -781,13 +806,26 @@ export default function NinVerificationPage({
                                         </div>
                                     </div>
 
-                                    <div className="text-right">
-                                        <div className="font-mono font-bold text-gray-900 dark:text-white">
-                                            ₦{Number(item.amount_paid).toFixed(2)}
+                                    <div className="flex items-center gap-2">
+                                        <div className="text-right">
+                                            <div className="font-mono font-bold text-gray-900 dark:text-white">
+                                                ₦{Number(item.amount_paid).toFixed(2)}
+                                            </div>
+                                            <span className="text-[10px] font-bold text-emerald-500 uppercase">
+                                                {item.status}
+                                            </span>
                                         </div>
-                                        <span className="text-[10px] font-bold text-emerald-500 uppercase">
-                                            {item.status}
-                                        </span>
+                                        {item.slip_download_url && (
+                                            <a
+                                                href={item.slip_download_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="p-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                                title="Download Slip"
+                                            >
+                                                <Download className="w-3.5 h-3.5" />
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             ))}
@@ -817,19 +855,10 @@ export default function NinVerificationPage({
                 amount={selectedSlip.price}
                 details={paymentDetails}
                 walletBalance={wallet_balance}
-                confirmButtonText="Proceed to Enter PIN"
-                onConfirm={handleConfirmPayment}
-                fundWalletUrl="/wallet"
-            />
-
-            {/* TRANSACTION PIN SHEET */}
-            <TransactionPinSheet
-                isOpen={isPinOpen}
-                onOpenChange={setIsPinOpen}
-                title="Authorize Verification"
-                description={`Enter your 4-digit PIN to pay ₦${selectedSlip.price.toFixed(2)}`}
-                onSubmitPin={handlePinSubmit}
+                confirmButtonText="Confirm & Verify"
                 isSubmitting={isVerifying}
+                onConfirm={handleConfirmVerification}
+                fundWalletUrl="/wallet"
             />
 
             {/* HIGH-RES SAMPLE SLIP LIGHTBOX MODAL */}

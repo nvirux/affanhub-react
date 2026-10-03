@@ -25,7 +25,7 @@ class StoreAirtimeDiscountResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDevicePhoneMobile;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Products & Pricing';
+    protected static string|UnitEnum|null $navigationGroup = 'VTU Services';
 
     protected static ?string $navigationLabel = 'Airtime Pricing';
 

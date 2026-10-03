@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
 {
@@ -20,5 +21,13 @@ class Service extends Model
     public function feature(): BelongsTo
     {
         return $this->belongsTo(Feature::class);
+    }
+
+    /**
+     * Get the official slips attached to this identity service.
+     */
+    public function slips(): HasMany
+    {
+        return $this->hasMany(Slip::class)->orderBy('sort_order');
     }
 }

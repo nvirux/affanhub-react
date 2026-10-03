@@ -1,7 +1,7 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\NinVerificationController::index
- * @see app/Http/Controllers/NinVerificationController.php:18
+ * @see app/Http/Controllers/NinVerificationController.php:24
  * @route '/identity/nin'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\NinVerificationController::index
- * @see app/Http/Controllers/NinVerificationController.php:18
+ * @see app/Http/Controllers/NinVerificationController.php:24
  * @route '/identity/nin'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\NinVerificationController::index
- * @see app/Http/Controllers/NinVerificationController.php:18
+ * @see app/Http/Controllers/NinVerificationController.php:24
  * @route '/identity/nin'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\NinVerificationController::index
- * @see app/Http/Controllers/NinVerificationController.php:18
+ * @see app/Http/Controllers/NinVerificationController.php:24
  * @route '/identity/nin'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\NinVerificationController::index
- * @see app/Http/Controllers/NinVerificationController.php:18
+ * @see app/Http/Controllers/NinVerificationController.php:24
  * @route '/identity/nin'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\NinVerificationController::index
- * @see app/Http/Controllers/NinVerificationController.php:18
+ * @see app/Http/Controllers/NinVerificationController.php:24
  * @route '/identity/nin'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\NinVerificationController::index
- * @see app/Http/Controllers/NinVerificationController.php:18
+ * @see app/Http/Controllers/NinVerificationController.php:24
  * @route '/identity/nin'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:118
+ * @see app/Http/Controllers/NinVerificationController.php:119
  * @route '/identity/nin/verify'
  */
 export const verify = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ verify.definition = {
 
 /**
 * @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:118
+ * @see app/Http/Controllers/NinVerificationController.php:119
  * @route '/identity/nin/verify'
  */
 verify.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ verify.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:118
+ * @see app/Http/Controllers/NinVerificationController.php:119
  * @route '/identity/nin/verify'
  */
 verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:118
+ * @see app/Http/Controllers/NinVerificationController.php:119
  * @route '/identity/nin/verify'
  */
     const verifyForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -123,7 +123,7 @@ verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:118
+ * @see app/Http/Controllers/NinVerificationController.php:119
  * @route '/identity/nin/verify'
  */
         verifyForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -132,6 +132,200 @@ verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
         })
     
     verify.form = verifyForm
-const NinVerificationController = { index, verify }
+/**
+* @see \App\Http\Controllers\NinVerificationController::show
+ * @see app/Http/Controllers/NinVerificationController.php:416
+ * @route '/identity/verifications/{reference}'
+ */
+export const show = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: show.url(args, options),
+    method: 'get',
+})
+
+show.definition = {
+    methods: ["get","head"],
+    url: '/identity/verifications/{reference}',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\NinVerificationController::show
+ * @see app/Http/Controllers/NinVerificationController.php:416
+ * @route '/identity/verifications/{reference}'
+ */
+show.url = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { reference: args }
+    }
+
+    
+    if (Array.isArray(args)) {
+        args = {
+                    reference: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        reference: args.reference,
+                }
+
+    return show.definition.url
+            .replace('{reference}', parsedArgs.reference.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\NinVerificationController::show
+ * @see app/Http/Controllers/NinVerificationController.php:416
+ * @route '/identity/verifications/{reference}'
+ */
+show.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: show.url(args, options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\NinVerificationController::show
+ * @see app/Http/Controllers/NinVerificationController.php:416
+ * @route '/identity/verifications/{reference}'
+ */
+show.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: show.url(args, options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\NinVerificationController::show
+ * @see app/Http/Controllers/NinVerificationController.php:416
+ * @route '/identity/verifications/{reference}'
+ */
+    const showForm = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: show.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\NinVerificationController::show
+ * @see app/Http/Controllers/NinVerificationController.php:416
+ * @route '/identity/verifications/{reference}'
+ */
+        showForm.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: show.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\NinVerificationController::show
+ * @see app/Http/Controllers/NinVerificationController.php:416
+ * @route '/identity/verifications/{reference}'
+ */
+        showForm.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: show.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    show.form = showForm
+/**
+* @see \App\Http\Controllers\NinVerificationController::downloadSlip
+ * @see app/Http/Controllers/NinVerificationController.php:463
+ * @route '/identity/verifications/{reference}/download-slip'
+ */
+export const downloadSlip = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: downloadSlip.url(args, options),
+    method: 'get',
+})
+
+downloadSlip.definition = {
+    methods: ["get","head"],
+    url: '/identity/verifications/{reference}/download-slip',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\NinVerificationController::downloadSlip
+ * @see app/Http/Controllers/NinVerificationController.php:463
+ * @route '/identity/verifications/{reference}/download-slip'
+ */
+downloadSlip.url = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { reference: args }
+    }
+
+    
+    if (Array.isArray(args)) {
+        args = {
+                    reference: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        reference: args.reference,
+                }
+
+    return downloadSlip.definition.url
+            .replace('{reference}', parsedArgs.reference.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\NinVerificationController::downloadSlip
+ * @see app/Http/Controllers/NinVerificationController.php:463
+ * @route '/identity/verifications/{reference}/download-slip'
+ */
+downloadSlip.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: downloadSlip.url(args, options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\NinVerificationController::downloadSlip
+ * @see app/Http/Controllers/NinVerificationController.php:463
+ * @route '/identity/verifications/{reference}/download-slip'
+ */
+downloadSlip.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: downloadSlip.url(args, options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\NinVerificationController::downloadSlip
+ * @see app/Http/Controllers/NinVerificationController.php:463
+ * @route '/identity/verifications/{reference}/download-slip'
+ */
+    const downloadSlipForm = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: downloadSlip.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\NinVerificationController::downloadSlip
+ * @see app/Http/Controllers/NinVerificationController.php:463
+ * @route '/identity/verifications/{reference}/download-slip'
+ */
+        downloadSlipForm.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: downloadSlip.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\NinVerificationController::downloadSlip
+ * @see app/Http/Controllers/NinVerificationController.php:463
+ * @route '/identity/verifications/{reference}/download-slip'
+ */
+        downloadSlipForm.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: downloadSlip.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    downloadSlip.form = downloadSlipForm
+const NinVerificationController = { index, verify, show, downloadSlip }
 
 export default NinVerificationController

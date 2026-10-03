@@ -114,9 +114,9 @@ class DataPlanResource extends Resource
                     ->badge()
                     ->color('warning')
                     ->searchable(),
-                TextInputColumn::make('cost_price')
+                TextColumn::make('cost_price')
                     ->label('Provider Cost (₦)')
-                    ->rules(['nullable', 'numeric', 'min:0'])
+                    ->state(fn (DataPlan $record) => $record->cost_price !== null ? '₦'.number_format((float) $record->cost_price, 2) : '—')
                     ->sortable(),
                 TextInputColumn::make('selling_price')
                     ->label('Wholesale Price (₦)')

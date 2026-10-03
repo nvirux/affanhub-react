@@ -5,6 +5,7 @@ namespace App\Filament\Merchant\Resources;
 use App\Filament\Merchant\Resources\StoreServiceResource\Pages\ListStoreServices;
 use App\Models\StoreService;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
@@ -21,7 +22,7 @@ class StoreServiceResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Products & Pricing';
+    protected static string|UnitEnum|null $navigationGroup = null;
 
     protected static ?string $navigationLabel = 'Services & Layout';
 
@@ -104,6 +105,14 @@ class StoreServiceResource extends Resource
                             ->success()
                             ->send();
                     }),
+            ])
+            ->recordActions([
+                Action::make('configure_slips')
+                    ->label('Manage Slips')
+                    ->icon('heroicon-o-identification')
+                    ->color('info')
+                    ->visible(fn (StoreService $record) => in_array($record->service?->key, ['nin_verification', 'bvn_verification']))
+                    ->url(fn () => StoreSlipResource::getUrl('index')),
             ])
             ->emptyStateHeading('No services found')
             ->emptyStateDescription('Your store services will automatically appear here.');

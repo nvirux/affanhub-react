@@ -4,7 +4,7 @@ import { dashboard } from '@/routes';
 import { cn } from '@/lib/utils';
 import {
     CheckCircle2, Clock, AlertCircle, Copy, Check, ArrowLeft,
-    Printer, RefreshCw, MessageSquare, ShieldCheck, Share2, ChevronLeft, Headphones
+    Printer, RefreshCw, MessageSquare, ShieldCheck, Share2, ChevronLeft, Headphones, FileText
 } from 'lucide-react';
 
 interface TransactionShowProps {
@@ -54,7 +54,14 @@ export default function TransactionShow({
           )}`
         : '/contact';
 
-    const serviceRoute = transaction.service_type === 'data' ? '/vtu/data' : '/vtu/airtime';
+    const isIdentityService = ['nin_verification', 'bvn_verification', 'nin', 'bvn'].includes(transaction.service_type);
+    const serviceRoute = transaction.service_type === 'data'
+        ? '/vtu/data'
+        : (transaction.service_type === 'bvn_verification' || transaction.service_type === 'bvn')
+            ? '/identity/bvn'
+            : (transaction.service_type === 'nin_verification' || transaction.service_type === 'nin')
+                ? '/identity/nin'
+                : '/vtu/airtime';
 
     return (
         <>
@@ -270,6 +277,16 @@ export default function TransactionShow({
 
                     {/* Action Buttons (Hidden on Print) */}
                     <div className="p-6 pt-0 space-y-2.5 print:hidden">
+                        {isIdentityService && isSuccess && (
+                            <Link
+                                href={`/identity/verifications/${transaction.reference}`}
+                                className="w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold text-xs shadow-sm shadow-primary/25 transition-all inline-flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                                <FileText className="w-4 h-4" />
+                                <span>View Verified Slip & Print PDF</span>
+                            </Link>
+                        )}
+
                         <div className="flex gap-2">
                             <button
                                 type="button"

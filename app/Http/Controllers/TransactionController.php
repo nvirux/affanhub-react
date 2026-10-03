@@ -25,8 +25,12 @@ class TransactionController extends Controller
             ->where('user_id', $user->id)
             ->when($tenantId, fn ($q) => $q->where('store_id', $tenantId));
 
-        if ($request->filled('type') && in_array($request->type, ['airtime', 'data', 'cable', 'electricity'], true)) {
-            $query->where('service_type', $request->type);
+        if ($request->filled('type')) {
+            if ($request->type === 'identity') {
+                $query->whereIn('service_type', ['nin_verification', 'bvn_verification']);
+            } elseif (in_array($request->type, ['airtime', 'data', 'cable', 'electricity', 'nin_verification', 'bvn_verification'], true)) {
+                $query->where('service_type', $request->type);
+            }
         }
 
         if ($request->filled('status') && in_array($request->status, ['successful', 'success', 'pending', 'failed'], true)) {
