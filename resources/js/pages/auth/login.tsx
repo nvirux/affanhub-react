@@ -210,7 +210,7 @@ export default function Login({ status, canResetPassword }: Props) {
                 phone: identifier,
                 pin: isPinMode ? currentPin : '',
                 password: isPinMode ? currentPin : password,
-                remember: true,
+                remember: false,
             },
             {
                 preserveScroll: true,

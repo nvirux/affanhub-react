@@ -257,7 +257,7 @@ test('users can logout', function () {
 
     $response = $this->actingAs($user)->post('http://demo.localhost/logout');
 
-    $response->assertRedirect('http://demo.localhost');
+    $response->assertRedirect('http://demo.localhost/login');
     $this->assertGuest();
 });
 

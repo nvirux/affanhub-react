@@ -15,6 +15,7 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Laravel\Fortify\Contracts\LoginResponse;
+use Laravel\Fortify\Contracts\LogoutResponse;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
 
@@ -41,6 +42,16 @@ class FortifyServiceProvider extends ServiceProvider
                     }
 
                     return redirect()->intended(route('dashboard'));
+                }
+            };
+        });
+
+        $this->app->singleton(LogoutResponse::class, function () {
+            return new class implements LogoutResponse
+            {
+                public function toResponse($request)
+                {
+                    return redirect()->route('login');
                 }
             };
         });
