@@ -29,6 +29,14 @@ trait HasEntitlements
             ->latestOfMany();
     }
 
+    /**
+     * Alias for activeSubscription() to support $store->subscription.
+     */
+    public function subscription(): HasOne
+    {
+        return $this->activeSubscription();
+    }
+
     public function featureOverrides(): HasMany
     {
         return $this->hasMany(StoreFeatureOverride::class, 'store_id');

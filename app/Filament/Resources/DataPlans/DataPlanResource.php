@@ -5,12 +5,16 @@ namespace App\Filament\Resources\DataPlans;
 use App\Models\DataPlan;
 use App\Models\DataType;
 use App\Models\Network;
+use App\Models\Plan;
+use App\Models\PlanDataPrice;
 use BackedEnum;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -153,62 +157,149 @@ class DataPlanResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    BulkAction::make('bulk_set_margins')
-                        ->label('⚡ Set Profit Margins on Selected')
+                    BulkAction::make('bulk_set_tier_margins')
+                        ->label('⚡ Set Tier Margins on Selected')
                         ->icon('heroicon-o-calculator')
                         ->color('warning')
                         ->form([
-                            TextInput::make('wholesale_margin')
-                                ->label('Wholesale Margin (+₦ on Provider Cost)')
-                                ->numeric()
-                                ->prefix('₦')
-                                ->default(10.00)
-                                ->required(),
-                            TextInput::make('retail_margin')
-                                ->label('Default Retail Margin (+₦ on Provider Cost)')
-                                ->numeric()
-                                ->prefix('₦')
-                                ->default(35.00)
-                                ->required(),
-                            Select::make('round_to')
-                                ->label('Price Rounding')
+                            Radio::make('margin_strategy')
+                                ->label('Profit Strategy')
                                 ->options([
-                                    'none' => 'Exact Decimals',
-                                    '5' => 'Nearest ₦5 (e.g. ₦235, ₦240)',
-                                    '10' => 'Nearest ₦10 (e.g. ₦240, ₦250)',
+                                    'fixed' => 'Fixed Profit (+₦ above provider cost)',
+                                    'percentage' => 'Percentage Profit (+% above provider cost)',
                                 ])
-                                ->default('5')
+                                ->default('fixed')
+                                ->inline()
+                                ->live()
                                 ->required(),
+
+                            Grid::make(3)
+                                ->schema([
+                                    TextInput::make('starter_margin')
+                                        ->label('Starter Tier Margin')
+                                        ->numeric()
+                                        ->prefix(fn ($get) => $get('margin_strategy') === 'percentage' ? null : '₦')
+                                        ->suffix(fn ($get) => $get('margin_strategy') === 'percentage' ? '%' : null)
+                                        ->default(fn ($get) => $get('margin_strategy') === 'percentage' ? 8.0 : 15.00)
+                                        ->helperText('Wholesale price for Starter merchants (and default DataPlan selling_price)')
+                                        ->required(),
+
+                                    TextInput::make('pro_margin')
+                                        ->label('Pro Tier Margin')
+                                        ->numeric()
+                                        ->prefix(fn ($get) => $get('margin_strategy') === 'percentage' ? null : '₦')
+                                        ->suffix(fn ($get) => $get('margin_strategy') === 'percentage' ? '%' : null)
+                                        ->default(fn ($get) => $get('margin_strategy') === 'percentage' ? 5.0 : 10.00)
+                                        ->helperText('Wholesale price for Pro merchants')
+                                        ->required(),
+
+                                    TextInput::make('enterprise_margin')
+                                        ->label('Enterprise Tier Margin')
+                                        ->numeric()
+                                        ->prefix(fn ($get) => $get('margin_strategy') === 'percentage' ? null : '₦')
+                                        ->suffix(fn ($get) => $get('margin_strategy') === 'percentage' ? '%' : null)
+                                        ->default(fn ($get) => $get('margin_strategy') === 'percentage' ? 2.5 : 5.00)
+                                        ->helperText('Wholesale price for Enterprise merchants')
+                                        ->required(),
+                                ]),
+
+                            Grid::make(2)
+                                ->schema([
+                                    TextInput::make('retail_margin')
+                                        ->label('Customer Retail Margin')
+                                        ->numeric()
+                                        ->prefix(fn ($get) => $get('margin_strategy') === 'percentage' ? null : '₦')
+                                        ->suffix(fn ($get) => $get('margin_strategy') === 'percentage' ? '%' : null)
+                                        ->default(fn ($get) => $get('margin_strategy') === 'percentage' ? 20.0 : 40.00)
+                                        ->helperText('Default storefront selling price for end-users')
+                                        ->required(),
+
+                                    Select::make('round_to')
+                                        ->label('Price Rounding')
+                                        ->options([
+                                            'none' => 'Exact Decimals',
+                                            '5' => 'Nearest ₦5 (e.g. ₦285, ₦290)',
+                                            '10' => 'Nearest ₦10 (e.g. ₦280, ₦290)',
+                                        ])
+                                        ->default('5')
+                                        ->required(),
+                                ]),
                         ])
                         ->action(function ($records, array $data): void {
                             $roundTo = $data['round_to'];
-                            $wMargin = (float) $data['wholesale_margin'];
-                            $rMargin = (float) $data['retail_margin'];
+                            $strategy = $data['margin_strategy'];
+                            $starterMargin = (float) $data['starter_margin'];
+                            $proMargin = (float) $data['pro_margin'];
+                            $enterpriseMargin = (float) $data['enterprise_margin'];
+                            $retailMargin = (float) $data['retail_margin'];
+
+                            $plansBySlug = Plan::whereIn('slug', ['starter', 'pro', 'enterprise'])->get()->keyBy('slug');
                             $count = 0;
 
                             foreach ($records as $record) {
                                 $cost = (float) $record->cost_price;
-                                $newWholesale = $cost + $wMargin;
-                                $newRetail = $cost + $rMargin;
+                                if ($cost <= 0) {
+                                    continue;
+                                }
+
+                                if ($strategy === 'percentage') {
+                                    $newStarter = $cost * (1 + ($starterMargin / 100));
+                                    $newPro = $cost * (1 + ($proMargin / 100));
+                                    $newEnterprise = $cost * (1 + ($enterpriseMargin / 100));
+                                    $newRetail = $cost * (1 + ($retailMargin / 100));
+                                } else {
+                                    $newStarter = $cost + $starterMargin;
+                                    $newPro = $cost + $proMargin;
+                                    $newEnterprise = $cost + $enterpriseMargin;
+                                    $newRetail = $cost + $retailMargin;
+                                }
 
                                 if ($roundTo === '5') {
-                                    $newWholesale = round($newWholesale / 5) * 5;
+                                    $newStarter = round($newStarter / 5) * 5;
+                                    $newPro = round($newPro / 5) * 5;
+                                    $newEnterprise = round($newEnterprise / 5) * 5;
                                     $newRetail = round($newRetail / 5) * 5;
                                 } elseif ($roundTo === '10') {
-                                    $newWholesale = round($newWholesale / 10) * 10;
+                                    $newStarter = round($newStarter / 10) * 10;
+                                    $newPro = round($newPro / 10) * 10;
+                                    $newEnterprise = round($newEnterprise / 10) * 10;
                                     $newRetail = round($newRetail / 10) * 10;
                                 }
 
+                                // Update DataPlan wholesale price (Starter rate) & default retail price
                                 $record->update([
-                                    'selling_price' => round($newWholesale, 2),
+                                    'selling_price' => round($newStarter, 2),
                                     'default_retail_price' => round($newRetail, 2),
                                 ]);
+
+                                // Update PlanDataPrice for each tier
+                                $tiers = [
+                                    'starter' => $newStarter,
+                                    'pro' => $newPro,
+                                    'enterprise' => $newEnterprise,
+                                ];
+
+                                foreach ($tiers as $slug => $price) {
+                                    $subPlan = $plansBySlug->get($slug);
+                                    if ($subPlan) {
+                                        PlanDataPrice::updateOrCreate(
+                                            [
+                                                'plan_id' => $subPlan->id,
+                                                'data_plan_id' => $record->id,
+                                            ],
+                                            [
+                                                'wholesale_price' => round($price, 2),
+                                            ]
+                                        );
+                                    }
+                                }
+
                                 $count++;
                             }
 
                             Notification::make()
-                                ->title('Margins Applied')
-                                ->body("Updated prices for {$count} selected data plans.")
+                                ->title('Tier Margins Applied!')
+                                ->body("Updated wholesale tiers and retail prices for {$count} selected data plans.")
                                 ->success()
                                 ->send();
                         }),

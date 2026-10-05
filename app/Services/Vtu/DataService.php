@@ -7,6 +7,7 @@ use App\Models\PlanDataPrice;
 use App\Models\Service;
 use App\Models\Store;
 use App\Models\StoreDataPlan;
+use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\ReferralService;
@@ -56,7 +57,8 @@ class DataService
         $planId = $dataPlan->plan_code ?? $dataPlan->id;
 
         // Resolve store & pricing
-        $store = (method_exists($customer, 'store') ? $customer->store : null)
+        $store = $storeDataPlan->store
+            ?? (method_exists($customer, 'store') ? $customer->store : null)
             ?? Store::where('owner_id', $customer->id)->first()
             ?? Store::first();
 
@@ -69,17 +71,23 @@ class DataService
         $facePrice = $customerRetailPrice;
         $discountAmount = 0.00;
 
-        $subscription = $store->subscription;
-        $tierPrice = null;
-        if ($subscription && $subscription->plan_id) {
-            $tierPrice = PlanDataPrice::where('plan_id', $subscription->plan_id)
-                ->where('data_plan_id', $dataPlan->id)
-                ->first();
-        }
+        // Resolve exact wholesale cost based on store's active subscription tier (e.g. Pro, Enterprise)
+        $resellerWholesaleCost = (float) ($storeDataPlan->getWholesaleCost() ?? 0.0);
+        if ($resellerWholesaleCost <= 0) {
+            $subscription = $store->activeSubscription
+                ?? Subscription::where('store_id', $store->id)->whereIn('status', ['active', 'trialing'])->latest()->first();
 
-        $resellerWholesaleCost = $tierPrice && $tierPrice->wholesale_price !== null
-            ? (float) $tierPrice->wholesale_price
-            : (float) ($dataPlan->selling_price ?? $dataPlan->cost_price ?? $customerRetailPrice);
+            $tierPrice = null;
+            if ($subscription && $subscription->plan_id) {
+                $tierPrice = PlanDataPrice::where('plan_id', $subscription->plan_id)
+                    ->where('data_plan_id', $dataPlan->id)
+                    ->first();
+            }
+
+            $resellerWholesaleCost = $tierPrice && $tierPrice->wholesale_price !== null
+                ? (float) $tierPrice->wholesale_price
+                : (float) ($dataPlan->selling_price ?? $dataPlan->cost_price ?? $customerRetailPrice);
+        }
 
         $vendorCost = (float) ($dataPlan->cost_price ?? $resellerWholesaleCost);
         $profitMargin = max(0, round($customerRetailPrice - $resellerWholesaleCost, 2));

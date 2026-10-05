@@ -8,6 +8,7 @@ use BackedEnum;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -117,16 +118,39 @@ class StoreDataPlanResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('bulk_set_profit')
-                        ->label('⚡ Set Profit on Selected (+₦)')
+                        ->label('⚡ Set Profit on Selected')
                         ->icon('heroicon-o-currency-dollar')
                         ->color('success')
                         ->form([
+                            Radio::make('profit_strategy')
+                                ->label('Profit Calculation Method')
+                                ->options([
+                                    'fixed' => 'Fixed Profit (+₦ on wholesale cost)',
+                                    'percentage' => 'Percentage Profit (+% on wholesale cost)',
+                                ])
+                                ->default('fixed')
+                                ->inline()
+                                ->live()
+                                ->required(),
+
                             TextInput::make('profit_amount')
-                                ->label('Profit Margin (+₦ on Wholesale Cost)')
+                                ->label('Profit Margin (+₦)')
                                 ->numeric()
                                 ->prefix('₦')
                                 ->default(50.00)
-                                ->required(),
+                                ->visible(fn ($get) => $get('profit_strategy') !== 'percentage')
+                                ->helperText('Added directly to your wholesale cost (e.g. Cost ₦230 + ₦50 = ₦280)')
+                                ->required(fn ($get) => $get('profit_strategy') !== 'percentage'),
+
+                            TextInput::make('profit_percent')
+                                ->label('Profit Percentage (+%)')
+                                ->numeric()
+                                ->suffix('%')
+                                ->default(15.0)
+                                ->visible(fn ($get) => $get('profit_strategy') === 'percentage')
+                                ->helperText('Percentage markup on top of your wholesale cost (e.g. 15% on ₦230 = ₦264.50)')
+                                ->required(fn ($get) => $get('profit_strategy') === 'percentage'),
+
                             Select::make('round_to')
                                 ->label('Price Rounding')
                                 ->options([
@@ -138,13 +162,19 @@ class StoreDataPlanResource extends Resource
                                 ->required(),
                         ])
                         ->action(function ($records, array $data): void {
-                            $profit = (float) $data['profit_amount'];
-                            $roundTo = $data['round_to'];
+                            $strategy = $data['profit_strategy'] ?? 'fixed';
+                            $roundTo = $data['round_to'] ?? '5';
                             $count = 0;
 
                             foreach ($records as $record) {
                                 $cost = $record->getWholesaleCost();
-                                $newPrice = $cost + $profit;
+                                if ($strategy === 'percentage') {
+                                    $percent = (float) $data['profit_percent'];
+                                    $newPrice = $cost * (1 + ($percent / 100));
+                                } else {
+                                    $profit = (float) $data['profit_amount'];
+                                    $newPrice = $cost + $profit;
+                                }
 
                                 if ($roundTo === '5') {
                                     $newPrice = round($newPrice / 5) * 5;
@@ -159,8 +189,8 @@ class StoreDataPlanResource extends Resource
                             }
 
                             Notification::make()
-                                ->title('Profit Applied')
-                                ->body("Updated prices for {$count} selected store plans.")
+                                ->title('Store Prices Updated!')
+                                ->body("Successfully updated customer selling prices for {$count} selected data plans.")
                                 ->success()
                                 ->send();
                         }),
