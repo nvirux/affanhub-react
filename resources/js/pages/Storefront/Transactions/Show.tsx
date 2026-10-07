@@ -176,17 +176,23 @@ export default function TransactionShow({
                             {isSuccess ? 'Transaction Successful' : isPending ? 'Processing' : 'Failed'}
                         </span>
 
-                        {/* Paid Amount as Hero Display */}
+                        {/* Recharge / Order Amount as Hero Display */}
                         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                            ₦{Number(transaction.amount_paid || transaction.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                            ₦{Number(transaction.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                         </h2>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            {isSuccess
-                                ? 'Your recharge has been dispatched and confirmed.'
-                                : isPending
-                                  ? 'Your order is currently processing with the network.'
-                                  : 'Unable to deliver order. Any debited amount has been auto-refunded.'}
-                        </p>
+                        {Number(transaction.discount) > 0 ? (
+                            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
+                                Paid ₦{Number(transaction.amount_paid).toLocaleString('en-NG', { minimumFractionDigits: 2 })} (Saved ₦{Number(transaction.discount).toLocaleString('en-NG', { minimumFractionDigits: 2 })} discount)
+                            </p>
+                        ) : (
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                {isSuccess
+                                    ? 'Your recharge has been dispatched and confirmed.'
+                                    : isPending
+                                      ? 'Your order is currently processing with the network.'
+                                      : 'Unable to deliver order. Any debited amount has been auto-refunded.'}
+                            </p>
+                        )}
                     </div>
 
                     {/* Receipt Details Table */}
@@ -208,7 +214,7 @@ export default function TransactionShow({
                         <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800">
                             <span className="text-slate-400 dark:text-slate-500 font-medium">Recharge Value</span>
                             <span className="font-bold text-slate-900 dark:text-white">
-                                ₦{Number(transaction.amount_paid || transaction.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                ₦{Number(transaction.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                             </span>
                         </div>
 
@@ -224,7 +230,7 @@ export default function TransactionShow({
                         <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800">
                             <span className="text-slate-400 dark:text-slate-500 font-medium">Total Paid</span>
                             <span className="font-extrabold text-slate-900 dark:text-white">
-                                ₦{Number(transaction.amount_paid || transaction.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                ₦{Number(transaction.amount_paid).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                             </span>
                         </div>
 

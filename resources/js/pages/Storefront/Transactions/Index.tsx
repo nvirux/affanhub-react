@@ -14,6 +14,7 @@ interface TransactionItem {
     service_type: string;
     recipient: string;
     amount: number;
+    discount?: number;
     amount_paid?: number;
     status: 'successful' | 'pending' | 'failed';
     created_at: string;
@@ -224,8 +225,13 @@ export default function TransactionsIndex({
                                         {/* Right Side: Amount & Status Badge */}
                                         <div className="flex flex-col items-end shrink-0 pl-2 text-right">
                                             <div className="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white font-mono leading-tight">
-                                                ₦{Number(tx.amount_paid || tx.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                                ₦{Number(tx.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                                             </div>
+                                            {Number(tx.discount) > 0 && (
+                                                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold leading-tight mt-0.5">
+                                                    Saved ₦{Number(tx.discount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                                </span>
+                                            )}
                                             <span
                                                 className={cn(
                                                     'inline-flex items-center px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wide mt-1',

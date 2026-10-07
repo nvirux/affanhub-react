@@ -799,6 +799,11 @@ export default function Dashboard() {
                                                     <span className="text-xs font-extrabold text-slate-900 dark:text-white font-mono">
                                                         ₦{Number(tx.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                                                     </span>
+                                                    {Number(tx.discount) > 0 && (
+                                                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold leading-tight">
+                                                            Saved ₦{Number(tx.discount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                                        </span>
+                                                    )}
                                                     <span
                                                         className={cn(
                                                             "text-[10px] font-bold capitalize mt-0.5",
