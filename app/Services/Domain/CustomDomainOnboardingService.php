@@ -185,17 +185,18 @@ class CustomDomainOnboardingService
         return true;
     }
 
-    protected function activateDomain(Domain $domain): void
+    public function activateDomain(Domain $domain): void
     {
         DB::transaction(function () use ($domain) {
             $updates = [
                 'verification_status' => Domain::VERIFY_ACTIVE,
                 'status' => Domain::STATUS_VERIFIED,
                 'is_verified' => true,
+                'ownership_verified_at' => $domain->ownership_verified_at ?? now(),
                 'verified_at' => $domain->verified_at ?? now(),
                 'is_approved' => true,
                 'approved_at' => $domain->approved_at ?? now(),
-                'last_verification_message' => 'Domain connected successfully. SSL and routing may take a few minutes to fully propagate.',
+                'last_verification_message' => 'Domain connected successfully via Cloudflare. Routing is active.',
                 'verification_error' => null,
             ];
 

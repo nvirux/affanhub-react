@@ -243,27 +243,49 @@ class CloudflareOAuthService
     }
 
     /**
-     * Upsert a DNS record in Cloudflare (updates if exists, creates if not).
+     * Upsert a DNS record in Cloudflare (updates if exists, removes conflicting A/AAAA, creates if not).
      */
     protected function upsertRecord(string $accessToken, string $zoneId, array $recordData): void
     {
+        // 1. Search for ANY existing records with this name
         $existing = Http::withToken($accessToken)
             ->get("https://api.cloudflare.com/client/v4/zones/{$zoneId}/dns_records", [
-                'type' => $recordData['type'],
                 'name' => $recordData['name'],
             ]);
 
         $existingRecords = $existing->successful() ? ($existing->json()['result'] ?? []) : [];
 
-        if (! empty($existingRecords)) {
-            // Update the first matching record
-            $recordId = $existingRecords[0]['id'];
-            Http::withToken($accessToken)
+        // 2. If creating a CNAME, remove conflicting A / AAAA records on the same hostname
+        if ($recordData['type'] === 'CNAME') {
+            foreach ($existingRecords as $rec) {
+                if (in_array($rec['type'], ['A', 'AAAA'], true)) {
+                    Http::withToken($accessToken)
+                        ->delete("https://api.cloudflare.com/client/v4/zones/{$zoneId}/dns_records/{$rec['id']}");
+                    Log::info("Cloudflare removed conflicting {$rec['type']} record for {$recordData['name']}");
+                }
+            }
+        }
+
+        // 3. Find if a record with the exact requested type exists
+        $matching = collect($existingRecords)->firstWhere('type', $recordData['type']);
+
+        if ($matching) {
+            $recordId = $matching['id'];
+            $res = Http::withToken($accessToken)
                 ->put("https://api.cloudflare.com/client/v4/zones/{$zoneId}/dns_records/{$recordId}", $recordData);
+
+            Log::info("Cloudflare updated record {$recordData['type']} {$recordData['name']}", [
+                'status' => $res->status(),
+                'success' => $res->successful(),
+            ]);
         } else {
-            // Create new record
-            Http::withToken($accessToken)
+            $res = Http::withToken($accessToken)
                 ->post("https://api.cloudflare.com/client/v4/zones/{$zoneId}/dns_records", $recordData);
+
+            Log::info("Cloudflare created record {$recordData['type']} {$recordData['name']}", [
+                'status' => $res->status(),
+                'success' => $res->successful(),
+            ]);
         }
     }
 }

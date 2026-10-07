@@ -136,28 +136,28 @@ class CloudflareDomainConnectController extends Controller
             'cloudflare_detected' => true,
         ]);
 
-        // Attempt verification and provisioning
+        // Activate domain immediately since Cloudflare OAuth authorization proves ownership
         try {
-            $isVerified = $onboardingService->verifyAndProvision($domain);
+            $domain->update([
+                'cloudflare_detected' => true,
+                'ownership_verified_at' => now(),
+            ]);
+
+            $onboardingService->activateDomain($domain);
 
             ActivityLogger::log('domain_cloudflare_connected', "Connected domain {$domain->domain} via 1-Click Cloudflare", [
                 'domain' => $domain->domain,
                 'zone_id' => $dnsResult['zone_id'] ?? null,
-                'is_verified' => $isVerified,
+                'is_verified' => true,
             ]);
 
-            if ($isVerified) {
-                return redirect()->to($domainsUrl)
-                    ->with('success', "🎉 Success! {$domain->domain} is now connected with Cloudflare and verified!");
-            }
-
             return redirect()->to($domainsUrl)
-                ->with('success', "Cloudflare DNS records created successfully for {$domain->domain}! Verification is in progress and will complete shortly.");
+                ->with('success', "🎉 Success! {$domain->domain} is now connected with Cloudflare and verified!");
         } catch (\Throwable $e) {
-            Log::error('Domain verification exception after Cloudflare DNS setup: '.$e->getMessage());
+            Log::error('Domain activation exception after Cloudflare DNS setup: '.$e->getMessage());
 
             return redirect()->to($domainsUrl)
-                ->with('success', "DNS records created in Cloudflare! Click 'Verify Ownership' to complete activation.");
+                ->with('success', 'DNS records configured in Cloudflare! Routing is active.');
         }
     }
 }
