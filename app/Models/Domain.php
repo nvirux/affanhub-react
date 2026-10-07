@@ -40,6 +40,7 @@ class Domain extends BaseDomain
         'last_resolved_ip',
         'last_verification_message',
         'cloudflare_detected',
+        'cloudflare_hostname_id',
         'origin_verified_at',
         'ownership_verified_at',
         'connection_verified_at',

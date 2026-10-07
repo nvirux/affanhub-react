@@ -44,7 +44,8 @@ class CustomDomainOnboardingService
         $isCloudflare = $this->dns->isCloudflareManaged($domainName);
 
         // Automatically register with Cloudflare for SaaS for SSL and CNAME cross-user routing
-        $this->cloudflareSaaS->createCustomHostname($domainName);
+        $saasResult = $this->cloudflareSaaS->createCustomHostname($domainName);
+        $hostnameId = $saasResult['id'] ?? null;
 
         // Check for existing domain for THIS tenant
         $existing = Domain::where('tenant_id', $tenant->id)
@@ -54,15 +55,19 @@ class CustomDomainOnboardingService
         if ($existing) {
             // If it's already healthy/verified, don't reset it!
             if ($existing->isHealthy()) {
-                $existing->update([
+                $existingUpdates = [
                     'is_primary' => true,
                     'cloudflare_detected' => $isCloudflare,
-                ]);
+                ];
+                if (filled($hostnameId)) {
+                    $existingUpdates['cloudflare_hostname_id'] = $hostnameId;
+                }
+                $existing->update($existingUpdates);
 
                 return $existing;
             }
 
-            $existing->update([
+            $updateData = [
                 'status' => Domain::STATUS_PENDING,
                 'verification_status' => Domain::VERIFY_PENDING_DNS,
                 'is_verified' => false,
@@ -75,7 +80,11 @@ class CustomDomainOnboardingService
                 'verification_error' => null,
                 'verification_attempts' => 0,
                 'cloudflare_detected' => $isCloudflare,
-            ]);
+            ];
+            if (filled($hostnameId)) {
+                $updateData['cloudflare_hostname_id'] = $hostnameId;
+            }
+            $existing->update($updateData);
 
             return $existing;
         }
@@ -94,6 +103,7 @@ class CustomDomainOnboardingService
             'is_routing_enabled' => false,
             'verification_token' => $token,
             'cloudflare_detected' => $isCloudflare,
+            'cloudflare_hostname_id' => $hostnameId,
         ]);
     }
 
@@ -232,6 +242,20 @@ class CustomDomainOnboardingService
         // Platform subdomains cannot be removed this way
         if (! $domain->isCustom()) {
             throw new \Exception('Platform subdomains cannot be removed.');
+        }
+
+        try {
+            // Delete custom hostname from Cloudflare for SaaS to release quota
+            if (filled($domain->cloudflare_hostname_id)) {
+                $this->cloudflareSaaS->deleteCustomHostname($domain->cloudflare_hostname_id);
+            } else {
+                $existing = $this->cloudflareSaaS->getCustomHostname($domain->domain);
+                if ($existing && isset($existing['id'])) {
+                    $this->cloudflareSaaS->deleteCustomHostname($existing['id']);
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Failed to delete Cloudflare custom hostname for {$domain->domain}: ".$e->getMessage());
         }
 
         $domain->delete();
