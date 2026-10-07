@@ -18,6 +18,10 @@ class CustomDomainOnboardingService
 
     public function submitDomain(Store $tenant, string $domainName): Domain
     {
+        if (! $tenant->hasFeature('custom_domain')) {
+            throw new \Exception('Custom domain mapping is not available on your current plan. Please upgrade your plan to connect a custom domain.');
+        }
+
         $domainName = $this->dns->normalizeDomain($domainName);
 
         // Conflict check: Check if domain is used by ANY other tenant (active or soft deleted)
