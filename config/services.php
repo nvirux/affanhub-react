@@ -56,4 +56,12 @@ return [
         'base_url' => env('IDCORE_BASE_URL', 'https://api.idcore.africa/v1'),
         'api_key' => env('IDCORE_API_KEY'),
     ],
+
+    'cloudflare' => [
+        'client_id' => env('CLOUDFLARE_OAUTH_CLIENT_ID'),
+        'client_secret' => env('CLOUDFLARE_OAUTH_CLIENT_SECRET'),
+        'redirect_uri' => env('CLOUDFLARE_OAUTH_REDIRECT_URI', 'https://merchant.affanhub.com/merchant/cloudflare/callback'),
+        'fallback_cname' => env('CLOUDFLARE_FALLBACK_CNAME', 'custom.affanhub.com'),
+        'scopes' => env('CLOUDFLARE_OAUTH_SCOPES', 'dns.read dns.write zone.read zone.write'),
+    ],
 ];

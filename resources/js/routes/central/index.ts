@@ -1,6 +1,6 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//127.0.0.1/privacy-policy'
  */
 export const privacyPolicy = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -14,7 +14,7 @@ privacyPolicy.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//127.0.0.1/privacy-policy'
  */
 privacyPolicy.url = (options?: RouteQueryOptions) => {
@@ -22,7 +22,7 @@ privacyPolicy.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//127.0.0.1/privacy-policy'
  */
 privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -30,7 +30,7 @@ privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//127.0.0.1/privacy-policy'
  */
 privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -39,7 +39,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
 })
 
     /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//127.0.0.1/privacy-policy'
  */
     const privacyPolicyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -48,7 +48,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     })
 
             /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//127.0.0.1/privacy-policy'
  */
         privacyPolicyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -56,7 +56,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
             method: 'get',
         })
             /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//127.0.0.1/privacy-policy'
  */
         privacyPolicyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -71,7 +71,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     
     privacyPolicy.form = privacyPolicyForm
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//localhost/privacy-policy'
  */
 export const privacyPolicy = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -85,7 +85,7 @@ privacyPolicy.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//localhost/privacy-policy'
  */
 privacyPolicy.url = (options?: RouteQueryOptions) => {
@@ -93,7 +93,7 @@ privacyPolicy.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//localhost/privacy-policy'
  */
 privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -101,7 +101,7 @@ privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//localhost/privacy-policy'
  */
 privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -110,7 +110,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
 })
 
     /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//localhost/privacy-policy'
  */
     const privacyPolicyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -119,7 +119,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     })
 
             /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//localhost/privacy-policy'
  */
         privacyPolicyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -127,7 +127,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
             method: 'get',
         })
             /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//localhost/privacy-policy'
  */
         privacyPolicyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -142,7 +142,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     
     privacyPolicy.form = privacyPolicyForm
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//merchant.localhost/privacy-policy'
  */
 export const privacyPolicy = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -156,7 +156,7 @@ privacyPolicy.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//merchant.localhost/privacy-policy'
  */
 privacyPolicy.url = (options?: RouteQueryOptions) => {
@@ -164,7 +164,7 @@ privacyPolicy.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//merchant.localhost/privacy-policy'
  */
 privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -172,7 +172,7 @@ privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//merchant.localhost/privacy-policy'
  */
 privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -181,7 +181,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
 })
 
     /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//merchant.localhost/privacy-policy'
  */
     const privacyPolicyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -190,7 +190,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     })
 
             /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//merchant.localhost/privacy-policy'
  */
         privacyPolicyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -198,7 +198,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
             method: 'get',
         })
             /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//merchant.localhost/privacy-policy'
  */
         privacyPolicyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -213,7 +213,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     
     privacyPolicy.form = privacyPolicyForm
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//admin.localhost/privacy-policy'
  */
 export const privacyPolicy = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -227,7 +227,7 @@ privacyPolicy.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//admin.localhost/privacy-policy'
  */
 privacyPolicy.url = (options?: RouteQueryOptions) => {
@@ -235,7 +235,7 @@ privacyPolicy.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//admin.localhost/privacy-policy'
  */
 privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -243,7 +243,7 @@ privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//admin.localhost/privacy-policy'
  */
 privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -252,7 +252,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
 })
 
     /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//admin.localhost/privacy-policy'
  */
     const privacyPolicyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -261,7 +261,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     })
 
             /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//admin.localhost/privacy-policy'
  */
         privacyPolicyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -269,7 +269,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
             method: 'get',
         })
             /**
- * @see routes/web.php:43
+ * @see routes/web.php:50
  * @route '//admin.localhost/privacy-policy'
  */
         privacyPolicyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

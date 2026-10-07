@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\MerchantPhoneCompletionController;
 use App\Http\Controllers\BillingCheckoutCallbackController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImpersonationController;
+use App\Http\Controllers\Merchant\CloudflareDomainConnectController;
 use App\Http\Controllers\Merchant\StaffInvitationController;
 use App\Http\Controllers\MobileAppDownloadController;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +37,12 @@ Route::get('/auth/google/callback', [MerchantGoogleAuthController::class, 'callb
 // Merchant Phone Completion Routes
 Route::get('/auth/complete-phone', [MerchantPhoneCompletionController::class, 'create'])->name('merchant.phone.complete');
 Route::post('/auth/complete-phone', [MerchantPhoneCompletionController::class, 'store'])->name('merchant.phone.store');
+
+// Merchant Cloudflare 1-Click Connect Routes
+Route::get('/merchant/cloudflare/connect/{domain}', [CloudflareDomainConnectController::class, 'connect'])
+    ->name('merchant.cloudflare.connect');
+Route::get('/merchant/cloudflare/callback', [CloudflareDomainConnectController::class, 'callback'])
+    ->name('merchant.cloudflare.callback');
 
 // Privacy Policy Routes for Central Domains
 foreach (config('tenancy.central_domains', []) as $centralDomain) {

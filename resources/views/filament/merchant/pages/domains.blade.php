@@ -24,6 +24,21 @@
                 </a>
             </div>
         @else
+            {{-- Flash Notifications --}}
+            @if(session('success'))
+                <div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; color: #065f46; font-size: 0.875rem; font-weight: 600;">
+                    <svg style="width: 20px; height: 20px; color: #10b981; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; color: #991b1b; font-size: 0.875rem; font-weight: 600;">
+                    <svg style="width: 20px; height: 20px; color: #ef4444; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
             {{-- Main Custom Domain Dashboard --}}
             <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
                 
@@ -114,8 +129,39 @@
                                 {{-- Verification Instructions (Only for pending custom domains) --}}
                                 @if($isCustom && !$isHealthy)
                                     <div style="border-top: 1px solid #e5e7eb; padding-top: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+                                        {{-- 1-Click Cloudflare Integration --}}
+                                        <div style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 1px solid #fed7aa; border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                                <div style="background-color: #f97316; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; box-shadow: 0 4px 8px rgba(249, 115, 22, 0.25);">
+                                                    <svg style="width: 26px; height: 26px;" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <div style="font-size: 0.9375rem; font-weight: 800; color: #9a3412; display: flex; align-items: center; gap: 0.5rem;">
+                                                        Option 1: 1-Click Connect with Cloudflare
+                                                        <span style="font-size: 0.6875rem; background-color: #ea580c; color: white; padding: 2px 8px; border-radius: 9999px; font-weight: 700;">Fastest & Automated</span>
+                                                    </div>
+                                                    <p style="font-size: 0.8125rem; color: #7c2d12; margin: 0.25rem 0 0 0; line-height: 1.4;">
+                                                        If your domain <strong>{{ $domain->domain }}</strong> is on Cloudflare, click to log in. We will automatically create the DNS records for you in seconds.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <a href="{{ route('merchant.cloudflare.connect', ['domain' => $domain->id]) }}" style="background-color: #ea580c; color: white; font-weight: 700; font-size: 0.8125rem; padding: 0.625rem 1.25rem; border-radius: 10px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; box-shadow: 0 4px 6px rgba(234, 88, 12, 0.25);">
+                                                <span>Connect with Cloudflare</span>
+                                                <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                            </a>
+                                        </div>
+
+                                        {{-- Separator --}}
+                                        <div style="display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0;">
+                                            <div style="flex-grow: 1; height: 1px; background-color: #e5e7eb;"></div>
+                                            <span style="font-size: 0.75rem; font-weight: 700; color: #9ca3af; text-transform: uppercase;">Option 2: Configure Manually</span>
+                                            <div style="flex-grow: 1; height: 1px; background-color: #e5e7eb;"></div>
+                                        </div>
+
                                         <p style="font-size: 0.8125rem; color: #4b5563; line-height: 1.5; margin: 0;">
-                                            To complete linking your domain, configure the following DNS records in your domain registrar (Namecheap, GoDaddy, Cloudflare, etc.).
+                                            Or configure the following DNS records manually in your domain registrar (Namecheap, GoDaddy, Google, etc.):
                                         </p>
 
                                         {{-- DNS Records Grid --}}
@@ -137,7 +183,7 @@
                                                 <div style="font-size: 0.8125rem; display: flex; flex-direction: column; gap: 0.25rem;">
                                                     <div><span style="color: #666666;">Type:</span> <strong style="color: #111111;">CNAME</strong></div>
                                                     <div><span style="color: #666666;">Host:</span> <code style="background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">@</code> (or root)</div>
-                                                    <div><span style="color: #666666;">Value:</span> <code style="background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">cname.affanhub.com</code></div>
+                                                    <div><span style="color: #666666;">Value:</span> <code style="background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">{{ config('services.cloudflare.fallback_cname', 'custom.affanhub.com') }}</code></div>
                                                 </div>
                                             </div>
 
