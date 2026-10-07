@@ -398,7 +398,7 @@ export default function Home() {
                                             </span>
                                         </li>
                                     )}
-                                    <li><a href="#" className="text-slate-500 hover:text-white transition-colors">Privacy Policy</a></li>
+                                    <li><Link href="/privacy-policy" className="text-slate-500 hover:text-white transition-colors">Privacy Policy</Link></li>
                                     <li><a href="#" className="text-slate-500 hover:text-white transition-colors">Terms of Service</a></li>
                                 </ul>
                             </div>

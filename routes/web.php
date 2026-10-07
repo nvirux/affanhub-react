@@ -8,6 +8,7 @@ use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\Merchant\StaffInvitationController;
 use App\Http\Controllers\MobileAppDownloadController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -35,3 +36,13 @@ Route::get('/auth/google/callback', [MerchantGoogleAuthController::class, 'callb
 // Merchant Phone Completion Routes
 Route::get('/auth/complete-phone', [MerchantPhoneCompletionController::class, 'create'])->name('merchant.phone.complete');
 Route::post('/auth/complete-phone', [MerchantPhoneCompletionController::class, 'store'])->name('merchant.phone.store');
+
+// Privacy Policy Routes for Central Domains
+foreach (config('tenancy.central_domains', []) as $centralDomain) {
+    Route::domain($centralDomain)->group(function () {
+        Route::get('/privacy-policy', function () {
+            return Inertia::render('Storefront/PrivacyPolicy');
+        })->name('central.privacy-policy');
+        Route::redirect('/privacy', '/privacy-policy');
+    });
+}

@@ -88,6 +88,7 @@ class HandleInertiaRequests extends Middleware
                 'customer_funding_fee_amount' => (float) (tenant('customer_funding_fee_amount') ?? 0),
                 'customer_funding_fee_cap' => (float) (tenant('customer_funding_fee_cap') ?? 100),
                 'funding_fee_text' => tenant() instanceof Store ? tenant()->getCustomerDepositFeeText() : '0% Fee (Free Funding)',
+                'privacy_policy' => tenant('privacy_policy'),
             ] : null,
             'auth' => [
                 'user' => function () use ($request) {

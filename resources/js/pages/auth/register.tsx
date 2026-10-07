@@ -338,6 +338,13 @@ export default function Register({ errors: serverErrors = {} }: Props) {
                                 Log in
                             </TextLink>
                         </div>
+
+                        <p className="text-[11px] text-center text-muted-foreground pt-1">
+                            By continuing, you agree to our{' '}
+                            <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">
+                                Privacy Policy
+                            </a>.
+                        </p>
                     </form>
                 </div>
             ) : (

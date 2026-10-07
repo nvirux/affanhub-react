@@ -593,3 +593,74 @@ contact.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
     
     contact.form = contactForm
+/**
+ * @see routes/tenant.php:103
+ * @route '/privacy-policy'
+ */
+export const privacyPolicy = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: privacyPolicy.url(options),
+    method: 'get',
+})
+
+privacyPolicy.definition = {
+    methods: ["get","head"],
+    url: '/privacy-policy',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+ * @see routes/tenant.php:103
+ * @route '/privacy-policy'
+ */
+privacyPolicy.url = (options?: RouteQueryOptions) => {
+    return privacyPolicy.definition.url + queryParams(options)
+}
+
+/**
+ * @see routes/tenant.php:103
+ * @route '/privacy-policy'
+ */
+privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: privacyPolicy.url(options),
+    method: 'get',
+})
+/**
+ * @see routes/tenant.php:103
+ * @route '/privacy-policy'
+ */
+privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: privacyPolicy.url(options),
+    method: 'head',
+})
+
+    /**
+ * @see routes/tenant.php:103
+ * @route '/privacy-policy'
+ */
+    const privacyPolicyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: privacyPolicy.url(options),
+        method: 'get',
+    })
+
+            /**
+ * @see routes/tenant.php:103
+ * @route '/privacy-policy'
+ */
+        privacyPolicyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: privacyPolicy.url(options),
+            method: 'get',
+        })
+            /**
+ * @see routes/tenant.php:103
+ * @route '/privacy-policy'
+ */
+        privacyPolicyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: privacyPolicy.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    privacyPolicy.form = privacyPolicyForm

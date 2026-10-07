@@ -99,6 +99,12 @@ Route::middleware([
         return Inertia::render('Storefront/Contact');
     })->name('contact');
 
+    // Privacy Policy Page
+    Route::get('/privacy-policy', function () {
+        return Inertia::render('Storefront/PrivacyPolicy');
+    })->name('privacy-policy');
+    Route::redirect('/privacy', '/privacy-policy');
+
     // Customer Settings
     require __DIR__.'/settings.php';
 });
