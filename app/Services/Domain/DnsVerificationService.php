@@ -251,6 +251,32 @@ class DnsVerificationService
         return ['status' => false, 'message' => 'CNAME not found or mismatched.'];
     }
 
+    /**
+     * Check if a domain's authoritative nameservers point to Cloudflare.
+     */
+    public function isCloudflareManaged(string $domain): bool
+    {
+        $domain = $this->normalizeDomain($domain);
+
+        // Strip subdomains to find apex for NS query (e.g. shop.example.com -> example.com)
+        $parts = explode('.', $domain);
+        $apex = count($parts) > 2 ? implode('.', array_slice($parts, -2)) : $domain;
+
+        $nsRecords = $this->getDnsRecords($apex, DNS_NS);
+        if (empty($nsRecords) && $apex !== $domain) {
+            $nsRecords = $this->getDnsRecords($domain, DNS_NS);
+        }
+
+        foreach ($nsRecords as $record) {
+            $target = strtolower($record['target'] ?? '');
+            if (str_contains($target, 'cloudflare.com')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function normalizeDomain(string $domain): string
     {
         $domain = strtolower($domain);

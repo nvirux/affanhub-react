@@ -4,6 +4,7 @@ namespace App\Services\Domain;
 
 use App\Models\Domain;
 use App\Models\Store;
+use App\Services\Cloudflare\CloudflareSaaSService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -11,7 +12,8 @@ use Illuminate\Support\Str;
 class CustomDomainOnboardingService
 {
     public function __construct(
-        protected DnsVerificationService $dns
+        protected DnsVerificationService $dns,
+        protected CloudflareSaaSService $cloudflareSaaS
     ) {}
 
     public function submitDomain(Store $tenant, string $domainName): Domain
@@ -39,6 +41,11 @@ class CustomDomainOnboardingService
             ->where('is_primary', true)
             ->update(['is_primary' => false]);
 
+        $isCloudflare = $this->dns->isCloudflareManaged($domainName);
+
+        // Automatically register with Cloudflare for SaaS for SSL and CNAME cross-user routing
+        $this->cloudflareSaaS->createCustomHostname($domainName);
+
         // Check for existing domain for THIS tenant
         $existing = Domain::where('tenant_id', $tenant->id)
             ->where('domain', $domainName)
@@ -47,7 +54,10 @@ class CustomDomainOnboardingService
         if ($existing) {
             // If it's already healthy/verified, don't reset it!
             if ($existing->isHealthy()) {
-                $existing->update(['is_primary' => true]);
+                $existing->update([
+                    'is_primary' => true,
+                    'cloudflare_detected' => $isCloudflare,
+                ]);
 
                 return $existing;
             }
@@ -64,6 +74,7 @@ class CustomDomainOnboardingService
                 'last_verification_message' => 'Domain restored. Please verify ownership.',
                 'verification_error' => null,
                 'verification_attempts' => 0,
+                'cloudflare_detected' => $isCloudflare,
             ]);
 
             return $existing;
@@ -82,6 +93,7 @@ class CustomDomainOnboardingService
             'is_approved' => false,
             'is_routing_enabled' => false,
             'verification_token' => $token,
+            'cloudflare_detected' => $isCloudflare,
         ]);
     }
 
