@@ -8,6 +8,7 @@ import Features from './Features'
 import Networks from './Networks'
 import Owners from './Owners'
 import Plans from './Plans'
+import Posts from './Posts'
 import Services from './Services'
 import SettlementAccounts from './SettlementAccounts'
 import Slips from './Slips'
@@ -30,6 +31,7 @@ Features: Object.assign(Features, Features),
 Networks: Object.assign(Networks, Networks),
 Owners: Object.assign(Owners, Owners),
 Plans: Object.assign(Plans, Plans),
+Posts: Object.assign(Posts, Posts),
 Services: Object.assign(Services, Services),
 SettlementAccounts: Object.assign(SettlementAccounts, SettlementAccounts),
 Slips: Object.assign(Slips, Slips),

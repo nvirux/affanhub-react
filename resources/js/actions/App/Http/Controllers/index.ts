@@ -1,3 +1,4 @@
+import BlogController from './BlogController'
 import HomeController from './HomeController'
 import ImpersonationController from './ImpersonationController'
 import BillingCheckoutCallbackController from './BillingCheckoutCallbackController'
@@ -17,7 +18,8 @@ import NinVerificationController from './NinVerificationController'
 import BvnVerificationController from './BvnVerificationController'
 import Settings from './Settings'
 const Controllers = {
-    HomeController: Object.assign(HomeController, HomeController),
+    BlogController: Object.assign(BlogController, BlogController),
+HomeController: Object.assign(HomeController, HomeController),
 ImpersonationController: Object.assign(ImpersonationController, ImpersonationController),
 BillingCheckoutCallbackController: Object.assign(BillingCheckoutCallbackController, BillingCheckoutCallbackController),
 MobileAppDownloadController: Object.assign(MobileAppDownloadController, MobileAppDownloadController),

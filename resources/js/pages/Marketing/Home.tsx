@@ -10,6 +10,8 @@ const NAV_LINKS = [
     { label: 'Features', href: '#features' },
     { label: 'How it works', href: '#how-it-works' },
     { label: 'Pricing', href: '#pricing' },
+    { label: 'FAQs', href: '#faqs' },
+    { label: 'Blog', href: '/blog' },
 ];
 
 const FEATURES = [
@@ -90,20 +92,32 @@ const STEPS = [
 
 const FAQS = [
     {
-        q: 'Do I need technical skills to start?',
-        a: 'Absolutely not. You can set up your store, change margins, and go live with just a few clicks from a simple, clean dashboard.'
+        q: 'Can I really start with ₦0 capital / no money?',
+        a: 'Yes, 100%! Setting up your storefront on AffanHub is completely free with zero upfront capital required. When your customers deposit money into your store dedicated virtual accounts to buy airtime or data, those customer deposits automatically fund your working balance to cover the wholesale purchase, while your profit markup is credited immediately for you to withdraw!'
     },
     {
-        q: 'How do I make money with AffanHub?',
-        a: 'You set your own customer-facing prices. For example, if a data plan costs you ₦210, you can sell it for ₦250 and keep the ₦40 profit automatically.'
+        q: 'Why is AffanHub better than buying a custom VTU script?',
+        a: 'Traditional VTU scripts force you to pay monthly cPanel/VPS hosting fees, deal with bug-ridden code, hire expensive developers, and constantly stress about hackers stealing your wallet balance. With AffanHub, you never manage hosting or servers. We provide 100% bank-grade security, enterprise uptime, automated Cloudflare SSL, and direct telecom connections completely hands-free.'
     },
     {
-        q: 'Can I connect my own domain name?',
-        a: 'Yes. With Pro and Enterprise plans, you can map your custom domain (e.g. www.yourbrand.com) so your customers never see AffanHub.'
+        q: 'What happens when new telecom services or provider APIs are added?',
+        a: 'You never have to touch code or pay developers for upgrades. Whenever telecom networks change their APIs, or whenever AffanHub rolls out new services (like new data types, electricity discos, exam pins, or identity services), your store updates automatically with zero downtime.'
     },
     {
-        q: 'How do wallet fundings work?',
-        a: 'We generate dedicated virtual bank accounts for your store. When your customers transfer money, their wallet updates instantly in real time.'
+        q: 'How do I make money and withdraw my profit?',
+        a: 'You set your own customer-facing prices directly from your merchant dashboard. For example, if a 1GB MTN data plan costs you ₦215 wholesale, you can sell it for ₦260 and earn ₦45 clear profit per gigabyte. You can withdraw your accumulated profits to any Nigerian bank account anytime with instant settlement.'
+    },
+    {
+        q: 'Can I connect my own custom domain name?',
+        a: 'Yes! On Pro and Enterprise plans, you can connect your own brand domain (e.g. www.yourbrand.com) with 1-click Cloudflare automated SSL. Your storefront is 100% white-labeled — customers never see AffanHub.'
+    },
+    {
+        q: 'How do customer wallet fundings work?',
+        a: 'AffanHub generates dedicated, automated virtual bank accounts (Wema, Moniepoint, etc.) for each of your customers. When they transfer money via USSD or mobile app, their wallet updates in real time in under 5 seconds.'
+    },
+    {
+        q: 'Do I need technical skills or a laptop to start?',
+        a: 'No technical coding skills or laptop required! You can set up your store, change margins, monitor sales, and withdraw profits directly from your smartphone in under 2 minutes.'
     }
 ];
 
@@ -119,10 +133,9 @@ export default function MarketingHome() {
             {/* NAV */}
             <header className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-sm border-b border-slate-200/80">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-2 shrink-0">
-                        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-black text-base">A</div>
-                        <span className="font-bold text-slate-900 text-lg tracking-tight">AffanHub</span>
-                    </div>
+                    <Link href="/" className="flex items-center shrink-0">
+                        <img src="/images/affan-logo.png" alt="AffanHub" className="h-8 sm:h-9 w-auto object-contain" />
+                    </Link>
 
                     <nav className="hidden md:flex items-center gap-1">
                         {NAV_LINKS.map(l => (
@@ -405,7 +418,7 @@ export default function MarketingHome() {
                 </section>
 
                 {/* FAQ SECTION */}
-                <section className="py-20 md:py-32 bg-white">
+                <section id="faqs" className="py-20 md:py-32 bg-white scroll-mt-16">
                     <div className="max-w-3xl mx-auto px-4 sm:px-6">
                         <div className="text-center mb-16">
                             <p className="text-xs font-bold tracking-widest text-primary uppercase mb-3">FAQ</p>
@@ -415,6 +428,16 @@ export default function MarketingHome() {
                             {FAQS.map((faq, idx) => (
                                 <FaqRow key={idx} question={faq.q} answer={faq.a} />
                             ))}
+                        </div>
+
+                        <div className="mt-12 p-5 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-sm">
+                            <div>
+                                <p className="font-semibold text-slate-900 text-sm">Have more questions or need step-by-step guidance?</p>
+                                <p className="text-xs text-slate-500 mt-0.5">Explore our comprehensive tutorials and strategy guides on the official blog.</p>
+                            </div>
+                            <Link href="/blog" className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-lg text-xs font-semibold hover:opacity-90 transition-all shrink-0 shadow-sm shadow-primary/20">
+                                Read Blog & Guides <ArrowRight className="w-3.5 h-3.5" />
+                            </Link>
                         </div>
                     </div>
                 </section>
@@ -446,9 +469,10 @@ export default function MarketingHome() {
                 <div className="max-w-6xl mx-auto px-4 sm:px-6">
                     <div className="flex flex-col md:flex-row items-start justify-between gap-10 mb-12">
                         <div className="max-w-xs">
-                            <div className="flex items-center gap-2 mb-4">
-                                <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center text-white font-black text-sm">A</div>
-                                <span className="font-bold text-white text-lg">AffanHub</span>
+                            <div className="mb-4">
+                                <div className="bg-white rounded-lg px-2.5 py-1.5 inline-block shadow-sm">
+                                    <img src="/images/affan-logo.png" alt="AffanHub" className="h-7 w-auto object-contain" />
+                                </div>
                             </div>
                             <p className="text-sm text-slate-500 leading-relaxed">
                                 The simplest way to run a digital services business for entrepreneurs and resellers.
@@ -462,6 +486,7 @@ export default function MarketingHome() {
                                     <li><a href="#features" className="text-slate-500 hover:text-white transition-colors">Features</a></li>
                                     <li><a href="#how-it-works" className="text-slate-500 hover:text-white transition-colors">How it works</a></li>
                                     <li><a href="#pricing" className="text-slate-500 hover:text-white transition-colors">Pricing</a></li>
+                                    <li><Link href="/blog" className="text-slate-500 hover:text-white transition-colors">Blog & Guides</Link></li>
                                     <li><a href="https://demo.affanhub.com" className="text-slate-500 hover:text-white transition-colors">Live Demo</a></li>
                                 </ul>
                             </div>

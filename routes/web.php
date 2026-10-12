@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\MerchantGoogleAuthController;
 use App\Http\Controllers\Auth\MerchantPhoneCompletionController;
 use App\Http\Controllers\BillingCheckoutCallbackController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\Merchant\CloudflareDomainConnectController;
@@ -44,9 +45,12 @@ Route::get('/merchant/cloudflare/connect/{domain}', [CloudflareDomainConnectCont
 Route::get('/merchant/cloudflare/callback', [CloudflareDomainConnectController::class, 'callback'])
     ->name('merchant.cloudflare.callback');
 
-// Privacy Policy Routes for Central Domains
+// Central Domains (Landing, Blog, Policies)
 foreach (config('tenancy.central_domains', []) as $centralDomain) {
     Route::domain($centralDomain)->group(function () {
+        Route::get('/blog', [BlogController::class, 'index'])->name('central.blog.index');
+        Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('central.blog.show');
+
         Route::get('/privacy-policy', function () {
             return Inertia::render('Storefront/PrivacyPolicy');
         })->name('central.privacy-policy');
