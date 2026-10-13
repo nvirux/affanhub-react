@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Merchant\Pages\Auth\Register;
+use App\Filament\Merchant\Pages\Dashboard;
 use App\Filament\Merchant\Pages\RegisterStore;
 use App\Http\Middleware\EnsureMerchantHasPhone;
 use App\Http\Middleware\RememberActiveStore;
@@ -12,7 +13,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;

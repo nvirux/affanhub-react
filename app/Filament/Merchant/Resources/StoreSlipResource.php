@@ -40,6 +40,16 @@ class StoreSlipResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
+    public static function getNavigationBadge(): ?string
+    {
+        return 'New';
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'success';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([

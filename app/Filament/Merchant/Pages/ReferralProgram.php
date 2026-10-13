@@ -24,6 +24,16 @@ class ReferralProgram extends Page
 
     protected static ?int $navigationSort = 3;
 
+    public static function getNavigationBadge(): ?string
+    {
+        return 'Hot';
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'danger';
+    }
+
     protected string $view = 'filament.merchant.pages.referral-program';
 
     public bool $hasAccess = false;
