@@ -13,6 +13,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -58,6 +59,14 @@ class MerchantPanelProvider extends PanelProvider
                 'Finance & Wallet',
                 'Customers & Growth',
                 'Settings',
+                'Help & Resources',
+            ])
+            ->navigationItems([
+                NavigationItem::make('Guides & Blog')
+                    ->url(fn () => rtrim(config('app.url'), '/').'/blog', shouldOpenInNewTab: true)
+                    ->icon('heroicon-o-book-open')
+                    ->group('Help & Resources')
+                    ->sort(2),
             ])
             ->pages([
                 Dashboard::class,

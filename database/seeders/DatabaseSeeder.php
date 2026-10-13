@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AirtimeDiscountSeeder::class,
             ServiceSeeder::class,
             ProductionBlogSeeder::class,
+            ProductionFaqSeeder::class,
         ]);
 
         if (app()->isLocal()) {
