@@ -1,280 +1,85 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
-import blog from './blog'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
- * @see routes/web.php:54
- * @route '//127.0.0.1/privacy-policy'
+ * @see routes/web.php:58
+ * @route '//{central_domain}/privacy-policy'
  */
-export const privacyPolicy = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: privacyPolicy.url(options),
+export const privacyPolicy = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: privacyPolicy.url(args, options),
     method: 'get',
 })
 
 privacyPolicy.definition = {
     methods: ["get","head"],
-    url: '//127.0.0.1/privacy-policy',
+    url: '//{central_domain}/privacy-policy',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:54
- * @route '//127.0.0.1/privacy-policy'
+ * @see routes/web.php:58
+ * @route '//{central_domain}/privacy-policy'
  */
-privacyPolicy.url = (options?: RouteQueryOptions) => {
-    return privacyPolicy.definition.url + queryParams(options)
-}
+privacyPolicy.url = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { central_domain: args }
+    }
 
-/**
- * @see routes/web.php:54
- * @route '//127.0.0.1/privacy-policy'
- */
-privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: privacyPolicy.url(options),
-    method: 'get',
-})
-/**
- * @see routes/web.php:54
- * @route '//127.0.0.1/privacy-policy'
- */
-privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: privacyPolicy.url(options),
-    method: 'head',
-})
-
-    /**
- * @see routes/web.php:54
- * @route '//127.0.0.1/privacy-policy'
- */
-    const privacyPolicyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: privacyPolicy.url(options),
-        method: 'get',
-    })
-
-            /**
- * @see routes/web.php:54
- * @route '//127.0.0.1/privacy-policy'
- */
-        privacyPolicyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: privacyPolicy.url(options),
-            method: 'get',
-        })
-            /**
- * @see routes/web.php:54
- * @route '//127.0.0.1/privacy-policy'
- */
-        privacyPolicyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: privacyPolicy.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
     
-    privacyPolicy.form = privacyPolicyForm
-/**
- * @see routes/web.php:54
- * @route '//localhost/privacy-policy'
- */
-export const privacyPolicy = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: privacyPolicy.url(options),
-    method: 'get',
-})
+    if (Array.isArray(args)) {
+        args = {
+                    central_domain: args[0],
+                }
+    }
 
-privacyPolicy.definition = {
-    methods: ["get","head"],
-    url: '//localhost/privacy-policy',
-} satisfies RouteDefinition<["get","head"]>
+    args = applyUrlDefaults(args)
 
-/**
- * @see routes/web.php:54
- * @route '//localhost/privacy-policy'
- */
-privacyPolicy.url = (options?: RouteQueryOptions) => {
-    return privacyPolicy.definition.url + queryParams(options)
+    const parsedArgs = {
+                        central_domain: args.central_domain,
+                }
+
+    return privacyPolicy.definition.url
+            .replace('{central_domain}', parsedArgs.central_domain.toString())
+            .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
- * @see routes/web.php:54
- * @route '//localhost/privacy-policy'
+ * @see routes/web.php:58
+ * @route '//{central_domain}/privacy-policy'
  */
-privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: privacyPolicy.url(options),
+privacyPolicy.get = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: privacyPolicy.url(args, options),
     method: 'get',
 })
 /**
- * @see routes/web.php:54
- * @route '//localhost/privacy-policy'
+ * @see routes/web.php:58
+ * @route '//{central_domain}/privacy-policy'
  */
-privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: privacyPolicy.url(options),
+privacyPolicy.head = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: privacyPolicy.url(args, options),
     method: 'head',
 })
 
     /**
- * @see routes/web.php:54
- * @route '//localhost/privacy-policy'
+ * @see routes/web.php:58
+ * @route '//{central_domain}/privacy-policy'
  */
-    const privacyPolicyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: privacyPolicy.url(options),
+    const privacyPolicyForm = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: privacyPolicy.url(args, options),
         method: 'get',
     })
 
             /**
- * @see routes/web.php:54
- * @route '//localhost/privacy-policy'
+ * @see routes/web.php:58
+ * @route '//{central_domain}/privacy-policy'
  */
-        privacyPolicyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: privacyPolicy.url(options),
+        privacyPolicyForm.get = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: privacyPolicy.url(args, options),
             method: 'get',
         })
             /**
- * @see routes/web.php:54
- * @route '//localhost/privacy-policy'
+ * @see routes/web.php:58
+ * @route '//{central_domain}/privacy-policy'
  */
-        privacyPolicyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: privacyPolicy.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    privacyPolicy.form = privacyPolicyForm
-/**
- * @see routes/web.php:54
- * @route '//merchant.localhost/privacy-policy'
- */
-export const privacyPolicy = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: privacyPolicy.url(options),
-    method: 'get',
-})
-
-privacyPolicy.definition = {
-    methods: ["get","head"],
-    url: '//merchant.localhost/privacy-policy',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
- * @see routes/web.php:54
- * @route '//merchant.localhost/privacy-policy'
- */
-privacyPolicy.url = (options?: RouteQueryOptions) => {
-    return privacyPolicy.definition.url + queryParams(options)
-}
-
-/**
- * @see routes/web.php:54
- * @route '//merchant.localhost/privacy-policy'
- */
-privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: privacyPolicy.url(options),
-    method: 'get',
-})
-/**
- * @see routes/web.php:54
- * @route '//merchant.localhost/privacy-policy'
- */
-privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: privacyPolicy.url(options),
-    method: 'head',
-})
-
-    /**
- * @see routes/web.php:54
- * @route '//merchant.localhost/privacy-policy'
- */
-    const privacyPolicyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: privacyPolicy.url(options),
-        method: 'get',
-    })
-
-            /**
- * @see routes/web.php:54
- * @route '//merchant.localhost/privacy-policy'
- */
-        privacyPolicyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: privacyPolicy.url(options),
-            method: 'get',
-        })
-            /**
- * @see routes/web.php:54
- * @route '//merchant.localhost/privacy-policy'
- */
-        privacyPolicyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: privacyPolicy.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    privacyPolicy.form = privacyPolicyForm
-/**
- * @see routes/web.php:54
- * @route '//admin.localhost/privacy-policy'
- */
-export const privacyPolicy = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: privacyPolicy.url(options),
-    method: 'get',
-})
-
-privacyPolicy.definition = {
-    methods: ["get","head"],
-    url: '//admin.localhost/privacy-policy',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
- * @see routes/web.php:54
- * @route '//admin.localhost/privacy-policy'
- */
-privacyPolicy.url = (options?: RouteQueryOptions) => {
-    return privacyPolicy.definition.url + queryParams(options)
-}
-
-/**
- * @see routes/web.php:54
- * @route '//admin.localhost/privacy-policy'
- */
-privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: privacyPolicy.url(options),
-    method: 'get',
-})
-/**
- * @see routes/web.php:54
- * @route '//admin.localhost/privacy-policy'
- */
-privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: privacyPolicy.url(options),
-    method: 'head',
-})
-
-    /**
- * @see routes/web.php:54
- * @route '//admin.localhost/privacy-policy'
- */
-    const privacyPolicyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: privacyPolicy.url(options),
-        method: 'get',
-    })
-
-            /**
- * @see routes/web.php:54
- * @route '//admin.localhost/privacy-policy'
- */
-        privacyPolicyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: privacyPolicy.url(options),
-            method: 'get',
-        })
-            /**
- * @see routes/web.php:54
- * @route '//admin.localhost/privacy-policy'
- */
-        privacyPolicyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: privacyPolicy.url({
+        privacyPolicyForm.head = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: privacyPolicy.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -285,8 +90,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     
     privacyPolicy.form = privacyPolicyForm
 const central = {
-    blog: Object.assign(blog, blog),
-privacyPolicy: Object.assign(privacyPolicy, privacyPolicy),
+    privacyPolicy: Object.assign(privacyPolicy, privacyPolicy),
 }
 
 export default central

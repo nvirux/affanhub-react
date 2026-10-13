@@ -4,6 +4,7 @@ import AirtimeDiscounts from './AirtimeDiscounts'
 import DataPlans from './DataPlans'
 import DataTypes from './DataTypes'
 import Domains from './Domains'
+import Faqs from './Faqs'
 import Features from './Features'
 import Networks from './Networks'
 import Owners from './Owners'
@@ -27,6 +28,7 @@ AirtimeDiscounts: Object.assign(AirtimeDiscounts, AirtimeDiscounts),
 DataPlans: Object.assign(DataPlans, DataPlans),
 DataTypes: Object.assign(DataTypes, DataTypes),
 Domains: Object.assign(Domains, Domains),
+Faqs: Object.assign(Faqs, Faqs),
 Features: Object.assign(Features, Features),
 Networks: Object.assign(Networks, Networks),
 Owners: Object.assign(Owners, Owners),

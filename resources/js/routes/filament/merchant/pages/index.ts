@@ -103,6 +103,108 @@ billing.head = (args: { tenant: string | number | { public_id: string | number }
     
     billing.form = billingForm
 /**
+* @see \App\Filament\Merchant\Pages\Dashboard::__invoke
+ * @see app/Filament/Merchant/Pages/Dashboard.php:7
+ * @route '//merchant.localhost/{tenant}'
+ */
+export const dashboard = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: dashboard.url(args, options),
+    method: 'get',
+})
+
+dashboard.definition = {
+    methods: ["get","head"],
+    url: '//merchant.localhost/{tenant}',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Filament\Merchant\Pages\Dashboard::__invoke
+ * @see app/Filament/Merchant/Pages/Dashboard.php:7
+ * @route '//merchant.localhost/{tenant}'
+ */
+dashboard.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { tenant: args }
+    }
+
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
+    
+    if (Array.isArray(args)) {
+        args = {
+                    tenant: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
+                }
+
+    return dashboard.definition.url
+            .replace('{tenant}', parsedArgs.tenant.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Filament\Merchant\Pages\Dashboard::__invoke
+ * @see app/Filament/Merchant/Pages/Dashboard.php:7
+ * @route '//merchant.localhost/{tenant}'
+ */
+dashboard.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: dashboard.url(args, options),
+    method: 'get',
+})
+/**
+* @see \App\Filament\Merchant\Pages\Dashboard::__invoke
+ * @see app/Filament/Merchant/Pages/Dashboard.php:7
+ * @route '//merchant.localhost/{tenant}'
+ */
+dashboard.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: dashboard.url(args, options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Filament\Merchant\Pages\Dashboard::__invoke
+ * @see app/Filament/Merchant/Pages/Dashboard.php:7
+ * @route '//merchant.localhost/{tenant}'
+ */
+    const dashboardForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: dashboard.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Pages\Dashboard::__invoke
+ * @see app/Filament/Merchant/Pages/Dashboard.php:7
+ * @route '//merchant.localhost/{tenant}'
+ */
+        dashboardForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: dashboard.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Pages\Dashboard::__invoke
+ * @see app/Filament/Merchant/Pages/Dashboard.php:7
+ * @route '//merchant.localhost/{tenant}'
+ */
+        dashboardForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: dashboard.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    dashboard.form = dashboardForm
+/**
 * @see \App\Filament\Merchant\Pages\Domains::__invoke
  * @see app/Filament/Merchant/Pages/Domains.php:7
  * @route '//merchant.localhost/{tenant}/domains'
@@ -204,6 +306,108 @@ domains.head = (args: { tenant: string | number | { public_id: string | number }
         })
     
     domains.form = domainsForm
+/**
+* @see \App\Filament\Merchant\Pages\HelpFaq::__invoke
+ * @see app/Filament/Merchant/Pages/HelpFaq.php:7
+ * @route '//merchant.localhost/{tenant}/help-faq'
+ */
+export const helpFaq = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: helpFaq.url(args, options),
+    method: 'get',
+})
+
+helpFaq.definition = {
+    methods: ["get","head"],
+    url: '//merchant.localhost/{tenant}/help-faq',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Filament\Merchant\Pages\HelpFaq::__invoke
+ * @see app/Filament/Merchant/Pages/HelpFaq.php:7
+ * @route '//merchant.localhost/{tenant}/help-faq'
+ */
+helpFaq.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { tenant: args }
+    }
+
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
+    
+    if (Array.isArray(args)) {
+        args = {
+                    tenant: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
+                }
+
+    return helpFaq.definition.url
+            .replace('{tenant}', parsedArgs.tenant.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Filament\Merchant\Pages\HelpFaq::__invoke
+ * @see app/Filament/Merchant/Pages/HelpFaq.php:7
+ * @route '//merchant.localhost/{tenant}/help-faq'
+ */
+helpFaq.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: helpFaq.url(args, options),
+    method: 'get',
+})
+/**
+* @see \App\Filament\Merchant\Pages\HelpFaq::__invoke
+ * @see app/Filament/Merchant/Pages/HelpFaq.php:7
+ * @route '//merchant.localhost/{tenant}/help-faq'
+ */
+helpFaq.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: helpFaq.url(args, options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Filament\Merchant\Pages\HelpFaq::__invoke
+ * @see app/Filament/Merchant/Pages/HelpFaq.php:7
+ * @route '//merchant.localhost/{tenant}/help-faq'
+ */
+    const helpFaqForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: helpFaq.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Pages\HelpFaq::__invoke
+ * @see app/Filament/Merchant/Pages/HelpFaq.php:7
+ * @route '//merchant.localhost/{tenant}/help-faq'
+ */
+        helpFaqForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: helpFaq.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Pages\HelpFaq::__invoke
+ * @see app/Filament/Merchant/Pages/HelpFaq.php:7
+ * @route '//merchant.localhost/{tenant}/help-faq'
+ */
+        helpFaqForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: helpFaq.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    helpFaq.form = helpFaqForm
 /**
 * @see \App\Filament\Merchant\Pages\MobileAppManager::__invoke
  * @see app/Filament/Merchant/Pages/MobileAppManager.php:7
@@ -715,26 +919,26 @@ storeWallet.head = (args: { tenant: string | number | { public_id: string | numb
     
     storeWallet.form = storeWalletForm
 /**
-* @see \Filament\Pages\Dashboard::__invoke
- * @see vendor/filament/filament/src/Pages/Dashboard.php:7
- * @route '//merchant.localhost/{tenant}'
+* @see \App\Filament\Merchant\Pages\WholesaleRates::__invoke
+ * @see app/Filament/Merchant/Pages/WholesaleRates.php:7
+ * @route '//merchant.localhost/{tenant}/wholesale-rates'
  */
-export const dashboard = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: dashboard.url(args, options),
+export const wholesaleRates = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: wholesaleRates.url(args, options),
     method: 'get',
 })
 
-dashboard.definition = {
+wholesaleRates.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}',
+    url: '//merchant.localhost/{tenant}/wholesale-rates',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \Filament\Pages\Dashboard::__invoke
- * @see vendor/filament/filament/src/Pages/Dashboard.php:7
- * @route '//merchant.localhost/{tenant}'
+* @see \App\Filament\Merchant\Pages\WholesaleRates::__invoke
+ * @see app/Filament/Merchant/Pages/WholesaleRates.php:7
+ * @route '//merchant.localhost/{tenant}/wholesale-rates'
  */
-dashboard.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
+wholesaleRates.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
@@ -757,56 +961,56 @@ dashboard.url = (args: { tenant: string | number | { public_id: string | number 
                 : args.tenant,
                 }
 
-    return dashboard.definition.url
+    return wholesaleRates.definition.url
             .replace('{tenant}', parsedArgs.tenant.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
-* @see \Filament\Pages\Dashboard::__invoke
- * @see vendor/filament/filament/src/Pages/Dashboard.php:7
- * @route '//merchant.localhost/{tenant}'
+* @see \App\Filament\Merchant\Pages\WholesaleRates::__invoke
+ * @see app/Filament/Merchant/Pages/WholesaleRates.php:7
+ * @route '//merchant.localhost/{tenant}/wholesale-rates'
  */
-dashboard.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: dashboard.url(args, options),
+wholesaleRates.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: wholesaleRates.url(args, options),
     method: 'get',
 })
 /**
-* @see \Filament\Pages\Dashboard::__invoke
- * @see vendor/filament/filament/src/Pages/Dashboard.php:7
- * @route '//merchant.localhost/{tenant}'
+* @see \App\Filament\Merchant\Pages\WholesaleRates::__invoke
+ * @see app/Filament/Merchant/Pages/WholesaleRates.php:7
+ * @route '//merchant.localhost/{tenant}/wholesale-rates'
  */
-dashboard.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: dashboard.url(args, options),
+wholesaleRates.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: wholesaleRates.url(args, options),
     method: 'head',
 })
 
     /**
-* @see \Filament\Pages\Dashboard::__invoke
- * @see vendor/filament/filament/src/Pages/Dashboard.php:7
- * @route '//merchant.localhost/{tenant}'
+* @see \App\Filament\Merchant\Pages\WholesaleRates::__invoke
+ * @see app/Filament/Merchant/Pages/WholesaleRates.php:7
+ * @route '//merchant.localhost/{tenant}/wholesale-rates'
  */
-    const dashboardForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: dashboard.url(args, options),
+    const wholesaleRatesForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: wholesaleRates.url(args, options),
         method: 'get',
     })
 
             /**
-* @see \Filament\Pages\Dashboard::__invoke
- * @see vendor/filament/filament/src/Pages/Dashboard.php:7
- * @route '//merchant.localhost/{tenant}'
+* @see \App\Filament\Merchant\Pages\WholesaleRates::__invoke
+ * @see app/Filament/Merchant/Pages/WholesaleRates.php:7
+ * @route '//merchant.localhost/{tenant}/wholesale-rates'
  */
-        dashboardForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: dashboard.url(args, options),
+        wholesaleRatesForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: wholesaleRates.url(args, options),
             method: 'get',
         })
             /**
-* @see \Filament\Pages\Dashboard::__invoke
- * @see vendor/filament/filament/src/Pages/Dashboard.php:7
- * @route '//merchant.localhost/{tenant}'
+* @see \App\Filament\Merchant\Pages\WholesaleRates::__invoke
+ * @see app/Filament/Merchant/Pages/WholesaleRates.php:7
+ * @route '//merchant.localhost/{tenant}/wholesale-rates'
  */
-        dashboardForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: dashboard.url(args, {
+        wholesaleRatesForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: wholesaleRates.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -815,17 +1019,19 @@ dashboard.head = (args: { tenant: string | number | { public_id: string | number
             method: 'get',
         })
     
-    dashboard.form = dashboardForm
+    wholesaleRates.form = wholesaleRatesForm
 const pages = {
     billing: Object.assign(billing, billing),
+dashboard: Object.assign(dashboard, dashboard),
 domains: Object.assign(domains, domains),
+helpFaq: Object.assign(helpFaq, helpFaq),
 mobileAppManager: Object.assign(mobileAppManager, mobileAppManager),
 onboarding: Object.assign(onboarding, onboarding),
 referralProgram: Object.assign(referralProgram, referralProgram),
 storeActivityLogs: Object.assign(storeActivityLogs, storeActivityLogs),
 storeSettings: Object.assign(storeSettings, storeSettings),
 storeWallet: Object.assign(storeWallet, storeWallet),
-dashboard: Object.assign(dashboard, dashboard),
+wholesaleRates: Object.assign(wholesaleRates, wholesaleRates),
 }
 
 export default pages

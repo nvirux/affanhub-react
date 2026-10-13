@@ -1,10 +1,10 @@
-import BlogController from './BlogController'
 import HomeController from './HomeController'
 import ImpersonationController from './ImpersonationController'
 import BillingCheckoutCallbackController from './BillingCheckoutCallbackController'
 import MobileAppDownloadController from './MobileAppDownloadController'
 import Merchant from './Merchant'
 import Auth from './Auth'
+import BlogController from './BlogController'
 import Webhook from './Webhook'
 import DashboardController from './DashboardController'
 import ServicesController from './ServicesController'
@@ -18,13 +18,13 @@ import NinVerificationController from './NinVerificationController'
 import BvnVerificationController from './BvnVerificationController'
 import Settings from './Settings'
 const Controllers = {
-    BlogController: Object.assign(BlogController, BlogController),
-HomeController: Object.assign(HomeController, HomeController),
+    HomeController: Object.assign(HomeController, HomeController),
 ImpersonationController: Object.assign(ImpersonationController, ImpersonationController),
 BillingCheckoutCallbackController: Object.assign(BillingCheckoutCallbackController, BillingCheckoutCallbackController),
 MobileAppDownloadController: Object.assign(MobileAppDownloadController, MobileAppDownloadController),
 Merchant: Object.assign(Merchant, Merchant),
 Auth: Object.assign(Auth, Auth),
+BlogController: Object.assign(BlogController, BlogController),
 Webhook: Object.assign(Webhook, Webhook),
 DashboardController: Object.assign(DashboardController, DashboardController),
 ServicesController: Object.assign(ServicesController, ServicesController),

@@ -1,118 +1,137 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-const RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url(options),
+const RedirectController16efd12767bca8b30488c11b51d3e0cf = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, options),
     method: 'get',
 })
 
-RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.definition = {
+RedirectController16efd12767bca8b30488c11b51d3e0cf.definition = {
     methods: ["get","head","post","put","patch","delete","options"],
-    url: '//127.0.0.1/privacy',
+    url: '//{central_domain}/privacy',
 } satisfies RouteDefinition<["get","head","post","put","patch","delete","options"]>
 
 /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url = (options?: RouteQueryOptions) => {
-    return RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.definition.url + queryParams(options)
+RedirectController16efd12767bca8b30488c11b51d3e0cf.url = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { central_domain: args }
+    }
+
+    
+    if (Array.isArray(args)) {
+        args = {
+                    central_domain: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        central_domain: args.central_domain,
+                }
+
+    return RedirectController16efd12767bca8b30488c11b51d3e0cf.definition.url
+            .replace('{central_domain}', parsedArgs.central_domain.toString())
+            .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url(options),
+RedirectController16efd12767bca8b30488c11b51d3e0cf.get = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, options),
     method: 'get',
 })
 /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url(options),
+RedirectController16efd12767bca8b30488c11b51d3e0cf.head = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, options),
     method: 'head',
 })
 /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url(options),
+RedirectController16efd12767bca8b30488c11b51d3e0cf.post = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, options),
     method: 'post',
 })
 /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
-    url: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url(options),
+RedirectController16efd12767bca8b30488c11b51d3e0cf.put = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, options),
     method: 'put',
 })
 /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.patch = (options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
-    url: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url(options),
+RedirectController16efd12767bca8b30488c11b51d3e0cf.patch = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+    url: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, options),
     method: 'patch',
 })
 /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
-    url: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url(options),
+RedirectController16efd12767bca8b30488c11b51d3e0cf.delete = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+    url: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, options),
     method: 'delete',
 })
 /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.options = (options?: RouteQueryOptions): RouteDefinition<'options'> => ({
-    url: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url(options),
+RedirectController16efd12767bca8b30488c11b51d3e0cf.options = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'options'> => ({
+    url: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, options),
     method: 'options',
 })
 
     /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-    const RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url(options),
+    const RedirectController16efd12767bca8b30488c11b51d3e0cfForm = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, options),
         method: 'get',
     })
 
             /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-        RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url(options),
+        RedirectController16efd12767bca8b30488c11b51d3e0cfForm.get = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, options),
             method: 'get',
         })
             /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-        RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url({
+        RedirectController16efd12767bca8b30488c11b51d3e0cfForm.head = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -123,19 +142,19 @@ RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.options = (options?: RouteQue
             /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-        RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69Form.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url(options),
+        RedirectController16efd12767bca8b30488c11b51d3e0cfForm.post = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, options),
             method: 'post',
         })
             /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-        RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69Form.put = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url({
+        RedirectController16efd12767bca8b30488c11b51d3e0cfForm.put = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'PUT',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -146,10 +165,10 @@ RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.options = (options?: RouteQue
             /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-        RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69Form.patch = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url({
+        RedirectController16efd12767bca8b30488c11b51d3e0cfForm.patch = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'PATCH',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -160,10 +179,10 @@ RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.options = (options?: RouteQue
             /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-        RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69Form.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url({
+        RedirectController16efd12767bca8b30488c11b51d3e0cfForm.delete = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'DELETE',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -174,10 +193,10 @@ RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.options = (options?: RouteQue
             /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//127.0.0.1/privacy'
+ * @route '//{central_domain}/privacy'
  */
-        RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69Form.options = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.url({
+        RedirectController16efd12767bca8b30488c11b51d3e0cfForm.options = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: RedirectController16efd12767bca8b30488c11b51d3e0cf.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'OPTIONS',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -186,571 +205,7 @@ RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.options = (options?: RouteQue
             method: 'get',
         })
     
-    RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69.form = RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69Form
-    /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-const RedirectController90983a4a9928a11600412e010dcd6760 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: RedirectController90983a4a9928a11600412e010dcd6760.url(options),
-    method: 'get',
-})
-
-RedirectController90983a4a9928a11600412e010dcd6760.definition = {
-    methods: ["get","head","post","put","patch","delete","options"],
-    url: '//localhost/privacy',
-} satisfies RouteDefinition<["get","head","post","put","patch","delete","options"]>
-
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-RedirectController90983a4a9928a11600412e010dcd6760.url = (options?: RouteQueryOptions) => {
-    return RedirectController90983a4a9928a11600412e010dcd6760.definition.url + queryParams(options)
-}
-
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-RedirectController90983a4a9928a11600412e010dcd6760.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: RedirectController90983a4a9928a11600412e010dcd6760.url(options),
-    method: 'get',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-RedirectController90983a4a9928a11600412e010dcd6760.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: RedirectController90983a4a9928a11600412e010dcd6760.url(options),
-    method: 'head',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-RedirectController90983a4a9928a11600412e010dcd6760.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: RedirectController90983a4a9928a11600412e010dcd6760.url(options),
-    method: 'post',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-RedirectController90983a4a9928a11600412e010dcd6760.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
-    url: RedirectController90983a4a9928a11600412e010dcd6760.url(options),
-    method: 'put',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-RedirectController90983a4a9928a11600412e010dcd6760.patch = (options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
-    url: RedirectController90983a4a9928a11600412e010dcd6760.url(options),
-    method: 'patch',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-RedirectController90983a4a9928a11600412e010dcd6760.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
-    url: RedirectController90983a4a9928a11600412e010dcd6760.url(options),
-    method: 'delete',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-RedirectController90983a4a9928a11600412e010dcd6760.options = (options?: RouteQueryOptions): RouteDefinition<'options'> => ({
-    url: RedirectController90983a4a9928a11600412e010dcd6760.url(options),
-    method: 'options',
-})
-
-    /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-    const RedirectController90983a4a9928a11600412e010dcd6760Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: RedirectController90983a4a9928a11600412e010dcd6760.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-        RedirectController90983a4a9928a11600412e010dcd6760Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectController90983a4a9928a11600412e010dcd6760.url(options),
-            method: 'get',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-        RedirectController90983a4a9928a11600412e010dcd6760Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectController90983a4a9928a11600412e010dcd6760.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-        RedirectController90983a4a9928a11600412e010dcd6760Form.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectController90983a4a9928a11600412e010dcd6760.url(options),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-        RedirectController90983a4a9928a11600412e010dcd6760Form.put = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectController90983a4a9928a11600412e010dcd6760.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'PUT',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-        RedirectController90983a4a9928a11600412e010dcd6760Form.patch = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectController90983a4a9928a11600412e010dcd6760.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'PATCH',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-        RedirectController90983a4a9928a11600412e010dcd6760Form.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectController90983a4a9928a11600412e010dcd6760.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'DELETE',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//localhost/privacy'
- */
-        RedirectController90983a4a9928a11600412e010dcd6760Form.options = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectController90983a4a9928a11600412e010dcd6760.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'OPTIONS',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    RedirectController90983a4a9928a11600412e010dcd6760.form = RedirectController90983a4a9928a11600412e010dcd6760Form
-    /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-const RedirectController1fb5d6cc671d576699b2318882e2dd4e = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url(options),
-    method: 'get',
-})
-
-RedirectController1fb5d6cc671d576699b2318882e2dd4e.definition = {
-    methods: ["get","head","post","put","patch","delete","options"],
-    url: '//merchant.localhost/privacy',
-} satisfies RouteDefinition<["get","head","post","put","patch","delete","options"]>
-
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-RedirectController1fb5d6cc671d576699b2318882e2dd4e.url = (options?: RouteQueryOptions) => {
-    return RedirectController1fb5d6cc671d576699b2318882e2dd4e.definition.url + queryParams(options)
-}
-
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-RedirectController1fb5d6cc671d576699b2318882e2dd4e.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url(options),
-    method: 'get',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-RedirectController1fb5d6cc671d576699b2318882e2dd4e.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url(options),
-    method: 'head',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-RedirectController1fb5d6cc671d576699b2318882e2dd4e.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url(options),
-    method: 'post',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-RedirectController1fb5d6cc671d576699b2318882e2dd4e.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
-    url: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url(options),
-    method: 'put',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-RedirectController1fb5d6cc671d576699b2318882e2dd4e.patch = (options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
-    url: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url(options),
-    method: 'patch',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-RedirectController1fb5d6cc671d576699b2318882e2dd4e.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
-    url: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url(options),
-    method: 'delete',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-RedirectController1fb5d6cc671d576699b2318882e2dd4e.options = (options?: RouteQueryOptions): RouteDefinition<'options'> => ({
-    url: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url(options),
-    method: 'options',
-})
-
-    /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-    const RedirectController1fb5d6cc671d576699b2318882e2dd4eForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-        RedirectController1fb5d6cc671d576699b2318882e2dd4eForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url(options),
-            method: 'get',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-        RedirectController1fb5d6cc671d576699b2318882e2dd4eForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-        RedirectController1fb5d6cc671d576699b2318882e2dd4eForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url(options),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-        RedirectController1fb5d6cc671d576699b2318882e2dd4eForm.put = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'PUT',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-        RedirectController1fb5d6cc671d576699b2318882e2dd4eForm.patch = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'PATCH',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-        RedirectController1fb5d6cc671d576699b2318882e2dd4eForm.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'DELETE',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//merchant.localhost/privacy'
- */
-        RedirectController1fb5d6cc671d576699b2318882e2dd4eForm.options = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectController1fb5d6cc671d576699b2318882e2dd4e.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'OPTIONS',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    RedirectController1fb5d6cc671d576699b2318882e2dd4e.form = RedirectController1fb5d6cc671d576699b2318882e2dd4eForm
-    /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-const RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url(options),
-    method: 'get',
-})
-
-RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.definition = {
-    methods: ["get","head","post","put","patch","delete","options"],
-    url: '//admin.localhost/privacy',
-} satisfies RouteDefinition<["get","head","post","put","patch","delete","options"]>
-
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url = (options?: RouteQueryOptions) => {
-    return RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.definition.url + queryParams(options)
-}
-
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url(options),
-    method: 'get',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url(options),
-    method: 'head',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url(options),
-    method: 'post',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
-    url: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url(options),
-    method: 'put',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.patch = (options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
-    url: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url(options),
-    method: 'patch',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
-    url: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url(options),
-    method: 'delete',
-})
-/**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.options = (options?: RouteQueryOptions): RouteDefinition<'options'> => ({
-    url: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url(options),
-    method: 'options',
-})
-
-    /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-    const RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69fForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-        RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69fForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url(options),
-            method: 'get',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-        RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69fForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-        RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69fForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url(options),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-        RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69fForm.put = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'PUT',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-        RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69fForm.patch = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'PATCH',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-        RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69fForm.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'DELETE',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-            /**
-* @see \Illuminate\Routing\RedirectController::__invoke
- * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
- * @route '//admin.localhost/privacy'
- */
-        RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69fForm.options = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'OPTIONS',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f.form = RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69fForm
+    RedirectController16efd12767bca8b30488c11b51d3e0cf.form = RedirectController16efd12767bca8b30488c11b51d3e0cfForm
     /**
 * @see \Illuminate\Routing\RedirectController::__invoke
  * @see vendor/laravel/framework/src/Illuminate/Routing/RedirectController.php:19
@@ -1510,10 +965,7 @@ RedirectController4b87d2df7e3aa853f6720faea796e36c.options = (options?: RouteQue
 * or import the route by name from your generated `routes/` directory.
 */
 const RedirectController = {
-    '//127.0.0.1/privacy': RedirectControllerc50a2730d2fac8eff3b869ddcecc2a69,
-    '//localhost/privacy': RedirectController90983a4a9928a11600412e010dcd6760,
-    '//merchant.localhost/privacy': RedirectController1fb5d6cc671d576699b2318882e2dd4e,
-    '//admin.localhost/privacy': RedirectControllerc88a625e849e3a0e92f0e6cb4be3c69f,
+    '//{central_domain}/privacy': RedirectController16efd12767bca8b30488c11b51d3e0cf,
     '/auth/login': RedirectController5937d986ec6e69c76864e78bfceac6a5,
     '/auth/register': RedirectController694f388d01b54be09f3b70932e0ac9c7,
     '/privacy': RedirectControllera2c058616aeb0c9393ca03a98bc05c02,

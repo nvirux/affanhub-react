@@ -45,15 +45,19 @@ Route::get('/merchant/cloudflare/connect/{domain}', [CloudflareDomainConnectCont
 Route::get('/merchant/cloudflare/callback', [CloudflareDomainConnectController::class, 'callback'])
     ->name('merchant.cloudflare.callback');
 
-// Central Domains (Landing, Blog, Policies)
-foreach (config('tenancy.central_domains', []) as $centralDomain) {
-    Route::domain($centralDomain)->group(function () {
-        Route::get('/blog', [BlogController::class, 'index'])->name('central.blog.index');
-        Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('central.blog.show');
+// Central Marketing Routes (Blog)
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
-        Route::get('/privacy-policy', function () {
-            return Inertia::render('Storefront/PrivacyPolicy');
-        })->name('central.privacy-policy');
-        Route::redirect('/privacy', '/privacy-policy');
-    });
+// Central Domain Policy Routes (Parameterized domain avoids duplicate route names during route:cache)
+$centralDomains = config('tenancy.central_domains', []);
+if (! empty($centralDomains)) {
+    Route::domain('{central_domain}')
+        ->whereIn('central_domain', $centralDomains)
+        ->group(function () {
+            Route::get('/privacy-policy', function () {
+                return Inertia::render('Storefront/PrivacyPolicy');
+            })->name('central.privacy-policy');
+            Route::redirect('/privacy', '/privacy-policy');
+        });
 }
