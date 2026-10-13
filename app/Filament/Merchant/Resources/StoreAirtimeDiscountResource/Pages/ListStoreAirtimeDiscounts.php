@@ -5,6 +5,7 @@ namespace App\Filament\Merchant\Resources\StoreAirtimeDiscountResource\Pages;
 use App\Filament\Merchant\Resources\StoreAirtimeDiscountResource;
 use App\Models\Network;
 use App\Models\StoreAirtimeDiscount;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,7 +16,16 @@ class ListStoreAirtimeDiscounts extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return []; // Hide "Create" button since all networks are auto-populated
+        return [
+            Action::make('wholesale_rates')
+                ->label('View Wholesale Rates')
+                ->icon('heroicon-o-arrow-top-right-on-square')
+                ->color('gray')
+                ->url(fn () => route('filament.merchant.pages.wholesale-rates', [
+                    'tenant' => Filament::getTenant()->public_id,
+                    'tab' => 'airtime',
+                ])),
+        ];
     }
 
     protected function getTableQuery(): ?Builder

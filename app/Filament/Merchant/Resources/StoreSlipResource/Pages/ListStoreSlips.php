@@ -6,6 +6,7 @@ use App\Filament\Merchant\Resources\StoreSlipResource;
 use App\Models\Service;
 use App\Models\Slip;
 use App\Models\StoreSlip;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -17,7 +18,16 @@ class ListStoreSlips extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            Action::make('wholesale_rates')
+                ->label('View Wholesale Rates')
+                ->icon('heroicon-o-arrow-top-right-on-square')
+                ->color('gray')
+                ->url(fn () => route('filament.merchant.pages.wholesale-rates', [
+                    'tenant' => Filament::getTenant()->public_id,
+                    'tab' => 'identity',
+                ])),
+        ];
     }
 
     protected function getTableQuery(): ?Builder
