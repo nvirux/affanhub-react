@@ -109,14 +109,59 @@
             transform: scale(0.985);
         }
 
+        .wa-banner-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: rgba(255, 255, 255, 0.85);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            padding: 0;
+            z-index: 10;
+        }
+
+        .wa-banner-close-btn:hover {
+            background: rgba(0, 0, 0, 0.35);
+            color: #ffffff;
+            transform: scale(1.08);
+        }
+
+        .wa-banner-close-btn:active {
+            transform: scale(0.92);
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+        @media (max-width: 639px) {
+            .wa-banner-card {
+                padding-top: 1.25rem;
+                padding-right: 2.75rem;
+            }
+        }
+
         /* Desktop & Tablet layout (min-width: 640px) */
         @media (min-width: 640px) {
             .wa-banner-card {
-                padding: 1.25rem 1.5rem;
+                padding: 1.25rem 3.5rem 1.25rem 1.5rem;
                 flex-direction: row;
                 align-items: center;
                 justify-content: space-between;
                 gap: 1.25rem;
+            }
+
+            .wa-banner-close-btn {
+                top: 12px;
+                right: 12px;
             }
 
             .wa-banner-body {
@@ -153,8 +198,50 @@
         }
     </style>
 
-    <div class="wa-banner-card">
+    <div
+        x-data="{
+            isDismissed: true,
+            storageKey: 'affan_merchant_wa_dismissed_until',
+            init() {
+                try {
+                    const dismissedUntil = localStorage.getItem(this.storageKey);
+                    if (!dismissedUntil || Date.now() >= parseInt(dismissedUntil, 10)) {
+                        this.isDismissed = false;
+                    }
+                } catch (e) {
+                    this.isDismissed = false;
+                }
+            },
+            dismiss() {
+                try {
+                    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+                    localStorage.setItem(this.storageKey, (Date.now() + sevenDaysMs).toString());
+                } catch (e) {}
+                this.isDismissed = true;
+            }
+        }"
+        x-show="!isDismissed"
+        x-cloak
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="wa-banner-card"
+    >
         <div class="wa-banner-bg-glow"></div>
+
+        <!-- Dismiss Button (Snooze for 7 days) -->
+        <button
+            type="button"
+            @click="dismiss()"
+            class="wa-banner-close-btn"
+            title="Dismiss for 7 days"
+            aria-label="Dismiss community banner for 7 days"
+        >
+            <svg width="14" height="14" style="width: 14px !important; height: 14px !important; display: block;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
 
         <!-- Left Section: Icon & Info -->
         <div class="wa-banner-body">
