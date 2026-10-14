@@ -119,10 +119,8 @@ const navGroups: NavGroup[] = [
             },
             {
                 title: 'Airtime to Cash',
-                href: '#',
+                href: '/vtu/airtime-to-cash',
                 icon: RefreshCw,
-                badge: 'Soon',
-                disabled: true,
             },
             {
                 title: 'Bulk SMS',

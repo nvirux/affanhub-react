@@ -132,6 +132,11 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class);
     }
 
+    public function airtimeCashRequests(): HasMany
+    {
+        return $this->hasMany(AirtimeCashRequest::class);
+    }
+
     public function identityVerifications(): HasMany
     {
         return $this->hasMany(IdentityVerification::class);

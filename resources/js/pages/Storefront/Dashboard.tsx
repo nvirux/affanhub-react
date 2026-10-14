@@ -96,6 +96,8 @@ export default function Dashboard() {
             router.get('/vtu/data');
         } else if (key === 'airtime') {
             router.get('/vtu/airtime');
+        } else if (key === 'airtime_cash' || key === 'airtime-to-cash' || key === 'airtime_to_cash') {
+            router.get('/vtu/airtime-to-cash');
         } else if (key === 'nin_verification' || key === 'nin') {
             router.get('/identity/nin');
         } else if (key === 'bvn_verification' || key === 'bvn') {

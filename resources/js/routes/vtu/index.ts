@@ -1,6 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import airtimeCd3da4 from './airtime'
 import dataC044be from './data'
+import airtimeToCash77cdf2 from './airtime-to-cash'
 /**
 * @see \App\Http\Controllers\AirtimeController::airtime
  * @see app/Http/Controllers/AirtimeController.php:23
@@ -157,9 +158,88 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
     
     data.form = dataForm
+/**
+* @see \App\Http\Controllers\AirtimeCashController::airtimeToCash
+ * @see app/Http/Controllers/AirtimeCashController.php:20
+ * @route '/vtu/airtime-to-cash'
+ */
+export const airtimeToCash = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: airtimeToCash.url(options),
+    method: 'get',
+})
+
+airtimeToCash.definition = {
+    methods: ["get","head"],
+    url: '/vtu/airtime-to-cash',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\AirtimeCashController::airtimeToCash
+ * @see app/Http/Controllers/AirtimeCashController.php:20
+ * @route '/vtu/airtime-to-cash'
+ */
+airtimeToCash.url = (options?: RouteQueryOptions) => {
+    return airtimeToCash.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\AirtimeCashController::airtimeToCash
+ * @see app/Http/Controllers/AirtimeCashController.php:20
+ * @route '/vtu/airtime-to-cash'
+ */
+airtimeToCash.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: airtimeToCash.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\AirtimeCashController::airtimeToCash
+ * @see app/Http/Controllers/AirtimeCashController.php:20
+ * @route '/vtu/airtime-to-cash'
+ */
+airtimeToCash.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: airtimeToCash.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\AirtimeCashController::airtimeToCash
+ * @see app/Http/Controllers/AirtimeCashController.php:20
+ * @route '/vtu/airtime-to-cash'
+ */
+    const airtimeToCashForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: airtimeToCash.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\AirtimeCashController::airtimeToCash
+ * @see app/Http/Controllers/AirtimeCashController.php:20
+ * @route '/vtu/airtime-to-cash'
+ */
+        airtimeToCashForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: airtimeToCash.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\AirtimeCashController::airtimeToCash
+ * @see app/Http/Controllers/AirtimeCashController.php:20
+ * @route '/vtu/airtime-to-cash'
+ */
+        airtimeToCashForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: airtimeToCash.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    airtimeToCash.form = airtimeToCashForm
 const vtu = {
     airtime: Object.assign(airtime, airtimeCd3da4),
 data: Object.assign(data, dataC044be),
+airtimeToCash: Object.assign(airtimeToCash, airtimeToCash77cdf2),
 }
 
 export default vtu

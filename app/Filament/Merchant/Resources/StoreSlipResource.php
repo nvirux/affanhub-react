@@ -30,11 +30,11 @@ class StoreSlipResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Identity Services';
 
-    protected static ?string $navigationLabel = 'Identity Slips Pricing';
+    protected static ?string $navigationLabel = 'Slip Pricing';
 
-    protected static ?string $modelLabel = 'Identity Slip';
+    protected static ?string $modelLabel = 'Slip Pricing';
 
-    protected static ?string $pluralModelLabel = 'Identity Slips Pricing';
+    protected static ?string $pluralModelLabel = 'Slip Pricing';
 
     protected static ?string $tenantRelationshipName = 'storeSlips';
 

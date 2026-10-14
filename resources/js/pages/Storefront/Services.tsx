@@ -52,6 +52,8 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
             router.get('/vtu/data');
         } else if (service.key === 'airtime') {
             router.get('/vtu/airtime');
+        } else if (service.key === 'airtime_cash' || service.key === 'airtime-to-cash' || service.key === 'airtime_to_cash') {
+            router.get('/vtu/airtime-to-cash');
         } else if (service.key === 'nin_verification' || service.key === 'nin') {
             router.get('/identity/nin');
         } else if (service.key === 'bvn_verification' || service.key === 'bvn') {

@@ -127,6 +127,16 @@ class Store extends BaseTenant implements TenantWithDatabase
         return $this->hasMany(StoreAirtimeDiscount::class);
     }
 
+    public function storeAirtimeCashSettings(): HasMany
+    {
+        return $this->hasMany(StoreAirtimeCashSetting::class);
+    }
+
+    public function airtimeCashRequests(): HasMany
+    {
+        return $this->hasMany(AirtimeCashRequest::class);
+    }
+
     public function storeSlips(): HasMany
     {
         return $this->hasMany(StoreSlip::class);

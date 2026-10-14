@@ -1,6 +1,8 @@
+import airtimeCashRequests from './airtime-cash-requests'
 import customers from './customers'
 import settlementAccounts from './settlement-accounts'
 import staff from './staff'
+import storeAirtimeCashSettings from './store-airtime-cash-settings'
 import storeAirtimeDiscounts from './store-airtime-discounts'
 import storeDataPlans from './store-data-plans'
 import manageServices from './manage-services'
@@ -9,9 +11,11 @@ import transactions from './transactions'
 import walletTransactions from './wallet-transactions'
 import withdrawals from './withdrawals'
 const resources = {
-    customers: Object.assign(customers, customers),
+    airtimeCashRequests: Object.assign(airtimeCashRequests, airtimeCashRequests),
+customers: Object.assign(customers, customers),
 settlementAccounts: Object.assign(settlementAccounts, settlementAccounts),
 staff: Object.assign(staff, staff),
+storeAirtimeCashSettings: Object.assign(storeAirtimeCashSettings, storeAirtimeCashSettings),
 storeAirtimeDiscounts: Object.assign(storeAirtimeDiscounts, storeAirtimeDiscounts),
 storeDataPlans: Object.assign(storeDataPlans, storeDataPlans),
 manageServices: Object.assign(manageServices, manageServices),
