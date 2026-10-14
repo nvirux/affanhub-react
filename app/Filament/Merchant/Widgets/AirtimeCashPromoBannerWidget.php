@@ -2,7 +2,6 @@
 
 namespace App\Filament\Merchant\Widgets;
 
-use App\Filament\Merchant\Pages\Billing;
 use App\Models\Service;
 use Filament\Facades\Filament;
 use Filament\Widgets\Widget;
@@ -22,11 +21,10 @@ class AirtimeCashPromoBannerWidget extends Widget
             return false;
         }
 
-        $isAccessible = $service->isAccessibleByStore($store);
         $isInPromo = $service->isInPromo();
         $isTrial = $service->trial_days && $store->created_at && $store->created_at->addDays($service->trial_days)->isFuture();
 
-        return $isInPromo || $isTrial || ! $isAccessible;
+        return $isInPromo || $isTrial;
     }
 
     public function getBannerData(): ?array
@@ -38,7 +36,6 @@ class AirtimeCashPromoBannerWidget extends Widget
             return null;
         }
 
-        $isAccessible = $service->isAccessibleByStore($store);
         $isInPromo = $service->isInPromo();
         $isTrial = $service->trial_days && $store->created_at && $store->created_at->addDays($service->trial_days)->isFuture();
 
@@ -63,19 +60,6 @@ class AirtimeCashPromoBannerWidget extends Widget
                 'badge' => 'FREE TRIAL',
                 'action_label' => null,
                 'action_url' => null,
-            ];
-        }
-
-        if (! $isAccessible) {
-            $requiredPlan = $service->getRequiredPlanForStore($store);
-
-            return [
-                'type' => 'locked',
-                'title' => '🔒 Plan Upgrade Required',
-                'message' => "Airtime to Cash is not included in your current subscription plan ({$requiredPlan} required). Upgrade your plan to activate airtime conversion on your customer storefront.",
-                'badge' => 'UPGRADE REQUIRED',
-                'action_label' => '⚡ Upgrade Subscription Plan',
-                'action_url' => Billing::getUrl(),
             ];
         }
 

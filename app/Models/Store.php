@@ -71,6 +71,11 @@ class Store extends BaseTenant implements TenantWithDatabase
         return $this->hasMany(User::class, 'store_id');
     }
 
+    public function announcements(): HasMany
+    {
+        return $this->hasMany(StoreAnnouncement::class, 'store_id');
+    }
+
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(Owner::class, 'store_owner')->withPivot('role')->withTimestamps();

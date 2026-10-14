@@ -4,6 +4,7 @@ import settlementAccounts from './settlement-accounts'
 import staff from './staff'
 import storeAirtimeCashSettings from './store-airtime-cash-settings'
 import storeAirtimeDiscounts from './store-airtime-discounts'
+import storeAnnouncements from './store-announcements'
 import storeDataPlans from './store-data-plans'
 import manageServices from './manage-services'
 import storeSlips from './store-slips'
@@ -17,6 +18,7 @@ settlementAccounts: Object.assign(settlementAccounts, settlementAccounts),
 staff: Object.assign(staff, staff),
 storeAirtimeCashSettings: Object.assign(storeAirtimeCashSettings, storeAirtimeCashSettings),
 storeAirtimeDiscounts: Object.assign(storeAirtimeDiscounts, storeAirtimeDiscounts),
+storeAnnouncements: Object.assign(storeAnnouncements, storeAnnouncements),
 storeDataPlans: Object.assign(storeDataPlans, storeDataPlans),
 manageServices: Object.assign(manageServices, manageServices),
 storeSlips: Object.assign(storeSlips, storeSlips),

@@ -4,6 +4,7 @@ import SettlementAccountResource from './SettlementAccountResource'
 import StaffResource from './StaffResource'
 import StoreAirtimeCashSettingResource from './StoreAirtimeCashSettingResource'
 import StoreAirtimeDiscountResource from './StoreAirtimeDiscountResource'
+import StoreAnnouncementResource from './StoreAnnouncementResource'
 import StoreDataPlanResource from './StoreDataPlanResource'
 import StoreServiceResource from './StoreServiceResource'
 import StoreSlipResource from './StoreSlipResource'
@@ -17,6 +18,7 @@ SettlementAccountResource: Object.assign(SettlementAccountResource, SettlementAc
 StaffResource: Object.assign(StaffResource, StaffResource),
 StoreAirtimeCashSettingResource: Object.assign(StoreAirtimeCashSettingResource, StoreAirtimeCashSettingResource),
 StoreAirtimeDiscountResource: Object.assign(StoreAirtimeDiscountResource, StoreAirtimeDiscountResource),
+StoreAnnouncementResource: Object.assign(StoreAnnouncementResource, StoreAnnouncementResource),
 StoreDataPlanResource: Object.assign(StoreDataPlanResource, StoreDataPlanResource),
 StoreServiceResource: Object.assign(StoreServiceResource, StoreServiceResource),
 StoreSlipResource: Object.assign(StoreSlipResource, StoreSlipResource),

@@ -19,6 +19,7 @@ import {
     SheetTitle,
     SheetDescription,
 } from '@/components/ui/sheet';
+import AnnouncementBar from '@/components/Storefront/AnnouncementBar';
 
 export default function Dashboard() {
     const { auth, store, store_services, recent_transactions, flash, errors } = usePage<any>().props;
@@ -154,10 +155,20 @@ export default function Dashboard() {
         <>
             <Head title="Dashboard" />
 
+            {/* Popup Modal Announcement (Shows once on storefront entry) */}
+            {store?.announcement?.style === 'modal' && (
+                <AnnouncementBar announcement={store.announcement} />
+            )}
+
             {/* ────────────────────────────────────────────────────────
                 DESKTOP VIEW (hidden md:flex)
                 ──────────────────────────────────────────────────────── */}
             <div className="hidden md:flex h-full w-full flex-1 flex-col gap-6 font-sans p-6 max-w-7xl mx-auto">
+
+                {/* Store Announcement Bar (Desktop) */}
+                {store?.announcement?.style !== 'modal' && (
+                    <AnnouncementBar announcement={store?.announcement} />
+                )}
 
                 {/* Header & Wallet Section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -690,6 +701,13 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
+
+                {/* Store Announcement Bar (Mobile) */}
+                {store?.announcement?.style !== 'modal' && (
+                    <div className="px-4 mb-4">
+                        <AnnouncementBar announcement={store?.announcement} />
+                    </div>
+                )}
 
                 {/* Quick Actions Section (Single Customizable Grid) */}
                 <div className="px-4 mb-6">

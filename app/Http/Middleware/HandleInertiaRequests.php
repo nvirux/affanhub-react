@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Store;
+use App\Models\StoreAnnouncement;
 use App\Services\Branding\ColorHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -89,6 +90,28 @@ class HandleInertiaRequests extends Middleware
                 'customer_funding_fee_cap' => (float) (tenant('customer_funding_fee_cap') ?? 100),
                 'funding_fee_text' => tenant() instanceof Store ? tenant()->getCustomerDepositFeeText() : '0% Fee (Free Funding)',
                 'privacy_policy' => tenant('privacy_policy'),
+                'announcement' => (function () {
+                    $tenant = tenant();
+                    if (! $tenant instanceof Store) {
+                        return null;
+                    }
+
+                    $active = StoreAnnouncement::getActiveForStore($tenant);
+                    if (! $active) {
+                        return null;
+                    }
+
+                    return [
+                        'id' => $active->id,
+                        'title' => $active->title,
+                        'text' => $active->message,
+                        'type' => $active->type,
+                        'style' => $active->display_style,
+                        'action_label' => $active->action_label,
+                        'action_url' => $active->action_url,
+                        'dismissible' => (bool) $active->is_dismissible,
+                    ];
+                })(),
             ] : null,
             'auth' => [
                 'user' => function () use ($request) {
