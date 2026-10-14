@@ -222,7 +222,7 @@ test('customer cannot submit airtime amount below min or above max', function ()
 });
 
 test('customer can submit with optional proof of transfer image', function () {
-    Storage::fake('public');
+    Storage::fake('central_public');
 
     $file = UploadedFile::fake()->image('ussd_receipt.jpg');
 
@@ -241,7 +241,7 @@ test('customer can submit with optional proof of transfer image', function () {
     $created = AirtimeCashRequest::where('airtime_amount', 2500)->first();
     expect($created)->not->toBeNull();
     expect($created->proof_image)->not->toBeNull();
-    Storage::disk('public')->assertExists($created->proof_image);
+    Storage::disk('central_public')->assertExists($created->proof_image);
 });
 
 test('airtime cash dashboard widget calculates pending orders and profit', function () {

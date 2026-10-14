@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class AirtimeCashRequest extends Model
@@ -49,7 +50,7 @@ class AirtimeCashRequest extends Model
             return null;
         }
 
-        return asset('storage/'.$this->proof_image);
+        return Storage::disk('central_public')->url($this->proof_image);
     }
 
     public static function generateReference(): string

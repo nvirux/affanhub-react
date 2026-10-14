@@ -127,7 +127,7 @@ class AirtimeCashRequestResource extends Resource
 
                 ImageColumn::make('proof_image')
                     ->label('Proof')
-                    ->disk('public')
+                    ->disk('central_public')
                     ->width(44)
                     ->height(44)
                     ->circular(false)

@@ -166,7 +166,7 @@ class AirtimeCashController extends Controller
 
         $proofPath = null;
         if ($request->hasFile('proof_image')) {
-            $proofPath = $request->file('proof_image')->store('proofs/airtime-cash', 'public');
+            $proofPath = $request->file('proof_image')->store('proofs/airtime-cash', 'central_public');
         }
 
         $conversionRequest = AirtimeCashRequest::create([
