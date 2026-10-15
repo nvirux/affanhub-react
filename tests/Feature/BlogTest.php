@@ -116,3 +116,27 @@ test('blog index filters posts by search and category', function () {
         ->where('posts.data.0.slug', 'airtel-api-integration')
     );
 });
+
+test('public blog post renders Open Graph and Twitter Card tags in initial HTML', function () {
+    $post = Post::create([
+        'title' => 'Why Pay for AffanHub Subscription?',
+        'slug' => 'why-pay-for-affanhub-subscription',
+        'category' => 'Business',
+        'excerpt' => 'Discover the real value of an AffanHub subscription.',
+        'content' => '<p>Content here</p>',
+        'cover_image' => 'https://affanhub.com/storage/blog/covers/sample.jpg',
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+        'seo_title' => 'Why Pay for AffanHub Subscription? | AffanHub',
+        'seo_description' => 'Discover the real value of an AffanHub subscription for VTU businesses.',
+    ]);
+
+    $response = $this->get("/blog/{$post->slug}");
+
+    $response->assertStatus(200);
+    $response->assertSee('<meta property="og:title" content="Why Pay for AffanHub Subscription? | AffanHub — AffanHub">', false);
+    $response->assertSee('<meta property="og:description" content="Discover the real value of an AffanHub subscription for VTU businesses.">', false);
+    $response->assertSee('<meta property="og:image" content="https://affanhub.com/storage/blog/covers/sample.jpg">', false);
+    $response->assertSee('<meta property="og:type" content="article">', false);
+    $response->assertSee('<meta name="twitter:card" content="summary_large_image">', false);
+});

@@ -43,6 +43,67 @@
         {{-- Dynamic App Name for Inertia Head and Title Resolvers --}}
         <meta name="app-name" content="{{ tenant() ? tenant('name') : config('app.name', 'AffanHub') }}">
 
+        @php
+            $post = $page['props']['post'] ?? null;
+            $appName = tenant() ? tenant('name') : config('app.name', 'AffanHub');
+
+            if ($post) {
+                $metaTitle = ($post['seo_title'] ?? $post['title']) . ' — ' . $appName;
+                $metaDescription = $post['seo_description'] ?? $post['excerpt'] ?? 'Discover insights, guides, and updates from ' . $appName;
+
+                $metaImage = null;
+                if (!empty($post['cover_image_url'])) {
+                    $metaImage = str_starts_with($post['cover_image_url'], 'http')
+                        ? $post['cover_image_url']
+                        : url($post['cover_image_url']);
+                } else {
+                    $metaImage = url('/affan-icon.png');
+                }
+
+                $metaUrl = url('/blog/' . ($post['slug'] ?? ''));
+                $metaType = 'article';
+            } else {
+                $metaTitle = tenant() ? tenant('name') : config('app.name', 'AffanHub');
+                $metaDescription = tenant()
+                    ? (tenant('tagline') ?? 'Fast & Reliable Telecom Services')
+                    : 'All-in-one automated VTU & digital telecom reselling platform. Sell airtime, data, cable TV, and electricity with instant delivery.';
+
+                $metaImage = null;
+                if (tenant() && tenant('logo_path')) {
+                    $metaImage = \Illuminate\Support\Facades\Storage::url(tenant('logo_path'));
+                    if (!str_starts_with($metaImage, 'http')) {
+                        $metaImage = url($metaImage);
+                    }
+                } else {
+                    $metaImage = url('/affan-icon.png');
+                }
+
+                $metaUrl = request()->url();
+                $metaType = 'website';
+            }
+        @endphp
+
+        {{-- Server-Rendered SEO & Social Meta Tags (Read immediately by WhatsApp, Facebook, Googlebot, Twitter) --}}
+        <meta name="description" content="{{ $metaDescription }}">
+        <link rel="canonical" href="{{ $metaUrl }}">
+
+        <!-- Open Graph / WhatsApp / Facebook -->
+        <meta property="og:type" content="{{ $metaType }}">
+        <meta property="og:site_name" content="{{ $appName }}">
+        <meta property="og:url" content="{{ $metaUrl }}">
+        <meta property="og:title" content="{{ $metaTitle }}">
+        <meta property="og:description" content="{{ $metaDescription }}">
+        <meta property="og:image" content="{{ $metaImage }}">
+        <meta property="og:image:secure_url" content="{{ $metaImage }}">
+        <meta property="og:image:alt" content="{{ $metaTitle }}">
+
+        <!-- Twitter / X Cards -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:url" content="{{ $metaUrl }}">
+        <meta name="twitter:title" content="{{ $metaTitle }}">
+        <meta name="twitter:description" content="{{ $metaDescription }}">
+        <meta name="twitter:image" content="{{ $metaImage }}">
+
         {{-- Mobile App & Browser Theme Color for Dynamic Status Bar --}}
         @php
             $storeThemeColor = tenant() && tenant('primary_color') ? tenant('primary_color') : '#10b981';
@@ -71,7 +132,7 @@
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
         <x-inertia::head>
-            <title>{{ tenant() ? tenant('name') : config('app.name', 'AffanHub') }}</title>
+            <title>{{ $metaTitle }}</title>
         </x-inertia::head>
 
         {{-- Tenant Dynamic Brand Theme & Foreground Contrast (Loaded last to ensure absolute cascade priority) --}}
