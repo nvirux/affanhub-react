@@ -89,7 +89,7 @@ class MerchantPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::BODY_END,
-                fn () => view('filament.merchant.components.tawk-chat')
+                fn () => view('filament.merchant.components.chatwoot-chat')
             )
             ->discoverWidgets(in: app_path('Filament/Merchant/Widgets'), for: 'App\Filament\Merchant\Widgets')
             ->widgets([
