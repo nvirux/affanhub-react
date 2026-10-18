@@ -3,7 +3,7 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import { dashboard } from '@/routes';
 import {
     ChevronLeft, Headphones, ShieldCheck, CheckCircle2,
-    FileText, IdCard, Smartphone, Copy, Check, Eye, EyeOff,
+    FileText, IdCard, Copy, Check, Eye, EyeOff,
     Download, Printer, RefreshCw, AlertCircle,
     BadgeCheck, Lock, Layers, ZoomIn, Building2
 } from 'lucide-react';
@@ -70,8 +70,6 @@ export default function BvnVerificationPage({
 }: BvnPageProps) {
     const { auth } = usePage<any>().props;
 
-    // Search Mode: 'bvn' vs 'phone'
-    const [searchMode, setSearchMode] = useState<'bvn' | 'phone'>('bvn');
     const [searchValue, setSearchValue] = useState('');
     const [selectedSlipId, setSelectedSlipId] = useState<string>(
         slips.find((s) => s.is_popular)?.id || slips[0]?.id || 'basic'
@@ -123,11 +121,7 @@ export default function BvnVerificationPage({
 
     const handleInitiateVerification = () => {
         if (!isInputValid) {
-            setErrorMessage(
-                searchMode === 'phone'
-                    ? 'Please enter a valid 11-digit phone number.'
-                    : 'Please enter a valid 11-digit Bank Verification Number (BVN).'
-            );
+            setErrorMessage('Please enter a valid 11-digit Bank Verification Number (BVN).');
             return;
         }
 
@@ -153,7 +147,7 @@ export default function BvnVerificationPage({
                     'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
                 },
                 body: JSON.stringify({
-                    search_type: searchMode,
+                    search_type: 'bvn',
                     search_value: searchValue,
                     slip_type: selectedSlip.id,
                 }),
@@ -203,11 +197,7 @@ export default function BvnVerificationPage({
             value: <span className="font-semibold text-gray-900 dark:text-white">BVN Verification</span>,
         },
         {
-            label: 'Search Mode',
-            value: searchMode === 'phone' ? 'Phone Lookup' : '11-Digit BVN',
-        },
-        {
-            label: searchMode === 'phone' ? 'Phone Number' : 'BVN Number',
+            label: 'BVN Number',
             value: <span className="font-mono font-semibold tracking-wider">{searchValue}</span>,
         },
         {
@@ -500,58 +490,12 @@ export default function BvnVerificationPage({
                 ) : (
                     /* SEARCH & SLIP SELECTION VIEW */
                     <div className="space-y-4">
-                        {/* 1. SEGMENTED SEARCH MODE SWITCHER */}
-                        <div className="bg-white dark:bg-[#181826] p-1.5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xs flex">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setSearchMode('bvn');
-                                    setSearchValue('');
-                                    setErrorMessage(null);
-                                }}
-                                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                                    searchMode === 'bvn'
-                                        ? 'bg-primary text-white shadow-sm'
-                                        : 'text-slate-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
-                                }`}
-                            >
-                                <IdCard className="w-4 h-4" />
-                                <span>By 11-Digit BVN</span>
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setSearchMode('phone');
-                                    setSearchValue('');
-                                    setErrorMessage(null);
-                                }}
-                                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                                    searchMode === 'phone'
-                                        ? 'bg-primary text-white shadow-sm'
-                                        : 'text-slate-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
-                                }`}
-                            >
-                                <Smartphone className="w-4 h-4" />
-                                <span>By Phone Number</span>
-                            </button>
-                        </div>
-
-                        {/* 2. SEARCH INPUT CARD */}
+                        {/* SEARCH INPUT CARD */}
                         <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-5 shadow-xs space-y-3">
                             <div className="flex items-center justify-between">
                                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                                    {searchMode === 'phone' ? (
-                                        <>
-                                            <Smartphone className="w-3.5 h-3.5 text-primary" />
-                                            <span>Registered Phone Number</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <IdCard className="w-3.5 h-3.5 text-primary" />
-                                            <span>11-Digit Bank Verification Number</span>
-                                        </>
-                                    )}
+                                    <IdCard className="w-3.5 h-3.5 text-primary" />
+                                    <span>11-Digit Bank Verification Number</span>
                                 </label>
 
                                 <span
@@ -574,11 +518,7 @@ export default function BvnVerificationPage({
                                     maxLength={11}
                                     value={searchValue}
                                     onChange={handleSearchValueChange}
-                                    placeholder={
-                                        searchMode === 'phone'
-                                            ? 'e.g. 08012345678'
-                                            : 'e.g. 22345678901'
-                                    }
+                                    placeholder="e.g. 22345678901"
                                     className="w-full pl-4 pr-24 py-3.5 bg-gray-50/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 rounded-xl text-base sm:text-lg font-mono font-bold tracking-wider text-gray-900 dark:text-white placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
                                 />
 
@@ -601,9 +541,7 @@ export default function BvnVerificationPage({
 
                             <p className="text-[11px] text-slate-400 flex items-center gap-1">
                                 <Lock className="w-3 h-3 text-slate-400" />
-                                {searchMode === 'phone'
-                                    ? 'Enter the 11-digit phone number linked to the customer\'s BVN registration.'
-                                    : 'Enter the customer\'s 11-digit Bank Verification Number (BVN).'}
+                                <span>Enter the customer's 11-digit Bank Verification Number (BVN).</span>
                             </p>
                         </div>
 
