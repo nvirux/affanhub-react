@@ -711,8 +711,8 @@ class MobileAppManager extends Page
                 ->send();
         } elseif ($this->mobileApp->status === 'failed' && $prevStatus !== 'failed') {
             Notification::make()
-                ->title('Compilation Issue')
-                ->body($this->mobileApp->failure_reason ?? 'Build failed on runner. Check workflow logs.')
+                ->title('Compilation Notice')
+                ->body('Unable to complete app compilation at this time. Please retry or contact support.')
                 ->danger()
                 ->send();
         }

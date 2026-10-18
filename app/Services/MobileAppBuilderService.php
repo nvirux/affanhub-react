@@ -200,9 +200,10 @@ class MobileAppBuilderService
                             $artifactsUrl = $latestRun['artifacts_url'];
                             $this->transferArtifactsToR2($mobileApp, $artifactsUrl, (string) $latestRun['id']);
                         } elseif ($conclusion === 'failure') {
+                            Log::warning("GitHub Action compilation failed for store #{$mobileApp->store_id}");
                             $mobileApp->update([
                                 'status' => 'failed',
-                                'failure_reason' => 'GitHub Action build failed. Check workflow logs.',
+                                'failure_reason' => 'Compilation could not be completed. Please try rebuilding or contact support.',
                             ]);
                         }
                     }
@@ -230,6 +231,12 @@ class MobileAppBuilderService
 
         $artifacts = $artResponse->json('artifacts') ?? [];
         if (empty($artifacts)) {
+            Log::warning("GitHub build completed for store #{$mobileApp->store_id}, but artifacts list was empty at {$artifactsUrl}");
+            $mobileApp->update([
+                'status' => 'failed',
+                'failure_reason' => 'Compilation could not generate output binaries. Please try rebuilding.',
+            ]);
+
             return;
         }
 
