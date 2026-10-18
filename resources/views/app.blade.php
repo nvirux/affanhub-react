@@ -163,5 +163,25 @@
     </head>
     <body class="font-sans antialiased">
         <x-inertia::app />
+
+        {{-- Chatwoot Live Support Widget for Central Marketing Domain (Landing Page & Blog) --}}
+        @if(!tenant())
+            <script>
+              window.chatwootSettings = {"position":"right","type":"standard","launcherTitle":""};
+              (function(d,t) {
+                var BASE_URL="https://app.chatwoot.com";
+                var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+                g.src=BASE_URL+"/packs/js/sdk.js";
+                g.async = true;
+                s.parentNode.insertBefore(g,s);
+                g.onload=function(){
+                  window.chatwootSDK.run({
+                    websiteToken: 'EsKYqLKgZB74sjE2jMpaoXZE',
+                    baseUrl: BASE_URL
+                  })
+                }
+              })(document,"script");
+            </script>
+        @endif
     </body>
 </html>
