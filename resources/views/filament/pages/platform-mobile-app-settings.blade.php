@@ -113,7 +113,7 @@
                             style="width: 100%; padding: 0.75rem 0.85rem 0.75rem 2.2rem; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 1.1rem; font-weight: 800; color: #0f172a;"
                         >
                     </div>
-                    <span style="font-size: 0.7rem; color: #10b981; font-weight: 700; display: block; margin-top: 0.35rem;">Default: ₦15,000</span>
+                    <span style="font-size: 0.7rem; color: #10b981; font-weight: 700; display: block; margin-top: 0.35rem;">Set to ₦0 to make Base APK Generation 100% Free for merchants.</span>
                 </div>
 
                 <!-- 2. Google Play Store Submission Fee -->
@@ -144,8 +144,8 @@
             <div style="background-color: #f1f5f9; border-radius: 12px; padding: 1rem; border-left: 4px solid #3b82f6;">
                 <span style="font-size: 0.8125rem; font-weight: 700; color: #1e293b; display: block; margin-bottom: 0.25rem;">Live Pricing Calculation on Merchant Dashboards:</span>
                 <div style="font-size: 0.75rem; color: #475569; display: flex; flex-direction: column; gap: 0.2rem;">
-                    <div>• <strong>APK Only Build:</strong> ₦{{ number_format($setupFee, 2) }}</div>
-                    <div>• <strong>APK + Google Play Publishing:</strong> ₦{{ number_format($setupFee + $playstoreFee, 2) }} (Bundle Deal)</div>
+                    <div>• <strong>APK Only Build:</strong> {{ $setupFee <= 0 ? 'FREE (₦0.00)' : '₦' . number_format($setupFee, 2) }}</div>
+                    <div>• <strong>APK + Google Play Publishing:</strong> ₦{{ number_format($setupFee + $playstoreFee, 2) }}</div>
                 </div>
             </div>
 

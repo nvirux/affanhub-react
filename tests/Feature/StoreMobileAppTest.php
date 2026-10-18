@@ -82,7 +82,7 @@ test('store can have mobile app record and increment versions', function () {
     expect($store->mobileApp->id)->toBe($app->id);
 });
 
-test('mobile app manager page renders cleanly without blade errors', function () {
+test('mobile app manager page renders cleanly without blade errors and supports free generation', function () {
     $owner = Owner::create([
         'name' => 'Demo Merchant',
         'email' => 'demo@example.com',
@@ -102,6 +102,14 @@ test('mobile app manager page renders cleanly without blade errors', function ()
 
     Livewire\Livewire::test(MobileAppManager::class)
         ->assertSuccessful()
-        ->assertSee('App Customization')
-        ->assertSee('Official Signed Production Build');
+        ->assertSee('App Branding')
+        ->assertSee('Branded Android APK')
+        ->assertSee('Generate Android App (Free)')
+        ->call('generateFreeApp')
+        ->assertHasNoErrors();
+
+    $store->refresh();
+    expect($store->mobileApp)->not->toBeNull()
+        ->and($store->mobileApp->status)->toBe('building')
+        ->and($store->mobileApp->price_paid)->toEqual(0.00);
 });

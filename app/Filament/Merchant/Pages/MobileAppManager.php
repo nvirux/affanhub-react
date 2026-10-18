@@ -44,7 +44,7 @@ class MobileAppManager extends Page
 
     public string $buildType = 'release'; // Always production release build (Signed APK + Google Play Bundle)
 
-    public float $setupPrice = 15000.00;
+    public float $setupPrice = 0.00;
 
     public float $playstorePrice = 30000.00;
 
@@ -57,16 +57,24 @@ class MobileAppManager extends Page
         }
     }
 
+    public function getHasPaidSetupProperty(): bool
+    {
+        return $this->setupPrice <= 0
+            || ($this->mobileApp && (float) $this->mobileApp->price_paid >= $this->setupPrice);
+    }
+
+    public function getHasPaidPlaystoreProperty(): bool
+    {
+        return $this->mobileApp && (float) $this->mobileApp->playstore_paid >= $this->playstorePrice;
+    }
+
     public function getTotalPriceProperty(): float
     {
-        $hasPaidSetup = $this->mobileApp && (float) $this->mobileApp->price_paid >= $this->setupPrice;
-        $hasPaidPlaystore = $this->mobileApp && (float) $this->mobileApp->playstore_paid >= $this->playstorePrice;
-
         $total = 0.0;
-        if (! $hasPaidSetup) {
+        if (! $this->has_paid_setup) {
             $total += $this->setupPrice;
         }
-        if ($this->includePlaystore && ! $hasPaidPlaystore) {
+        if ($this->includePlaystore && ! $this->has_paid_playstore) {
             $total += $this->playstorePrice;
         }
 
@@ -192,7 +200,7 @@ class MobileAppManager extends Page
         $tenant = Filament::getTenant();
         $this->mobileApp = $tenant->mobileApp;
 
-        $this->setupPrice = (float) PlatformSetting::get('mobile_app_setup_fee', 15000.00);
+        $this->setupPrice = (float) PlatformSetting::get('mobile_app_setup_fee', 0.00);
         $this->playstorePrice = (float) PlatformSetting::get('mobile_app_playstore_fee', 30000.00);
 
         if ($this->mobileApp) {
@@ -226,27 +234,106 @@ class MobileAppManager extends Page
     {
         $tenant = Filament::getTenant();
 
-        if ($this->iconChoice === 'store_logo' && ! empty($tenant->logo_path)) {
-            return $builder->processAndStoreAppIcon($tenant->logo_path, $tenant->id);
-        }
-
-        if ($this->appIcon) {
-            if ($this->mobileApp?->app_icon_path) {
-                $builder->deleteOldIcon($this->mobileApp->app_icon_path);
+        try {
+            if ($this->iconChoice === 'store_logo' && ! empty($tenant->logo_path)) {
+                return $builder->processAndStoreAppIcon($tenant->logo_path, $tenant->id);
             }
 
-            return $builder->processAndStoreAppIcon($this->appIcon, $tenant->id);
-        }
+            if ($this->appIcon) {
+                if ($this->mobileApp?->app_icon_path) {
+                    $builder->deleteOldIcon($this->mobileApp->app_icon_path);
+                }
 
-        if ($this->mobileApp?->app_icon_path) {
-            return $this->mobileApp->app_icon_path;
-        }
+                return $builder->processAndStoreAppIcon($this->appIcon, $tenant->id);
+            }
 
-        if (! empty($tenant->logo_path)) {
-            return $builder->processAndStoreAppIcon($tenant->logo_path, $tenant->id);
+            if ($this->mobileApp?->app_icon_path) {
+                return $this->mobileApp->app_icon_path;
+            }
+
+            if (! empty($tenant->logo_path)) {
+                return $builder->processAndStoreAppIcon($tenant->logo_path, $tenant->id);
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Could not process app icon for store #{$tenant->id}: {$e->getMessage()}");
+
+            return $this->mobileApp?->app_icon_path ?? $tenant->logo_path;
         }
 
         return null;
+    }
+
+    /**
+     * Trigger instant compilation when generation is free (total price is ₦0).
+     */
+    public function generateFreeApp(MobileAppBuilderService $builder): void
+    {
+        if (! $this->canCreateOrRebuildApp()) {
+            Notification::make()
+                ->title('App Creation Unavailable')
+                ->body($this->getEligibilityBlockReason() ?? 'Mobile app creation is not available.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        if ($this->totalPrice > 0) {
+            Notification::make()
+                ->title('Payment Required')
+                ->body('Please choose a payment method to complete your order with the selected add-ons.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        $tenant = Filament::getTenant();
+
+        $rules = [
+            'appName' => 'required|string|min:2|max:30',
+            'appIcon' => 'nullable|image|max:3072',
+        ];
+
+        $this->validate($rules);
+
+        $iconPath = $this->resolveIconPath($builder);
+
+        $app = StoreMobileApp::updateOrCreate(
+            ['store_id' => $tenant->id],
+            [
+                'app_name' => $this->appName,
+                'package_id' => $this->package_id,
+                'app_icon_path' => $iconPath,
+                'price_paid' => $this->mobileApp?->price_paid ?? 0,
+                'include_playstore' => false,
+                'playstore_status' => $this->mobileApp?->playstore_status ?? 'not_requested',
+                'playstore_paid' => $this->mobileApp?->playstore_paid ?? 0,
+                'status' => 'building',
+                'version_code' => $this->mobileApp?->version_code ?? 1,
+                'version_name' => $this->mobileApp?->version_name ?? '1.0.0',
+            ]
+        );
+
+        $this->mobileApp = $app;
+
+        $storeUrl = $this->getResolvedStoreUrl();
+
+        $result = $builder->dispatchBuild($app, $storeUrl, $this->buildType);
+
+        if ($result['success']) {
+            Notification::make()
+                ->title('App Compilation Started!')
+                ->body('Your Android app is compiling in the cloud. It will be ready in approximately 2 minutes.')
+                ->success()
+                ->send();
+        } else {
+            Notification::make()
+                ->title('Compilation Notice')
+                ->body($result['message'])
+                ->info()
+                ->send();
+        }
     }
 
     /**
@@ -254,6 +341,12 @@ class MobileAppManager extends Page
      */
     public function payWithPayMint(MobileAppBuilderService $builder): mixed
     {
+        if ($this->totalPrice <= 0) {
+            $this->generateFreeApp($builder);
+
+            return null;
+        }
+
         if (! $this->canCreateOrRebuildApp()) {
             Notification::make()
                 ->title('App Creation Unavailable')
@@ -268,11 +361,8 @@ class MobileAppManager extends Page
 
         $rules = [
             'appName' => 'required|string|min:2|max:30',
+            'appIcon' => 'nullable|image|max:3072',
         ];
-
-        if ($this->iconChoice === 'custom' && ! $this->mobileApp?->app_icon_path) {
-            $rules['appIcon'] = 'required|image|max:3072';
-        }
 
         $this->validate($rules);
 
@@ -348,6 +438,12 @@ class MobileAppManager extends Page
      */
     public function orderWithBalance(MobileAppBuilderService $builder): void
     {
+        if ($this->totalPrice <= 0) {
+            $this->generateFreeApp($builder);
+
+            return;
+        }
+
         if (! $this->canCreateOrRebuildApp()) {
             Notification::make()
                 ->title('App Creation Unavailable')
@@ -362,18 +458,15 @@ class MobileAppManager extends Page
 
         $rules = [
             'appName' => 'required|string|min:2|max:30',
+            'appIcon' => 'nullable|image|max:3072',
         ];
-
-        if ($this->iconChoice === 'custom' && ! $this->mobileApp?->app_icon_path) {
-            $rules['appIcon'] = 'required|image|max:3072';
-        }
 
         $this->validate($rules);
 
         $wallet = $tenant->mainWallet();
         $totalPrice = $this->totalPrice;
-        $hasPaidSetup = $this->mobileApp && (float) $this->mobileApp->price_paid >= $this->setupPrice;
-        $hasPaidPlaystore = $this->mobileApp && (float) $this->mobileApp->playstore_paid >= $this->playstorePrice;
+        $hasPaidSetup = $this->has_paid_setup;
+        $hasPaidPlaystore = $this->has_paid_playstore;
 
         // Debit store wallet if there is an unpaid amount (setup or playstore)
         if ($totalPrice > 0) {
@@ -440,7 +533,7 @@ class MobileAppManager extends Page
     }
 
     /**
-     * Request Google Play Store Publishing for an existing built app.
+     * Request Google Play Store Publishing for an existing built app (via Store Wallet).
      */
     public function requestPlayStorePublishing(): void
     {
@@ -454,7 +547,7 @@ class MobileAppManager extends Page
         if (! $wallet->hasSufficientBalance($this->playstorePrice)) {
             Notification::make()
                 ->title('Insufficient Store Balance')
-                ->body('You need ₦'.number_format($this->playstorePrice, 2).' in your store wallet to request Google Play Store publishing.')
+                ->body('You need ₦'.number_format($this->playstorePrice, 2).' in your store wallet. Or use PayMint below.')
                 ->danger()
                 ->send();
 
@@ -483,6 +576,66 @@ class MobileAppManager extends Page
             ->body('Our deployment team will package, sign, and submit your app bundle (.aab) to Google Play Store.')
             ->success()
             ->send();
+    }
+
+    /**
+     * Request Google Play Store Publishing and pay via PayMint.
+     */
+    public function requestPlayStoreWithPayMint(): mixed
+    {
+        if (! $this->mobileApp || $this->mobileApp->isPlayStoreRequested()) {
+            return null;
+        }
+
+        $tenant = Filament::getTenant();
+        $reference = 'APP_PLAY_'.strtoupper(Str::random(10));
+        $redirectUrl = route('merchant.billing.callback', ['tenant' => $tenant->public_id]);
+        $owner = $tenant->owner;
+
+        try {
+            $response = PayMint::checkout()->initialize([
+                'amount' => (int) $this->playstorePrice,
+                'email' => $owner?->email ?? 'merchant@store.com',
+                'reference' => $reference,
+                'redirect_url' => $redirectUrl,
+                'name' => $owner?->name ?? $tenant->name,
+                'phone' => $owner?->phone ?? '08012345678',
+            ]);
+
+            if (($response['status'] ?? '') !== 'success' || empty($response['data']['authorization_url'])) {
+                $errorMsg = $response['message'] ?? 'Failed to initialize PayMint Checkout.';
+                Notification::make()
+                    ->title('PayMint Checkout Failed')
+                    ->body($errorMsg)
+                    ->danger()
+                    ->send();
+
+                return null;
+            }
+
+            Cache::put("mobile_app_checkout_{$reference}", [
+                'store_id' => $tenant->id,
+                'app_name' => $this->mobileApp->app_name,
+                'package_id' => $this->mobileApp->package_id,
+                'icon_path' => $this->mobileApp->app_icon_path,
+                'price' => $this->playstorePrice,
+                'include_playstore' => true,
+                'playstore_fee' => $this->playstorePrice,
+            ], now()->addHours(2));
+
+            $authUrl = $response['data']['authorization_url'];
+            $this->js("window.location.href = '{$authUrl}';");
+
+            return $this->redirect($authUrl, navigate: false);
+        } catch (\Throwable $e) {
+            Notification::make()
+                ->title('Payment Initialization Error')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+
+            return null;
+        }
     }
 
     /**
