@@ -6,8 +6,11 @@ use App\Models\StoreMobileApp;
 use App\Services\MobileAppBuilderService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -19,6 +22,7 @@ class StoreMobileAppsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordUrl(null)
             ->columns([
                 ImageColumn::make('app_icon_path')
                     ->label('Icon')
@@ -38,15 +42,15 @@ class StoreMobileAppsTable
 
                 TextColumn::make('package_id')
                     ->label('Package ID')
-                    ->searchable()
+                    ->fontFamily('mono')
                     ->copyable()
-                    ->color('gray'),
+                    ->searchable(),
 
-                TextColumn::make('version')
+                TextColumn::make('version_name')
                     ->label('Version')
                     ->badge()
                     ->color('info')
-                    ->state(fn (StoreMobileApp $record): string => "v{$record->version_name} ({$record->version_code})"),
+                    ->formatStateUsing(fn ($state, StoreMobileApp $record) => "v{$state} ({$record->version_code})"),
 
                 TextColumn::make('status')
                     ->label('Build Status')
@@ -99,6 +103,8 @@ class StoreMobileAppsTable
                     ]),
             ])
             ->recordActions([
+                ViewAction::make(),
+
                 Action::make('download')
                     ->label('Download APK')
                     ->icon('heroicon-o-arrow-down-tray')
@@ -108,21 +114,82 @@ class StoreMobileAppsTable
                     ->openUrlInNewTab(),
 
                 Action::make('downloadAab')
-                    ->label('Download AAB Bundle')
+                    ->label('Download AAB')
                     ->icon('heroicon-o-cloud-arrow-down')
                     ->color('primary')
                     ->visible(fn (StoreMobileApp $record): bool => ! empty($record->aab_download_url))
                     ->url(fn (StoreMobileApp $record): ?string => $record->aab_download_url)
                     ->openUrlInNewTab(),
 
+                Action::make('cancel_build')
+                    ->label('Cancel Build')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->visible(fn (StoreMobileApp $record): bool => $record->status === 'building')
+                    ->requiresConfirmation()
+                    ->modalHeading('Cancel Cloud Build')
+                    ->modalDescription('Are you sure you want to cancel this build? The merchant will be able to retry immediately.')
+                    ->action(function (StoreMobileApp $record): void {
+                        $record->update([
+                            'status' => 'failed',
+                            'failure_reason' => 'Build cancelled by administrator.',
+                        ]);
+
+                        Notification::make()
+                            ->title('Build Cancelled')
+                            ->body("The build for {$record->app_name} has been cancelled.")
+                            ->info()
+                            ->send();
+                    }),
+
+                Action::make('manage_playstore')
+                    ->label('Play Store')
+                    ->icon('heroicon-o-globe-alt')
+                    ->color('info')
+                    ->modalHeading(fn (StoreMobileApp $record): string => "Update Google Play: {$record->app_name}")
+                    ->form([
+                        Select::make('playstore_status')
+                            ->label('Google Play Submission Status')
+                            ->options([
+                                'not_requested' => 'Not Requested',
+                                'pending_submission' => 'Pending Submission',
+                                'submitted' => 'Submitted to Google Console',
+                                'published' => 'Published Live on Play Store',
+                                'rejected' => 'Rejected by Google Policy',
+                            ])
+                            ->required(),
+
+                        TextInput::make('playstore_url')
+                            ->label('Google Play Store Live Listing URL')
+                            ->url()
+                            ->placeholder('https://play.google.com/store/apps/details?id=...'),
+                    ])
+                    ->fillForm(fn (StoreMobileApp $record): array => [
+                        'playstore_status' => $record->playstore_status,
+                        'playstore_url' => $record->playstore_url,
+                    ])
+                    ->action(function (StoreMobileApp $record, array $data): void {
+                        $record->update([
+                            'playstore_status' => $data['playstore_status'],
+                            'playstore_url' => $data['playstore_url'],
+                        ]);
+
+                        Notification::make()
+                            ->title('Play Store Status Updated')
+                            ->body("Updated Google Play details for {$record->app_name}.")
+                            ->success()
+                            ->send();
+                    }),
+
                 Action::make('rebuild')
-                    ->label('Trigger Build')
+                    ->label('Rebuild')
                     ->icon('heroicon-o-bolt')
                     ->color('warning')
                     ->requiresConfirmation()
                     ->modalHeading('Trigger Android APK Build')
-                    ->modalDescription('This will increment the build version and trigger a fresh GitHub Actions cloud build for this app.')
+                    ->modalDescription('This will increment the version code, clean old files, and dispatch a fresh cloud build.')
                     ->action(function (StoreMobileApp $record, MobileAppBuilderService $builder): void {
+                        $builder->cleanupOldBuilds($record);
                         $record->incrementVersion();
                         $record->status = 'building';
                         $record->save();
@@ -145,7 +212,7 @@ class StoreMobileAppsTable
                     }),
 
                 Action::make('sync_status')
-                    ->label('Check Status')
+                    ->label('Sync')
                     ->icon('heroicon-o-arrow-path')
                     ->color('gray')
                     ->action(function (StoreMobileApp $record, MobileAppBuilderService $builder): void {
@@ -167,13 +234,14 @@ class StoreMobileAppsTable
                         } else {
                             Notification::make()
                                 ->title('Compilation In Progress')
-                                ->body('GitHub Actions runner is still compiling the APK.')
+                                ->body('Runner is still compiling.')
                                 ->info()
                                 ->send();
                         }
                     }),
 
-                EditAction::make(),
+                DeleteAction::make()
+                    ->before(fn (StoreMobileApp $record, MobileAppBuilderService $builder) => $builder->cleanupOldBuilds($record)),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -67,14 +67,39 @@ class MobileAppBuilderService
     /**
      * Dispatch the GitHub Actions cloud build workflow for a merchant store app.
      */
+    public function getActiveStorageDisk(): string
+    {
+        return ! empty(config('filesystems.disks.r2.bucket'))
+            ? 'r2'
+            : (! empty(config('filesystems.disks.s3.bucket')) ? 's3' : config('filesystems.default'));
+    }
+
+    /**
+     * Dispatch the GitHub Actions cloud build workflow for a merchant store app.
+     */
     public function dispatchBuild(StoreMobileApp $mobileApp, ?string $storefrontUrl = null, string $buildType = 'release'): array
     {
         $store = $mobileApp->store;
         $resolvedStoreUrl = $this->resolveStorefrontUrl($mobileApp, $storefrontUrl);
-        $iconUrl = $mobileApp->app_icon_path ? Storage::url($mobileApp->app_icon_path) : null;
+        $targetDisk = $this->getActiveStorageDisk();
 
-        if ($iconUrl && ! str_starts_with($iconUrl, 'http')) {
-            $iconUrl = url($iconUrl);
+        $iconUrl = null;
+        if (! empty($mobileApp->app_icon_path)) {
+            try {
+                $iconUrl = Storage::disk($targetDisk)->url($mobileApp->app_icon_path);
+            } catch (\Throwable) {
+                $iconUrl = Storage::url($mobileApp->app_icon_path);
+            }
+
+            if ($iconUrl && ! str_starts_with($iconUrl, 'http')) {
+                $iconUrl = url($iconUrl);
+            }
+
+            // GitHub Actions cloud runner cannot access local machine URLs (localhost / 127.0.0.1)
+            if ($iconUrl && (str_contains($iconUrl, 'localhost') || str_contains($iconUrl, '127.0.0.1'))) {
+                Log::warning("App icon URL ({$iconUrl}) is local and unreachable from GitHub Actions cloud runner. Build will use template default branding.");
+                $iconUrl = null;
+            }
         }
 
         // Custom keystore support (for legacy stores already published on Google Play)
@@ -102,16 +127,15 @@ class MobileAppBuilderService
         ];
 
         if (empty($this->token)) {
-            Log::warning('GitHub App Builder Token missing. Simulating build in local/sandbox mode.');
+            Log::error('GitHub App Builder Token missing. Build cannot proceed without GITHUB_APP_TOKEN.');
             $mobileApp->update([
-                'status' => 'building',
-                'last_built_at' => now(),
+                'status' => 'failed',
+                'failure_reason' => 'App builder configuration issue (missing GITHUB_APP_TOKEN in .env).',
             ]);
 
             return [
-                'success' => true,
-                'simulated' => true,
-                'message' => 'Build initiated in simulated mode (Add GITHUB_APP_TOKEN to .env to connect to live GitHub Actions runner).',
+                'success' => false,
+                'message' => 'Mobile app compiler is currently offline. Please contact support.',
             ];
         }
 
@@ -173,9 +197,29 @@ class MobileAppBuilderService
     public function syncBuildStatus(StoreMobileApp $mobileApp): array
     {
         if (empty($this->token)) {
+            if ($mobileApp->isBuilding()) {
+                $mobileApp->update([
+                    'status' => 'failed',
+                    'failure_reason' => 'Build stopped: missing GITHUB_APP_TOKEN in .env.',
+                ]);
+            }
+
             return [
                 'status' => $mobileApp->status,
                 'ready' => $mobileApp->isReady(),
+            ];
+        }
+
+        // Auto-cancel / time-out if stuck in building for more than 15 minutes
+        if ($mobileApp->isBuilding() && $mobileApp->last_built_at && $mobileApp->last_built_at->diffInMinutes(now()) >= 15) {
+            $mobileApp->update([
+                'status' => 'failed',
+                'failure_reason' => 'Build timed out after 15 minutes with no response from build runner.',
+            ]);
+
+            return [
+                'status' => $mobileApp->status,
+                'ready' => false,
             ];
         }
 
@@ -199,8 +243,8 @@ class MobileAppBuilderService
                         if ($conclusion === 'success') {
                             $artifactsUrl = $latestRun['artifacts_url'];
                             $this->transferArtifactsToR2($mobileApp, $artifactsUrl, (string) $latestRun['id']);
-                        } elseif ($conclusion === 'failure') {
-                            Log::warning("GitHub Action compilation failed for store #{$mobileApp->store_id}");
+                        } elseif (in_array($conclusion, ['failure', 'cancelled', 'timed_out'])) {
+                            Log::warning("GitHub Action compilation ended with [{$conclusion}] for store #{$mobileApp->store_id}");
                             $mobileApp->update([
                                 'status' => 'failed',
                                 'failure_reason' => 'Compilation could not be completed. Please try rebuilding or contact support.',
@@ -319,13 +363,38 @@ class MobileAppBuilderService
         $rawBinary = null;
 
         if (is_string($source)) {
-            $disk = config('filesystems.default');
-            if (Storage::disk($disk)->exists($source)) {
-                $rawBinary = Storage::disk($disk)->get($source);
-            } elseif (Storage::disk('public')->exists($source)) {
-                $rawBinary = Storage::disk('public')->get($source);
-            } elseif (file_exists($source)) {
-                $rawBinary = file_get_contents($source);
+            $disks = array_filter(array_unique([
+                $this->getActiveStorageDisk(),
+                'r2',
+                's3',
+                'public',
+                config('filesystems.default'),
+                'local',
+            ]));
+
+            foreach ($disks as $disk) {
+                try {
+                    if (Storage::disk($disk)->exists($source)) {
+                        $rawBinary = Storage::disk($disk)->get($source);
+                        if (! empty($rawBinary)) {
+                            break;
+                        }
+                    }
+                } catch (\Throwable) {
+                    // Try next disk
+                }
+            }
+
+            if (empty($rawBinary)) {
+                if (file_exists($source)) {
+                    $rawBinary = file_get_contents($source);
+                } elseif (str_starts_with($source, 'http://') || str_starts_with($source, 'https://')) {
+                    try {
+                        $rawBinary = Http::timeout(10)->get($source)->body();
+                    } catch (\Throwable) {
+                        // Remote fetch failed
+                    }
+                }
             }
         } elseif (is_object($source) && method_exists($source, 'getRealPath')) {
             $rawBinary = file_get_contents($source->getRealPath());
@@ -369,7 +438,7 @@ class MobileAppBuilderService
         imagedestroy($srcImg);
         imagedestroy($canvas);
 
-        $storageDisk = config('filesystems.default');
+        $storageDisk = $this->getActiveStorageDisk();
         $fileName = 'icon_'.time().'.png';
         $storedPath = "store-app-icons/{$storeId}/{$fileName}";
 
@@ -390,33 +459,58 @@ class MobileAppBuilderService
             return;
         }
 
-        $storageDisk = config('filesystems.default');
-        Storage::disk($storageDisk)->delete($oldPath);
-        Storage::disk('public')->delete($oldPath);
+        $disks = array_filter(array_unique([
+            $this->getActiveStorageDisk(),
+            'r2',
+            's3',
+            'public',
+            config('filesystems.default'),
+        ]));
+
+        foreach ($disks as $disk) {
+            try {
+                if (Storage::disk($disk)->exists($oldPath)) {
+                    Storage::disk($disk)->delete($oldPath);
+                }
+            } catch (\Throwable) {
+            }
+        }
     }
 
     /**
-     * Delete previously built APK and AAB binaries to conserve storage upon rebuild.
+     * Delete previously built APK, AAB binaries, and app icons from Cloudflare R2 / S3 upon rebuild or deletion.
      */
     public function cleanupOldBuilds(StoreMobileApp $mobileApp, ?string $newUrl = null): void
     {
-        $storageDisk = ! empty(config('filesystems.disks.r2.bucket'))
-            ? 'r2'
-            : (! empty(config('filesystems.disks.s3.bucket')) ? 's3' : config('filesystems.default'));
-
         $dir = "apps/{$mobileApp->store_id}";
+        $iconDir = "store-app-icons/{$mobileApp->store_id}";
 
-        try {
-            foreach (array_unique([$storageDisk, 'public', config('filesystems.default')]) as $disk) {
-                if (Storage::disk($disk)->exists($dir)) {
-                    $files = Storage::disk($disk)->files($dir);
-                    foreach ($files as $file) {
-                        Storage::disk($disk)->delete($file);
-                    }
-                }
+        $disks = array_filter(array_unique([
+            $this->getActiveStorageDisk(),
+            'r2',
+            's3',
+            'public',
+            config('filesystems.default'),
+        ]));
+
+        foreach ($disks as $disk) {
+            if (empty(config("filesystems.disks.{$disk}"))) {
+                continue;
             }
-        } catch (\Throwable $e) {
-            Log::warning("Could not cleanup old builds for store #{$mobileApp->store_id}: {$e->getMessage()}");
+
+            try {
+                // Delete app build directory
+                if (Storage::disk($disk)->exists($dir)) {
+                    Storage::disk($disk)->deleteDirectory($dir);
+                }
+
+                // Delete custom app icons folder
+                if (Storage::disk($disk)->exists($iconDir)) {
+                    Storage::disk($disk)->deleteDirectory($iconDir);
+                }
+            } catch (\Throwable $e) {
+                Log::warning("Could not cleanup builds on disk [{$disk}] for store #{$mobileApp->store_id}: {$e->getMessage()}");
+            }
         }
     }
 }

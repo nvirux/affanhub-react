@@ -234,30 +234,28 @@ class MobileAppManager extends Page
     {
         $tenant = Filament::getTenant();
 
-        try {
-            if ($this->iconChoice === 'store_logo' && ! empty($tenant->logo_path)) {
-                return $builder->processAndStoreAppIcon($tenant->logo_path, $tenant->id);
-            }
-
-            if ($this->appIcon) {
-                if ($this->mobileApp?->app_icon_path) {
-                    $builder->deleteOldIcon($this->mobileApp->app_icon_path);
-                }
-
-                return $builder->processAndStoreAppIcon($this->appIcon, $tenant->id);
-            }
-
-            if ($this->mobileApp?->app_icon_path) {
-                return $this->mobileApp->app_icon_path;
-            }
-
+        if ($this->iconChoice === 'store_logo') {
             if (! empty($tenant->logo_path)) {
                 return $builder->processAndStoreAppIcon($tenant->logo_path, $tenant->id);
             }
-        } catch (\Throwable $e) {
-            Log::warning("Could not process app icon for store #{$tenant->id}: {$e->getMessage()}");
 
-            return $this->mobileApp?->app_icon_path ?? $tenant->logo_path;
+            return null;
+        }
+
+        if ($this->appIcon) {
+            if ($this->mobileApp?->app_icon_path) {
+                $builder->deleteOldIcon($this->mobileApp->app_icon_path);
+            }
+
+            return $builder->processAndStoreAppIcon($this->appIcon, $tenant->id);
+        }
+
+        if ($this->mobileApp?->app_icon_path) {
+            return $this->mobileApp->app_icon_path;
+        }
+
+        if (! empty($tenant->logo_path)) {
+            return $builder->processAndStoreAppIcon($tenant->logo_path, $tenant->id);
         }
 
         return null;
@@ -297,7 +295,17 @@ class MobileAppManager extends Page
 
         $this->validate($rules);
 
-        $iconPath = $this->resolveIconPath($builder);
+        try {
+            $iconPath = $this->resolveIconPath($builder);
+        } catch (\Throwable $e) {
+            Notification::make()
+                ->title('App Launcher Icon Required')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+
+            return;
+        }
 
         $app = StoreMobileApp::updateOrCreate(
             ['store_id' => $tenant->id],
@@ -493,7 +501,17 @@ class MobileAppManager extends Page
             );
         }
 
-        $iconPath = $this->resolveIconPath($builder);
+        try {
+            $iconPath = $this->resolveIconPath($builder);
+        } catch (\Throwable $e) {
+            Notification::make()
+                ->title('App Launcher Icon Required')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+
+            return;
+        }
 
         $app = StoreMobileApp::updateOrCreate(
             ['store_id' => $tenant->id],
@@ -639,6 +657,27 @@ class MobileAppManager extends Page
     }
 
     /**
+     * Cancel an in-progress or stuck build and allow retry.
+     */
+    public function cancelBuild(): void
+    {
+        if (! $this->mobileApp || ! $this->mobileApp->isBuilding()) {
+            return;
+        }
+
+        $this->mobileApp->update([
+            'status' => 'failed',
+            'failure_reason' => 'Build cancelled by merchant.',
+        ]);
+
+        Notification::make()
+            ->title('Build Cancelled')
+            ->body('App compilation was cancelled. You can now adjust your settings and retry.')
+            ->info()
+            ->send();
+    }
+
+    /**
      * Trigger a new release update (auto-increments version code). Cleans up old builds.
      */
     public function requestUpdate(MobileAppBuilderService $builder): void
@@ -665,9 +704,19 @@ class MobileAppManager extends Page
         $tenant = Filament::getTenant();
 
         // Update logo if new one uploaded or re-selected
-        $iconPath = $this->resolveIconPath($builder);
-        if ($iconPath) {
-            $this->mobileApp->app_icon_path = $iconPath;
+        try {
+            $iconPath = $this->resolveIconPath($builder);
+            if ($iconPath) {
+                $this->mobileApp->app_icon_path = $iconPath;
+            }
+        } catch (\Throwable $e) {
+            Notification::make()
+                ->title('App Launcher Icon Required')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+
+            return;
         }
 
         // Clean up old APK to avoid storage buildup

@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\StoreMobileApps;
 
-use App\Filament\Resources\StoreMobileApps\Pages\CreateStoreMobileApp;
-use App\Filament\Resources\StoreMobileApps\Pages\EditStoreMobileApp;
 use App\Filament\Resources\StoreMobileApps\Pages\ListStoreMobileApps;
 use App\Filament\Resources\StoreMobileApps\Schemas\StoreMobileAppForm;
 use App\Filament\Resources\StoreMobileApps\Tables\StoreMobileAppsTable;
@@ -60,8 +58,6 @@ class StoreMobileAppResource extends Resource
     {
         return [
             'index' => ListStoreMobileApps::route('/'),
-            'create' => CreateStoreMobileApp::route('/create'),
-            'edit' => EditStoreMobileApp::route('/{record}/edit'),
         ];
     }
 }

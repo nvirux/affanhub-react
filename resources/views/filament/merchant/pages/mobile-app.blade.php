@@ -212,9 +212,17 @@
                                 </span>
                             </div>
                         </div>
-                        <span style="font-size: 0.75rem; font-weight: 700; color: #92400e; background: #fef3c7; padding: 0.2rem 0.5rem; border-radius: 6px;">
-                            Auto-checking
-                        </span>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #92400e; background: #fef3c7; padding: 0.2rem 0.5rem; border-radius: 6px;">
+                                Auto-checking
+                            </span>
+                            <button wire:click="cancelBuild" 
+                                    wire:confirm="Are you sure you want to cancel this build? You can immediately adjust settings and retry."
+                                    type="button" 
+                                    style="font-size: 0.75rem; font-weight: 700; color: #dc2626; background: #ffffff; border: 1px solid #fca5a5; padding: 0.2rem 0.6rem; border-radius: 6px; cursor: pointer;">
+                                ✖ Cancel &amp; Retry
+                            </button>
+                        </div>
                     </div>
                 @endif
 
@@ -555,16 +563,39 @@
                                 {{ $this->getEligibilityBlockReason() }}
                             </span>
                         @elseif($isBuilding)
-                            <button disabled type="button" class="mam-btn-primary" style="background: #d97706; cursor: wait;">
-                                ⏳ Compiling in Cloud...
+                            <div style="display: flex; gap: 0.5rem; width: 100%;">
+                                <button disabled type="button" class="mam-btn-primary" style="flex: 1; background: #d97706; cursor: wait;">
+                                    ⏳ Compiling in Cloud...
+                                </button>
+                                <button wire:click="cancelBuild" 
+                                        wire:confirm="Cancel current cloud build and allow retry?"
+                                        type="button" 
+                                        style="padding: 0.85rem 1rem; background: #ffffff; color: #dc2626; border: 1.5px solid #fca5a5; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; white-space: nowrap;">
+                                    Cancel
+                                </button>
+                            </div>
+                        @elseif($isReady)
+                            <button wire:click="requestUpdate" 
+                                    wire:loading.attr="disabled"
+                                    type="button" 
+                                    class="mam-btn-primary mam-btn-green">
+                                <span wire:loading.remove wire:target="requestUpdate">
+                                    🔄 Rebuild Update (v{{ $app->version_code + 1 }}.0 - Free)
+                                </span>
+                                <span wire:loading wire:target="requestUpdate">
+                                    Dispatching Cloud Update...
+                                </span>
                             </button>
+                            <span style="font-size: 0.75rem; color: #64748b; display: block; margin-top: 0.35rem; line-height: 1.4;">
+                                Changing details above will compile an updated Version {{ $app->version_code + 1 }}.0 APK for your customers.
+                            </span>
                         @else
                             <button wire:click="generateFreeApp" 
                                     wire:loading.attr="disabled"
                                     type="button" 
                                     class="mam-btn-primary mam-btn-green">
                                 <span wire:loading.remove wire:target="generateFreeApp">
-                                    🚀 {{ $app ? 'Recompile Android App (Free)' : 'Generate Android App (Free)' }}
+                                    🚀 Generate Android App (Free)
                                 </span>
                                 <span wire:loading wire:target="generateFreeApp">
                                     Initiating Cloud Compilation...
