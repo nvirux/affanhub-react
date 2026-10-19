@@ -396,22 +396,27 @@ class MobileAppBuilderService
     }
 
     /**
-     * Delete previously built APK to conserve storage upon rebuild.
+     * Delete previously built APK and AAB binaries to conserve storage upon rebuild.
      */
     public function cleanupOldBuilds(StoreMobileApp $mobileApp, ?string $newUrl = null): void
     {
-        $storageDisk = config('filesystems.default');
-        if (! empty($mobileApp->apk_download_url) && $mobileApp->apk_download_url !== $newUrl) {
-            $parsed = parse_url($mobileApp->apk_download_url, PHP_URL_PATH);
-            if ($parsed) {
-                $relative = ltrim(str_replace('/storage/', '', $parsed), '/');
-                if (Storage::disk($storageDisk)->exists($relative)) {
-                    Storage::disk($storageDisk)->delete($relative);
-                }
-                if (Storage::disk('public')->exists($relative)) {
-                    Storage::disk('public')->delete($relative);
+        $storageDisk = ! empty(config('filesystems.disks.r2.bucket'))
+            ? 'r2'
+            : (! empty(config('filesystems.disks.s3.bucket')) ? 's3' : config('filesystems.default'));
+
+        $dir = "apps/{$mobileApp->store_id}";
+
+        try {
+            foreach (array_unique([$storageDisk, 'public', config('filesystems.default')]) as $disk) {
+                if (Storage::disk($disk)->exists($dir)) {
+                    $files = Storage::disk($disk)->files($dir);
+                    foreach ($files as $file) {
+                        Storage::disk($disk)->delete($file);
+                    }
                 }
             }
+        } catch (\Throwable $e) {
+            Log::warning("Could not cleanup old builds for store #{$mobileApp->store_id}: {$e->getMessage()}");
         }
     }
 }

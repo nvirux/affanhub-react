@@ -56,7 +56,8 @@ class StoreMobileAppsTable
                         'building' => 'warning',
                         'failed' => 'danger',
                         default => 'gray',
-                    }),
+                    })
+                    ->description(fn (StoreMobileApp $record): ?string => $record->status === 'failed' ? $record->failure_reason : null),
 
                 TextColumn::make('playstore_status')
                     ->label('Google Play')
