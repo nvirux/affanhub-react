@@ -17,7 +17,9 @@
             flex-direction: column;
             gap: 1.25rem;
             width: 100%;
+            max-width: 100%;
             box-sizing: border-box;
+            overflow-x: hidden;
         }
 
         .mam-card {
@@ -27,17 +29,66 @@
             padding: 1.5rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
             box-sizing: border-box;
+            max-width: 100%;
+            overflow: hidden;
         }
 
         .mam-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 1.25rem;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         @media (min-width: 1024px) {
             .mam-grid {
                 grid-template-columns: 1.25fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .mam-card {
+                padding: 1rem 0.85rem !important;
+                border-radius: 14px;
+            }
+            .top-header-wrap {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 0.85rem !important;
+            }
+            .top-header-actions {
+                width: 100% !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+            }
+            .top-header-actions button,
+            .top-header-actions a {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+            .customer-url-box {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 0.5rem !important;
+            }
+            .customer-url-box input {
+                width: 100% !important;
+            }
+            .customer-url-box button {
+                width: 100% !important;
+            }
+            .ready-actions-wrap {
+                flex-direction: column !important;
+                width: 100% !important;
+            }
+            .ready-actions-wrap button,
+            .ready-actions-wrap a {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+            .launcher-choice-grid {
+                grid-template-columns: 1fr !important;
             }
         }
 
@@ -48,6 +99,7 @@
             padding: 1.15rem;
             cursor: pointer;
             transition: all 0.2s ease;
+            box-sizing: border-box;
         }
 
         .mam-toggle-card:hover {
@@ -76,10 +128,18 @@
             gap: 0.5rem;
             transition: all 0.15s ease;
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+            box-sizing: border-box;
         }
 
         .mam-btn-primary:hover {
             background: #1e293b;
+        }
+
+        .mam-btn-primary[disabled],
+        button[disabled] {
+            opacity: 0.65 !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
         }
 
         .mam-btn-green {
@@ -110,12 +170,18 @@
             align-items: center;
             gap: 0.75rem;
             transition: all 0.15s ease;
+            box-sizing: border-box;
         }
 
         .payment-tab-btn.is-active {
             border-color: #f59e0b;
             background: #fffdf7;
             box-shadow: 0 2px 6px rgba(245, 158, 11, 0.12);
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
     </style>
 
@@ -126,50 +192,56 @@
         <div class="mam-card">
             <div style="display: flex; flex-direction: column; gap: 1rem;">
                 
-                <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;">
+                <div class="top-header-wrap" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;">
                     {{-- Left: Store Logo & Details --}}
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div style="width: 54px; height: 54px; border-radius: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+                    <div style="display: flex; align-items: center; gap: 0.85rem; min-width: 0;">
+                        <div style="width: 50px; height: 50px; border-radius: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
                             @if($iconChoice === 'custom' && $appIcon)
                                 <img src="{{ $appIcon->temporaryUrl() }}" style="width: 100%; height: 100%; object-fit: cover;" />
                             @elseif($app && $app->app_icon_path)
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($app->app_icon_path) }}" style="width: 100%; height: 100%; object-fit: cover;" />
+                                <img src="{{ \Illuminate\Support\Facades\Storage::url($app->app_icon_path) }}" 
+                                     onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';"
+                                     style="width: 100%; height: 100%; object-fit: cover;" />
+                                <span style="display: none; font-size: 1.4rem;">📱</span>
                             @elseif($tenant->logo_path)
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($tenant->logo_path) }}" style="width: 100%; height: 100%; object-fit: contain;" />
+                                <img src="{{ \Illuminate\Support\Facades\Storage::url($tenant->logo_path) }}" 
+                                     onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';"
+                                     style="width: 100%; height: 100%; object-fit: contain;" />
+                                <span style="display: none; font-size: 1.4rem;">📱</span>
                             @else
-                                <span style="font-size: 1.6rem;">📱</span>
+                                <span style="font-size: 1.4rem;">📱</span>
                             @endif
                         </div>
 
-                        <div>
-                            <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
-                                <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.01em;">
+                        <div style="min-width: 0;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                <h2 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.01em; word-break: break-word;">
                                     {{ $appName ?: $tenant->name }} Mobile App
                                 </h2>
 
                                 @if($isReady)
-                                    <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.65rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">
-                                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981;"></span>
+                                    <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.15rem 0.55rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; white-space: nowrap;">
+                                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
                                         v{{ $app->version_name }} Ready
                                     </span>
                                 @elseif($isBuilding)
-                                    <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.65rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background-color: #fffbeb; color: #92400e; border: 1px solid #fde68a;">
-                                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; animation: pulse 1.5s infinite;"></span>
+                                    <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.15rem 0.55rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; background-color: #fffbeb; color: #92400e; border: 1px solid #fde68a; white-space: nowrap;">
+                                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; animation: pulse 1.5s infinite;"></span>
                                         Cloud Compiling ⏳
                                     </span>
                                 @else
-                                    <span style="padding: 0.2rem 0.65rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background-color: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;">
+                                    <span style="padding: 0.15rem 0.55rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; background-color: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; white-space: nowrap;">
                                         Ready to Build
                                     </span>
                                 @endif
                             </div>
 
-                            <div style="display: flex; align-items: center; gap: 0.65rem; margin-top: 0.35rem; flex-wrap: wrap;">
-                                <span style="font-size: 0.8125rem; color: #64748b;">
-                                    Package: <code style="font-family: monospace; font-weight: 700; color: #0284c7; background: #f1f5f9; padding: 0.15rem 0.45rem; border-radius: 6px; border: 1px solid #e2e8f0;">{{ $this->package_id }}</code>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.35rem; flex-wrap: wrap;">
+                                <span style="font-size: 0.78rem; color: #64748b; word-break: break-all;">
+                                    Package: <code style="font-family: monospace; font-weight: 700; color: #0284c7; background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 5px; border: 1px solid #e2e8f0;">{{ $this->package_id }}</code>
                                 </span>
                                 @if($app && $app->last_built_at)
-                                    <span style="font-size: 0.75rem; color: #94a3b8;">
+                                    <span style="font-size: 0.72rem; color: #94a3b8;">
                                         • Built {{ $app->last_built_at->diffForHumans() }}
                                     </span>
                                 @endif
@@ -178,13 +250,15 @@
                     </div>
 
                     {{-- Right: Actions --}}
-                    <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+                    <div class="top-header-actions" style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
                         <button wire:click="checkBuildStatus" 
                                 wire:loading.attr="disabled"
                                 type="button"
                                 style="padding: 0.6rem 1rem; background: #ffffff; border: 1.5px solid #d1d5db; color: #374151; font-size: 0.8125rem; font-weight: 700; border-radius: 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
                             <span wire:loading.remove wire:target="checkBuildStatus">🔄 Refresh Status</span>
-                            <span wire:loading wire:target="checkBuildStatus">Checking...</span>
+                            <span wire:loading wire:target="checkBuildStatus" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Checking...
+                            </span>
                         </button>
 
                         @if($isReady)
@@ -299,11 +373,11 @@
                             <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #065f46; margin-bottom: 0.35rem;">
                                 Customer APK Download URL
                             </label>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;" x-data="{ copied: false }">
+                            <div class="customer-url-box" style="display: flex; align-items: center; gap: 0.5rem;" x-data="{ copied: false }">
                                 <input type="text" 
                                        readonly 
                                        value="{{ $downloadUrl }}" 
-                                       style="width: 100%; border: 1.5px solid #a7f3d0; background: #ffffff; border-radius: 10px; padding: 0.65rem 0.85rem; font-size: 0.85rem; font-family: monospace; color: #0f172a;" />
+                                       style="width: 100%; border: 1.5px solid #a7f3d0; background: #ffffff; border-radius: 10px; padding: 0.65rem 0.85rem; font-size: 0.85rem; font-family: monospace; color: #0f172a; box-sizing: border-box;" />
                                 <button type="button"
                                         x-on:click="navigator.clipboard.writeText('{{ $downloadUrl }}'); copied = true; setTimeout(() => copied = false, 2500)"
                                         style="padding: 0.65rem 1rem; background: #065f46; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; white-space: nowrap; flex-shrink: 0;">
@@ -314,7 +388,7 @@
                         </div>
 
                         {{-- Action Buttons --}}
-                        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.25rem;">
+                        <div class="ready-actions-wrap" style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.25rem;">
                             <a href="{{ $downloadUrl }}" 
                                download
                                class="mam-btn-primary mam-btn-green"
@@ -330,8 +404,8 @@
                                     <span wire:loading.remove wire:target="requestUpdate">
                                         🔄 Rebuild Update (v{{ $app->version_code + 1 }}.0 - Free)
                                     </span>
-                                    <span wire:loading wire:target="requestUpdate">
-                                        Dispatching Update...
+                                    <span wire:loading wire:target="requestUpdate" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                        <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Dispatching...
                                     </span>
                                 </button>
                             @endif
@@ -386,15 +460,18 @@
                             App Launcher Icon
                         </label>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 0.75rem;">
+                        <div class="launcher-choice-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 0.75rem;">
                             <div wire:click="setIconChoice('store_logo')" 
                                  class="mam-toggle-card {{ $iconChoice === 'store_logo' ? 'is-selected' : '' }}"
                                  style="padding: 0.75rem 0.85rem; display: flex; align-items: center; gap: 0.65rem;">
-                                <div style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <div style="width: 34px; height: 34px; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                     @if($tenant->logo_path)
-                                        <img src="{{ \Illuminate\Support\Facades\Storage::url($tenant->logo_path) }}" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                                        <img src="{{ \Illuminate\Support\Facades\Storage::url($tenant->logo_path) }}" 
+                                             onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';"
+                                             style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                                        <span style="display: none; font-size: 1.1rem;">🏪</span>
                                     @else
-                                        <span>🏪</span>
+                                        <span style="font-size: 1.1rem;">🏪</span>
                                     @endif
                                 </div>
                                 <div style="flex: 1; min-width: 0;">
@@ -407,7 +484,7 @@
                             <div wire:click="setIconChoice('custom')" 
                                  class="mam-toggle-card {{ $iconChoice === 'custom' ? 'is-selected' : '' }}"
                                  style="padding: 0.75rem 0.85rem; display: flex; align-items: center; gap: 0.65rem;">
-                                <div style="width: 32px; height: 32px; border-radius: 8px; border: 1px dashed #cbd5e1; background: #f8fafc; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1rem;">
+                                <div style="width: 34px; height: 34px; border-radius: 8px; border: 1px dashed #cbd5e1; background: #f8fafc; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;">
                                     📁
                                 </div>
                                 <div style="flex: 1; min-width: 0;">
@@ -418,28 +495,103 @@
                             </div>
                         </div>
 
+                        {{-- Dynamic Custom Icon Upload Box --}}
                         @if($iconChoice === 'custom')
-                            <div style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
-                                <div style="width: 50px; height: 50px; border-radius: 12px; background-color: #ffffff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
-                                    @if($appIcon)
-                                        <img src="{{ $appIcon->temporaryUrl() }}" style="width: 100%; height: 100%; object-fit: cover;" />
-                                    @elseif($app && $app->app_icon_path)
-                                        <img src="{{ \Illuminate\Support\Facades\Storage::url($app->app_icon_path) }}" style="width: 100%; height: 100%; object-fit: cover;" />
-                                    @else
-                                        <span style="font-size: 1.4rem; color: #94a3b8;">🖼️</span>
-                                    @endif
+                            <div x-data="{ isUploading: false, progress: 0 }"
+                                 x-on:livewire-upload-start="isUploading = true"
+                                 x-on:livewire-upload-finish="isUploading = false"
+                                 x-on:livewire-upload-error="isUploading = false"
+                                 x-on:livewire-upload-progress="progress = $event.detail.progress"
+                                 style="position: relative;">
+
+                                {{-- State A: Upload In Progress --}}
+                                <div x-show="isUploading" style="display: none; padding: 1.25rem; background: #f0fdf4; border: 1.5px dashed #10b981; border-radius: 14px; text-align: center;">
+                                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.65rem; margin-bottom: 0.6rem;">
+                                        <div style="width: 18px; height: 18px; border: 2.5px solid #10b981; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                                        <span style="font-size: 0.85rem; font-weight: 800; color: #065f46;" x-text="'Uploading Icon... ' + progress + '%'"></span>
+                                    </div>
+                                    <div style="width: 100%; height: 6px; background: #d1fae5; border-radius: 9999px; overflow: hidden;">
+                                        <div :style="'width: ' + progress + '%'" style="height: 100%; background: #10b981; transition: width 0.15s ease;"></div>
+                                    </div>
                                 </div>
 
-                                <div style="flex-grow: 1;">
-                                    <input type="file" 
-                                           wire:model="appIcon" 
-                                           {{ $isBuilding ? 'disabled' : '' }}
-                                           accept="image/png,image/jpeg,image/webp" 
-                                           style="font-size: 0.8rem; color: #475569;" />
-                                    <span style="font-size: 0.7rem; color: #6b7280; display: block; margin-top: 0.25rem;">
-                                        Square image (PNG, JPG). Auto-resampled to 512×512 HD icon.
-                                    </span>
-                                </div>
+                                {{-- State B: Newly Selected Custom File --}}
+                                @if($appIcon)
+                                    <div x-show="!isUploading" style="display: flex; align-items: center; justify-content: space-between; gap: 0.85rem; padding: 0.95rem 1.15rem; background: #f8fafc; border: 1.5px solid #a7f3d0; border-radius: 14px; flex-wrap: wrap;">
+                                        <div style="display: flex; align-items: center; gap: 0.85rem; min-width: 0;">
+                                            <div style="width: 54px; height: 54px; border-radius: 12px; background: #ffffff; border: 1.5px solid #10b981; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 10px rgba(16,185,129,0.15);">
+                                                <img src="{{ $appIcon->temporaryUrl() }}" style="width: 100%; height: 100%; object-fit: cover;" />
+                                            </div>
+                                            <div style="min-width: 0;">
+                                                <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.7rem; font-weight: 800; background: #dcfce7; color: #166534; padding: 0.15rem 0.5rem; border-radius: 9999px; margin-bottom: 0.2rem;">
+                                                    ✓ Custom Icon Selected
+                                                </span>
+                                                <span style="font-size: 0.825rem; font-weight: 800; color: #0f172a; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                    {{ $appIcon->getClientOriginalName() }}
+                                                </span>
+                                                <span style="font-size: 0.725rem; color: #64748b; display: block;">
+                                                    {{ round($appIcon->getSize() / 1024, 1) }} KB • Ready to compile
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <label for="custom_app_icon_input" style="padding: 0.55rem 0.95rem; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.78rem; font-weight: 700; color: #1e293b; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap;">
+                                            <span>🔄 Replace</span>
+                                        </label>
+                                    </div>
+
+                                {{-- State C: Has Existing Stored App Icon --}}
+                                @elseif($app && $app->app_icon_path)
+                                    <div x-show="!isUploading" style="display: flex; align-items: center; justify-content: space-between; gap: 0.85rem; padding: 0.95rem 1.15rem; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; flex-wrap: wrap;">
+                                        <div style="display: flex; align-items: center; gap: 0.85rem; min-width: 0;">
+                                            <div style="width: 54px; height: 54px; border-radius: 12px; background: #ffffff; border: 1.5px solid #e2e8f0; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+                                                <img src="{{ \Illuminate\Support\Facades\Storage::url($app->app_icon_path) }}" 
+                                                     onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';"
+                                                     style="width: 100%; height: 100%; object-fit: cover;" />
+                                                <span style="display: none; font-size: 1.5rem;">📱</span>
+                                            </div>
+                                            <div style="min-width: 0;">
+                                                <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.7rem; font-weight: 800; background: #ecfdf5; color: #047857; padding: 0.15rem 0.5rem; border-radius: 9999px; margin-bottom: 0.2rem;">
+                                                    Current Custom App Icon
+                                                </span>
+                                                <span style="font-size: 0.825rem; font-weight: 800; color: #0f172a; display: block;">
+                                                    Active Launcher Icon (512×512 HD)
+                                                </span>
+                                                <span style="font-size: 0.725rem; color: #64748b; display: block;">
+                                                    Tap replace below to upload a new one
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <label for="custom_app_icon_input" style="padding: 0.55rem 0.95rem; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.78rem; font-weight: 700; color: #1e293b; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap;">
+                                            <span>Upload New</span>
+                                        </label>
+                                    </div>
+
+                                {{-- State D: Empty Dropzone (No Icon Selected) --}}
+                                @else
+                                    <label for="custom_app_icon_input" 
+                                           x-show="!isUploading"
+                                           style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.45rem; padding: 1.5rem 1rem; background: #f8fafc; border: 2px dashed #94a3b8; border-radius: 14px; cursor: pointer; transition: all 0.2s ease;">
+                                        <div style="width: 44px; height: 44px; border-radius: 50%; background: #e0f2fe; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                                            📤
+                                        </div>
+                                        <span style="font-size: 0.875rem; font-weight: 800; color: #0f172a; text-align: center;">
+                                            Tap here to choose your App Launcher Icon
+                                        </span>
+                                        <span style="font-size: 0.75rem; color: #64748b; text-align: center;">
+                                            PNG, JPG or WebP (Square image recommended, up to 3MB)
+                                        </span>
+                                    </label>
+                                @endif
+
+                                {{-- Hidden file input --}}
+                                <input type="file" 
+                                       id="custom_app_icon_input"
+                                       wire:model="appIcon" 
+                                       {{ $isBuilding ? 'disabled' : '' }}
+                                       accept="image/png,image/jpeg,image/webp" 
+                                       style="display: none;" />
                             </div>
                             @error('appIcon') <span style="font-size: 0.75rem; color: #dc2626; display: block; margin-top: 0.25rem;">{{ $message }}</span> @enderror
                         @else
@@ -582,8 +734,8 @@
                                 <span wire:loading.remove wire:target="requestUpdate">
                                     🔄 Rebuild Update (v{{ $app->version_code + 1 }}.0 - Free)
                                 </span>
-                                <span wire:loading wire:target="requestUpdate">
-                                    Dispatching Cloud Update...
+                                <span wire:loading wire:target="requestUpdate" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Dispatching Cloud Update...
                                 </span>
                             </button>
                             <span style="font-size: 0.75rem; color: #64748b; display: block; margin-top: 0.35rem; line-height: 1.4;">
@@ -597,8 +749,8 @@
                                 <span wire:loading.remove wire:target="generateFreeApp">
                                     🚀 Generate Android App (Free)
                                 </span>
-                                <span wire:loading wire:target="generateFreeApp">
-                                    Initiating Cloud Compilation...
+                                <span wire:loading wire:target="generateFreeApp" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Initiating Cloud Compilation...
                                 </span>
                             </button>
                         @endif

@@ -459,6 +459,12 @@ class MobileAppBuilderService
             return;
         }
 
+        // SAFETY GUARD: Only delete dedicated app icons located in store-app-icons/.
+        // NEVER touch merchant store logos (logos/) or any other website assets!
+        if (! str_starts_with($oldPath, 'store-app-icons/')) {
+            return;
+        }
+
         $disks = array_filter(array_unique([
             $this->getActiveStorageDisk(),
             'r2',
