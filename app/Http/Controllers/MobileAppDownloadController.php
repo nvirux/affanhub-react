@@ -12,6 +12,20 @@ use ZipArchive;
 class MobileAppDownloadController extends Controller
 {
     /**
+     * Storefront direct download endpoint (served on tenant domain like demo.affanhub.com/app/download).
+     */
+    public function downloadStorefront(Request $request): mixed
+    {
+        $tenant = function_exists('tenant') ? tenant() : null;
+
+        if (! $tenant) {
+            abort(404, 'Store not found.');
+        }
+
+        return $this->download($request, $tenant);
+    }
+
+    /**
      * Direct APK file delivery controller. Proxies and extracts GitHub Actions artifacts
      * so merchants and customers download a real .apk without authentication errors.
      */

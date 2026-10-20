@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('vtu:reconcile-pending')->everyMinute();
 Schedule::command('vtu:sync-plans')->everySixHours()->withoutOverlapping();
+Schedule::command('mobile-app:sync-builds')->everyMinute()->withoutOverlapping();

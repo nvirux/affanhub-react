@@ -719,9 +719,6 @@ class MobileAppManager extends Page
             return;
         }
 
-        // Clean up old APK to avoid storage buildup
-        $builder->cleanupOldBuilds($this->mobileApp);
-
         $this->mobileApp->app_name = $this->appName;
         $this->mobileApp->incrementVersion();
         $this->mobileApp->status = 'building';

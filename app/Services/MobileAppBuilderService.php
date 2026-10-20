@@ -210,26 +210,13 @@ class MobileAppBuilderService
             ];
         }
 
-        // Auto-cancel / time-out if stuck in building for more than 15 minutes
-        if ($mobileApp->isBuilding() && $mobileApp->last_built_at && $mobileApp->last_built_at->diffInMinutes(now()) >= 15) {
-            $mobileApp->update([
-                'status' => 'failed',
-                'failure_reason' => 'Build timed out after 15 minutes with no response from build runner.',
-            ]);
-
-            return [
-                'status' => $mobileApp->status,
-                'ready' => false,
-            ];
-        }
-
         try {
             $response = Http::withHeaders([
                 'Accept' => 'application/vnd.github+json',
                 'Authorization' => "Bearer {$this->token}",
                 'X-GitHub-Api-Version' => '2022-11-28',
             ])->get("https://api.github.com/repos/{$this->repo}/actions/workflows/build-apk.yml/runs", [
-                'per_page' => 1,
+                'per_page' => 5,
             ]);
 
             if ($response->successful()) {
@@ -243,18 +230,41 @@ class MobileAppBuilderService
                         if ($conclusion === 'success') {
                             $artifactsUrl = $latestRun['artifacts_url'];
                             $this->transferArtifactsToR2($mobileApp, $artifactsUrl, (string) $latestRun['id']);
+
+                            return [
+                                'status' => 'ready',
+                                'ready' => true,
+                            ];
                         } elseif (in_array($conclusion, ['failure', 'cancelled', 'timed_out'])) {
                             Log::warning("GitHub Action compilation ended with [{$conclusion}] for store #{$mobileApp->store_id}");
                             $mobileApp->update([
                                 'status' => 'failed',
                                 'failure_reason' => 'Compilation could not be completed. Please try rebuilding or contact support.',
                             ]);
+
+                            return [
+                                'status' => 'failed',
+                                'ready' => false,
+                            ];
                         }
                     }
                 }
             }
         } catch (\Throwable $e) {
             Log::warning("Could not sync GitHub status: {$e->getMessage()}");
+        }
+
+        // Only auto-cancel / time-out if the runner is STILL queued or in_progress after 20 minutes
+        if ($mobileApp->isBuilding() && $mobileApp->last_built_at && $mobileApp->last_built_at->diffInMinutes(now()) >= 20) {
+            $mobileApp->update([
+                'status' => 'failed',
+                'failure_reason' => 'Build timed out after 20 minutes with no response from build runner.',
+            ]);
+
+            return [
+                'status' => $mobileApp->status,
+                'ready' => false,
+            ];
         }
 
         return [

@@ -5,6 +5,7 @@ use App\Models\Owner;
 use App\Models\Store;
 use App\Models\StoreMobileApp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
@@ -99,6 +100,11 @@ test('mobile app manager page renders cleanly without blade errors and supports 
     Filament\Facades\Filament::setCurrentPanel(Filament\Facades\Filament::getPanel('merchant'));
     $this->actingAs($owner, 'owner');
     Filament\Facades\Filament::setTenant($store);
+
+    config(['services.github_app_builder.token' => 'mock-token']);
+    Http::fake([
+        'https://api.github.com/*' => Http::response([], 204),
+    ]);
 
     Livewire\Livewire::test(MobileAppManager::class)
         ->assertSuccessful()

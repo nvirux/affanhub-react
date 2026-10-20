@@ -54,6 +54,27 @@ class StoreMobileApp extends Model
         return $this->status === 'ready' && ! empty($this->apk_download_url);
     }
 
+    public function getDownloadUrl(): string
+    {
+        // 1. If we have a direct Cloudflare R2 / S3 / CDN URL, return it directly
+        if (! empty($this->apk_download_url) && ! str_contains($this->apk_download_url, 'api.github.com') && ! str_contains($this->apk_download_url, 'merchant.')) {
+            return $this->apk_download_url;
+        }
+
+        // 2. Return storefront direct download URL on the store's domain
+        $store = $this->store;
+        if ($store) {
+            $storeUrl = rtrim($store->getStoreUrl(), '/');
+
+            return "{$storeUrl}/app/download";
+        }
+
+        // 3. Fallback to central platform domain (never merchant subdomain)
+        $centralUrl = rtrim((string) config('app.url', 'https://affanhub.com'), '/');
+
+        return "{$centralUrl}/apps/download/{$store?->public_id}";
+    }
+
     public function isPlayStoreRequested(): bool
     {
         return $this->include_playstore || in_array($this->playstore_status, ['pending_submission', 'submitted', 'published']);

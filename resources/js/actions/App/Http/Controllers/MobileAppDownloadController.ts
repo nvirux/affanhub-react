@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MobileAppDownloadController::download
- * @see app/Http/Controllers/MobileAppDownloadController.php:18
+ * @see app/Http/Controllers/MobileAppDownloadController.php:32
  * @route '/apps/download/{store}'
  */
 export const download = (args: { store: string | { public_id: string } } | [store: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ download.definition = {
 
 /**
 * @see \App\Http\Controllers\MobileAppDownloadController::download
- * @see app/Http/Controllers/MobileAppDownloadController.php:18
+ * @see app/Http/Controllers/MobileAppDownloadController.php:32
  * @route '/apps/download/{store}'
  */
 download.url = (args: { store: string | { public_id: string } } | [store: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ download.url = (args: { store: string | { public_id: string } } | [store: string
 
 /**
 * @see \App\Http\Controllers\MobileAppDownloadController::download
- * @see app/Http/Controllers/MobileAppDownloadController.php:18
+ * @see app/Http/Controllers/MobileAppDownloadController.php:32
  * @route '/apps/download/{store}'
  */
 download.get = (args: { store: string | { public_id: string } } | [store: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -58,7 +58,7 @@ download.get = (args: { store: string | { public_id: string } } | [store: string
 })
 /**
 * @see \App\Http\Controllers\MobileAppDownloadController::download
- * @see app/Http/Controllers/MobileAppDownloadController.php:18
+ * @see app/Http/Controllers/MobileAppDownloadController.php:32
  * @route '/apps/download/{store}'
  */
 download.head = (args: { store: string | { public_id: string } } | [store: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -68,7 +68,7 @@ download.head = (args: { store: string | { public_id: string } } | [store: strin
 
     /**
 * @see \App\Http\Controllers\MobileAppDownloadController::download
- * @see app/Http/Controllers/MobileAppDownloadController.php:18
+ * @see app/Http/Controllers/MobileAppDownloadController.php:32
  * @route '/apps/download/{store}'
  */
     const downloadForm = (args: { store: string | { public_id: string } } | [store: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -78,7 +78,7 @@ download.head = (args: { store: string | { public_id: string } } | [store: strin
 
             /**
 * @see \App\Http\Controllers\MobileAppDownloadController::download
- * @see app/Http/Controllers/MobileAppDownloadController.php:18
+ * @see app/Http/Controllers/MobileAppDownloadController.php:32
  * @route '/apps/download/{store}'
  */
         downloadForm.get = (args: { store: string | { public_id: string } } | [store: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -87,7 +87,7 @@ download.head = (args: { store: string | { public_id: string } } | [store: strin
         })
             /**
 * @see \App\Http\Controllers\MobileAppDownloadController::download
- * @see app/Http/Controllers/MobileAppDownloadController.php:18
+ * @see app/Http/Controllers/MobileAppDownloadController.php:32
  * @route '/apps/download/{store}'
  */
         downloadForm.head = (args: { store: string | { public_id: string } } | [store: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -101,6 +101,84 @@ download.head = (args: { store: string | { public_id: string } } | [store: strin
         })
     
     download.form = downloadForm
-const MobileAppDownloadController = { download }
+/**
+* @see \App\Http\Controllers\MobileAppDownloadController::downloadStorefront
+ * @see app/Http/Controllers/MobileAppDownloadController.php:17
+ * @route '/app/download'
+ */
+export const downloadStorefront = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: downloadStorefront.url(options),
+    method: 'get',
+})
+
+downloadStorefront.definition = {
+    methods: ["get","head"],
+    url: '/app/download',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\MobileAppDownloadController::downloadStorefront
+ * @see app/Http/Controllers/MobileAppDownloadController.php:17
+ * @route '/app/download'
+ */
+downloadStorefront.url = (options?: RouteQueryOptions) => {
+    return downloadStorefront.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\MobileAppDownloadController::downloadStorefront
+ * @see app/Http/Controllers/MobileAppDownloadController.php:17
+ * @route '/app/download'
+ */
+downloadStorefront.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: downloadStorefront.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\MobileAppDownloadController::downloadStorefront
+ * @see app/Http/Controllers/MobileAppDownloadController.php:17
+ * @route '/app/download'
+ */
+downloadStorefront.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: downloadStorefront.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\MobileAppDownloadController::downloadStorefront
+ * @see app/Http/Controllers/MobileAppDownloadController.php:17
+ * @route '/app/download'
+ */
+    const downloadStorefrontForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: downloadStorefront.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\MobileAppDownloadController::downloadStorefront
+ * @see app/Http/Controllers/MobileAppDownloadController.php:17
+ * @route '/app/download'
+ */
+        downloadStorefrontForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: downloadStorefront.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\MobileAppDownloadController::downloadStorefront
+ * @see app/Http/Controllers/MobileAppDownloadController.php:17
+ * @route '/app/download'
+ */
+        downloadStorefrontForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: downloadStorefront.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    downloadStorefront.form = downloadStorefrontForm
+const MobileAppDownloadController = { download, downloadStorefront }
 
 export default MobileAppDownloadController

@@ -8,7 +8,7 @@
         $isBuilding = $app && $app->isBuilding();
         $hasPaidSetup = $this->has_paid_setup;
         $hasPaidPlaystore = $this->has_paid_playstore;
-        $downloadUrl = route('merchant.mobile-app.download', ['store' => $tenant->public_id]);
+        $downloadUrl = $app ? $app->getDownloadUrl() : route('merchant.mobile-app.download', ['store' => $tenant->public_id]);
     @endphp
 
     <style>

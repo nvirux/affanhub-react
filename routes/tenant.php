@@ -20,6 +20,7 @@ use App\Http\Controllers\EarnController;
 |
 */
 
+use App\Http\Controllers\MobileAppDownloadController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VirtualAccountController;
@@ -103,7 +104,9 @@ Route::middleware([
     Route::get('/privacy-policy', function () {
         return Inertia::render('Storefront/PrivacyPolicy');
     })->name('privacy-policy');
-    Route::redirect('/privacy', '/privacy-policy');
+    // Mobile App Direct APK Download on Storefront domain
+    Route::get('/app/download', [MobileAppDownloadController::class, 'downloadStorefront'])
+        ->name('store.mobile-app.download');
 
     // Customer Settings
     require __DIR__.'/settings.php';
