@@ -1,2 +1,9 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin
+Disallow: /merchant
+Disallow: /api
+Disallow: /billing/callback/
+Disallow: /impersonate/
+
+Sitemap: https://affanhub.com/sitemap.xml

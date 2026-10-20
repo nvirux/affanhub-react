@@ -9,6 +9,7 @@ use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\Merchant\CloudflareDomainConnectController;
 use App\Http\Controllers\Merchant\StaffInvitationController;
 use App\Http\Controllers\MobileAppDownloadController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -48,6 +49,9 @@ Route::get('/merchant/cloudflare/callback', [CloudflareDomainConnectController::
 // Central Marketing Routes (Blog)
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+
+// XML Sitemap for Search Engines
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
 // Central Domain Policy Routes (Parameterized domain avoids duplicate route names during route:cache)
 $centralDomains = config('tenancy.central_domains', []);

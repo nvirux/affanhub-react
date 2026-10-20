@@ -1,6 +1,6 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
- * @see routes/web.php:58
+ * @see routes/web.php:62
  * @route '//{central_domain}/privacy-policy'
  */
 export const privacyPolicy = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -14,7 +14,7 @@ privacyPolicy.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:58
+ * @see routes/web.php:62
  * @route '//{central_domain}/privacy-policy'
  */
 privacyPolicy.url = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -41,7 +41,7 @@ privacyPolicy.url = (args: { central_domain: string | number } | [central_domain
 }
 
 /**
- * @see routes/web.php:58
+ * @see routes/web.php:62
  * @route '//{central_domain}/privacy-policy'
  */
 privacyPolicy.get = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -49,7 +49,7 @@ privacyPolicy.get = (args: { central_domain: string | number } | [central_domain
     method: 'get',
 })
 /**
- * @see routes/web.php:58
+ * @see routes/web.php:62
  * @route '//{central_domain}/privacy-policy'
  */
 privacyPolicy.head = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -58,7 +58,7 @@ privacyPolicy.head = (args: { central_domain: string | number } | [central_domai
 })
 
     /**
- * @see routes/web.php:58
+ * @see routes/web.php:62
  * @route '//{central_domain}/privacy-policy'
  */
     const privacyPolicyForm = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -67,7 +67,7 @@ privacyPolicy.head = (args: { central_domain: string | number } | [central_domai
     })
 
             /**
- * @see routes/web.php:58
+ * @see routes/web.php:62
  * @route '//{central_domain}/privacy-policy'
  */
         privacyPolicyForm.get = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -75,7 +75,7 @@ privacyPolicy.head = (args: { central_domain: string | number } | [central_domai
             method: 'get',
         })
             /**
- * @see routes/web.php:58
+ * @see routes/web.php:62
  * @route '//{central_domain}/privacy-policy'
  */
         privacyPolicyForm.head = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

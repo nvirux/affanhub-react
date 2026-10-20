@@ -5,6 +5,7 @@ import MobileAppDownloadController from './MobileAppDownloadController'
 import Merchant from './Merchant'
 import Auth from './Auth'
 import BlogController from './BlogController'
+import SitemapController from './SitemapController'
 import Webhook from './Webhook'
 import DashboardController from './DashboardController'
 import ServicesController from './ServicesController'
@@ -26,6 +27,7 @@ MobileAppDownloadController: Object.assign(MobileAppDownloadController, MobileAp
 Merchant: Object.assign(Merchant, Merchant),
 Auth: Object.assign(Auth, Auth),
 BlogController: Object.assign(BlogController, BlogController),
+SitemapController: Object.assign(SitemapController, SitemapController),
 Webhook: Object.assign(Webhook, Webhook),
 DashboardController: Object.assign(DashboardController, DashboardController),
 ServicesController: Object.assign(ServicesController, ServicesController),
