@@ -179,6 +179,34 @@
             box-shadow: 0 2px 6px rgba(245, 158, 11, 0.12);
         }
 
+        .mam-loading-inline {
+            display: none;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .mam-dropzone {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.45rem !important;
+            padding: 1.5rem 1rem !important;
+            background: #f8fafc !important;
+            border: 2px dashed #94a3b8 !important;
+            border-radius: 14px !important;
+            cursor: pointer !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            transition: all 0.2s ease !important;
+            clear: both !important;
+        }
+
+        .mam-dropzone:hover {
+            border-color: #0284c7 !important;
+            background: #f0f9ff !important;
+        }
+
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -256,7 +284,7 @@
                                 type="button"
                                 style="padding: 0.6rem 1rem; background: #ffffff; border: 1.5px solid #d1d5db; color: #374151; font-size: 0.8125rem; font-weight: 700; border-radius: 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
                             <span wire:loading.remove wire:target="checkBuildStatus">🔄 Refresh Status</span>
-                            <span wire:loading wire:target="checkBuildStatus" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <span wire:loading.inline-flex wire:target="checkBuildStatus" class="mam-loading-inline">
                                 <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Checking...
                             </span>
                         </button>
@@ -404,7 +432,7 @@
                                     <span wire:loading.remove wire:target="requestUpdate">
                                         🔄 Rebuild Update (v{{ $app->version_code + 1 }}.0 - Free)
                                     </span>
-                                    <span wire:loading wire:target="requestUpdate" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <span wire:loading.inline-flex wire:target="requestUpdate" class="mam-loading-inline">
                                         <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Dispatching...
                                     </span>
                                 </button>
@@ -570,9 +598,9 @@
 
                                 {{-- State D: Empty Dropzone (No Icon Selected) --}}
                                 @else
-                                    <label for="custom_app_icon_input" 
-                                           x-show="!isUploading"
-                                           style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.45rem; padding: 1.5rem 1rem; background: #f8fafc; border: 2px dashed #94a3b8; border-radius: 14px; cursor: pointer; transition: all 0.2s ease;">
+                                    <div class="mam-dropzone" 
+                                         x-show="!isUploading"
+                                         onclick="document.getElementById('custom_app_icon_input').click()">
                                         <div style="width: 44px; height: 44px; border-radius: 50%; background: #e0f2fe; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
                                             📤
                                         </div>
@@ -582,7 +610,7 @@
                                         <span style="font-size: 0.75rem; color: #64748b; text-align: center;">
                                             PNG, JPG or WebP (Square image recommended, up to 3MB)
                                         </span>
-                                    </label>
+                                    </div>
                                 @endif
 
                                 {{-- Hidden file input --}}
@@ -734,7 +762,7 @@
                                 <span wire:loading.remove wire:target="requestUpdate">
                                     🔄 Rebuild Update (v{{ $app->version_code + 1 }}.0 - Free)
                                 </span>
-                                <span wire:loading wire:target="requestUpdate" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <span wire:loading.inline-flex wire:target="requestUpdate" class="mam-loading-inline">
                                     <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Dispatching Cloud Update...
                                 </span>
                             </button>
@@ -749,7 +777,7 @@
                                 <span wire:loading.remove wire:target="generateFreeApp">
                                     🚀 Generate Android App (Free)
                                 </span>
-                                <span wire:loading wire:target="generateFreeApp" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <span wire:loading.inline-flex wire:target="generateFreeApp" class="mam-loading-inline">
                                     <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Initiating Cloud Compilation...
                                 </span>
                             </button>
@@ -836,8 +864,8 @@
                                 <span wire:loading.remove wire:target="payWithPayMint">
                                     ⚡ Pay ₦{{ number_format($this->totalPrice, 0) }} with PayMint
                                 </span>
-                                <span wire:loading wire:target="payWithPayMint">
-                                    Redirecting to Checkout...
+                                <span wire:loading.inline-flex wire:target="payWithPayMint" class="mam-loading-inline">
+                                    <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Redirecting to Checkout...
                                 </span>
                             </button>
                         @else
@@ -849,8 +877,8 @@
                                     <span wire:loading.remove wire:target="orderWithBalance">
                                         💼 Pay ₦{{ number_format($this->totalPrice, 0) }} from Store Wallet
                                     </span>
-                                    <span wire:loading wire:target="orderWithBalance">
-                                        Debiting Wallet &amp; Compiling...
+                                    <span wire:loading.inline-flex wire:target="orderWithBalance" class="mam-loading-inline">
+                                        <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Debiting Wallet &amp; Compiling...
                                     </span>
                                 </button>
                             @else

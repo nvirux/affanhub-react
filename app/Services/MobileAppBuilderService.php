@@ -404,39 +404,66 @@ class MobileAppBuilderService
             throw new \InvalidArgumentException('Unable to read image binary data for app icon processing.');
         }
 
-        $srcImg = @imagecreatefromstring($rawBinary);
-        if (! $srcImg) {
-            throw new \RuntimeException('Failed to initialize image resource for app icon.');
+        $pngData = null;
+
+        // 1. Try PHP GD extension if installed
+        if (function_exists('imagecreatefromstring') && function_exists('imagecreatetruecolor')) {
+            try {
+                $srcImg = @imagecreatefromstring($rawBinary);
+                if ($srcImg) {
+                    $origWidth = imagesx($srcImg);
+                    $origHeight = imagesy($srcImg);
+                    $targetSize = 512;
+
+                    // Calculate aspect-ratio preserving dimensions that contain the logo neatly
+                    $scale = min($targetSize / $origWidth, $targetSize / $origHeight);
+                    $newWidth = (int) round($origWidth * $scale);
+                    $newHeight = (int) round($origHeight * $scale);
+                    $dstX = (int) round(($targetSize - $newWidth) / 2);
+                    $dstY = (int) round(($targetSize - $newHeight) / 2);
+
+                    // Create 512x512 canvas with full alpha transparency
+                    $canvas = imagecreatetruecolor($targetSize, $targetSize);
+                    imagealphablending($canvas, false);
+                    imagesavealpha($canvas, true);
+                    $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+                    imagefilledrectangle($canvas, 0, 0, $targetSize, $targetSize, $transparent);
+                    imagealphablending($canvas, true);
+
+                    // Resample centered onto canvas
+                    imagecopyresampled($canvas, $srcImg, $dstX, $dstY, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+
+                    ob_start();
+                    imagepng($canvas, null, 9);
+                    $pngData = ob_get_clean();
+
+                    imagedestroy($srcImg);
+                    imagedestroy($canvas);
+                }
+            } catch (\Throwable $e) {
+                Log::warning("GD icon processing failed: {$e->getMessage()}. Using raw image binary.");
+            }
         }
 
-        $origWidth = imagesx($srcImg);
-        $origHeight = imagesy($srcImg);
-        $targetSize = 512;
+        // 2. Try Imagick extension if GD is unavailable
+        if (empty($pngData) && class_exists(\Imagick::class)) {
+            try {
+                $im = new \Imagick;
+                $im->readImageBlob($rawBinary);
+                $im->setImageFormat('png');
+                $im->thumbnailImage(512, 512, true, true);
+                $pngData = $im->getImageBlob();
+                $im->clear();
+                $im->destroy();
+            } catch (\Throwable $e) {
+                Log::warning("Imagick icon processing failed: {$e->getMessage()}.");
+            }
+        }
 
-        // Calculate aspect-ratio preserving dimensions that contain the logo neatly
-        $scale = min($targetSize / $origWidth, $targetSize / $origHeight);
-        $newWidth = (int) round($origWidth * $scale);
-        $newHeight = (int) round($origHeight * $scale);
-        $dstX = (int) round(($targetSize - $newWidth) / 2);
-        $dstY = (int) round(($targetSize - $newHeight) / 2);
-
-        // Create 512x512 canvas with full alpha transparency
-        $canvas = imagecreatetruecolor($targetSize, $targetSize);
-        imagealphablending($canvas, false);
-        imagesavealpha($canvas, true);
-        $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
-        imagefilledrectangle($canvas, 0, 0, $targetSize, $targetSize, $transparent);
-        imagealphablending($canvas, true);
-
-        // Resample centered onto canvas
-        imagecopyresampled($canvas, $srcImg, $dstX, $dstY, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
-
-        ob_start();
-        imagepng($canvas, null, 9);
-        $pngData = ob_get_clean();
-
-        imagedestroy($srcImg);
-        imagedestroy($canvas);
+        // 3. Fallback: If neither GD nor Imagick is installed in PHP, preserve raw image binary seamlessly
+        if (empty($pngData)) {
+            $pngData = $rawBinary;
+        }
 
         $storageDisk = $this->getActiveStorageDisk();
         $fileName = 'icon_'.time().'.png';
