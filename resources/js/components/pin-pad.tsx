@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
-import { Delete } from 'lucide-react';
+import { Delete, Fingerprint } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type PinPadProps = {
@@ -10,6 +10,8 @@ type PinPadProps = {
     disabled?: boolean;
     error?: boolean;
     className?: string;
+    showBiometric?: boolean;
+    onBiometricClick?: () => void;
 };
 
 export default function PinPad({
@@ -20,6 +22,8 @@ export default function PinPad({
     disabled = false,
     error = false,
     className,
+    showBiometric = false,
+    onBiometricClick,
 }: PinPadProps) {
     const handleDigit = useCallback(
         (digit: string) => {
@@ -70,7 +74,7 @@ export default function PinPad({
         ['1', '2', '3'],
         ['4', '5', '6'],
         ['7', '8', '9'],
-        ['', '0', 'backspace'],
+        ['biometric', '0', 'backspace'],
     ];
 
     return (
@@ -101,8 +105,28 @@ export default function PinPad({
             {/* Custom On-Screen Keypad with Balanced Circular Keys & Generous Spacing */}
             <div className="grid grid-cols-3 gap-x-5 sm:gap-x-7 gap-y-3 sm:gap-y-4 w-full max-w-[280px] sm:max-w-[300px] mx-auto mt-1">
                 {keys.flat().map((key, index) => {
-                    if (key === '') {
-                        return <div key={index} className="size-16 sm:size-[66px] mx-auto" />;
+                    if (key === 'biometric') {
+                        if (!showBiometric) {
+                            return <div key={index} className="size-16 sm:size-[66px] mx-auto" />;
+                        }
+
+                        return (
+                            <button
+                                key={index}
+                                type="button"
+                                onClick={onBiometricClick}
+                                disabled={disabled}
+                                aria-label="Fingerprint"
+                                className={cn(
+                                    'size-16 sm:size-[66px] mx-auto rounded-full flex items-center justify-center cursor-pointer',
+                                    'bg-primary/10 hover:bg-primary/20 text-primary active:scale-90 active:bg-primary/25',
+                                    'border border-primary/25 shadow-xs transition-all duration-150',
+                                    'disabled:opacity-40 disabled:cursor-not-allowed'
+                                )}
+                            >
+                                <Fingerprint className="size-7 sm:size-8 text-primary transition-transform duration-150 hover:scale-105" />
+                            </button>
+                        );
                     }
 
                     if (key === 'backspace') {

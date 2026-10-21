@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import PinPad from '@/components/pin-pad';
+import { isBiometricSupported, requestBiometricLogin, saveBiometricToken } from '@/lib/biometrics';
 import { register } from '@/routes';
 import { request } from '@/routes/password';
 
@@ -40,6 +41,11 @@ export default function Login({ status, canResetPassword }: Props) {
     const [usePasswordFallback, setUsePasswordFallback] = useState(false);
     const [loginError, setLoginError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [hasBiometrics, setHasBiometrics] = useState(false);
+
+    useEffect(() => {
+        setHasBiometrics(isBiometricSupported());
+    }, []);
 
     const identifierInputRef = useRef<HTMLInputElement>(null);
 
@@ -215,6 +221,11 @@ export default function Login({ status, canResetPassword }: Props) {
             {
                 preserveScroll: true,
                 onSuccess: () => {
+                    // Save biometric PIN in Android secure vault if biometrics available
+                    if (isPinMode && currentPin.length === 4) {
+                        saveBiometricToken(currentPin);
+                    }
+
                     // Update display hint on successful login
                     saveRememberedAccount({
                         identifier,
@@ -373,6 +384,23 @@ export default function Login({ status, canResetPassword }: Props) {
                                 }}
                                 disabled={isSubmitting}
                                 error={Boolean(loginError)}
+                                showBiometric={hasBiometrics}
+                                onBiometricClick={() => {
+                                    if (isSubmitting) return;
+                                    requestBiometricLogin({
+                                        title: userName ? `Welcome back, ${userName}` : 'Biometric Login',
+                                        subtitle: 'Scan your fingerprint to log in',
+                                        onSuccess: (tokenOrPin) => {
+                                            if (tokenOrPin) {
+                                                setPin(tokenOrPin);
+                                                submitLogin(tokenOrPin);
+                                            }
+                                        },
+                                        onError: (err) => {
+                                            setLoginError(err);
+                                        },
+                                    });
+                                }}
                             />
 
                             <div className={`flex items-center ${hasPassword ? 'justify-between' : 'justify-center'} w-full max-w-[280px] sm:max-w-[300px] text-xs pt-4`}>

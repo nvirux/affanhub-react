@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/sheet';
 import { Lock, AlertCircle, Loader2 } from 'lucide-react';
 import PinPad from '@/components/pin-pad';
+import { isBiometricSupported, requestBiometricTransaction, saveTransactionPin } from '@/lib/biometrics';
 
 interface TransactionPinSheetProps {
     isOpen: boolean;
@@ -32,6 +33,11 @@ export function TransactionPinSheet({
     onSubmitPin,
 }: TransactionPinSheetProps) {
     const [pin, setPin] = useState('');
+    const [hasBiometrics, setHasBiometrics] = useState(false);
+
+    useEffect(() => {
+        setHasBiometrics(isBiometricSupported());
+    }, []);
 
     useEffect(() => {
         if (error) {
@@ -39,7 +45,28 @@ export function TransactionPinSheet({
         }
     }, [error]);
 
+    const handleBiometricAuth = () => {
+        if (isSubmitting) return;
+
+        requestBiometricTransaction({
+            title: title || 'Authorize Payment',
+            subtitle: 'Scan your fingerprint to complete purchase',
+            onSuccess: (val) => {
+                if (val) {
+                    setPin(val);
+                    onSubmitPin(val);
+                }
+            },
+            onError: (err) => {
+                console.warn('Biometric transaction error:', err);
+            },
+        });
+    };
+
     const handlePinComplete = (val: string) => {
+        if (hasBiometrics && val.length === 4) {
+            saveTransactionPin(val);
+        }
         onSubmitPin(val);
     };
 
@@ -119,6 +146,8 @@ export function TransactionPinSheet({
                         onComplete={handlePinComplete}
                         disabled={isSubmitting}
                         error={Boolean(error)}
+                        showBiometric={hasBiometrics}
+                        onBiometricClick={handleBiometricAuth}
                     />
 
                     {isSubmitting && (
