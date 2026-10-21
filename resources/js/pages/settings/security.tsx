@@ -1,11 +1,19 @@
-import { Head, router, Link } from '@inertiajs/react';
+import { Head, router, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { KeyRound, ShieldCheck, ChevronLeft, Headphones } from 'lucide-react';
+import { KeyRound, ShieldCheck, ChevronLeft, Headphones, Fingerprint } from 'lucide-react';
 import type { Props as ManageTwoFactorProps } from '@/components/manage-two-factor';
 import ManageTwoFactor from '@/components/manage-two-factor';
 import { Button } from '@/components/ui/button';
 import { PinSheetModal, type PinSheetStep } from '@/components/pin-sheet-modal';
 import { edit as editProfile } from '@/routes/profile';
+import { isBiometricSupported, hasBiometricFor, saveBiometric, clearBiometricFor } from '@/lib/biometrics';
+import { toast } from 'sonner';
+
+function getXsrfToken(): string {
+    if (typeof document === 'undefined') return '';
+    const match = document.cookie.match(new RegExp('(^|;\\s*)(?:XSRF-TOKEN|X-XSRF-TOKEN)=([^;]*)'));
+    return match ? decodeURIComponent(match[2]) : '';
+}
 
 type Props = {
     hasPassword: boolean;
@@ -14,6 +22,56 @@ type Props = {
 } & ManageTwoFactorProps;
 
 export default function Security(props: Props) {
+    const { auth } = usePage<any>().props;
+    const userIdentifier = auth?.user?.phone || auth?.user?.email || '';
+    const [bioSupported] = useState(() => isBiometricSupported());
+    const [bioEnabled, setBioEnabled] = useState(() => Boolean(userIdentifier && hasBiometricFor(userIdentifier)));
+    const [isTogglingBio, setIsTogglingBio] = useState(false);
+
+    const handleToggleBiometrics = async () => {
+        if (!userIdentifier || isTogglingBio) return;
+        setIsTogglingBio(true);
+
+        if (bioEnabled) {
+            try {
+                clearBiometricFor(userIdentifier);
+                await fetch('/user/biometric-token', {
+                    method: 'DELETE',
+                    headers: {
+                        Accept: 'application/json',
+                        'X-XSRF-TOKEN': getXsrfToken(),
+                    },
+                });
+                setBioEnabled(false);
+                toast.success('Fingerprint login turned off.');
+            } catch {
+                toast.error('Failed to disable biometric login.');
+            } finally {
+                setIsTogglingBio(false);
+            }
+        } else {
+            try {
+                const response = await fetch('/user/biometric-token', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'X-XSRF-TOKEN': getXsrfToken(),
+                    },
+                });
+                const data = await response.json();
+                if (data.biometric_token) {
+                    saveBiometric(userIdentifier, data.biometric_token);
+                    setBioEnabled(true);
+                    toast.success('Fingerprint login enabled successfully!');
+                }
+            } catch {
+                toast.error('Failed to enable biometric login.');
+            } finally {
+                setIsTogglingBio(false);
+            }
+        }
+    };
+
     const [loginPinSheetOpen, setLoginPinSheetOpen] = useState(false);
     const [transactionPinSheetOpen, setTransactionPinSheetOpen] = useState(false);
 
@@ -271,7 +329,50 @@ export default function Security(props: Props) {
                     </button>
                 </div>
 
-                {/* 3. Two-Factor Authentication Card */}
+                {/* 3. Fingerprint / Biometric Sign-in Card (Shown on Supported Devices) */}
+                {bioSupported && (
+                    <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-5 shadow-xs flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3.5 min-w-0">
+                            <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                <Fingerprint className="w-5 h-5 stroke-[1.8]" />
+                            </div>
+                            <div className="min-w-0">
+                                <div className="flex items-center gap-2">
+                                    <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                                        Fingerprint Sign-in
+                                    </h3>
+                                    <span
+                                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                            bioEnabled
+                                                ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'
+                                        }`}
+                                    >
+                                        {bioEnabled ? 'Active' : 'Off'}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                                    Sign in using your device's fingerprint or biometric sensor
+                                </p>
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={handleToggleBiometrics}
+                            disabled={isTogglingBio}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer shadow-xs ${
+                                bioEnabled
+                                    ? 'bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/20'
+                                    : 'bg-primary text-white hover:opacity-90 active:scale-95'
+                            }`}
+                        >
+                            {isTogglingBio ? 'Updating...' : bioEnabled ? 'Disable' : 'Enable'}
+                        </button>
+                    </div>
+                )}
+
+                {/* 4. Two-Factor Authentication Card */}
                 <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-5 shadow-xs">
                     <ManageTwoFactor {...props} />
                 </div>

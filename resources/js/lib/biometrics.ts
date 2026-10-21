@@ -7,16 +7,24 @@ declare global {
     interface Window {
         AffanBridge?: {
             canAuthenticateBiometric?: () => boolean;
-            hasSavedBiometricToken?: () => boolean;
-            hasSavedTransactionPin?: () => boolean;
-            saveBiometricToken?: (token: string) => void;
+            hasBiometricFor?: (identifier: string) => boolean;
+            saveBiometric?: (identifier: string, pin: string) => void;
+            clearBiometricFor?: (identifier: string) => void;
+            promptBiometricFor?: (identifier: string, title: string) => void;
+
+            // Transaction methods
+            hasTransactionPin?: () => boolean;
             saveTransactionPin?: (pin: string) => void;
-            clearBiometricToken?: () => void;
+            clearTransactionPin?: () => void;
+            promptTransactionBiometric?: (title: string, subtitle: string) => void;
+
+            // Legacy fallbacks
+            hasSavedBiometricToken?: () => boolean;
+            saveBiometricToken?: (token: string) => void;
             promptBiometric?: (title: string, subtitle?: string) => void;
-            promptTransactionBiometric?: (title: string, subtitle?: string) => void;
         };
         isAffanApp?: boolean;
-        onBiometricSuccess?: (token?: string) => void;
+        onBiometricSuccess?: (tokenOrPin?: string) => void;
         onBiometricError?: (message?: string) => void;
         onTransactionBiometricSuccess?: (pin?: string) => void;
         onTransactionBiometricError?: (message?: string) => void;
@@ -37,11 +45,16 @@ export function isBiometricSupported(): boolean {
 }
 
 /**
- * Checks whether the user has previously saved a biometric login credential on this device.
+ * Checks whether a biometric PIN was previously saved for this specific email/phone.
+ * ONLY if this returns true should the fingerprint button appear on the Login PIN keypad.
  */
-export function hasSavedBiometricToken(): boolean {
-    if (typeof window === 'undefined') return false;
+export function hasBiometricFor(identifier: string): boolean {
+    if (typeof window === 'undefined' || !identifier) return false;
     try {
+        if (window.AffanBridge?.hasBiometricFor) {
+            return Boolean(window.AffanBridge.hasBiometricFor(identifier));
+        }
+        // Fallback for previous build
         return Boolean(window.AffanBridge?.hasSavedBiometricToken?.());
     } catch {
         return false;
@@ -49,99 +62,85 @@ export function hasSavedBiometricToken(): boolean {
 }
 
 /**
- * Checks whether the user has saved their transaction PIN for quick biometric authorization.
+ * Saves the user's PIN securely in the hardware keystore bound to this identifier.
  */
-export function hasSavedTransactionPin(): boolean {
-    if (typeof window === 'undefined') return false;
+export function saveBiometric(identifier: string, pin: string): void {
+    if (typeof window === 'undefined' || !identifier || !pin) return;
     try {
-        return Boolean(window.AffanBridge?.hasSavedTransactionPin?.());
-    } catch {
-        return false;
+        if (window.AffanBridge?.saveBiometric) {
+            window.AffanBridge.saveBiometric(identifier, pin);
+        } else if (window.AffanBridge?.saveBiometricToken) {
+            window.AffanBridge.saveBiometricToken(pin);
+        }
+    } catch (e) {
+        console.warn('Failed saving biometric PIN:', e);
     }
 }
 
 /**
- * Launches the native Android BiometricPrompt for Login.
+ * Clears the saved biometric PIN for a specific identifier.
  */
-export function requestBiometricLogin(options: {
-    title?: string;
-    subtitle?: string;
-    onSuccess: (token?: string) => void;
-    onError?: (error: string) => void;
-}): void {
-    if (typeof window === 'undefined' || !window.AffanBridge?.promptBiometric) {
-        options.onError?.('Biometric authentication is not supported on this device.');
-        return;
+export function clearBiometricFor(identifier: string): void {
+    if (typeof window === 'undefined' || !identifier) return;
+    try {
+        window.AffanBridge?.clearBiometricFor?.(identifier);
+    } catch (e) {
+        console.warn('Failed clearing biometric PIN for identifier:', e);
     }
-
-    window.onBiometricSuccess = (token?: string) => {
-        options.onSuccess(token);
-    };
-
-    window.onBiometricError = (error?: string) => {
-        options.onError?.(error || 'Fingerprint verification failed or was cancelled.');
-    };
-
-    window.AffanBridge.promptBiometric(
-        options.title || 'Biometric Login',
-        options.subtitle || 'Scan your fingerprint to log in'
-    );
 }
 
 /**
- * Launches the native Android BiometricPrompt for Transaction Authorization.
+ * Launches native biometric prompt for Login.
+ * On fingerprint match, Android returns the saved PIN for this identifier.
  */
-export function requestBiometricTransaction(options: {
+export function promptBiometricFor(options: {
+    identifier: string;
     title?: string;
-    subtitle?: string;
-    onSuccess: (pin?: string) => void;
+    onSuccess: (pin: string) => void;
     onError?: (error: string) => void;
 }): void {
     if (typeof window === 'undefined') {
-        options.onError?.('Biometric authentication is not available.');
+        options.onError?.('Biometric authentication is not supported.');
         return;
     }
 
-    // If native has promptTransactionBiometric, use it; otherwise fallback to promptBiometric
-    const promptFn = window.AffanBridge?.promptTransactionBiometric || window.AffanBridge?.promptBiometric;
-
-    if (!promptFn) {
-        options.onError?.('Biometric prompt is not available on this device.');
-        return;
-    }
-
-    window.onTransactionBiometricSuccess = (pin?: string) => {
-        options.onSuccess(pin);
-    };
-
-    window.onTransactionBiometricError = (error?: string) => {
-        options.onError?.(error || 'Transaction authorization cancelled.');
-    };
-
-    // Also register onBiometricSuccess fallback if Android uses a single callback
-    window.onBiometricSuccess = (tokenOrPin?: string) => {
-        options.onSuccess(tokenOrPin);
+    window.onBiometricSuccess = (pin?: string) => {
+        if (pin && pin.length > 0) {
+            options.onSuccess(pin);
+        } else {
+            options.onError?.('No credentials stored. Please enter your PIN.');
+        }
     };
 
     window.onBiometricError = (error?: string) => {
-        options.onError?.(error || 'Transaction authorization cancelled.');
+        options.onError?.(error || 'Fingerprint verification failed.');
     };
 
-    promptFn.call(
-        window.AffanBridge,
-        options.title || 'Authorize Transaction',
-        options.subtitle || 'Scan your fingerprint to approve payment'
-    );
+    if (window.AffanBridge?.promptBiometricFor) {
+        window.AffanBridge.promptBiometricFor(
+            options.identifier,
+            options.title || 'Biometric Login'
+        );
+    } else if (window.AffanBridge?.promptBiometric) {
+        window.AffanBridge.promptBiometric(
+            options.title || 'Biometric Login',
+            'Scan your fingerprint to log in'
+        );
+    } else {
+        options.onError?.('Biometric prompt is unavailable on this device.');
+    }
 }
 
 /**
- * Saves a biometric login token in the device's secure Keystore.
+ * Checks whether a transaction PIN was saved on this phone.
+ * ONLY if this returns true should the fingerprint button appear on the Payment PIN keypad.
  */
-export function saveBiometricToken(token: string): void {
+export function hasTransactionPin(): boolean {
+    if (typeof window === 'undefined') return false;
     try {
-        window.AffanBridge?.saveBiometricToken?.(token);
-    } catch (e) {
-        console.warn('Failed saving biometric token:', e);
+        return Boolean(window.AffanBridge?.hasTransactionPin?.());
+    } catch {
+        return false;
     }
 }
 
@@ -149,6 +148,7 @@ export function saveBiometricToken(token: string): void {
  * Saves the user's transaction PIN securely in Keystore for fast biometric approval.
  */
 export function saveTransactionPin(pin: string): void {
+    if (typeof window === 'undefined' || !pin) return;
     try {
         window.AffanBridge?.saveTransactionPin?.(pin);
     } catch (e) {
@@ -157,12 +157,66 @@ export function saveTransactionPin(pin: string): void {
 }
 
 /**
- * Clears stored biometric credentials on logout or account switch.
+ * Clears stored transaction PIN (called if PIN was changed or reset).
  */
-export function clearBiometricCredentials(): void {
+export function clearTransactionPin(): void {
+    if (typeof window === 'undefined') return;
     try {
-        window.AffanBridge?.clearBiometricToken?.();
+        window.AffanBridge?.clearTransactionPin?.();
     } catch (e) {
-        console.warn('Failed clearing biometric credentials:', e);
+        console.warn('Failed clearing transaction PIN:', e);
     }
+}
+
+/**
+ * Launches native biometric prompt for Transaction Approval.
+ * On fingerprint match, Android returns the saved transaction PIN.
+ */
+export function promptTransactionBiometric(options: {
+    title?: string;
+    subtitle?: string;
+    onSuccess: (pin: string) => void;
+    onError?: (error: string) => void;
+}): void {
+    if (typeof window === 'undefined') {
+        options.onError?.('Biometric authentication is not available.');
+        return;
+    }
+
+    const promptFn = window.AffanBridge?.promptTransactionBiometric || window.AffanBridge?.promptBiometric;
+
+    if (!promptFn) {
+        options.onError?.('Biometric prompt is not available on this device.');
+        return;
+    }
+
+    window.onTransactionBiometricSuccess = (pin?: string) => {
+        if (pin && pin.length > 0) {
+            options.onSuccess(pin);
+        } else {
+            options.onError?.('Please enter your 4-digit PIN once to activate fingerprint payments.');
+        }
+    };
+
+    window.onTransactionBiometricError = (error?: string) => {
+        options.onError?.(error || 'Transaction authorization cancelled.');
+    };
+
+    window.onBiometricSuccess = (pin?: string) => {
+        if (pin && pin.length > 0) {
+            options.onSuccess(pin);
+        } else {
+            options.onError?.('Please enter your 4-digit PIN once to activate fingerprint payments.');
+        }
+    };
+
+    window.onBiometricError = (error?: string) => {
+        options.onError?.(error || 'Transaction authorization cancelled.');
+    };
+
+    promptFn.call(
+        window.AffanBridge,
+        options.title || 'Authorize Payment',
+        options.subtitle || 'Scan your fingerprint to approve payment'
+    );
 }

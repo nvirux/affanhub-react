@@ -41,8 +41,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['id', 'name', 'email', 'phone', 'bvn', 'nin', 'referral_code', 'referred_by', 'password', 'login_pin_hash', 'login_pin_enabled', 'transaction_pin_hash', 'store_id', 'is_active'])]
-#[Hidden(['password', 'login_pin_hash', 'transaction_pin_hash', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
+#[Fillable(['id', 'name', 'email', 'phone', 'bvn', 'nin', 'referral_code', 'referred_by', 'password', 'login_pin_hash', 'login_pin_enabled', 'biometric_token', 'transaction_pin_hash', 'store_id', 'is_active'])]
+#[Hidden(['password', 'login_pin_hash', 'biometric_token', 'transaction_pin_hash', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */

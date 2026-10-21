@@ -35,6 +35,15 @@ class FortifyServiceProvider extends ServiceProvider
                 {
                     $user = $request->user();
 
+                    if ($user) {
+                        $plainToken = Str::random(64);
+                        $user->update([
+                            'biometric_token' => hash('sha256', $plainToken),
+                        ]);
+                        $request->session()->flash('biometric_token', $plainToken);
+                        $request->session()->flash('biometric_identifier', $user->phone ?: $user->email);
+                    }
+
                     if ($user && ! $user->login_pin_enabled) {
                         $request->session()->put('needs_pin_setup', true);
 

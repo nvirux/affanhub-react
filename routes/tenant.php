@@ -44,6 +44,10 @@ Route::middleware([
         ->name('login.check-identifier')
         ->middleware('throttle:30,1');
 
+    Route::post('/login/biometric', [TenantAuthController::class, 'biometricLogin'])
+        ->name('login.biometric')
+        ->middleware('throttle:15,1');
+
     Route::post('/register/validate-step-1', [TenantAuthController::class, 'validateRegisterStep1'])
         ->name('register.validate-step-1')
         ->middleware('throttle:30,1');
@@ -62,7 +66,7 @@ Route::middleware([
         require base_path('vendor/laravel/fortify/routes/routes.php');
     });
 
-    // PIN Setup for legacy password users
+    // PIN Setup for legacy password users & Biometrics
     Route::middleware(['auth'])->group(function () {
         Route::get('/setup-pin', [TenantPinSetupController::class, 'show'])->name('pin.setup');
         Route::post('/setup-pin', [TenantPinSetupController::class, 'store'])->name('pin.setup.store');
@@ -70,6 +74,10 @@ Route::middleware([
         // Transaction PIN Setup
         Route::get('/setup-transaction-pin', [TransactionPinController::class, 'create'])->name('transaction-pin.setup');
         Route::post('/setup-transaction-pin', [TransactionPinController::class, 'store'])->name('transaction-pin.setup.store');
+
+        // Biometric Token Management
+        Route::post('/user/biometric-token', [TenantAuthController::class, 'generateBiometricToken'])->name('user.biometric-token');
+        Route::delete('/user/biometric-token', [TenantAuthController::class, 'revokeBiometricToken'])->name('user.biometric-token.revoke');
     });
 
     // Customer Dashboard

@@ -5,6 +5,7 @@ use App\Models\Store;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
 
@@ -288,4 +289,71 @@ test('users are rate limited after 5 failed PIN attempts', function () {
     ]);
 
     $response->assertTooManyRequests();
+});
+
+test('user can log in via valid biometric token', function () {
+    $plainToken = Str::random(64);
+    $user = User::create([
+        'name' => 'Biometric User',
+        'email' => 'bio@example.com',
+        'phone' => '08099887766',
+        'login_pin_hash' => '1234',
+        'login_pin_enabled' => true,
+        'biometric_token' => hash('sha256', $plainToken),
+        'store_id' => $this->store->id,
+    ]);
+
+    $response = $this->postJson('http://demo.localhost/login/biometric', [
+        'identifier' => '08099887766',
+        'biometric_token' => $plainToken,
+    ]);
+
+    $response->assertOk()
+        ->assertJson([
+            'success' => true,
+            'redirect' => 'http://demo.localhost/dashboard',
+        ]);
+
+    $this->assertAuthenticatedAs($user);
+});
+
+test('biometric login fails with invalid or expired biometric token', function () {
+    $plainToken = Str::random(64);
+    $user = User::create([
+        'name' => 'Biometric User',
+        'email' => 'bio_invalid@example.com',
+        'phone' => '08099887755',
+        'login_pin_hash' => '1234',
+        'login_pin_enabled' => true,
+        'biometric_token' => hash('sha256', $plainToken),
+        'store_id' => $this->store->id,
+    ]);
+
+    $response = $this->postJson('http://demo.localhost/login/biometric', [
+        'identifier' => '08099887755',
+        'biometric_token' => Str::random(64),
+    ]);
+
+    $response->assertStatus(401);
+    $this->assertGuest();
+});
+
+test('biometric login fails when user has no biometric token configured', function () {
+    $user = User::create([
+        'name' => 'No Bio User',
+        'email' => 'nobio@example.com',
+        'phone' => '08099887744',
+        'login_pin_hash' => '1234',
+        'login_pin_enabled' => true,
+        'biometric_token' => null,
+        'store_id' => $this->store->id,
+    ]);
+
+    $response = $this->postJson('http://demo.localhost/login/biometric', [
+        'identifier' => '08099887744',
+        'biometric_token' => Str::random(64),
+    ]);
+
+    $response->assertStatus(401);
+    $this->assertGuest();
 });

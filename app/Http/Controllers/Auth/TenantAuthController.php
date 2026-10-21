@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class TenantAuthController extends Controller
@@ -121,6 +124,105 @@ class TenantAuthController extends Controller
             'name' => $user->name,
             'identifier' => $rawIdentifier,
             'masked_identifier' => $masked,
+        ]);
+    }
+
+    /**
+     * Authenticate a user via secure biometric token from mobile app.
+     */
+    public function biometricLogin(Request $request): JsonResponse|RedirectResponse
+    {
+        $validated = $request->validate([
+            'identifier' => ['required', 'string', 'max:255'],
+            'biometric_token' => ['required', 'string', 'min:32', 'max:128'],
+        ]);
+
+        $rawIdentifier = trim($validated['identifier']);
+        $tenantId = function_exists('tenant') && tenant() ? tenant('id') : null;
+        $normalizedPhone = preg_replace('/[^0-9+]/', '', $rawIdentifier);
+
+        $user = User::query()
+            ->when($tenantId, fn ($query) => $query->where('store_id', $tenantId))
+            ->where(function ($query) use ($rawIdentifier, $normalizedPhone) {
+                $query->where('email', $rawIdentifier)
+                    ->orWhere('phone', $rawIdentifier);
+
+                if (! empty($normalizedPhone) && $normalizedPhone !== $rawIdentifier) {
+                    $query->orWhere('phone', $normalizedPhone);
+                }
+            })
+            ->first();
+
+        if (! $user) {
+            return response()->json([
+                'message' => 'No account found matching this identifier.',
+            ], 404);
+        }
+
+        if ($user->is_active === false) {
+            return response()->json([
+                'message' => 'Your account has been suspended. Please contact store support.',
+            ], 403);
+        }
+
+        if (empty($user->biometric_token)) {
+            return response()->json([
+                'message' => 'Biometric login has expired or was disabled. Please enter your PIN.',
+            ], 401);
+        }
+
+        $tokenHash = hash('sha256', $validated['biometric_token']);
+
+        if (! hash_equals($user->biometric_token, $tokenHash)) {
+            return response()->json([
+                'message' => 'Invalid biometric credentials. Please enter your PIN.',
+            ], 401);
+        }
+
+        Auth::login($user, true);
+        $request->session()->regenerate();
+
+        if ($request->wantsJson() && ! $request->header('X-Inertia')) {
+            return response()->json([
+                'success' => true,
+                'redirect' => route('dashboard'),
+            ]);
+        }
+
+        return redirect()->intended(route('dashboard'));
+    }
+
+    /**
+     * Generate or refresh biometric token for the authenticated user.
+     */
+    public function generateBiometricToken(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $plainToken = Str::random(64);
+
+        $user->update([
+            'biometric_token' => hash('sha256', $plainToken),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'biometric_token' => $plainToken,
+            'identifier' => $user->phone ?: $user->email,
+        ]);
+    }
+
+    /**
+     * Revoke biometric token for the authenticated user.
+     */
+    public function revokeBiometricToken(Request $request): JsonResponse
+    {
+        $request->user()->update([
+            'biometric_token' => null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Biometric login disabled.',
         ]);
     }
 }

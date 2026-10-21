@@ -1,10 +1,13 @@
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
 import type { BreadcrumbItem } from '@/types';
 import { usePage, Link } from '@inertiajs/react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Home, Wallet, Gift, History, User } from 'lucide-react';
 import { dashboard } from '@/routes';
 import { edit as editProfile } from '@/routes/profile';
+
+import { isBiometricSupported, hasBiometricFor, saveBiometric } from '@/lib/biometrics';
+import EnableBiometricSheet from '@/components/enable-biometric-sheet';
 
 export default function AppLayout({
     breadcrumbs = [],
@@ -13,8 +16,33 @@ export default function AppLayout({
     breadcrumbs?: BreadcrumbItem[];
     children: React.ReactNode;
 }) {
-    const { store } = usePage<any>().props;
+    const { store, flash } = usePage<any>().props;
     const url = usePage().url;
+
+    const [showBiometricPrompt, setShowBiometricPrompt] = useState(false);
+    const [bioPromptData, setBioPromptData] = useState<{ identifier: string; token: string } | null>(null);
+
+    useEffect(() => {
+        const token = flash?.biometric_token;
+        const identifier = flash?.biometric_identifier;
+
+        if (token && identifier && isBiometricSupported()) {
+            const hasBio = hasBiometricFor(identifier);
+            if (hasBio) {
+                // Silently refresh token in secure vault for existing user
+                saveBiometric(identifier, token);
+            } else {
+                const dismissed = sessionStorage.getItem(`bio_prompt_dismissed_${identifier}`);
+                if (!dismissed) {
+                    setBioPromptData({ identifier, token });
+                    const timer = setTimeout(() => {
+                        setShowBiometricPrompt(true);
+                    }, 600);
+                    return () => clearTimeout(timer);
+                }
+            }
+        }
+    }, [flash?.biometric_token, flash?.biometric_identifier]);
 
     const isDashboardActive = url.startsWith('/dashboard');
     const isWalletActive = url.startsWith('/wallet');
@@ -27,6 +55,15 @@ export default function AppLayout({
             <div className="pb-20 md:pb-0 min-h-screen flex flex-col flex-1 bg-[#f8f7fc] dark:bg-zinc-900 w-full min-w-0">
                 {children}
             </div>
+
+            {bioPromptData && (
+                <EnableBiometricSheet
+                    isOpen={showBiometricPrompt}
+                    onClose={() => setShowBiometricPrompt(false)}
+                    identifier={bioPromptData.identifier}
+                    token={bioPromptData.token}
+                />
+            )}
 
             {/* ─── STICKY BOTTOM NAVIGATION FOR MOBILE ─── */}
             <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#1e1e2d] border-t border-slate-200/60 dark:border-slate-800 grid grid-cols-5 h-16 items-center px-1 shadow-lg shadow-black/5">

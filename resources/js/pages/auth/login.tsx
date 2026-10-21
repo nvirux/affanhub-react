@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import PinPad from '@/components/pin-pad';
-import { isBiometricSupported, requestBiometricLogin, saveBiometricToken } from '@/lib/biometrics';
+import { isBiometricSupported, hasBiometricFor, promptBiometricFor, clearBiometricFor } from '@/lib/biometrics';
 import { register } from '@/routes';
 import { request } from '@/routes/password';
 
@@ -41,11 +41,6 @@ export default function Login({ status, canResetPassword }: Props) {
     const [usePasswordFallback, setUsePasswordFallback] = useState(false);
     const [loginError, setLoginError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [hasBiometrics, setHasBiometrics] = useState(false);
-
-    useEffect(() => {
-        setHasBiometrics(isBiometricSupported());
-    }, []);
 
     const identifierInputRef = useRef<HTMLInputElement>(null);
 
@@ -221,11 +216,6 @@ export default function Login({ status, canResetPassword }: Props) {
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    // Save biometric PIN in Android secure vault if biometrics available
-                    if (isPinMode && currentPin.length === 4) {
-                        saveBiometricToken(currentPin);
-                    }
-
                     // Update display hint on successful login
                     saveRememberedAccount({
                         identifier,
@@ -250,6 +240,49 @@ export default function Login({ status, canResetPassword }: Props) {
                     if (isPinMode) {
                         setPin('');
                     }
+                    setIsSubmitting(false);
+                },
+                onFinish: () => {
+                    setIsSubmitting(false);
+                },
+            }
+        );
+    };
+
+    const submitBiometricLogin = (savedToken: string) => {
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+        setLoginError(null);
+
+        router.post(
+            '/login/biometric',
+            {
+                identifier,
+                biometric_token: savedToken,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    saveRememberedAccount({
+                        identifier,
+                        masked_identifier: maskedIdentifier || identifier,
+                        name: userName,
+                        login_pin_enabled: userPinEnabled,
+                        has_password: hasPassword,
+                    });
+                },
+                onError: (errs) => {
+                    clearBiometricFor(identifier);
+                    const message =
+                        errs.biometric_token ||
+                        errs.identifier ||
+                        errs.message ||
+                        Object.values(errs)[0];
+                    setLoginError(
+                        typeof message === 'string'
+                            ? message
+                            : 'Biometric login expired. Please enter your PIN.'
+                    );
                     setIsSubmitting(false);
                 },
                 onFinish: () => {
@@ -384,16 +417,15 @@ export default function Login({ status, canResetPassword }: Props) {
                                 }}
                                 disabled={isSubmitting}
                                 error={Boolean(loginError)}
-                                showBiometric={hasBiometrics}
+                                showBiometric={Boolean(isBiometricSupported() && hasBiometricFor(identifier))}
                                 onBiometricClick={() => {
                                     if (isSubmitting) return;
-                                    requestBiometricLogin({
+                                    promptBiometricFor({
+                                        identifier,
                                         title: userName ? `Welcome back, ${userName}` : 'Biometric Login',
-                                        subtitle: 'Scan your fingerprint to log in',
-                                        onSuccess: (tokenOrPin) => {
-                                            if (tokenOrPin) {
-                                                setPin(tokenOrPin);
-                                                submitLogin(tokenOrPin);
+                                        onSuccess: (savedToken) => {
+                                            if (savedToken) {
+                                                submitBiometricLogin(savedToken);
                                             }
                                         },
                                         onError: (err) => {

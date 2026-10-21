@@ -209,7 +209,7 @@ updateLoginPin.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     updateLoginPin.form = updateLoginPinForm
 /**
 * @see \App\Http\Controllers\Settings\SecurityController::updateTransactionPin
- * @see app/Http/Controllers/Settings/SecurityController.php:105
+ * @see app/Http/Controllers/Settings/SecurityController.php:106
  * @route '/settings/transaction-pin'
  */
 export const updateTransactionPin = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -224,7 +224,7 @@ updateTransactionPin.definition = {
 
 /**
 * @see \App\Http\Controllers\Settings\SecurityController::updateTransactionPin
- * @see app/Http/Controllers/Settings/SecurityController.php:105
+ * @see app/Http/Controllers/Settings/SecurityController.php:106
  * @route '/settings/transaction-pin'
  */
 updateTransactionPin.url = (options?: RouteQueryOptions) => {
@@ -233,7 +233,7 @@ updateTransactionPin.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Settings\SecurityController::updateTransactionPin
- * @see app/Http/Controllers/Settings/SecurityController.php:105
+ * @see app/Http/Controllers/Settings/SecurityController.php:106
  * @route '/settings/transaction-pin'
  */
 updateTransactionPin.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -243,7 +243,7 @@ updateTransactionPin.put = (options?: RouteQueryOptions): RouteDefinition<'put'>
 
     /**
 * @see \App\Http\Controllers\Settings\SecurityController::updateTransactionPin
- * @see app/Http/Controllers/Settings/SecurityController.php:105
+ * @see app/Http/Controllers/Settings/SecurityController.php:106
  * @route '/settings/transaction-pin'
  */
     const updateTransactionPinForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -258,7 +258,7 @@ updateTransactionPin.put = (options?: RouteQueryOptions): RouteDefinition<'put'>
 
             /**
 * @see \App\Http\Controllers\Settings\SecurityController::updateTransactionPin
- * @see app/Http/Controllers/Settings/SecurityController.php:105
+ * @see app/Http/Controllers/Settings/SecurityController.php:106
  * @route '/settings/transaction-pin'
  */
         updateTransactionPinForm.put = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

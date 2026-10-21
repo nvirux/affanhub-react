@@ -1,4 +1,60 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
+import biometricToken20cd0c from './biometric-token'
+/**
+* @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:198
+ * @route '/user/biometric-token'
+ */
+export const biometricToken = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: biometricToken.url(options),
+    method: 'post',
+})
+
+biometricToken.definition = {
+    methods: ["post"],
+    url: '/user/biometric-token',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:198
+ * @route '/user/biometric-token'
+ */
+biometricToken.url = (options?: RouteQueryOptions) => {
+    return biometricToken.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:198
+ * @route '/user/biometric-token'
+ */
+biometricToken.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: biometricToken.url(options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:198
+ * @route '/user/biometric-token'
+ */
+    const biometricTokenForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: biometricToken.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:198
+ * @route '/user/biometric-token'
+ */
+        biometricTokenForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: biometricToken.url(options),
+            method: 'post',
+        })
+    
+    biometricToken.form = biometricTokenForm
 /**
 * @see \App\Http\Controllers\DashboardController::dashboard
  * @see app/Http/Controllers/DashboardController.php:20
@@ -78,7 +134,8 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     dashboard.form = dashboardForm
 const user = {
-    dashboard: Object.assign(dashboard, dashboard),
+    biometricToken: Object.assign(biometricToken, biometricToken20cd0c),
+dashboard: Object.assign(dashboard, dashboard),
 }
 
 export default user

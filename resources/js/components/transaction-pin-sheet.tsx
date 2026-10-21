@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/sheet';
 import { Lock, AlertCircle, Loader2 } from 'lucide-react';
 import PinPad from '@/components/pin-pad';
-import { isBiometricSupported, requestBiometricTransaction, saveTransactionPin } from '@/lib/biometrics';
+import { isBiometricSupported, hasTransactionPin, promptTransactionBiometric, saveTransactionPin, clearTransactionPin } from '@/lib/biometrics';
 
 interface TransactionPinSheetProps {
     isOpen: boolean;
@@ -36,25 +36,38 @@ export function TransactionPinSheet({
     const [hasBiometrics, setHasBiometrics] = useState(false);
 
     useEffect(() => {
-        setHasBiometrics(isBiometricSupported());
-    }, []);
+        // ONLY show fingerprint if device supports it AND has a saved transaction PIN
+        if (isOpen) {
+            setHasBiometrics(Boolean(isBiometricSupported() && hasTransactionPin()));
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         if (error) {
             setPin('');
+            // If server reports incorrect PIN (e.g. changed on PC), clear cached PIN immediately
+            if (typeof error === 'string' && error.toLowerCase().includes('incorrect')) {
+                clearTransactionPin();
+                setHasBiometrics(false);
+            }
         }
     }, [error]);
 
     const handleBiometricAuth = () => {
         if (isSubmitting) return;
 
-        requestBiometricTransaction({
+        promptTransactionBiometric({
             title: title || 'Authorize Payment',
             subtitle: 'Scan your fingerprint to complete purchase',
             onSuccess: (val) => {
-                if (val) {
-                    setPin(val);
-                    onSubmitPin(val);
+                const cleanPin = (val || '').trim();
+                if (cleanPin.length === 4 && /^\d{4}$/.test(cleanPin)) {
+                    setPin(cleanPin);
+                    onSubmitPin(cleanPin);
+                } else {
+                    clearTransactionPin();
+                    setHasBiometrics(false);
+                    setPin('');
                 }
             },
             onError: (err) => {
@@ -64,8 +77,9 @@ export function TransactionPinSheet({
     };
 
     const handlePinComplete = (val: string) => {
-        if (hasBiometrics && val.length === 4) {
+        if (isBiometricSupported() && val.length === 4) {
             saveTransactionPin(val);
+            setHasBiometrics(true);
         }
         onSubmitPin(val);
     };

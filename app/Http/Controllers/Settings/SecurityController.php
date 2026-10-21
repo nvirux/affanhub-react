@@ -92,6 +92,7 @@ class SecurityController extends Controller
         $user->update([
             'login_pin_hash' => $request->pin,
             'login_pin_enabled' => true,
+            'biometric_token' => null,
         ]);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Login PIN updated successfully.')]);
