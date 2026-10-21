@@ -36,12 +36,16 @@ class FortifyServiceProvider extends ServiceProvider
                     $user = $request->user();
 
                     if ($user) {
-                        $plainToken = Str::random(64);
-                        $user->update([
-                            'biometric_token' => hash('sha256', $plainToken),
-                        ]);
-                        $request->session()->flash('biometric_token', $plainToken);
-                        $request->session()->flash('biometric_identifier', $user->phone ?: $user->email);
+                        try {
+                            $plainToken = Str::random(64);
+                            $user->forceFill([
+                                'biometric_token' => hash('sha256', $plainToken),
+                            ])->saveQuietly();
+                            $request->session()->flash('biometric_token', $plainToken);
+                            $request->session()->flash('biometric_identifier', $user->phone ?: $user->email);
+                        } catch (\Throwable $e) {
+                            // Ensure login never crashes even if migrations are running
+                        }
                     }
 
                     if ($user && ! $user->login_pin_enabled) {

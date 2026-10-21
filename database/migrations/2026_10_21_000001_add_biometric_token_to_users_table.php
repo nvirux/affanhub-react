@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('biometric_token', 64)->nullable()->after('login_pin_enabled')->index();
-        });
+        if (Schema::hasTable('users') && ! Schema::hasColumn('users', 'biometric_token')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('biometric_token', 64)->nullable()->after('login_pin_enabled')->index();
+            });
+        }
     }
 
     /**
