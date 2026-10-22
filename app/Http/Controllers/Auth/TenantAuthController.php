@@ -124,6 +124,9 @@ class TenantAuthController extends Controller
             'name' => $user->name,
             'identifier' => $rawIdentifier,
             'masked_identifier' => $masked,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'biometric_enabled' => ! empty($user->biometric_token),
         ]);
     }
 

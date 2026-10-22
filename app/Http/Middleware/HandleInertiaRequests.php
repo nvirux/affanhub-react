@@ -147,6 +147,8 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
                 'biometric_token' => fn () => $request->session()->get('biometric_token'),
                 'biometric_identifier' => fn () => $request->session()->get('biometric_identifier'),
+                'biometric_phone' => fn () => $request->session()->get('biometric_phone'),
+                'biometric_email' => fn () => $request->session()->get('biometric_email'),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];

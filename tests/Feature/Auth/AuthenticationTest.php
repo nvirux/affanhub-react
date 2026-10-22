@@ -64,6 +64,9 @@ test('check identifier detects user with login PIN enabled', function () {
             'status' => 'found',
             'login_pin_enabled' => true,
             'name' => 'PIN User',
+            'email' => 'pinuser@example.com',
+            'phone' => '08011223344',
+            'biometric_enabled' => false,
         ]);
 });
 

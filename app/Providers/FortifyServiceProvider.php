@@ -43,6 +43,12 @@ class FortifyServiceProvider extends ServiceProvider
                             ])->saveQuietly();
                             $request->session()->flash('biometric_token', $plainToken);
                             $request->session()->flash('biometric_identifier', $user->phone ?: $user->email);
+                            if ($user->phone) {
+                                $request->session()->flash('biometric_phone', $user->phone);
+                            }
+                            if ($user->email) {
+                                $request->session()->flash('biometric_email', $user->email);
+                            }
                         } catch (\Throwable $e) {
                             // Ensure login never crashes even if migrations are running
                         }

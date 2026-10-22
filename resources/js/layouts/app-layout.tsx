@@ -16,25 +16,36 @@ export default function AppLayout({
     breadcrumbs?: BreadcrumbItem[];
     children: React.ReactNode;
 }) {
-    const { store, flash } = usePage<any>().props;
+    const { store, flash, auth } = usePage<any>().props;
     const url = usePage().url;
 
     const [showBiometricPrompt, setShowBiometricPrompt] = useState(false);
-    const [bioPromptData, setBioPromptData] = useState<{ identifier: string; token: string } | null>(null);
+    const [bioPromptData, setBioPromptData] = useState<{ identifier: string; token: string; aliases: string[] } | null>(null);
 
     useEffect(() => {
         const token = flash?.biometric_token;
         const identifier = flash?.biometric_identifier;
 
         if (token && identifier && isBiometricSupported()) {
-            const hasBio = hasBiometricFor(identifier);
+            const aliases = Array.from(
+                new Set(
+                    [
+                        auth?.user?.email,
+                        auth?.user?.phone,
+                        flash?.biometric_email,
+                        flash?.biometric_phone,
+                    ].filter(Boolean) as string[]
+                )
+            );
+
+            const hasBio = hasBiometricFor(identifier, aliases);
             if (hasBio) {
                 // Silently refresh token in secure vault for existing user
-                saveBiometric(identifier, token);
+                saveBiometric(identifier, token, aliases);
             } else {
                 const dismissed = sessionStorage.getItem(`bio_prompt_dismissed_${identifier}`);
                 if (!dismissed) {
-                    setBioPromptData({ identifier, token });
+                    setBioPromptData({ identifier, token, aliases });
                     const timer = setTimeout(() => {
                         setShowBiometricPrompt(true);
                     }, 600);
@@ -42,7 +53,7 @@ export default function AppLayout({
                 }
             }
         }
-    }, [flash?.biometric_token, flash?.biometric_identifier]);
+    }, [flash?.biometric_token, flash?.biometric_identifier, auth?.user]);
 
     const isDashboardActive = url.startsWith('/dashboard');
     const isWalletActive = url.startsWith('/wallet');
@@ -62,6 +73,7 @@ export default function AppLayout({
                     onClose={() => setShowBiometricPrompt(false)}
                     identifier={bioPromptData.identifier}
                     token={bioPromptData.token}
+                    aliases={bioPromptData.aliases}
                 />
             )}
 

@@ -10,6 +10,7 @@ interface EnableBiometricSheetProps {
     onClose: () => void;
     identifier: string;
     token: string;
+    aliases?: (string | undefined | null)[];
 }
 
 export default function EnableBiometricSheet({
@@ -17,14 +18,22 @@ export default function EnableBiometricSheet({
     onClose,
     identifier,
     token,
+    aliases = [],
 }: EnableBiometricSheetProps) {
     const [isSaving, setIsSaving] = useState(false);
 
     const handleEnable = () => {
         setIsSaving(true);
         try {
-            saveBiometric(identifier, token);
-            localStorage.setItem(`bio_enabled_${identifier}`, 'true');
+            saveBiometric(identifier, token, aliases);
+            try {
+                const saved = localStorage.getItem('affanhub_last_login');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    parsed.biometric_enabled = true;
+                    localStorage.setItem('affanhub_last_login', JSON.stringify(parsed));
+                }
+            } catch {}
             toast.success('Fingerprint login enabled! You can now log in with one touch.');
             onClose();
         } catch (e) {
