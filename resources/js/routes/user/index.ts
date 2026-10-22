@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 import biometricToken20cd0c from './biometric-token'
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
- * @see app/Http/Controllers/Auth/TenantAuthController.php:198
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:201
  * @route '/user/biometric-token'
  */
 export const biometricToken = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -17,7 +17,7 @@ biometricToken.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
- * @see app/Http/Controllers/Auth/TenantAuthController.php:198
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:201
  * @route '/user/biometric-token'
  */
 biometricToken.url = (options?: RouteQueryOptions) => {
@@ -26,7 +26,7 @@ biometricToken.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
- * @see app/Http/Controllers/Auth/TenantAuthController.php:198
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:201
  * @route '/user/biometric-token'
  */
 biometricToken.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -36,7 +36,7 @@ biometricToken.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
 
     /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
- * @see app/Http/Controllers/Auth/TenantAuthController.php:198
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:201
  * @route '/user/biometric-token'
  */
     const biometricTokenForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -46,7 +46,7 @@ biometricToken.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
 
             /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
- * @see app/Http/Controllers/Auth/TenantAuthController.php:198
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:201
  * @route '/user/biometric-token'
  */
         biometricTokenForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

@@ -56,7 +56,7 @@ checkIdentifier.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
     checkIdentifier.form = checkIdentifierForm
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometric
- * @see app/Http/Controllers/Auth/TenantAuthController.php:133
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:136
  * @route '/login/biometric'
  */
 export const biometric = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -71,7 +71,7 @@ biometric.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometric
- * @see app/Http/Controllers/Auth/TenantAuthController.php:133
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:136
  * @route '/login/biometric'
  */
 biometric.url = (options?: RouteQueryOptions) => {
@@ -80,7 +80,7 @@ biometric.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometric
- * @see app/Http/Controllers/Auth/TenantAuthController.php:133
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:136
  * @route '/login/biometric'
  */
 biometric.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -90,7 +90,7 @@ biometric.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometric
- * @see app/Http/Controllers/Auth/TenantAuthController.php:133
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:136
  * @route '/login/biometric'
  */
     const biometricForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -100,7 +100,7 @@ biometric.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometric
- * @see app/Http/Controllers/Auth/TenantAuthController.php:133
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:136
  * @route '/login/biometric'
  */
         biometricForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
