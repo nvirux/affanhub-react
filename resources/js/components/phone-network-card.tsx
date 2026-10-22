@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, BookUser, AlertCircle, Smartphone } from 'lucide-react';
 import { PatternFormat } from 'react-number-format';
 import mtnIcon from '@/assets/icons/mtn.png';
@@ -81,6 +81,8 @@ export function PhoneNetworkCard({
     networks,
 }: PhoneNetworkCardProps) {
     const [networkDropdownOpen, setNetworkDropdownOpen] = useState(false);
+    const lastAutoDetectedPrefix = useRef<string>('');
+    const isManualOverride = useRef<boolean>(false);
 
     const isNetworkEnabled = (slug: string): boolean => {
         if (!networks || networks.length === 0) return true;
@@ -88,10 +90,23 @@ export function PhoneNetworkCard({
         return net ? Boolean(net.is_enabled ?? true) : true;
     };
 
-    // Auto-detect phone network prefix
+    // Auto-detect phone network prefix only when prefix changes and user hasn't manually overridden it
     useEffect(() => {
-        if (autoDetect && phone.length >= 4) {
-            const prefix = phone.substring(0, 4);
+        if (!autoDetect) return;
+
+        if (phone.length < 4) {
+            lastAutoDetectedPrefix.current = '';
+            isManualOverride.current = false;
+            return;
+        }
+
+        const prefix = phone.substring(0, 4);
+
+        // Only run auto-detection when the 4-digit prefix actually changes
+        if (prefix !== lastAutoDetectedPrefix.current) {
+            lastAutoDetectedPrefix.current = prefix;
+            isManualOverride.current = false; // Reset manual override for new phone prefix
+
             const mtnPrefixes = ['0803', '0806', '0703', '0706', '0813', '0816', '0810', '0814', '0903', '0906', '0913', '0916'];
             const airtelPrefixes = ['0802', '0808', '0708', '0812', '0701', '0902', '0901', '0904', '0907', '0912'];
             const gloPrefixes = ['0805', '0807', '0705', '0815', '0811', '0905', '0915'];
@@ -103,7 +118,7 @@ export function PhoneNetworkCard({
             else if (gloPrefixes.includes(prefix)) detected = 'glo';
             else if (etisalatPrefixes.includes(prefix)) detected = '9mobile';
 
-            if (detected && detected !== selectedNetwork) {
+            if (detected) {
                 if (isNetworkEnabled(detected)) {
                     setSelectedNetwork(detected);
                     onNetworkChange?.(detected);
@@ -116,7 +131,7 @@ export function PhoneNetworkCard({
                 }
             }
         }
-    }, [phone, autoDetect, selectedNetwork, setSelectedNetwork, onNetworkChange, networks]);
+    }, [phone, autoDetect, setSelectedNetwork, onNetworkChange]);
 
     const isCurrentActive = isNetworkEnabled(selectedNetwork);
 
@@ -247,6 +262,7 @@ export function PhoneNetworkCard({
                                             disabled={!isEnabled}
                                             onClick={() => {
                                                 if (!isEnabled) return;
+                                                isManualOverride.current = true;
                                                 setSelectedNetwork(net.slug);
                                                 onNetworkChange?.(net.slug);
                                                 setNetworkDropdownOpen(false);
