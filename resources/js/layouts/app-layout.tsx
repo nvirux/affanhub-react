@@ -55,6 +55,29 @@ export default function AppLayout({
         }
     }, [flash?.biometric_token, flash?.biometric_identifier, auth?.user]);
 
+    // Sync authenticated user with native Android OneSignal Bridge (AffanBridge)
+    useEffect(() => {
+        if (typeof window !== 'undefined' && (window as any).AffanBridge) {
+            const bridge = (window as any).AffanBridge;
+            const userId = auth?.user?.id;
+            const tenantId = store?.id || store?.public_id;
+
+            if (userId && tenantId) {
+                if (typeof bridge.setNotificationUser === 'function') {
+                    bridge.setNotificationUser(String(userId), String(tenantId));
+                } else if (typeof bridge.loginPushUser === 'function') {
+                    bridge.loginPushUser(String(userId), String(tenantId));
+                }
+            } else if (!userId) {
+                if (typeof bridge.removeNotificationUser === 'function') {
+                    bridge.removeNotificationUser();
+                } else if (typeof bridge.logoutPushUser === 'function') {
+                    bridge.logoutPushUser();
+                }
+            }
+        }
+    }, [auth?.user?.id, store?.id, store?.public_id]);
+
     const isDashboardActive = url.startsWith('/dashboard');
     const isWalletActive = url.startsWith('/wallet');
     const isEarnActive = url.startsWith('/earn');

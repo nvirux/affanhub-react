@@ -207,6 +207,18 @@
             background: #f0f9ff !important;
         }
 
+        .push-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (min-width: 1024px) {
+            .push-grid {
+                grid-template-columns: 1.15fr 0.85fr;
+            }
+        }
+
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -438,6 +450,134 @@
                                 </button>
                             @endif
                         </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Push Notifications Broadcast to App Customers --}}
+        @if($isReady)
+            <div class="mam-card" style="border: 1.5px solid #bfdbfe; background: #ffffff;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 1.35rem;">🔔</span>
+                            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0;">
+                                Broadcast Push Notification
+                            </h3>
+                            <span style="background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; font-size: 0.7rem; font-weight: 800; padding: 0.2rem 0.55rem; border-radius: 9999px;">
+                                OneSignal Cloud Push
+                            </span>
+                        </div>
+                        <p style="font-size: 0.8125rem; color: #64748b; margin-top: 0.3rem; margin-bottom: 0;">
+                            Instantly alert all customers who downloaded your <strong>{{ $app->app_name }}</strong> Android app on their phones.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="push-grid">
+                    {{-- Form --}}
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem;">
+                        <form wire:submit="sendPushNotification" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div>
+                                <label style="display: block; font-size: 0.8125rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+                                    Notification Title <span style="color: #dc2626;">*</span>
+                                </label>
+                                <input type="text" 
+                                       wire:model="pushTitle" 
+                                       placeholder="e.g. Weekend Flash Sale: 20% Off Data Today!" 
+                                       maxlength="100"
+                                       required
+                                       style="width: 100%; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.875rem; background: #ffffff;" />
+                                @error('pushTitle') <span style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.8125rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+                                    Message Body <span style="color: #dc2626;">*</span>
+                                </label>
+                                <textarea wire:model="pushMessage" 
+                                          rows="3" 
+                                          placeholder="e.g. Enjoy discounted airtime and data bundles all weekend. Tap here to top up now!" 
+                                          maxlength="255"
+                                          required
+                                          style="width: 100%; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.875rem; background: #ffffff; resize: vertical;"></textarea>
+                                @error('pushMessage') <span style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.8125rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+                                    Destination / Deep Link URL <span style="font-size: 0.75rem; font-weight: normal; color: #64748b;">(Optional)</span>
+                                </label>
+                                <input type="text" 
+                                       wire:model="pushActionUrl" 
+                                       placeholder="e.g. /dashboard/buy-data or full https:// link" 
+                                       style="width: 100%; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.875rem; background: #ffffff;" />
+                                <span style="font-size: 0.72rem; color: #64748b; margin-top: 0.25rem; display: block;">When customers tap the notification on their phone, the app automatically opens to this page.</span>
+                            </div>
+
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem; gap: 1rem; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: #64748b;">
+                                    <span>🎯 Target Audience:</span>
+                                    <strong style="color: #0f172a;">All {{ $app->app_name }} App Users</strong>
+                                </div>
+
+                                <button type="submit" 
+                                        wire:loading.attr="disabled"
+                                        style="padding: 0.65rem 1.35rem; background: #2563eb; color: #ffffff; border: none; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
+                                    <span wire:loading.remove wire:target="sendPushNotification">
+                                        🚀 Dispatch Broadcast
+                                    </span>
+                                    <span wire:loading.inline-flex wire:target="sendPushNotification" style="display: none; align-items: center; gap: 0.35rem;">
+                                        <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Dispatching...
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    {{-- Sent History --}}
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column;">
+                        <h4 style="font-size: 0.875rem; font-weight: 800; color: #0f172a; margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.4rem;">
+                            <span>📜</span>
+                            <span>Recent Broadcasts</span>
+                        </h4>
+
+                        @php $recentBroadcasts = $this->recentPushNotifications; @endphp
+
+                        @if($recentBroadcasts->isEmpty())
+                            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem 1rem; border: 1.5px dashed #cbd5e1; border-radius: 8px;">
+                                <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">📬</div>
+                                <span style="font-size: 0.8125rem; font-weight: 700; color: #475569;">No Broadcasts Sent Yet</span>
+                                <p style="font-size: 0.75rem; color: #94a3b8; margin: 0.2rem 0 0 0;">
+                                    When you send a push notification, it will be listed here with its delivery status.
+                                </p>
+                            </div>
+                        @else
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 320px; overflow-y: auto;">
+                                @foreach($recentBroadcasts as $notification)
+                                    <div style="border: 1px solid #f1f5f9; background: #f8fafc; border-radius: 8px; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-size: 0.8125rem; color: #0f172a;">{{ $notification->title }}</strong>
+                                            @if($notification->status === 'sent')
+                                                <span style="font-size: 0.68rem; font-weight: 700; background: #dcfce7; color: #15803d; padding: 0.15rem 0.45rem; border-radius: 4px;">Sent</span>
+                                            @else
+                                                <span style="font-size: 0.68rem; font-weight: 700; background: #fee2e2; color: #b91c1c; padding: 0.15rem 0.45rem; border-radius: 4px;">Failed</span>
+                                            @endif
+                                        </div>
+                                        <p style="font-size: 0.75rem; color: #64748b; margin: 0; line-height: 1.3;">
+                                            {{ \Illuminate\Support\Str::limit($notification->message, 90) }}
+                                        </p>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.35rem; font-size: 0.7rem; color: #94a3b8;">
+                                            <span>🕒 {{ $notification->created_at->diffForHumans() }}</span>
+                                            @if($notification->recipients_count > 0)
+                                                <span>👥 {{ number_format($notification->recipients_count) }} reached</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

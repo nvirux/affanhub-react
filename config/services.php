@@ -66,4 +66,9 @@ return [
         'zone_id' => env('CLOUDFLARE_ZONE_ID'),
         'api_token' => env('CLOUDFLARE_API_TOKEN'),
     ],
+
+    'onesignal' => [
+        'app_id' => env('ONESIGNAL_APP_ID', '340f8d56-0123-4030-8756-3c42c9282f1a'),
+        'rest_api_key' => env('ONESIGNAL_REST_API_KEY'),
+    ],
 ];
