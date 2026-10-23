@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:71
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:72
  * @route '/login/check-identifier'
  */
 export const checkIdentifier = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ checkIdentifier.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:71
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:72
  * @route '/login/check-identifier'
  */
 checkIdentifier.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ checkIdentifier.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:71
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:72
  * @route '/login/check-identifier'
  */
 checkIdentifier.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ checkIdentifier.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
 
     /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:71
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:72
  * @route '/login/check-identifier'
  */
     const checkIdentifierForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ checkIdentifier.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
 
             /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:71
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:72
  * @route '/login/check-identifier'
  */
         checkIdentifierForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -56,7 +56,7 @@ checkIdentifier.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
     checkIdentifier.form = checkIdentifierForm
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometric
- * @see app/Http/Controllers/Auth/TenantAuthController.php:136
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:137
  * @route '/login/biometric'
  */
 export const biometric = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -71,7 +71,7 @@ biometric.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometric
- * @see app/Http/Controllers/Auth/TenantAuthController.php:136
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:137
  * @route '/login/biometric'
  */
 biometric.url = (options?: RouteQueryOptions) => {
@@ -80,7 +80,7 @@ biometric.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometric
- * @see app/Http/Controllers/Auth/TenantAuthController.php:136
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:137
  * @route '/login/biometric'
  */
 biometric.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -90,7 +90,7 @@ biometric.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometric
- * @see app/Http/Controllers/Auth/TenantAuthController.php:136
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:137
  * @route '/login/biometric'
  */
     const biometricForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -100,7 +100,7 @@ biometric.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometric
- * @see app/Http/Controllers/Auth/TenantAuthController.php:136
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:137
  * @route '/login/biometric'
  */
         biometricForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

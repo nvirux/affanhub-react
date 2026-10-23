@@ -42,6 +42,7 @@ export default function Login({ status, canResetPassword }: Props) {
     const [password, setPassword] = useState('');
     const [usePasswordFallback, setUsePasswordFallback] = useState(false);
     const [hasBiometrics, setHasBiometrics] = useState(false);
+    const [serverBiometricEnabled, setServerBiometricEnabled] = useState<boolean | null>(null);
     const [loginError, setLoginError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -101,6 +102,12 @@ export default function Login({ status, canResetPassword }: Props) {
                                 setHasPassword(hasPwd);
                                 if (email) setAccountEmail(email);
                                 if (phone) setAccountPhone(phone);
+                                const serverBio = Boolean(data.biometric_enabled);
+                                setServerBiometricEnabled(serverBio);
+                                if (!serverBio) {
+                                    clearBiometricFor(parsed.identifier, [email, phone].filter(Boolean));
+                                }
+
                                 saveRememberedAccount({
                                     identifier: parsed.identifier,
                                     masked_identifier: data.masked_identifier || parsed.identifier,
@@ -109,7 +116,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                     has_password: hasPwd,
                                     email,
                                     phone,
-                                    biometric_enabled: Boolean(data.biometric_enabled),
+                                    biometric_enabled: serverBio,
                                 });
                             }
                         })
@@ -125,15 +132,18 @@ export default function Login({ status, canResetPassword }: Props) {
     useEffect(() => {
         if (typeof window === 'undefined') return;
         const supported = isBiometricSupported();
-        if (!supported) {
+        if (!supported || serverBiometricEnabled === false) {
             setHasBiometrics(false);
+            if (serverBiometricEnabled === false && identifier) {
+                clearBiometricFor(identifier, [accountEmail, accountPhone].filter(Boolean));
+            }
             return;
         }
 
         const aliases = [accountEmail, accountPhone].filter(Boolean);
         const hasBio = hasBiometricFor(identifier, aliases);
         setHasBiometrics(hasBio);
-    }, [step, identifier, accountEmail, accountPhone, userPinEnabled]);
+    }, [step, identifier, accountEmail, accountPhone, userPinEnabled, serverBiometricEnabled]);
 
     const handleSwitchAccount = () => {
         try {
@@ -150,6 +160,7 @@ export default function Login({ status, canResetPassword }: Props) {
         setPin('');
         setPassword('');
         setHasBiometrics(false);
+        setServerBiometricEnabled(null);
         setUsePasswordFallback(false);
         setLoginError(null);
         setIdentifierError(null);
@@ -203,6 +214,13 @@ export default function Login({ status, canResetPassword }: Props) {
             setUserName(name);
             if (email) setAccountEmail(email);
             if (phone) setAccountPhone(phone);
+            const isBio = Boolean(data.biometric_enabled);
+            setServerBiometricEnabled(isBio);
+            if (!isBio) {
+                clearBiometricFor(cleanId, [email, phone].filter(Boolean));
+                setHasBiometrics(false);
+            }
+
             setUsePasswordFallback(false);
             setStep(2);
             setLoginError(null);
@@ -216,7 +234,7 @@ export default function Login({ status, canResetPassword }: Props) {
                 has_password: hasPwd,
                 email,
                 phone,
-                biometric_enabled: Boolean(data.biometric_enabled),
+                biometric_enabled: isBio,
             });
         } catch {
             setIdentifierError('Unable to connect. Please check your network connection.');
@@ -318,7 +336,9 @@ export default function Login({ status, canResetPassword }: Props) {
                     });
                 },
                 onError: (errs) => {
-                    clearBiometricFor(identifier);
+                    clearBiometricFor(identifier, [accountEmail, accountPhone].filter(Boolean));
+                    setHasBiometrics(false);
+                    setServerBiometricEnabled(false);
                     const message =
                         errs.biometric_token ||
                         errs.identifier ||
@@ -476,7 +496,14 @@ export default function Login({ status, canResetPassword }: Props) {
                                             }
                                         },
                                         onError: (err) => {
-                                            setLoginError(err);
+                                            if (!err) return;
+                                            const lower = err.toLowerCase();
+                                            // Suppress cancel: user simply dismissed fingerprint and wants to enter PIN
+                                            if (lower.includes('cancel') || lower.includes('canceled') || lower.includes('cancelled') || lower.includes('user_canceled')) {
+                                                return;
+                                            }
+                                            // Clean human-friendly message instead of raw token length or native error codes
+                                            setLoginError('Fingerprint verification failed. Please enter your PIN.');
                                         },
                                     });
                                 }}

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::validateStep1
- * @see app/Http/Controllers/Auth/TenantAuthController.php:20
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:21
  * @route '/register/validate-step-1'
  */
 export const validateStep1 = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ validateStep1.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::validateStep1
- * @see app/Http/Controllers/Auth/TenantAuthController.php:20
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:21
  * @route '/register/validate-step-1'
  */
 validateStep1.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ validateStep1.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::validateStep1
- * @see app/Http/Controllers/Auth/TenantAuthController.php:20
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:21
  * @route '/register/validate-step-1'
  */
 validateStep1.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ validateStep1.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => (
 
     /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::validateStep1
- * @see app/Http/Controllers/Auth/TenantAuthController.php:20
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:21
  * @route '/register/validate-step-1'
  */
     const validateStep1Form = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ validateStep1.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => (
 
             /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::validateStep1
- * @see app/Http/Controllers/Auth/TenantAuthController.php:20
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:21
  * @route '/register/validate-step-1'
  */
         validateStep1Form.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

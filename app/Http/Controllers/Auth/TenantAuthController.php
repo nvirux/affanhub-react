@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class TenantAuthController extends Controller
 {
@@ -157,18 +158,36 @@ class TenantAuthController extends Controller
             ->first();
 
         if (! $user) {
+            if ($request->header('X-Inertia')) {
+                throw ValidationException::withMessages([
+                    'biometric_token' => 'No account found matching this identifier.',
+                ]);
+            }
+
             return response()->json([
                 'message' => 'No account found matching this identifier.',
             ], 404);
         }
 
         if ($user->is_active === false) {
+            if ($request->header('X-Inertia')) {
+                throw ValidationException::withMessages([
+                    'biometric_token' => 'Your account has been suspended. Please contact store support.',
+                ]);
+            }
+
             return response()->json([
                 'message' => 'Your account has been suspended. Please contact store support.',
             ], 403);
         }
 
         if (empty($user->biometric_token)) {
+            if ($request->header('X-Inertia')) {
+                throw ValidationException::withMessages([
+                    'biometric_token' => 'Biometric login has expired or was disabled. Please enter your PIN.',
+                ]);
+            }
+
             return response()->json([
                 'message' => 'Biometric login has expired or was disabled. Please enter your PIN.',
             ], 401);
@@ -177,6 +196,12 @@ class TenantAuthController extends Controller
         $tokenHash = hash('sha256', $validated['biometric_token']);
 
         if (! hash_equals($user->biometric_token, $tokenHash)) {
+            if ($request->header('X-Inertia')) {
+                throw ValidationException::withMessages([
+                    'biometric_token' => 'Invalid biometric credentials. Please enter your PIN.',
+                ]);
+            }
+
             return response()->json([
                 'message' => 'Invalid biometric credentials. Please enter your PIN.',
             ], 401);

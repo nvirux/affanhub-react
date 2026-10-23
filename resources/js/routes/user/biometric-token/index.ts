@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::revoke
- * @see app/Http/Controllers/Auth/TenantAuthController.php:220
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:245
  * @route '/user/biometric-token'
  */
 export const revoke = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -16,7 +16,7 @@ revoke.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::revoke
- * @see app/Http/Controllers/Auth/TenantAuthController.php:220
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:245
  * @route '/user/biometric-token'
  */
 revoke.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ revoke.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::revoke
- * @see app/Http/Controllers/Auth/TenantAuthController.php:220
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:245
  * @route '/user/biometric-token'
  */
 revoke.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -35,7 +35,7 @@ revoke.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
 
     /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::revoke
- * @see app/Http/Controllers/Auth/TenantAuthController.php:220
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:245
  * @route '/user/biometric-token'
  */
     const revokeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -50,7 +50,7 @@ revoke.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
 
             /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::revoke
- * @see app/Http/Controllers/Auth/TenantAuthController.php:220
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:245
  * @route '/user/biometric-token'
  */
         revokeForm.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
