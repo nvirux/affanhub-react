@@ -6,6 +6,7 @@ import Domains from './Domains'
 import HelpFaq from './HelpFaq'
 import MobileAppManager from './MobileAppManager'
 import OnboardingPlan from './OnboardingPlan'
+import PushNotifications from './PushNotifications'
 import ReferralProgram from './ReferralProgram'
 import StoreActivityLogs from './StoreActivityLogs'
 import StoreSettings from './StoreSettings'
@@ -20,6 +21,7 @@ Domains: Object.assign(Domains, Domains),
 HelpFaq: Object.assign(HelpFaq, HelpFaq),
 MobileAppManager: Object.assign(MobileAppManager, MobileAppManager),
 OnboardingPlan: Object.assign(OnboardingPlan, OnboardingPlan),
+PushNotifications: Object.assign(PushNotifications, PushNotifications),
 ReferralProgram: Object.assign(ReferralProgram, ReferralProgram),
 StoreActivityLogs: Object.assign(StoreActivityLogs, StoreActivityLogs),
 StoreSettings: Object.assign(StoreSettings, StoreSettings),

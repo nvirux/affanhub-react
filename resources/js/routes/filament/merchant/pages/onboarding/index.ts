@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Pages\OnboardingPlan::__invoke
  * @see app/Filament/Merchant/Pages/OnboardingPlan.php:7
@@ -65,42 +65,6 @@ plan.head = (args: { tenant: string | number | { public_id: string | number } } 
     url: plan.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Pages\OnboardingPlan::__invoke
- * @see app/Filament/Merchant/Pages/OnboardingPlan.php:7
- * @route '//merchant.localhost/{tenant}/onboarding/plan'
- */
-    const planForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: plan.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Pages\OnboardingPlan::__invoke
- * @see app/Filament/Merchant/Pages/OnboardingPlan.php:7
- * @route '//merchant.localhost/{tenant}/onboarding/plan'
- */
-        planForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: plan.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Pages\OnboardingPlan::__invoke
- * @see app/Filament/Merchant/Pages/OnboardingPlan.php:7
- * @route '//merchant.localhost/{tenant}/onboarding/plan'
- */
-        planForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: plan.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    plan.form = planForm
 const onboarding = {
     plan: Object.assign(plan, plan),
 }

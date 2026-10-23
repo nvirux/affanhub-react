@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\MerchantPhoneCompletionController::complete
  * @see app/Http/Controllers/Auth/MerchantPhoneCompletionController.php:16
@@ -42,41 +42,6 @@ complete.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\Auth\MerchantPhoneCompletionController::complete
- * @see app/Http/Controllers/Auth/MerchantPhoneCompletionController.php:16
- * @route '/auth/complete-phone'
- */
-    const completeForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: complete.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\Auth\MerchantPhoneCompletionController::complete
- * @see app/Http/Controllers/Auth/MerchantPhoneCompletionController.php:16
- * @route '/auth/complete-phone'
- */
-        completeForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: complete.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\Auth\MerchantPhoneCompletionController::complete
- * @see app/Http/Controllers/Auth/MerchantPhoneCompletionController.php:16
- * @route '/auth/complete-phone'
- */
-        completeForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: complete.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    complete.form = completeForm
 /**
 * @see \App\Http\Controllers\Auth\MerchantPhoneCompletionController::store
  * @see app/Http/Controllers/Auth/MerchantPhoneCompletionController.php:41
@@ -110,28 +75,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-    /**
-* @see \App\Http\Controllers\Auth\MerchantPhoneCompletionController::store
- * @see app/Http/Controllers/Auth/MerchantPhoneCompletionController.php:41
- * @route '/auth/complete-phone'
- */
-    const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: store.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Auth\MerchantPhoneCompletionController::store
- * @see app/Http/Controllers/Auth/MerchantPhoneCompletionController.php:41
- * @route '/auth/complete-phone'
- */
-        storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: store.url(options),
-            method: 'post',
-        })
-    
-    store.form = storeForm
 const phone = {
     complete: Object.assign(complete, complete),
 store: Object.assign(store, store),

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\AirtimeCashController::index
  * @see app/Http/Controllers/AirtimeCashController.php:20
@@ -42,41 +42,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\AirtimeCashController::index
- * @see app/Http/Controllers/AirtimeCashController.php:20
- * @route '/vtu/airtime-to-cash'
- */
-    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\AirtimeCashController::index
- * @see app/Http/Controllers/AirtimeCashController.php:20
- * @route '/vtu/airtime-to-cash'
- */
-        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\AirtimeCashController::index
- * @see app/Http/Controllers/AirtimeCashController.php:20
- * @route '/vtu/airtime-to-cash'
- */
-        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
 /**
 * @see \App\Http\Controllers\AirtimeCashController::submit
  * @see app/Http/Controllers/AirtimeCashController.php:109
@@ -110,28 +75,6 @@ submit.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: submit.url(options),
     method: 'post',
 })
-
-    /**
-* @see \App\Http\Controllers\AirtimeCashController::submit
- * @see app/Http/Controllers/AirtimeCashController.php:109
- * @route '/vtu/airtime-to-cash/submit'
- */
-    const submitForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: submit.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\AirtimeCashController::submit
- * @see app/Http/Controllers/AirtimeCashController.php:109
- * @route '/vtu/airtime-to-cash/submit'
- */
-        submitForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: submit.url(options),
-            method: 'post',
-        })
-    
-    submit.form = submitForm
 const AirtimeCashController = { index, submit }
 
 export default AirtimeCashController

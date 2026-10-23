@@ -437,17 +437,23 @@
                             </a>
 
                             @if($this->canCreateOrRebuildApp() && ! $isBuilding)
-                                <button wire:click="requestUpdate" 
-                                        wire:loading.attr="disabled"
-                                        type="button"
-                                        style="padding: 0.7rem 1.15rem; background: #ffffff; border: 1.5px solid #cbd5e1; color: #0f172a; font-size: 0.85rem; font-weight: 700; border-radius: 10px; cursor: pointer;">
-                                    <span wire:loading.remove wire:target="requestUpdate">
-                                        🔄 Rebuild Update (v{{ $app->version_code + 1 }}.0 - Free)
+                                @if($app->isPlayStorePublished())
+                                    <span style="font-size: 0.8rem; font-weight: 700; color: #166534; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.45rem 0.85rem; border-radius: 8px;">
+                                        🛡️ Published on Google Play Store (Updates locked to avoid version conflicts)
                                     </span>
-                                    <span wire:loading.inline-flex wire:target="requestUpdate" class="mam-loading-inline">
-                                        <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Dispatching...
-                                    </span>
-                                </button>
+                                @else
+                                    <button wire:click="requestUpdate" 
+                                            wire:loading.attr="disabled"
+                                            type="button"
+                                            style="padding: 0.7rem 1.15rem; background: #ffffff; border: 1.5px solid #cbd5e1; color: #0f172a; font-size: 0.85rem; font-weight: 700; border-radius: 10px; cursor: pointer;">
+                                        <span wire:loading.remove wire:target="requestUpdate">
+                                            🔄 Rebuild Update (v{{ $app->version_code + 1 }}.0 - Free)
+                                        </span>
+                                        <span wire:loading.inline-flex wire:target="requestUpdate" class="mam-loading-inline">
+                                            <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Dispatching...
+                                        </span>
+                                    </button>
+                                @endif
                             @endif
                         </div>
                     </div>
@@ -455,131 +461,34 @@
             </div>
         @endif
 
-        {{-- Push Notifications Broadcast to App Customers --}}
+        {{-- Push Notifications Hub Link Banner --}}
         @if($isReady)
-            <div class="mam-card" style="border: 1.5px solid #bfdbfe; background: #ffffff;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div class="mam-card" style="border: 1.5px solid #dbeafe; background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%); display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 48px; height: 48px; border-radius: 12px; background: #dbeafe; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
+                        🔔
+                    </div>
                     <div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-size: 1.35rem;">🔔</span>
-                            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0;">
-                                Broadcast Push Notification
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                            <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0;">
+                                App Push Notifications Hub
                             </h3>
-                            <span style="background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; font-size: 0.7rem; font-weight: 800; padding: 0.2rem 0.55rem; border-radius: 9999px;">
-                                OneSignal Cloud Push
+                            <span style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.55rem; border-radius: 9999px;">
+                                OneSignal Cloud Active
                             </span>
                         </div>
-                        <p style="font-size: 0.8125rem; color: #64748b; margin-top: 0.3rem; margin-bottom: 0;">
-                            Instantly alert all customers who downloaded your <strong>{{ $app->app_name }}</strong> Android app on their phones.
+                        <p style="font-size: 0.8125rem; color: #64748b; margin: 0.25rem 0 0 0;">
+                            Send real-time alerts, promos, and deep links (Data, Airtime, Wallet) to all customers who installed your <strong>{{ $app->app_name }}</strong> app.
                         </p>
                     </div>
                 </div>
 
-                <div class="push-grid">
-                    {{-- Form --}}
-                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem;">
-                        <form wire:submit="sendPushNotification" style="display: flex; flex-direction: column; gap: 1rem;">
-                            <div>
-                                <label style="display: block; font-size: 0.8125rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
-                                    Notification Title <span style="color: #dc2626;">*</span>
-                                </label>
-                                <input type="text" 
-                                       wire:model="pushTitle" 
-                                       placeholder="e.g. Weekend Flash Sale: 20% Off Data Today!" 
-                                       maxlength="100"
-                                       required
-                                       style="width: 100%; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.875rem; background: #ffffff;" />
-                                @error('pushTitle') <span style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div>
-                                <label style="display: block; font-size: 0.8125rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
-                                    Message Body <span style="color: #dc2626;">*</span>
-                                </label>
-                                <textarea wire:model="pushMessage" 
-                                          rows="3" 
-                                          placeholder="e.g. Enjoy discounted airtime and data bundles all weekend. Tap here to top up now!" 
-                                          maxlength="255"
-                                          required
-                                          style="width: 100%; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.875rem; background: #ffffff; resize: vertical;"></textarea>
-                                @error('pushMessage') <span style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div>
-                                <label style="display: block; font-size: 0.8125rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
-                                    Destination / Deep Link URL <span style="font-size: 0.75rem; font-weight: normal; color: #64748b;">(Optional)</span>
-                                </label>
-                                <input type="text" 
-                                       wire:model="pushActionUrl" 
-                                       placeholder="e.g. /dashboard/buy-data or full https:// link" 
-                                       style="width: 100%; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.875rem; background: #ffffff;" />
-                                <span style="font-size: 0.72rem; color: #64748b; margin-top: 0.25rem; display: block;">When customers tap the notification on their phone, the app automatically opens to this page.</span>
-                            </div>
-
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem; gap: 1rem; flex-wrap: wrap;">
-                                <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: #64748b;">
-                                    <span>🎯 Target Audience:</span>
-                                    <strong style="color: #0f172a;">All {{ $app->app_name }} App Users</strong>
-                                </div>
-
-                                <button type="submit" 
-                                        wire:loading.attr="disabled"
-                                        style="padding: 0.65rem 1.35rem; background: #2563eb; color: #ffffff; border: none; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
-                                    <span wire:loading.remove wire:target="sendPushNotification">
-                                        🚀 Dispatch Broadcast
-                                    </span>
-                                    <span wire:loading.inline-flex wire:target="sendPushNotification" style="display: none; align-items: center; gap: 0.35rem;">
-                                        <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Dispatching...
-                                    </span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    {{-- Sent History --}}
-                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column;">
-                        <h4 style="font-size: 0.875rem; font-weight: 800; color: #0f172a; margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.4rem;">
-                            <span>📜</span>
-                            <span>Recent Broadcasts</span>
-                        </h4>
-
-                        @php $recentBroadcasts = $this->recentPushNotifications; @endphp
-
-                        @if($recentBroadcasts->isEmpty())
-                            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem 1rem; border: 1.5px dashed #cbd5e1; border-radius: 8px;">
-                                <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">📬</div>
-                                <span style="font-size: 0.8125rem; font-weight: 700; color: #475569;">No Broadcasts Sent Yet</span>
-                                <p style="font-size: 0.75rem; color: #94a3b8; margin: 0.2rem 0 0 0;">
-                                    When you send a push notification, it will be listed here with its delivery status.
-                                </p>
-                            </div>
-                        @else
-                            <div style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 320px; overflow-y: auto;">
-                                @foreach($recentBroadcasts as $notification)
-                                    <div style="border: 1px solid #f1f5f9; background: #f8fafc; border-radius: 8px; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.25rem;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-size: 0.8125rem; color: #0f172a;">{{ $notification->title }}</strong>
-                                            @if($notification->status === 'sent')
-                                                <span style="font-size: 0.68rem; font-weight: 700; background: #dcfce7; color: #15803d; padding: 0.15rem 0.45rem; border-radius: 4px;">Sent</span>
-                                            @else
-                                                <span style="font-size: 0.68rem; font-weight: 700; background: #fee2e2; color: #b91c1c; padding: 0.15rem 0.45rem; border-radius: 4px;">Failed</span>
-                                            @endif
-                                        </div>
-                                        <p style="font-size: 0.75rem; color: #64748b; margin: 0; line-height: 1.3;">
-                                            {{ \Illuminate\Support\Str::limit($notification->message, 90) }}
-                                        </p>
-                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.35rem; font-size: 0.7rem; color: #94a3b8;">
-                                            <span>🕒 {{ $notification->created_at->diffForHumans() }}</span>
-                                            @if($notification->recipients_count > 0)
-                                                <span>👥 {{ number_format($notification->recipients_count) }} reached</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-                    </div>
-                </div>
+                <a href="{{ route('filament.merchant.pages.push-notifications', ['tenant' => $tenant->public_id]) }}" 
+                   class="mam-btn-primary" 
+                   style="width: auto; padding: 0.75rem 1.35rem; background: #2563eb; text-decoration: none; font-size: 0.875rem; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);">
+                    <span>📢 Compose Push Broadcast</span>
+                    <span>&rarr;</span>
+                </a>
             </div>
         @endif
 
@@ -822,10 +731,8 @@
                             </div>
                         </div>
 
-                        {{-- Channel B: Google Play Store Publishing (Optional Paid Add-on) --}}
-                        <div wire:click="togglePlaystore" 
-                             class="mam-toggle-card {{ $includePlaystore ? 'is-selected' : '' }}"
-                             style="cursor: {{ ($app && $app->isPlayStoreRequested()) ? 'default' : 'pointer' }};">
+                        {{-- Channel B: Google Play Store Publishing (Concierge Publishing) --}}
+                        <div class="mam-toggle-card" style="cursor: default; border-color: #e2e8f0; background: #ffffff;">
                             <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem;">
                                 <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
                                     <div style="font-size: 1.4rem;">🚀</div>
@@ -834,24 +741,31 @@
                                             <span style="font-size: 0.9rem; font-weight: 800; color: #0f172a;">
                                                 Google Play Store Publishing
                                             </span>
-                                            <span style="background: #e0e7ff; color: #3730a3; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">
-                                                +₦{{ number_format($playstorePrice, 0) }}
-                                            </span>
-                                            @if($app && $app->isPlayStoreRequested())
+                                            @if($app && $app->isPlayStorePublished())
                                                 <span style="background: #ecfdf5; color: #059669; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">
-                                                    ✓ {{ ucwords(str_replace('_', ' ', $app->playstore_status)) }}
+                                                    ✓ Live on Play Store
+                                                </span>
+                                            @elseif($app && $app->isPlayStoreRequested())
+                                                <span style="background: #fffbeb; color: #b45309; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">
+                                                    ⏳ {{ ucwords(str_replace('_', ' ', $app->playstore_status)) }}
+                                                </span>
+                                            @else
+                                                <span style="background: #eff6ff; color: #1d4ed8; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">
+                                                    Concierge Publishing
                                                 </span>
                                             @endif
                                         </div>
-                                        <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; margin-bottom: 0; line-height: 1.4;">
-                                            Our deployment team generates, cryptographically signs, and submits your app bundle (.aab) to Google Play.
+                                        <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; margin-bottom: 0.4rem; line-height: 1.4;">
+                                            Want your app listed on the official Google Play Store? Our deployment specialists handle app bundle (.aab) generation, signing, store listing assets, and Google Play Console compliance.
                                         </p>
+                                        <div style="margin-top: 0.35rem;">
+                                            <a href="https://wa.me/2348000000000?text={{ urlencode('Hello AffanHub Admin, I want to publish my mobile app on Google Play Store: ' . $tenant->name) }}"
+                                               target="_blank"
+                                               style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; font-weight: 800; color: #2563eb; text-decoration: underline;">
+                                                <span>💬 Contact Publishing Team on WhatsApp &rarr;</span>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                                <div style="width: 18px; height: 18px; border-radius: 5px; border: 2px solid {{ $includePlaystore ? '#10b981' : '#cbd5e1' }}; background: {{ $includePlaystore ? '#10b981' : 'transparent' }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.15rem;">
-                                    @if($includePlaystore)
-                                        <span style="color: white; font-weight: 900; font-size: 0.7rem;">✓</span>
-                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -895,20 +809,38 @@
                                 </button>
                             </div>
                         @elseif($isReady)
-                            <button wire:click="requestUpdate" 
-                                    wire:loading.attr="disabled"
-                                    type="button" 
-                                    class="mam-btn-primary mam-btn-green">
-                                <span wire:loading.remove wire:target="requestUpdate">
-                                    🔄 Rebuild Update (v{{ $app->version_code + 1 }}.0 - Free)
+                            @if($app->isPlayStorePublished())
+                                <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 12px; padding: 1.15rem; text-align: center;">
+                                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.45rem; color: #166534; font-weight: 800; font-size: 0.95rem; margin-bottom: 0.35rem;">
+                                        <span>🛡️</span>
+                                        <span>Live on Google Play Store</span>
+                                    </div>
+                                    <p style="font-size: 0.775rem; color: #15803d; margin: 0 0 0.85rem 0; line-height: 1.4;">
+                                        Your app is officially published on Google Play. Automatic cloud rebuilds are locked to avoid version code mismatches.
+                                    </p>
+                                    <a href="https://wa.me/2348000000000?text={{ urlencode('Hello AffanHub Admin, I need an updated Google Play build for: ' . $tenant->name) }}" 
+                                       target="_blank"
+                                       class="mam-btn-primary" 
+                                       style="background: #166534; text-decoration: none; font-size: 0.85rem; padding: 0.75rem 1rem;">
+                                        💬 Contact Admin for Store Update
+                                    </a>
+                                </div>
+                            @else
+                                <button wire:click="requestUpdate" 
+                                        wire:loading.attr="disabled"
+                                        type="button" 
+                                        class="mam-btn-primary mam-btn-green">
+                                    <span wire:loading.remove wire:target="requestUpdate">
+                                        🔄 Rebuild Update (v{{ $app->version_code + 1 }}.0 - Free)
+                                    </span>
+                                    <span wire:loading.inline-flex wire:target="requestUpdate" class="mam-loading-inline">
+                                        <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Dispatching Cloud Update...
+                                    </span>
+                                </button>
+                                <span style="font-size: 0.75rem; color: #64748b; display: block; margin-top: 0.35rem; line-height: 1.4;">
+                                    Changing details above will compile an updated Version {{ $app->version_code + 1 }}.0 APK for your customers.
                                 </span>
-                                <span wire:loading.inline-flex wire:target="requestUpdate" class="mam-loading-inline">
-                                    <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Dispatching Cloud Update...
-                                </span>
-                            </button>
-                            <span style="font-size: 0.75rem; color: #64748b; display: block; margin-top: 0.35rem; line-height: 1.4;">
-                                Changing details above will compile an updated Version {{ $app->version_code + 1 }}.0 APK for your customers.
-                            </span>
+                            @endif
                         @else
                             <button wire:click="generateFreeApp" 
                                     wire:loading.attr="disabled"

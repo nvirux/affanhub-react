@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
  * @see app/Http/Controllers/Auth/TenantAuthController.php:72
@@ -33,27 +33,6 @@ checkIdentifier.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
     method: 'post',
 })
 
-    /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:72
- * @route '/login/check-identifier'
- */
-    const checkIdentifierForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: checkIdentifier.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::checkIdentifier
- * @see app/Http/Controllers/Auth/TenantAuthController.php:72
- * @route '/login/check-identifier'
- */
-        checkIdentifierForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: checkIdentifier.url(options),
-            method: 'post',
-        })
-    
-    checkIdentifier.form = checkIdentifierForm
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometricLogin
  * @see app/Http/Controllers/Auth/TenantAuthController.php:137
@@ -88,27 +67,6 @@ biometricLogin.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
     method: 'post',
 })
 
-    /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::biometricLogin
- * @see app/Http/Controllers/Auth/TenantAuthController.php:137
- * @route '/login/biometric'
- */
-    const biometricLoginForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: biometricLogin.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::biometricLogin
- * @see app/Http/Controllers/Auth/TenantAuthController.php:137
- * @route '/login/biometric'
- */
-        biometricLoginForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: biometricLogin.url(options),
-            method: 'post',
-        })
-    
-    biometricLogin.form = biometricLoginForm
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::validateRegisterStep1
  * @see app/Http/Controllers/Auth/TenantAuthController.php:21
@@ -143,27 +101,6 @@ validateRegisterStep1.post = (options?: RouteQueryOptions): RouteDefinition<'pos
     method: 'post',
 })
 
-    /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::validateRegisterStep1
- * @see app/Http/Controllers/Auth/TenantAuthController.php:21
- * @route '/register/validate-step-1'
- */
-    const validateRegisterStep1Form = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: validateRegisterStep1.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::validateRegisterStep1
- * @see app/Http/Controllers/Auth/TenantAuthController.php:21
- * @route '/register/validate-step-1'
- */
-        validateRegisterStep1Form.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: validateRegisterStep1.url(options),
-            method: 'post',
-        })
-    
-    validateRegisterStep1.form = validateRegisterStep1Form
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::generateBiometricToken
  * @see app/Http/Controllers/Auth/TenantAuthController.php:226
@@ -198,27 +135,6 @@ generateBiometricToken.post = (options?: RouteQueryOptions): RouteDefinition<'po
     method: 'post',
 })
 
-    /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::generateBiometricToken
- * @see app/Http/Controllers/Auth/TenantAuthController.php:226
- * @route '/user/biometric-token'
- */
-    const generateBiometricTokenForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: generateBiometricToken.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::generateBiometricToken
- * @see app/Http/Controllers/Auth/TenantAuthController.php:226
- * @route '/user/biometric-token'
- */
-        generateBiometricTokenForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: generateBiometricToken.url(options),
-            method: 'post',
-        })
-    
-    generateBiometricToken.form = generateBiometricTokenForm
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::revokeBiometricToken
  * @see app/Http/Controllers/Auth/TenantAuthController.php:245
@@ -252,38 +168,6 @@ revokeBiometricToken.delete = (options?: RouteQueryOptions): RouteDefinition<'de
     url: revokeBiometricToken.url(options),
     method: 'delete',
 })
-
-    /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::revokeBiometricToken
- * @see app/Http/Controllers/Auth/TenantAuthController.php:245
- * @route '/user/biometric-token'
- */
-    const revokeBiometricTokenForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: revokeBiometricToken.url({
-                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                        _method: 'DELETE',
-                        ...(options?.query ?? options?.mergeQuery ?? {}),
-                    }
-                }),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::revokeBiometricToken
- * @see app/Http/Controllers/Auth/TenantAuthController.php:245
- * @route '/user/biometric-token'
- */
-        revokeBiometricTokenForm.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: revokeBiometricToken.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'DELETE',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-    
-    revokeBiometricToken.form = revokeBiometricTokenForm
 const TenantAuthController = { checkIdentifier, biometricLogin, validateRegisterStep1, generateBiometricToken, revokeBiometricToken }
 
 export default TenantAuthController

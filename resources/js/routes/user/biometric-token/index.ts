@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::revoke
  * @see app/Http/Controllers/Auth/TenantAuthController.php:245
@@ -32,38 +32,6 @@ revoke.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: revoke.url(options),
     method: 'delete',
 })
-
-    /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::revoke
- * @see app/Http/Controllers/Auth/TenantAuthController.php:245
- * @route '/user/biometric-token'
- */
-    const revokeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: revoke.url({
-                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                        _method: 'DELETE',
-                        ...(options?.query ?? options?.mergeQuery ?? {}),
-                    }
-                }),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Auth\TenantAuthController::revoke
- * @see app/Http/Controllers/Auth/TenantAuthController.php:245
- * @route '/user/biometric-token'
- */
-        revokeForm.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: revoke.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'DELETE',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-    
-    revoke.form = revokeForm
 const biometricToken = {
     revoke: Object.assign(revoke, revoke),
 }

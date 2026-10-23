@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\NinVerificationController::verify
  * @see app/Http/Controllers/NinVerificationController.php:119
@@ -32,28 +32,6 @@ verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: verify.url(options),
     method: 'post',
 })
-
-    /**
-* @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:119
- * @route '/identity/nin/verify'
- */
-    const verifyForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: verify.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\NinVerificationController::verify
- * @see app/Http/Controllers/NinVerificationController.php:119
- * @route '/identity/nin/verify'
- */
-        verifyForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: verify.url(options),
-            method: 'post',
-        })
-    
-    verify.form = verifyForm
 const nin = {
     verify: Object.assign(verify, verify),
 }

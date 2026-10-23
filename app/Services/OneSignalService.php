@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Store;
 use App\Models\StorePushNotification;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -61,6 +62,8 @@ class OneSignalService
             ];
         }
 
+        $resolvedUrl = $this->resolveFullUrl($storeId, $actionUrl);
+
         $payload = [
             'app_id' => $this->appId,
             // Filter targets devices that belong to this store
@@ -76,9 +79,9 @@ class OneSignalService
             'contents' => ['en' => $message],
         ];
 
-        if (! empty($actionUrl)) {
-            $payload['data'] = ['url' => $actionUrl];
-            $payload['url'] = $actionUrl;
+        if (! empty($resolvedUrl)) {
+            $payload['data'] = ['url' => $resolvedUrl];
+            $payload['url'] = $resolvedUrl;
         }
 
         try {
@@ -102,7 +105,7 @@ class OneSignalService
                     'store_id' => $storeId,
                     'title' => $title,
                     'message' => $message,
-                    'action_url' => $actionUrl,
+                    'action_url' => $resolvedUrl,
                     'target_audience' => 'all',
                     'status' => 'sent',
                     'recipients_count' => $recipients,
@@ -212,9 +215,11 @@ class OneSignalService
             'contents' => ['en' => $message],
         ];
 
-        if (! empty($actionUrl)) {
-            $payload['data'] = ['url' => $actionUrl];
-            $payload['url'] = $actionUrl;
+        $resolvedUrl = $this->resolveFullUrl($storeId, $actionUrl);
+
+        if (! empty($resolvedUrl)) {
+            $payload['data'] = ['url' => $resolvedUrl];
+            $payload['url'] = $resolvedUrl;
         }
 
         try {
@@ -246,5 +251,29 @@ class OneSignalService
                 'error' => $e->getMessage(),
             ];
         }
+    }
+
+    /**
+     * Ensure URL is fully qualified with store scheme & domain.
+     */
+    public function resolveFullUrl(int|string $storeId, ?string $url): ?string
+    {
+        if (empty($url)) {
+            return null;
+        }
+
+        $trimmed = trim($url);
+        if (str_starts_with($trimmed, 'http://') || str_starts_with($trimmed, 'https://')) {
+            return $trimmed;
+        }
+
+        $store = Store::find($storeId);
+        if ($store) {
+            $base = rtrim($store->getStoreUrl(), '/');
+
+            return "{$base}/".ltrim($trimmed, '/');
+        }
+
+        return $trimmed;
     }
 }

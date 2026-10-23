@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../wayfinder'
 import ninBd9d09 from './nin'
 import bvnC51c8d from './bvn'
 import verifications from './verifications'
@@ -45,41 +45,6 @@ nin.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:24
- * @route '/identity/nin'
- */
-    const ninForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: nin.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:24
- * @route '/identity/nin'
- */
-        ninForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: nin.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:24
- * @route '/identity/nin'
- */
-        ninForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: nin.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    nin.form = ninForm
 /**
 * @see \App\Http\Controllers\BvnVerificationController::bvn
  * @see app/Http/Controllers/BvnVerificationController.php:24
@@ -122,42 +87,6 @@ bvn.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: bvn.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:24
- * @route '/identity/bvn'
- */
-    const bvnForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: bvn.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:24
- * @route '/identity/bvn'
- */
-        bvnForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bvn.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:24
- * @route '/identity/bvn'
- */
-        bvnForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bvn.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    bvn.form = bvnForm
 const identity = {
     nin: Object.assign(nin, ninBd9d09),
 bvn: Object.assign(bvn, bvnC51c8d),

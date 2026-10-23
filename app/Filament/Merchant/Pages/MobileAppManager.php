@@ -4,9 +4,7 @@ namespace App\Filament\Merchant\Pages;
 
 use App\Models\PlatformSetting;
 use App\Models\StoreMobileApp;
-use App\Models\StorePushNotification;
 use App\Services\MobileAppBuilderService;
-use App\Services\OneSignalService;
 use BackedEnum;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
@@ -24,13 +22,13 @@ class MobileAppManager extends Page
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-device-phone-mobile';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|UnitEnum|null $navigationGroup = 'Mobile App';
 
-    protected static ?string $title = 'Mobile App (Android)';
+    protected static ?string $title = 'Android App Builder';
 
-    protected static ?string $navigationLabel = 'Mobile App';
+    protected static ?string $navigationLabel = 'Android App Builder';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
 
     protected string $view = 'filament.merchant.pages.mobile-app';
 
@@ -51,12 +49,6 @@ class MobileAppManager extends Page
     public float $playstorePrice = 30000.00;
 
     public bool $includePlaystore = false;
-
-    public string $pushTitle = '';
-
-    public string $pushMessage = '';
-
-    public string $pushActionUrl = '';
 
     public function togglePlaystore(): void
     {
@@ -81,9 +73,6 @@ class MobileAppManager extends Page
         $total = 0.0;
         if (! $this->has_paid_setup) {
             $total += $this->setupPrice;
-        }
-        if ($this->includePlaystore && ! $this->has_paid_playstore) {
-            $total += $this->playstorePrice;
         }
 
         return $total;
@@ -214,10 +203,11 @@ class MobileAppManager extends Page
         if ($this->mobileApp) {
             $this->appName = $this->mobileApp->app_name;
             $this->iconChoice = 'custom';
-            $this->includePlaystore = (bool) $this->mobileApp->include_playstore;
+            $this->includePlaystore = false;
         } else {
             $this->appName = $tenant->name;
             $this->iconChoice = ! empty($tenant->logo_path) ? 'store_logo' : 'custom';
+            $this->includePlaystore = false;
         }
     }
 
@@ -694,6 +684,16 @@ class MobileAppManager extends Page
             return;
         }
 
+        if ($this->mobileApp->isPlayStorePublished()) {
+            Notification::make()
+                ->title('Play Store App Update Locked')
+                ->body('Your app is published on the Google Play Store. To release an update without version or policy conflicts, please contact platform support.')
+                ->warning()
+                ->send();
+
+            return;
+        }
+
         if (! $this->canCreateOrRebuildApp()) {
             Notification::make()
                 ->title('App Updates Unavailable')
@@ -770,62 +770,5 @@ class MobileAppManager extends Page
                 ->danger()
                 ->send();
         }
-    }
-
-    /**
-     * Send push notification broadcast to all customers who installed this store's mobile app.
-     */
-    public function sendPushNotification(OneSignalService $oneSignal): void
-    {
-        $tenant = Filament::getTenant();
-        if (! $tenant) {
-            return;
-        }
-
-        $this->validate([
-            'pushTitle' => 'required|string|max:100',
-            'pushMessage' => 'required|string|max:255',
-            'pushActionUrl' => 'nullable|string|max:500',
-        ]);
-
-        $result = $oneSignal->sendToStore(
-            storeId: $tenant->id,
-            title: $this->pushTitle,
-            message: $this->pushMessage,
-            actionUrl: ! empty(trim($this->pushActionUrl)) ? trim($this->pushActionUrl) : null,
-            sentById: auth()->id()
-        );
-
-        if ($result['success']) {
-            Notification::make()
-                ->title('Push Notification Dispatched!')
-                ->body("Your broadcast was sent successfully to OneSignal for {$tenant->name}'s mobile app.")
-                ->success()
-                ->send();
-
-            $this->reset(['pushTitle', 'pushMessage', 'pushActionUrl']);
-        } else {
-            Notification::make()
-                ->title('Failed to Dispatch Notification')
-                ->body($result['error'] ?? 'Unable to send push notification. Please check OneSignal configuration.')
-                ->danger()
-                ->send();
-        }
-    }
-
-    /**
-     * Retrieve recent push broadcasts for this store.
-     */
-    public function getRecentPushNotificationsProperty()
-    {
-        $tenant = Filament::getTenant();
-        if (! $tenant) {
-            return collect();
-        }
-
-        return StorePushNotification::where('store_id', $tenant->id)
-            ->latest()
-            ->take(8)
-            ->get();
     }
 }

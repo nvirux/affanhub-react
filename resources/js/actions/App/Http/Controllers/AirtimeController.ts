@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\AirtimeController::index
  * @see app/Http/Controllers/AirtimeController.php:23
@@ -42,41 +42,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\AirtimeController::index
- * @see app/Http/Controllers/AirtimeController.php:23
- * @route '/vtu/airtime'
- */
-    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\AirtimeController::index
- * @see app/Http/Controllers/AirtimeController.php:23
- * @route '/vtu/airtime'
- */
-        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\AirtimeController::index
- * @see app/Http/Controllers/AirtimeController.php:23
- * @route '/vtu/airtime'
- */
-        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
 /**
 * @see \App\Http\Controllers\AirtimeController::purchase
  * @see app/Http/Controllers/AirtimeController.php:84
@@ -110,28 +75,6 @@ purchase.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: purchase.url(options),
     method: 'post',
 })
-
-    /**
-* @see \App\Http\Controllers\AirtimeController::purchase
- * @see app/Http/Controllers/AirtimeController.php:84
- * @route '/vtu/airtime/purchase'
- */
-    const purchaseForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: purchase.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\AirtimeController::purchase
- * @see app/Http/Controllers/AirtimeController.php:84
- * @route '/vtu/airtime/purchase'
- */
-        purchaseForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: purchase.url(options),
-            method: 'post',
-        })
-    
-    purchase.form = purchaseForm
 const AirtimeController = { index, purchase }
 
 export default AirtimeController

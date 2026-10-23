@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Slips\Pages\EditSlip::__invoke
  * @see app/Filament/Resources/Slips/Pages/EditSlip.php:7
@@ -60,40 +60,4 @@ EditSlip.head = (args: { record: string | number } | [record: string | number ] 
     url: EditSlip.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Resources\Slips\Pages\EditSlip::__invoke
- * @see app/Filament/Resources/Slips/Pages/EditSlip.php:7
- * @route '//admin.localhost/slips/{record}/edit'
- */
-    const EditSlipForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: EditSlip.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\Slips\Pages\EditSlip::__invoke
- * @see app/Filament/Resources/Slips/Pages/EditSlip.php:7
- * @route '//admin.localhost/slips/{record}/edit'
- */
-        EditSlipForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EditSlip.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\Slips\Pages\EditSlip::__invoke
- * @see app/Filament/Resources/Slips/Pages/EditSlip.php:7
- * @route '//admin.localhost/slips/{record}/edit'
- */
-        EditSlipForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EditSlip.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    EditSlip.form = EditSlipForm
 export default EditSlip

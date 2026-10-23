@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Merchant\CloudflareDomainConnectController::connect
  * @see app/Http/Controllers/Merchant/CloudflareDomainConnectController.php:23
@@ -66,41 +66,6 @@ connect.head = (args: { domain: number | { id: number } } | [domain: number | { 
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\Merchant\CloudflareDomainConnectController::connect
- * @see app/Http/Controllers/Merchant/CloudflareDomainConnectController.php:23
- * @route '/merchant/cloudflare/connect/{domain}'
- */
-    const connectForm = (args: { domain: number | { id: number } } | [domain: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: connect.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\Merchant\CloudflareDomainConnectController::connect
- * @see app/Http/Controllers/Merchant/CloudflareDomainConnectController.php:23
- * @route '/merchant/cloudflare/connect/{domain}'
- */
-        connectForm.get = (args: { domain: number | { id: number } } | [domain: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: connect.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\Merchant\CloudflareDomainConnectController::connect
- * @see app/Http/Controllers/Merchant/CloudflareDomainConnectController.php:23
- * @route '/merchant/cloudflare/connect/{domain}'
- */
-        connectForm.head = (args: { domain: number | { id: number } } | [domain: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: connect.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    connect.form = connectForm
 /**
 * @see \App\Http\Controllers\Merchant\CloudflareDomainConnectController::callback
  * @see app/Http/Controllers/Merchant/CloudflareDomainConnectController.php:70
@@ -143,42 +108,6 @@ callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: callback.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Http\Controllers\Merchant\CloudflareDomainConnectController::callback
- * @see app/Http/Controllers/Merchant/CloudflareDomainConnectController.php:70
- * @route '/merchant/cloudflare/callback'
- */
-    const callbackForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: callback.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\Merchant\CloudflareDomainConnectController::callback
- * @see app/Http/Controllers/Merchant/CloudflareDomainConnectController.php:70
- * @route '/merchant/cloudflare/callback'
- */
-        callbackForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: callback.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\Merchant\CloudflareDomainConnectController::callback
- * @see app/Http/Controllers/Merchant/CloudflareDomainConnectController.php:70
- * @route '/merchant/cloudflare/callback'
- */
-        callbackForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: callback.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    callback.form = callbackForm
 const CloudflareDomainConnectController = { connect, callback }
 
 export default CloudflareDomainConnectController

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Faqs\Pages\CreateFaq::__invoke
  * @see app/Filament/Resources/Faqs/Pages/CreateFaq.php:7
@@ -41,40 +41,4 @@ CreateFaq.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: CreateFaq.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Resources\Faqs\Pages\CreateFaq::__invoke
- * @see app/Filament/Resources/Faqs/Pages/CreateFaq.php:7
- * @route '//admin.localhost/faqs/create'
- */
-    const CreateFaqForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: CreateFaq.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\Faqs\Pages\CreateFaq::__invoke
- * @see app/Filament/Resources/Faqs/Pages/CreateFaq.php:7
- * @route '//admin.localhost/faqs/create'
- */
-        CreateFaqForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: CreateFaq.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\Faqs\Pages\CreateFaq::__invoke
- * @see app/Filament/Resources/Faqs/Pages/CreateFaq.php:7
- * @route '//admin.localhost/faqs/create'
- */
-        CreateFaqForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: CreateFaq.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    CreateFaq.form = CreateFaqForm
 export default CreateFaq

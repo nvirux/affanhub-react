@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \Filament\Auth\Pages\Login::__invoke
  * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
@@ -42,41 +42,6 @@ login.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \Filament\Auth\Pages\Login::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
- * @route '//admin.localhost/login'
- */
-    const loginForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: login.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \Filament\Auth\Pages\Login::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
- * @route '//admin.localhost/login'
- */
-        loginForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: login.url(options),
-            method: 'get',
-        })
-            /**
-* @see \Filament\Auth\Pages\Login::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
- * @route '//admin.localhost/login'
- */
-        loginForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: login.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    login.form = loginForm
 /**
 * @see \Filament\Auth\Http\Controllers\LogoutController::__invoke
  * @see vendor/filament/filament/src/Auth/Http/Controllers/LogoutController.php:10
@@ -111,27 +76,6 @@ logout.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     method: 'post',
 })
 
-    /**
-* @see \Filament\Auth\Http\Controllers\LogoutController::__invoke
- * @see vendor/filament/filament/src/Auth/Http/Controllers/LogoutController.php:10
- * @route '//admin.localhost/logout'
- */
-    const logoutForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: logout.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \Filament\Auth\Http\Controllers\LogoutController::__invoke
- * @see vendor/filament/filament/src/Auth/Http/Controllers/LogoutController.php:10
- * @route '//admin.localhost/logout'
- */
-        logoutForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: logout.url(options),
-            method: 'post',
-        })
-    
-    logout.form = logoutForm
 /**
 * @see \Filament\Auth\Pages\EditProfile::__invoke
  * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
@@ -174,42 +118,6 @@ profile.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: profile.url(options),
     method: 'head',
 })
-
-    /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
- * @route '//admin.localhost/profile'
- */
-    const profileForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: profile.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
- * @route '//admin.localhost/profile'
- */
-        profileForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: profile.url(options),
-            method: 'get',
-        })
-            /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
- * @route '//admin.localhost/profile'
- */
-        profileForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: profile.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    profile.form = profileForm
 const auth = {
     login: Object.assign(login, login),
 logout: Object.assign(logout, logout),

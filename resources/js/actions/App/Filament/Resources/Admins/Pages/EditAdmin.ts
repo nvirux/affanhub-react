@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Admins\Pages\EditAdmin::__invoke
  * @see app/Filament/Resources/Admins/Pages/EditAdmin.php:7
@@ -60,40 +60,4 @@ EditAdmin.head = (args: { record: string | number } | [record: string | number ]
     url: EditAdmin.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Resources\Admins\Pages\EditAdmin::__invoke
- * @see app/Filament/Resources/Admins/Pages/EditAdmin.php:7
- * @route '//admin.localhost/admins/{record}/edit'
- */
-    const EditAdminForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: EditAdmin.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\Admins\Pages\EditAdmin::__invoke
- * @see app/Filament/Resources/Admins/Pages/EditAdmin.php:7
- * @route '//admin.localhost/admins/{record}/edit'
- */
-        EditAdminForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EditAdmin.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\Admins\Pages\EditAdmin::__invoke
- * @see app/Filament/Resources/Admins/Pages/EditAdmin.php:7
- * @route '//admin.localhost/admins/{record}/edit'
- */
-        EditAdminForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EditAdmin.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    EditAdmin.form = EditAdminForm
 export default EditAdmin

@@ -1,6 +1,7 @@
 <?php
 
 use App\Filament\Merchant\Pages\MobileAppManager;
+use App\Filament\Merchant\Pages\PushNotifications;
 use App\Models\Owner;
 use App\Models\Store;
 use App\Models\StoreMobileApp;
@@ -122,6 +123,43 @@ test('mobile app manager page renders cleanly without blade errors and supports 
         ->and($store->mobileApp->price_paid)->toEqual(0.00);
 });
 
+test('mobile app manager locks self-serve rebuild when app is published on play store', function () {
+    $owner = Owner::create([
+        'name' => 'Play Store Merchant',
+        'email' => 'playstore@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    $store = Store::create([
+        'name' => 'Play Store VTU',
+        'public_id' => 'str_playvtu',
+        'owner_id' => $owner->id,
+        'status' => 'active',
+    ]);
+
+    StoreMobileApp::create([
+        'store_id' => $store->id,
+        'app_name' => 'Play Store VTU App',
+        'package_id' => 'com.affanhub.playstorevtu',
+        'version_code' => 5,
+        'version_name' => '1.4.0',
+        'status' => 'ready',
+        'apk_download_url' => 'https://media.affanhub.com/apps/1/app.apk',
+        'playstore_status' => 'published',
+        'include_playstore' => true,
+    ]);
+
+    Filament\Facades\Filament::setCurrentPanel(Filament\Facades\Filament::getPanel('merchant'));
+    $this->actingAs($owner, 'owner');
+    Filament\Facades\Filament::setTenant($store);
+
+    Livewire\Livewire::test(MobileAppManager::class)
+        ->assertSuccessful()
+        ->assertSee('App Push Notifications Hub')
+        ->assertSee('Live on Google Play Store')
+        ->assertSee('Contact Admin for Store Update');
+});
+
 test('merchant can broadcast push notification to mobile app customers via onesignal', function () {
     $owner = Owner::create([
         'name' => 'Push Merchant',
@@ -163,13 +201,14 @@ test('merchant can broadcast push notification to mobile app customers via onesi
         ], 200),
     ]);
 
-    Livewire\Livewire::test(MobileAppManager::class)
+    Livewire\Livewire::test(PushNotifications::class)
         ->assertSuccessful()
-        ->assertSee('Broadcast Push Notification')
+        ->assertSee('Compose Broadcast')
         ->set('pushTitle', 'Weekend Airtime Bonus!')
         ->set('pushMessage', 'Get an instant 10% bonus on all MTN & Airtel airtime recharges.')
-        ->set('pushActionUrl', '/dashboard/airtime')
-        ->call('sendPushNotification')
+        ->set('destinationPreset', 'custom')
+        ->set('customUrl', '/vtu/airtime')
+        ->call('sendBroadcast')
         ->assertHasNoErrors();
 
     Http::assertSent(function (Request $request) use ($store) {
@@ -180,7 +219,8 @@ test('merchant can broadcast push notification to mobile app customers via onesi
             && $data['headings']['en'] === 'Weekend Airtime Bonus!'
             && $data['contents']['en'] === 'Get an instant 10% bonus on all MTN & Airtel airtime recharges.'
             && $data['filters'][0]['key'] === 'store_id'
-            && $data['filters'][0]['value'] === (string) $store->id;
+            && $data['filters'][0]['value'] === (string) $store->id
+            && str_ends_with($data['url'], '/vtu/airtime');
     });
 
     $notification = StorePushNotification::where('store_id', $store->id)->first();

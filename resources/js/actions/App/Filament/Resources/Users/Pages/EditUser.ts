@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Users\Pages\EditUser::__invoke
  * @see app/Filament/Resources/Users/Pages/EditUser.php:7
@@ -60,40 +60,4 @@ EditUser.head = (args: { record: string | number } | [record: string | number ] 
     url: EditUser.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Resources\Users\Pages\EditUser::__invoke
- * @see app/Filament/Resources/Users/Pages/EditUser.php:7
- * @route '//admin.localhost/users/{record}/edit'
- */
-    const EditUserForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: EditUser.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\Users\Pages\EditUser::__invoke
- * @see app/Filament/Resources/Users/Pages/EditUser.php:7
- * @route '//admin.localhost/users/{record}/edit'
- */
-        EditUserForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EditUser.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\Users\Pages\EditUser::__invoke
- * @see app/Filament/Resources/Users/Pages/EditUser.php:7
- * @route '//admin.localhost/users/{record}/edit'
- */
-        EditUserForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EditUser.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    EditUser.form = EditUserForm
 export default EditUser

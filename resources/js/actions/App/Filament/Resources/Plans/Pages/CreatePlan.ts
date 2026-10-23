@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Plans\Pages\CreatePlan::__invoke
  * @see app/Filament/Resources/Plans/Pages/CreatePlan.php:7
@@ -41,40 +41,4 @@ CreatePlan.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: CreatePlan.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Resources\Plans\Pages\CreatePlan::__invoke
- * @see app/Filament/Resources/Plans/Pages/CreatePlan.php:7
- * @route '//admin.localhost/plans/create'
- */
-    const CreatePlanForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: CreatePlan.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\Plans\Pages\CreatePlan::__invoke
- * @see app/Filament/Resources/Plans/Pages/CreatePlan.php:7
- * @route '//admin.localhost/plans/create'
- */
-        CreatePlanForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: CreatePlan.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\Plans\Pages\CreatePlan::__invoke
- * @see app/Filament/Resources/Plans/Pages/CreatePlan.php:7
- * @route '//admin.localhost/plans/create'
- */
-        CreatePlanForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: CreatePlan.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    CreatePlan.form = CreatePlanForm
 export default CreatePlan

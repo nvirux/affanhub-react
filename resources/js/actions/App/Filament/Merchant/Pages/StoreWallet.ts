@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
@@ -65,40 +65,4 @@ StoreWallet.head = (args: { tenant: string | number | { public_id: string | numb
     url: StoreWallet.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
- * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
- */
-    const StoreWalletForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: StoreWallet.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
- * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
- */
-        StoreWalletForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: StoreWallet.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
- * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
- */
-        StoreWalletForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: StoreWallet.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    StoreWallet.form = StoreWalletForm
 export default StoreWallet

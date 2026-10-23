@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::redirect
  * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:20
@@ -42,41 +42,6 @@ redirect.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::redirect
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:20
- * @route '/auth/google/redirect'
- */
-    const redirectForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: redirect.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::redirect
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:20
- * @route '/auth/google/redirect'
- */
-        redirectForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: redirect.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::redirect
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:20
- * @route '/auth/google/redirect'
- */
-        redirectForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: redirect.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    redirect.form = redirectForm
 /**
 * @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::callback
  * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:28
@@ -119,42 +84,6 @@ callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: callback.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::callback
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:28
- * @route '/auth/google/callback'
- */
-    const callbackForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: callback.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::callback
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:28
- * @route '/auth/google/callback'
- */
-        callbackForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: callback.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::callback
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:28
- * @route '/auth/google/callback'
- */
-        callbackForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: callback.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    callback.form = callbackForm
 const google = {
     redirect: Object.assign(redirect, redirect),
 callback: Object.assign(callback, callback),

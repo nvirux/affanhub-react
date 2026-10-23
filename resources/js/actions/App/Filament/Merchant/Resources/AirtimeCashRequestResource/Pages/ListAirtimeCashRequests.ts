@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\AirtimeCashRequestResource\Pages\ListAirtimeCashRequests::__invoke
  * @see app/Filament/Merchant/Resources/AirtimeCashRequestResource/Pages/ListAirtimeCashRequests.php:7
@@ -65,40 +65,4 @@ ListAirtimeCashRequests.head = (args: { tenant: string | number | { public_id: s
     url: ListAirtimeCashRequests.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Resources\AirtimeCashRequestResource\Pages\ListAirtimeCashRequests::__invoke
- * @see app/Filament/Merchant/Resources/AirtimeCashRequestResource/Pages/ListAirtimeCashRequests.php:7
- * @route '//merchant.localhost/{tenant}/airtime-cash-requests'
- */
-    const ListAirtimeCashRequestsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: ListAirtimeCashRequests.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Resources\AirtimeCashRequestResource\Pages\ListAirtimeCashRequests::__invoke
- * @see app/Filament/Merchant/Resources/AirtimeCashRequestResource/Pages/ListAirtimeCashRequests.php:7
- * @route '//merchant.localhost/{tenant}/airtime-cash-requests'
- */
-        ListAirtimeCashRequestsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ListAirtimeCashRequests.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Resources\AirtimeCashRequestResource\Pages\ListAirtimeCashRequests::__invoke
- * @see app/Filament/Merchant/Resources/AirtimeCashRequestResource/Pages/ListAirtimeCashRequests.php:7
- * @route '//merchant.localhost/{tenant}/airtime-cash-requests'
- */
-        ListAirtimeCashRequestsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ListAirtimeCashRequests.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    ListAirtimeCashRequests.form = ListAirtimeCashRequestsForm
 export default ListAirtimeCashRequests

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Pages\Dashboard::__invoke
  * @see app/Filament/Merchant/Pages/Dashboard.php:7
@@ -65,40 +65,4 @@ Dashboard.head = (args: { tenant: string | number | { public_id: string | number
     url: Dashboard.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Pages\Dashboard::__invoke
- * @see app/Filament/Merchant/Pages/Dashboard.php:7
- * @route '//merchant.localhost/{tenant}'
- */
-    const DashboardForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: Dashboard.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Pages\Dashboard::__invoke
- * @see app/Filament/Merchant/Pages/Dashboard.php:7
- * @route '//merchant.localhost/{tenant}'
- */
-        DashboardForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: Dashboard.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Pages\Dashboard::__invoke
- * @see app/Filament/Merchant/Pages/Dashboard.php:7
- * @route '//merchant.localhost/{tenant}'
- */
-        DashboardForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: Dashboard.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    Dashboard.form = DashboardForm
 export default Dashboard

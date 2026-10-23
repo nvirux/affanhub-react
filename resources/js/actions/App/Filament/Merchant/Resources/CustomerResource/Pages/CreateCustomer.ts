@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\CustomerResource\Pages\CreateCustomer::__invoke
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/CreateCustomer.php:7
@@ -65,40 +65,4 @@ CreateCustomer.head = (args: { tenant: string | number | { public_id: string | n
     url: CreateCustomer.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\CreateCustomer::__invoke
- * @see app/Filament/Merchant/Resources/CustomerResource/Pages/CreateCustomer.php:7
- * @route '//merchant.localhost/{tenant}/customers/create'
- */
-    const CreateCustomerForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: CreateCustomer.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\CreateCustomer::__invoke
- * @see app/Filament/Merchant/Resources/CustomerResource/Pages/CreateCustomer.php:7
- * @route '//merchant.localhost/{tenant}/customers/create'
- */
-        CreateCustomerForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: CreateCustomer.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\CreateCustomer::__invoke
- * @see app/Filament/Merchant/Resources/CustomerResource/Pages/CreateCustomer.php:7
- * @route '//merchant.localhost/{tenant}/customers/create'
- */
-        CreateCustomerForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: CreateCustomer.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    CreateCustomer.form = CreateCustomerForm
 export default CreateCustomer

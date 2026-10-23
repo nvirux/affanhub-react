@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Subscriptions\Pages\EditSubscription::__invoke
  * @see app/Filament/Resources/Subscriptions/Pages/EditSubscription.php:7
@@ -60,40 +60,4 @@ EditSubscription.head = (args: { record: string | number } | [record: string | n
     url: EditSubscription.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Resources\Subscriptions\Pages\EditSubscription::__invoke
- * @see app/Filament/Resources/Subscriptions/Pages/EditSubscription.php:7
- * @route '//admin.localhost/subscriptions/{record}/edit'
- */
-    const EditSubscriptionForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: EditSubscription.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\Subscriptions\Pages\EditSubscription::__invoke
- * @see app/Filament/Resources/Subscriptions/Pages/EditSubscription.php:7
- * @route '//admin.localhost/subscriptions/{record}/edit'
- */
-        EditSubscriptionForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EditSubscription.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\Subscriptions\Pages\EditSubscription::__invoke
- * @see app/Filament/Resources/Subscriptions/Pages/EditSubscription.php:7
- * @route '//admin.localhost/subscriptions/{record}/edit'
- */
-        EditSubscriptionForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EditSubscription.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    EditSubscription.form = EditSubscriptionForm
 export default EditSubscription
