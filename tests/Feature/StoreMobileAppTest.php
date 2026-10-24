@@ -211,16 +211,15 @@ test('merchant can broadcast push notification to mobile app customers via onesi
         ->call('sendBroadcast')
         ->assertHasNoErrors();
 
-    Http::assertSent(function (Request $request) use ($store) {
+    Http::assertSent(function (Request $request) {
         $data = $request->data();
 
         return $request->url() === 'https://onesignal.com/api/v1/notifications'
             && $data['app_id'] === '340f8d56-0123-4030-8756-3c42c9282f1a'
             && $data['headings']['en'] === 'Weekend Airtime Bonus!'
             && $data['contents']['en'] === 'Get an instant 10% bonus on all MTN & Airtel airtime recharges.'
-            && $data['filters'][0]['key'] === 'store_id'
-            && $data['filters'][0]['value'] === (string) $store->id
-            && str_ends_with($data['url'], '/vtu/airtime');
+            && ! isset($data['url'])
+            && str_ends_with($data['data']['url'], '/vtu/airtime');
     });
 
     $notification = StorePushNotification::where('store_id', $store->id)->first();

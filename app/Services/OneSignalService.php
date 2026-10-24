@@ -81,7 +81,6 @@ class OneSignalService
 
         if (! empty($resolvedUrl)) {
             $payload['data'] = ['url' => $resolvedUrl];
-            $payload['url'] = $resolvedUrl;
         }
 
         try {
@@ -219,7 +218,6 @@ class OneSignalService
 
         if (! empty($resolvedUrl)) {
             $payload['data'] = ['url' => $resolvedUrl];
-            $payload['url'] = $resolvedUrl;
         }
 
         try {
