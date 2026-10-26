@@ -30,6 +30,8 @@ class StoreAnnouncementResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Customers & Growth';
 
+    protected static ?string $slug = 'announcements';
+
     protected static ?string $navigationLabel = 'Announcements';
 
     protected static ?string $modelLabel = 'Announcement';

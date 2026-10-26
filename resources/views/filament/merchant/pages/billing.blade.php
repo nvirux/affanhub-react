@@ -359,7 +359,7 @@
                                     <div style="font-size: 0.8125rem; color: #6b7280;">
                                         Store Balance: <strong style="color: #dc2626;">₦{{ number_format($storeBalance, 2) }}</strong> (Shortfall: ₦{{ number_format($planPrice - $storeBalance, 2) }})
                                     </div>
-                                    <a href="{{ route('filament.merchant.pages.store-wallet', ['tenant' => $tenant->public_id]) }}" style="font-size: 0.8125rem; font-weight: 700; color: #d97706; text-decoration: underline;">
+                                    <a href="{{ \App\Filament\Merchant\Pages\StoreWallet::getUrl(['tenant' => $tenant]) }}" style="font-size: 0.8125rem; font-weight: 700; color: #d97706; text-decoration: underline;">
                                         Top up Wallet &rarr;
                                     </a>
                                 </div>

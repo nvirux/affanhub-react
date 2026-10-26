@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MobileAppDownloadController::download
  * @see app/Http/Controllers/MobileAppDownloadController.php:17
@@ -41,6 +41,42 @@ download.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: download.url(options),
     method: 'head',
 })
+
+    /**
+* @see \App\Http\Controllers\MobileAppDownloadController::download
+ * @see app/Http/Controllers/MobileAppDownloadController.php:17
+ * @route '/app/download'
+ */
+    const downloadForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: download.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\MobileAppDownloadController::download
+ * @see app/Http/Controllers/MobileAppDownloadController.php:17
+ * @route '/app/download'
+ */
+        downloadForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: download.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\MobileAppDownloadController::download
+ * @see app/Http/Controllers/MobileAppDownloadController.php:17
+ * @route '/app/download'
+ */
+        downloadForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: download.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    download.form = downloadForm
 const mobileApp = {
     download: Object.assign(download, download),
 }

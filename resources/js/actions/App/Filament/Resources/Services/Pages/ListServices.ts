@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Services\Pages\ListServices::__invoke
  * @see app/Filament/Resources/Services/Pages/ListServices.php:7
@@ -41,4 +41,40 @@ ListServices.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: ListServices.url(options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\Services\Pages\ListServices::__invoke
+ * @see app/Filament/Resources/Services/Pages/ListServices.php:7
+ * @route '//admin.localhost/services'
+ */
+    const ListServicesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ListServices.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\Services\Pages\ListServices::__invoke
+ * @see app/Filament/Resources/Services/Pages/ListServices.php:7
+ * @route '//admin.localhost/services'
+ */
+        ListServicesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListServices.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\Services\Pages\ListServices::__invoke
+ * @see app/Filament/Resources/Services/Pages/ListServices.php:7
+ * @route '//admin.localhost/services'
+ */
+        ListServicesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListServices.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ListServices.form = ListServicesForm
 export default ListServices

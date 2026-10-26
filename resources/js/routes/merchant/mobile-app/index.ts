@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MobileAppDownloadController::download
  * @see app/Http/Controllers/MobileAppDownloadController.php:32
@@ -65,6 +65,42 @@ download.head = (args: { store: string | { public_id: string } } | [store: strin
     url: download.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Http\Controllers\MobileAppDownloadController::download
+ * @see app/Http/Controllers/MobileAppDownloadController.php:32
+ * @route '/apps/download/{store}'
+ */
+    const downloadForm = (args: { store: string | { public_id: string } } | [store: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: download.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\MobileAppDownloadController::download
+ * @see app/Http/Controllers/MobileAppDownloadController.php:32
+ * @route '/apps/download/{store}'
+ */
+        downloadForm.get = (args: { store: string | { public_id: string } } | [store: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: download.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\MobileAppDownloadController::download
+ * @see app/Http/Controllers/MobileAppDownloadController.php:32
+ * @route '/apps/download/{store}'
+ */
+        downloadForm.head = (args: { store: string | { public_id: string } } | [store: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: download.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    download.form = downloadForm
 const mobileApp = {
     download: Object.assign(download, download),
 }

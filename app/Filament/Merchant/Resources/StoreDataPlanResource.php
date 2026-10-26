@@ -32,6 +32,8 @@ class StoreDataPlanResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'VTU Services';
 
+    protected static ?string $slug = 'data-plans';
+
     protected static ?string $navigationLabel = 'Data Plan Pricing';
 
     protected static ?string $modelLabel = 'Store Data Plan';

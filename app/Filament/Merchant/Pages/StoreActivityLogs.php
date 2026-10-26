@@ -24,6 +24,8 @@ class StoreActivityLogs extends Page implements HasTable
 
     protected static string|UnitEnum|null $navigationGroup = 'Settings';
 
+    protected static ?string $slug = 'activity-logs';
+
     protected static ?string $title = 'Activity Logs';
 
     protected static ?string $navigationLabel = 'Activity Logs';

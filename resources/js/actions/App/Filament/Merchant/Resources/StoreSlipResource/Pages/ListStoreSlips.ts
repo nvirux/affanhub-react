@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\StoreSlipResource\Pages\ListStoreSlips::__invoke
  * @see app/Filament/Merchant/Resources/StoreSlipResource/Pages/ListStoreSlips.php:7
@@ -65,4 +65,40 @@ ListStoreSlips.head = (args: { tenant: string | number | { public_id: string | n
     url: ListStoreSlips.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Merchant\Resources\StoreSlipResource\Pages\ListStoreSlips::__invoke
+ * @see app/Filament/Merchant/Resources/StoreSlipResource/Pages/ListStoreSlips.php:7
+ * @route '//merchant.localhost/{tenant}/store-slips'
+ */
+    const ListStoreSlipsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ListStoreSlips.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Resources\StoreSlipResource\Pages\ListStoreSlips::__invoke
+ * @see app/Filament/Merchant/Resources/StoreSlipResource/Pages/ListStoreSlips.php:7
+ * @route '//merchant.localhost/{tenant}/store-slips'
+ */
+        ListStoreSlipsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListStoreSlips.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Resources\StoreSlipResource\Pages\ListStoreSlips::__invoke
+ * @see app/Filament/Merchant/Resources/StoreSlipResource/Pages/ListStoreSlips.php:7
+ * @route '//merchant.localhost/{tenant}/store-slips'
+ */
+        ListStoreSlipsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListStoreSlips.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ListStoreSlips.form = ListStoreSlipsForm
 export default ListStoreSlips

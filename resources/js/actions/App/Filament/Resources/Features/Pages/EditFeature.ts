@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Features\Pages\EditFeature::__invoke
  * @see app/Filament/Resources/Features/Pages/EditFeature.php:7
@@ -60,4 +60,40 @@ EditFeature.head = (args: { record: string | number } | [record: string | number
     url: EditFeature.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\Features\Pages\EditFeature::__invoke
+ * @see app/Filament/Resources/Features/Pages/EditFeature.php:7
+ * @route '//admin.localhost/features/{record}/edit'
+ */
+    const EditFeatureForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: EditFeature.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\Features\Pages\EditFeature::__invoke
+ * @see app/Filament/Resources/Features/Pages/EditFeature.php:7
+ * @route '//admin.localhost/features/{record}/edit'
+ */
+        EditFeatureForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditFeature.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\Features\Pages\EditFeature::__invoke
+ * @see app/Filament/Resources/Features/Pages/EditFeature.php:7
+ * @route '//admin.localhost/features/{record}/edit'
+ */
+        EditFeatureForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditFeature.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    EditFeature.form = EditFeatureForm
 export default EditFeature

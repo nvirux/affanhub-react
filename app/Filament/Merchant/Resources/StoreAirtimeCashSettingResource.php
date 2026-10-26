@@ -24,6 +24,8 @@ class StoreAirtimeCashSettingResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'VTU Services';
 
+    protected static ?string $slug = 'airtime-cash-settings';
+
     protected static ?string $navigationLabel = 'Airtime to Cash Rates';
 
     protected static ?string $modelLabel = 'Airtime to Cash Rate';

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\VirtualAccounts\Pages\ListVirtualAccounts::__invoke
  * @see app/Filament/Resources/VirtualAccounts/Pages/ListVirtualAccounts.php:7
@@ -41,4 +41,40 @@ ListVirtualAccounts.head = (options?: RouteQueryOptions): RouteDefinition<'head'
     url: ListVirtualAccounts.url(options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\VirtualAccounts\Pages\ListVirtualAccounts::__invoke
+ * @see app/Filament/Resources/VirtualAccounts/Pages/ListVirtualAccounts.php:7
+ * @route '//admin.localhost/virtual-accounts'
+ */
+    const ListVirtualAccountsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ListVirtualAccounts.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\VirtualAccounts\Pages\ListVirtualAccounts::__invoke
+ * @see app/Filament/Resources/VirtualAccounts/Pages/ListVirtualAccounts.php:7
+ * @route '//admin.localhost/virtual-accounts'
+ */
+        ListVirtualAccountsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListVirtualAccounts.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\VirtualAccounts\Pages\ListVirtualAccounts::__invoke
+ * @see app/Filament/Resources/VirtualAccounts/Pages/ListVirtualAccounts.php:7
+ * @route '//admin.localhost/virtual-accounts'
+ */
+        ListVirtualAccountsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListVirtualAccounts.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ListVirtualAccounts.form = ListVirtualAccountsForm
 export default ListVirtualAccounts

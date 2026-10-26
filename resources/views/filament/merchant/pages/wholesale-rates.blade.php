@@ -441,7 +441,7 @@
                 </div>
                 <div style="flex-shrink: 0;">
                     <a
-                        href="{{ route('filament.merchant.resources.store-data-plans.index', ['tenant' => \Filament\Facades\Filament::getTenant()->public_id]) }}"
+                        href="{{ \App\Filament\Merchant\Resources\StoreDataPlanResource::getUrl('index') }}"
                         class="rates-secondary-btn"
                     >
                         Manage Store Selling Prices

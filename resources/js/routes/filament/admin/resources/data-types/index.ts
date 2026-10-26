@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\DataTypes\Pages\ListDataTypes::__invoke
  * @see app/Filament/Resources/DataTypes/Pages/ListDataTypes.php:7
@@ -41,6 +41,42 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\DataTypes\Pages\ListDataTypes::__invoke
+ * @see app/Filament/Resources/DataTypes/Pages/ListDataTypes.php:7
+ * @route '//admin.localhost/data-types'
+ */
+    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: index.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\DataTypes\Pages\ListDataTypes::__invoke
+ * @see app/Filament/Resources/DataTypes/Pages/ListDataTypes.php:7
+ * @route '//admin.localhost/data-types'
+ */
+        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\DataTypes\Pages\ListDataTypes::__invoke
+ * @see app/Filament/Resources/DataTypes/Pages/ListDataTypes.php:7
+ * @route '//admin.localhost/data-types'
+ */
+        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    index.form = indexForm
 const dataTypes = {
     index: Object.assign(index, index),
 }

@@ -27,6 +27,8 @@ class StoreAirtimeDiscountResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'VTU Services';
 
+    protected static ?string $slug = 'airtime-discounts';
+
     protected static ?string $navigationLabel = 'Airtime Pricing';
 
     protected static ?string $modelLabel = 'Store Airtime Setting';

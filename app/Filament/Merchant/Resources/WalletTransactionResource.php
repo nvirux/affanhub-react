@@ -24,9 +24,9 @@ class WalletTransactionResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Finance & Wallet';
 
-    protected static ?string $navigationLabel = 'Financial Statements';
+    protected static ?string $navigationLabel = 'Wallet Transactions';
 
-    protected static ?string $modelLabel = 'Financial Statement';
+    protected static ?string $modelLabel = 'Wallet Transaction';
 
     protected static ?int $navigationSort = 3;
 

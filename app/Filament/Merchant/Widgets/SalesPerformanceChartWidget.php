@@ -8,6 +8,11 @@ use Filament\Widgets\ChartWidget;
 
 class SalesPerformanceChartWidget extends ChartWidget
 {
+    public static function canView(): bool
+    {
+        return false;
+    }
+
     protected ?string $heading = 'Store Vending Sales (Last 14 Days)';
 
     protected static ?int $sort = 2;

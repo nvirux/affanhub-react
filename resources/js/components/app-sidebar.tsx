@@ -146,17 +146,13 @@ const navGroups: NavGroup[] = [
             },
             {
                 title: 'NIN Modification',
-                href: '#',
+                href: '/identity/nin-modification',
                 icon: FileEdit,
-                badge: 'Soon',
-                disabled: true,
             },
             {
                 title: 'BVN Modification',
-                href: '#',
+                href: '/identity/bvn-modification',
                 icon: BadgeCheck,
-                badge: 'Soon',
-                disabled: true,
             },
             {
                 title: 'IPE Clearance',

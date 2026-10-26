@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \Filament\Actions\Imports\Http\Controllers\DownloadImportFailureCsv::__invoke
  * @see vendor/filament/actions/src/Imports/Http/Controllers/DownloadImportFailureCsv.php:17
@@ -65,6 +65,42 @@ download.head = (args: { import: string | number | { id: string | number } } | [
     url: download.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \Filament\Actions\Imports\Http\Controllers\DownloadImportFailureCsv::__invoke
+ * @see vendor/filament/actions/src/Imports/Http/Controllers/DownloadImportFailureCsv.php:17
+ * @route '/filament/imports/{import}/failed-rows/download'
+ */
+    const downloadForm = (args: { import: string | number | { id: string | number } } | [importParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: download.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \Filament\Actions\Imports\Http\Controllers\DownloadImportFailureCsv::__invoke
+ * @see vendor/filament/actions/src/Imports/Http/Controllers/DownloadImportFailureCsv.php:17
+ * @route '/filament/imports/{import}/failed-rows/download'
+ */
+        downloadForm.get = (args: { import: string | number | { id: string | number } } | [importParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: download.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \Filament\Actions\Imports\Http\Controllers\DownloadImportFailureCsv::__invoke
+ * @see vendor/filament/actions/src/Imports/Http/Controllers/DownloadImportFailureCsv.php:17
+ * @route '/filament/imports/{import}/failed-rows/download'
+ */
+        downloadForm.head = (args: { import: string | number | { id: string | number } } | [importParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: download.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    download.form = downloadForm
 const failedRows = {
     download: Object.assign(download, download),
 }

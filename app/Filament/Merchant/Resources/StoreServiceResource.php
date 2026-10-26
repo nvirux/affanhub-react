@@ -168,6 +168,13 @@ class StoreServiceResource extends Resource
                     ->visible(fn (StoreService $record) => in_array($record->service?->key, ['nin_verification', 'bvn_verification']) && $record->hasAccess())
                     ->url(fn () => StoreSlipResource::getUrl('index')),
 
+                Action::make('configure_modifications')
+                    ->label('Modification Pricing')
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('warning')
+                    ->visible(fn (StoreService $record) => in_array($record->service?->key, ['nin_modification', 'bvn_modification']) && $record->hasAccess())
+                    ->url(fn () => StoreModificationServiceResource::getUrl('index')),
+
                 Action::make('upgrade_plan')
                     ->label('Upgrade Plan')
                     ->icon('heroicon-o-lock-closed')

@@ -157,6 +157,16 @@ class Store extends BaseTenant implements TenantWithDatabase
         return $this->hasMany(IdentityVerification::class);
     }
 
+    public function modificationServices(): HasMany
+    {
+        return $this->hasMany(StoreModificationService::class);
+    }
+
+    public function modificationRequests(): HasMany
+    {
+        return $this->hasMany(ModificationRequest::class);
+    }
+
     public function settlementAccount(): HasOne
     {
         return $this->hasOne(SettlementAccount::class, 'store_id')->where('is_active', true);

@@ -53,7 +53,7 @@ class DashboardController extends Controller
         $recentTransactions = Transaction::query()
             ->where('user_id', Auth::id())
             ->latest()
-            ->take(8)
+            ->take(5)
             ->get()
             ->map(fn ($tx) => [
                 'id' => $tx->id,

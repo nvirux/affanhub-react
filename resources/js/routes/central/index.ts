@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
  * @see routes/web.php:62
  * @route '//{central_domain}/privacy-policy'
@@ -56,6 +56,39 @@ privacyPolicy.head = (args: { central_domain: string | number } | [central_domai
     url: privacyPolicy.url(args, options),
     method: 'head',
 })
+
+    /**
+ * @see routes/web.php:62
+ * @route '//{central_domain}/privacy-policy'
+ */
+    const privacyPolicyForm = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: privacyPolicy.url(args, options),
+        method: 'get',
+    })
+
+            /**
+ * @see routes/web.php:62
+ * @route '//{central_domain}/privacy-policy'
+ */
+        privacyPolicyForm.get = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: privacyPolicy.url(args, options),
+            method: 'get',
+        })
+            /**
+ * @see routes/web.php:62
+ * @route '//{central_domain}/privacy-policy'
+ */
+        privacyPolicyForm.head = (args: { central_domain: string | number } | [central_domain: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: privacyPolicy.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    privacyPolicy.form = privacyPolicyForm
 const central = {
     privacyPolicy: Object.assign(privacyPolicy, privacyPolicy),
 }

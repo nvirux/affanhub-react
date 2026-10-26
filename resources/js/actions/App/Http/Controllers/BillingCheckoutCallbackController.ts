@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\BillingCheckoutCallbackController::handle
  * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
@@ -65,6 +65,42 @@ handle.head = (args: { tenant: string | { public_id: string } } | [tenant: strin
     url: handle.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Http\Controllers\BillingCheckoutCallbackController::handle
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
+ * @route '/billing/callback/{tenant}'
+ */
+    const handleForm = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: handle.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\BillingCheckoutCallbackController::handle
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
+ * @route '/billing/callback/{tenant}'
+ */
+        handleForm.get = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: handle.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\BillingCheckoutCallbackController::handle
+ * @see app/Http/Controllers/BillingCheckoutCallbackController.php:21
+ * @route '/billing/callback/{tenant}'
+ */
+        handleForm.head = (args: { tenant: string | { public_id: string } } | [tenant: string | { public_id: string } ] | string | { public_id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: handle.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    handle.form = handleForm
 const BillingCheckoutCallbackController = { handle }
 
 export default BillingCheckoutCallbackController

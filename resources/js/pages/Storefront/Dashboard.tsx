@@ -103,6 +103,10 @@ export default function Dashboard() {
             router.get('/identity/nin');
         } else if (key === 'bvn_verification' || key === 'bvn') {
             router.get('/identity/bvn');
+        } else if (key === 'nin_modification' || key === 'nin-modification' || key === 'modification' || key === 'identity_modification') {
+            router.get('/identity/nin-modification');
+        } else if (key === 'bvn_modification' || key === 'bvn-modification') {
+            router.get('/identity/bvn-modification');
         }
     };
 
@@ -322,9 +326,9 @@ export default function Dashboard() {
                                         { key: 'airtime', name: 'Airtime', description: 'Top up airtime', icon: 'Smartphone', category: 'vtu' },
                                         { key: 'data', name: 'Data', description: 'Buy data plans', icon: 'Wifi', category: 'vtu' },
                                         { key: 'nin_verification', name: 'NIN Verify', description: 'Verify & print slips', icon: 'IdCard', category: 'identity' },
+                                        { key: 'nin_modification', name: 'NIN Mod', description: 'Name/DOB/Phone', icon: 'Edit3', category: 'identity' },
                                         { key: 'cable', name: 'Cable TV', description: 'Pay for TV', icon: 'Tv', category: 'vtu' },
                                         { key: 'electricity', name: 'Electricity', description: 'Buy electricity', icon: 'Zap', category: 'vtu' },
-                                        { key: 'exam_pins', name: 'Exam PINs', description: 'Buy exam pins', icon: 'GraduationCap', category: 'vtu' },
                                         { key: 'airtime_cash', name: 'Airtime to Cash', description: 'Convert to cash', icon: 'RefreshCw', category: 'vtu' },
                                         { key: 'bulk_sms', name: 'Bulk SMS', description: 'Send messages', icon: 'MessageSquare', category: 'vtu' },
                                     ];
@@ -733,7 +737,9 @@ export default function Dashboard() {
                                             : (svc.key === 'education' || svc.key === 'exam_pins') ? 'Education'
                                                 : svc.key === 'nin_verification' ? 'NIN Verify'
                                                     : svc.key === 'bvn_verification' ? 'BVN Verify'
-                                                        : svc.name;
+                                                        : svc.key === 'nin_modification' ? 'NIN Mod'
+                                                            : svc.key === 'bvn_modification' ? 'BVN Mod'
+                                                                : svc.name;
                                 return (
                                     <button key={svc.key || svc.id} onClick={() => handleServiceClick(svc.key)} className="flex flex-col items-center group w-full cursor-pointer">
                                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-1.5 group-active:scale-95 transition-transform ${getColorClass(svc.key, svc.category).split(' ')[0]} ${getColorClass(svc.key, svc.category).split(' ')[1]}`}>

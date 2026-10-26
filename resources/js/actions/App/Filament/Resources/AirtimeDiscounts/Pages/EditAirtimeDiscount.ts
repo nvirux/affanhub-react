@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\AirtimeDiscounts\Pages\EditAirtimeDiscount::__invoke
  * @see app/Filament/Resources/AirtimeDiscounts/Pages/EditAirtimeDiscount.php:7
@@ -60,4 +60,40 @@ EditAirtimeDiscount.head = (args: { record: string | number } | [record: string 
     url: EditAirtimeDiscount.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\AirtimeDiscounts\Pages\EditAirtimeDiscount::__invoke
+ * @see app/Filament/Resources/AirtimeDiscounts/Pages/EditAirtimeDiscount.php:7
+ * @route '//admin.localhost/airtime-discounts/{record}/edit'
+ */
+    const EditAirtimeDiscountForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: EditAirtimeDiscount.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\AirtimeDiscounts\Pages\EditAirtimeDiscount::__invoke
+ * @see app/Filament/Resources/AirtimeDiscounts/Pages/EditAirtimeDiscount.php:7
+ * @route '//admin.localhost/airtime-discounts/{record}/edit'
+ */
+        EditAirtimeDiscountForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditAirtimeDiscount.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\AirtimeDiscounts\Pages\EditAirtimeDiscount::__invoke
+ * @see app/Filament/Resources/AirtimeDiscounts/Pages/EditAirtimeDiscount.php:7
+ * @route '//admin.localhost/airtime-discounts/{record}/edit'
+ */
+        EditAirtimeDiscountForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditAirtimeDiscount.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    EditAirtimeDiscount.form = EditAirtimeDiscountForm
 export default EditAirtimeDiscount

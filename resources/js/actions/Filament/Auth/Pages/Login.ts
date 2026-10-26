@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \Filament\Auth\Pages\Login::__invoke
  * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
@@ -45,6 +45,41 @@ Login20451467d993977f462db772b7e7e575.head = (options?: RouteQueryOptions): Rout
     /**
 * @see \Filament\Auth\Pages\Login::__invoke
  * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
+ * @route '//admin.localhost/login'
+ */
+    const Login20451467d993977f462db772b7e7e575Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: Login20451467d993977f462db772b7e7e575.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \Filament\Auth\Pages\Login::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
+ * @route '//admin.localhost/login'
+ */
+        Login20451467d993977f462db772b7e7e575Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: Login20451467d993977f462db772b7e7e575.url(options),
+            method: 'get',
+        })
+            /**
+* @see \Filament\Auth\Pages\Login::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
+ * @route '//admin.localhost/login'
+ */
+        Login20451467d993977f462db772b7e7e575Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: Login20451467d993977f462db772b7e7e575.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    Login20451467d993977f462db772b7e7e575.form = Login20451467d993977f462db772b7e7e575Form
+    /**
+* @see \Filament\Auth\Pages\Login::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
  * @route '//merchant.localhost/login'
  */
 const Loginf4c93f7e1cbb664a7957d1816a8e62cb = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -84,6 +119,42 @@ Loginf4c93f7e1cbb664a7957d1816a8e62cb.head = (options?: RouteQueryOptions): Rout
     url: Loginf4c93f7e1cbb664a7957d1816a8e62cb.url(options),
     method: 'head',
 })
+
+    /**
+* @see \Filament\Auth\Pages\Login::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
+ * @route '//merchant.localhost/login'
+ */
+    const Loginf4c93f7e1cbb664a7957d1816a8e62cbForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: Loginf4c93f7e1cbb664a7957d1816a8e62cb.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \Filament\Auth\Pages\Login::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
+ * @route '//merchant.localhost/login'
+ */
+        Loginf4c93f7e1cbb664a7957d1816a8e62cbForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: Loginf4c93f7e1cbb664a7957d1816a8e62cb.url(options),
+            method: 'get',
+        })
+            /**
+* @see \Filament\Auth\Pages\Login::__invoke
+ * @see vendor/filament/filament/src/Auth/Pages/Login.php:7
+ * @route '//merchant.localhost/login'
+ */
+        Loginf4c93f7e1cbb664a7957d1816a8e62cbForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: Loginf4c93f7e1cbb664a7957d1816a8e62cb.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    Loginf4c93f7e1cbb664a7957d1816a8e62cb.form = Loginf4c93f7e1cbb664a7957d1816a8e62cbForm
 
 /**
 * Multiple routes resolve to \Filament\Auth\Pages\Login::Login, so this export is a

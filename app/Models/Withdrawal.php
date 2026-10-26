@@ -13,4 +13,13 @@ class Withdrawal extends Model
     {
         return $this->belongsTo(Store::class, 'store_id');
     }
+
+    protected function casts(): array
+    {
+        return [
+            'amount' => 'decimal:2',
+            'fee' => 'decimal:2',
+            'net_amount' => 'decimal:2',
+        ];
+    }
 }

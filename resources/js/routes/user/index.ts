@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import biometricToken20cd0c from './biometric-token'
 /**
 * @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
@@ -34,6 +34,27 @@ biometricToken.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
     method: 'post',
 })
 
+    /**
+* @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:226
+ * @route '/user/biometric-token'
+ */
+    const biometricTokenForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: biometricToken.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Auth\TenantAuthController::biometricToken
+ * @see app/Http/Controllers/Auth/TenantAuthController.php:226
+ * @route '/user/biometric-token'
+ */
+        biometricTokenForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: biometricToken.url(options),
+            method: 'post',
+        })
+    
+    biometricToken.form = biometricTokenForm
 /**
 * @see \App\Http\Controllers\DashboardController::dashboard
  * @see app/Http/Controllers/DashboardController.php:20
@@ -76,6 +97,42 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: dashboard.url(options),
     method: 'head',
 })
+
+    /**
+* @see \App\Http\Controllers\DashboardController::dashboard
+ * @see app/Http/Controllers/DashboardController.php:20
+ * @route '/user/dashboard'
+ */
+    const dashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: dashboard.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\DashboardController::dashboard
+ * @see app/Http/Controllers/DashboardController.php:20
+ * @route '/user/dashboard'
+ */
+        dashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: dashboard.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\DashboardController::dashboard
+ * @see app/Http/Controllers/DashboardController.php:20
+ * @route '/user/dashboard'
+ */
+        dashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: dashboard.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    dashboard.form = dashboardForm
 const user = {
     biometricToken: Object.assign(biometricToken, biometricToken20cd0c),
 dashboard: Object.assign(dashboard, dashboard),

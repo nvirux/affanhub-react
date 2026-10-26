@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
@@ -65,4 +65,40 @@ StoreSettings.head = (args: { tenant: string | number | { public_id: string | nu
     url: StoreSettings.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
+ * @see app/Filament/Merchant/Pages/StoreSettings.php:7
+ * @route '//merchant.localhost/{tenant}/store-settings'
+ */
+    const StoreSettingsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: StoreSettings.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
+ * @see app/Filament/Merchant/Pages/StoreSettings.php:7
+ * @route '//merchant.localhost/{tenant}/store-settings'
+ */
+        StoreSettingsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: StoreSettings.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
+ * @see app/Filament/Merchant/Pages/StoreSettings.php:7
+ * @route '//merchant.localhost/{tenant}/store-settings'
+ */
+        StoreSettingsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: StoreSettings.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    StoreSettings.form = StoreSettingsForm
 export default StoreSettings

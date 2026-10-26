@@ -21,6 +21,8 @@ class StoreSettings extends Page
 
     protected static string|UnitEnum|null $navigationGroup = 'Settings';
 
+    protected static ?string $slug = 'settings';
+
     protected static ?string $title = 'Store Settings';
 
     protected static ?string $navigationLabel = 'Store Settings';

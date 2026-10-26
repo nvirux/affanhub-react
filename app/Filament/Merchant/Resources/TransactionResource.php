@@ -24,17 +24,17 @@ class TransactionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Sales & Orders';
+    protected static string|UnitEnum|null $navigationGroup = 'Finance & Wallet';
 
-    protected static ?string $navigationLabel = 'Orders & Transactions';
+    protected static ?string $navigationLabel = 'Services Transactions';
 
-    protected static ?string $modelLabel = 'Order';
+    protected static ?string $modelLabel = 'Service Transaction';
 
     protected static ?string $tenantRelationshipName = 'transactions';
 
     protected static ?string $tenantOwnershipRelationshipName = 'store';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function getNavigationBadge(): ?string
     {

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Owners\Pages\EditOwner::__invoke
  * @see app/Filament/Resources/Owners/Pages/EditOwner.php:7
@@ -60,4 +60,40 @@ EditOwner.head = (args: { record: string | number } | [record: string | number ]
     url: EditOwner.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\Owners\Pages\EditOwner::__invoke
+ * @see app/Filament/Resources/Owners/Pages/EditOwner.php:7
+ * @route '//admin.localhost/owners/{record}/edit'
+ */
+    const EditOwnerForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: EditOwner.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\Owners\Pages\EditOwner::__invoke
+ * @see app/Filament/Resources/Owners/Pages/EditOwner.php:7
+ * @route '//admin.localhost/owners/{record}/edit'
+ */
+        EditOwnerForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditOwner.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\Owners\Pages\EditOwner::__invoke
+ * @see app/Filament/Resources/Owners/Pages/EditOwner.php:7
+ * @route '//admin.localhost/owners/{record}/edit'
+ */
+        EditOwnerForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditOwner.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    EditOwner.form = EditOwnerForm
 export default EditOwner
