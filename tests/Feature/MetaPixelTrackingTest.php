@@ -1,10 +1,16 @@
 <?php
 
+use App\Filament\Merchant\Pages\Auth\Register;
 use App\Models\Owner;
 use App\Models\Plan;
 use App\Models\Store;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
+use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\User as SocialiteUser;
+use Livewire\Livewire;
 use PayMint\Laravel\Facades\PayMint;
 use PayMint\Resources\Checkout;
 
@@ -42,7 +48,104 @@ test('tenant website isolates and does not render meta pixel base code', functio
     $response->assertDontSee('connect.facebook.net/en_US/fbevents.js');
 });
 
-test('successful subscription checkout verification flashes Subscribe meta pixel event', function () {
+test('merchant registration queues CompleteRegistration pixel event in session', function () {
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+
+    Livewire::test(Register::class)
+        ->fillForm([
+            'name' => 'Al-Amin Test Owner',
+            'email' => 'alamin_pixel@test.com',
+            'phone' => '08012345679',
+            'password' => 'secret12345',
+            'passwordConfirmation' => 'secret12345',
+            'terms' => true,
+        ])
+        ->call('register')
+        ->assertHasNoFormErrors();
+
+    expect(session('pixel_event'))->toBe([
+        'event' => 'CompleteRegistration',
+        'params' => [
+            'content_name' => 'Merchant Account Registered',
+            'status' => true,
+        ],
+    ]);
+});
+
+test('failed merchant registration does not queue CompleteRegistration pixel event', function () {
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+
+    Livewire::test(Register::class)
+        ->fillForm([
+            'name' => 'Al-Amin Test Owner',
+            'email' => 'alamin_fail@test.com',
+            'phone' => '08012345679',
+            'password' => 'secret12345',
+            'passwordConfirmation' => 'secret12345',
+            'terms' => false,
+        ])
+        ->call('register')
+        ->assertHasFormErrors(['terms' => 'accepted']);
+
+    expect(session('pixel_event'))->toBeNull();
+});
+
+test('meta pixel component renders queued event and pulls it so it does not fire twice', function () {
+    session()->put('pixel_event', [
+        'event' => 'CompleteRegistration',
+        'params' => [
+            'content_name' => 'Merchant Account Registered',
+            'status' => true,
+        ],
+    ]);
+
+    // First render: must output the track call
+    $renderedFirst = Blade::render("@include('filament.merchant.components.meta-pixel')");
+
+    expect($renderedFirst)
+        ->toContain("fbq('track', 'CompleteRegistration',")
+        ->toContain('"content_name":"Merchant Account Registered"');
+
+    // After first render: session pixel_event has been pulled/consumed
+    expect(session('pixel_event'))->toBeNull();
+
+    // Second render (simulating page reload): must NOT output the track call again
+    $renderedSecond = Blade::render("@include('filament.merchant.components.meta-pixel')");
+
+    expect($renderedSecond)
+        ->not->toContain("fbq('track', 'CompleteRegistration',");
+});
+
+test('google oauth signup queues CompleteRegistration event only for brand new owners', function () {
+    $socialiteUser = Mockery::mock(SocialiteUser::class);
+    $socialiteUser->shouldReceive('getId')->andReturn('google_unique_123');
+    $socialiteUser->shouldReceive('getEmail')->andReturn('google_new_merchant@example.com');
+    $socialiteUser->shouldReceive('getName')->andReturn('Google Merchant');
+    $socialiteUser->shouldReceive('getAvatar')->andReturn(null);
+
+    Socialite::shouldReceive('driver->user')->once()->andReturn($socialiteUser);
+
+    $response = $this->get(route('merchant.google.callback'));
+
+    $response->assertRedirect(route('merchant.phone.complete'));
+    expect(session('pixel_event'))->toBe([
+        'event' => 'CompleteRegistration',
+        'params' => [
+            'content_name' => 'Merchant Account Registered (Google OAuth)',
+            'status' => true,
+        ],
+    ]);
+
+    // Existing owner logging in again via Google OAuth must NOT queue CompleteRegistration
+    session()->forget('pixel_event');
+
+    Socialite::shouldReceive('driver->user')->once()->andReturn($socialiteUser);
+
+    $responseSecond = $this->get(route('merchant.google.callback'));
+    expect(session('pixel_event'))->toBeNull();
+});
+
+test('successful subscription checkout verification queues Subscribe meta pixel event', function () {
     $owner = Owner::create([
         'name' => 'Subscriber Owner',
         'email' => 'sub@example.com',
@@ -94,7 +197,7 @@ test('successful subscription checkout verification flashes Subscribe meta pixel
     ]));
 
     $response->assertRedirect(route('filament.merchant.pages.billing', ['tenant' => $store->public_id]));
-    $response->assertSessionHas('pixel_event', [
+    expect(session('pixel_event'))->toBe([
         'event' => 'Subscribe',
         'params' => [
             'value' => 5000.00,
@@ -105,7 +208,7 @@ test('successful subscription checkout verification flashes Subscribe meta pixel
     ]);
 });
 
-test('failed subscription checkout verification does not flash Subscribe meta pixel event', function () {
+test('failed subscription checkout verification does not queue Subscribe meta pixel event', function () {
     $owner = Owner::create([
         'name' => 'Failed Owner',
         'email' => 'fail@example.com',
@@ -140,5 +243,5 @@ test('failed subscription checkout verification does not flash Subscribe meta pi
         'reference' => $reference,
     ]));
 
-    $response->assertSessionMissing('pixel_event');
+    expect(session('pixel_event'))->toBeNull();
 });

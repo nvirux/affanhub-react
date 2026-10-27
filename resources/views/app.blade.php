@@ -181,6 +181,17 @@
                      src="https://www.facebook.com/tr?id=1955741159167125&ev=PageView&noscript=1" />
             </noscript>
             <!-- End Meta Pixel Code -->
+
+            @if(session()->has('pixel_event'))
+                @php
+                    $pixelEvent = session()->pull('pixel_event');
+                @endphp
+                <script>
+                    if (typeof window.fbq === 'function') {
+                        window.fbq('track', '{{ $pixelEvent['event'] }}', @json($pixelEvent['params'] ?? []));
+                    }
+                </script>
+            @endif
         @endif
     </head>
     <body class="font-sans antialiased">

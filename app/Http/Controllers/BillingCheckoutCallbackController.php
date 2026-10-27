@@ -131,7 +131,7 @@ class BillingCheckoutCallbackController extends Controller
             Cache::forget("billing_checkout_{$reference}");
 
             // Flash Meta Pixel Subscribe event
-            session()->flash('pixel_event', [
+            session()->put('pixel_event', [
                 'event' => 'Subscribe',
                 'params' => [
                     'value' => (float) $price,

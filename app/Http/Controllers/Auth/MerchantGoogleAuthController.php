@@ -90,7 +90,7 @@ class MerchantGoogleAuthController extends Controller
         request()->session()->regenerate();
 
         if (! empty($isNewOwner)) {
-            request()->session()->flash('pixel_event', [
+            request()->session()->put('pixel_event', [
                 'event' => 'CompleteRegistration',
                 'params' => [
                     'content_name' => 'Merchant Account Registered (Google OAuth)',

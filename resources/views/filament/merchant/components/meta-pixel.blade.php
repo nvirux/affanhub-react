@@ -17,12 +17,13 @@
 </noscript>
 <!-- End Meta Pixel Code -->
 
-@if(session('pixel_event'))
+@if(session()->has('pixel_event'))
+    @php
+        $pixelEvent = session()->pull('pixel_event');
+    @endphp
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof window.fbq === 'function') {
-                window.fbq('track', '{{ session('pixel_event')['event'] }}', @json(session('pixel_event')['params'] ?? []));
-            }
-        });
+        if (typeof window.fbq === 'function') {
+            window.fbq('track', '{{ $pixelEvent['event'] }}', @json($pixelEvent['params'] ?? []));
+        }
     </script>
 @endif

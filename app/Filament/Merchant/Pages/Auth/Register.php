@@ -116,7 +116,7 @@ class Register extends BaseRegister
 
     protected function afterRegister(): void
     {
-        session()->flash('pixel_event', [
+        session()->put('pixel_event', [
             'event' => 'CompleteRegistration',
             'params' => [
                 'content_name' => 'Merchant Account Registered',
