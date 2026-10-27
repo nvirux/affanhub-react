@@ -136,6 +136,10 @@
             border-top-color: #ffffff;
             margin-right: 8px;
         }
+        .otp-loading-spinner-wrap {
+            align-items: center;
+            justify-content: center;
+        }
         @keyframes otp-spin {
             to { transform: rotate(360deg); }
         }
@@ -176,7 +180,7 @@
                     <span wire:loading.remove wire:target="verifyCode">
                         Verify Account
                     </span>
-                    <span wire:loading wire:target="verifyCode" style="display: inline-flex; align-items: center;">
+                    <span wire:loading.flex wire:target="verifyCode" class="otp-loading-spinner-wrap">
                         <span class="otp-spinner"></span>
                         Verifying...
                     </span>

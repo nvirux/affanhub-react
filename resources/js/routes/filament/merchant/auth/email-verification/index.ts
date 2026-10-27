@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
 export const prompt = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -15,8 +15,8 @@ prompt.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
 prompt.url = (options?: RouteQueryOptions) => {
@@ -24,8 +24,8 @@ prompt.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
 prompt.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -33,8 +33,8 @@ prompt.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
 prompt.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -43,8 +43,8 @@ prompt.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
     const promptForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -53,8 +53,8 @@ prompt.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
         promptForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -62,8 +62,8 @@ prompt.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
         promptForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

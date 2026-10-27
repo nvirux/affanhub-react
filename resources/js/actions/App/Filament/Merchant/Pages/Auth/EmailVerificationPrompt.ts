@@ -1,7 +1,7 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
 /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
 const EmailVerificationPrompt = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -15,8 +15,8 @@ EmailVerificationPrompt.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
 EmailVerificationPrompt.url = (options?: RouteQueryOptions) => {
@@ -24,8 +24,8 @@ EmailVerificationPrompt.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
 EmailVerificationPrompt.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -33,8 +33,8 @@ EmailVerificationPrompt.get = (options?: RouteQueryOptions): RouteDefinition<'ge
     method: 'get',
 })
 /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
 EmailVerificationPrompt.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -43,8 +43,8 @@ EmailVerificationPrompt.head = (options?: RouteQueryOptions): RouteDefinition<'h
 })
 
     /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
     const EmailVerificationPromptForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -53,8 +53,8 @@ EmailVerificationPrompt.head = (options?: RouteQueryOptions): RouteDefinition<'h
     })
 
             /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
         EmailVerificationPromptForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -62,8 +62,8 @@ EmailVerificationPrompt.head = (options?: RouteQueryOptions): RouteDefinition<'h
             method: 'get',
         })
             /**
-* @see \Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EmailVerification/EmailVerificationPrompt.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
  * @route '//merchant.localhost/email-verification/prompt'
  */
         EmailVerificationPromptForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

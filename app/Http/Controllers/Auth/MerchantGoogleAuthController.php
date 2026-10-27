@@ -19,6 +19,10 @@ class MerchantGoogleAuthController extends Controller
      */
     public function redirect(): RedirectResponse
     {
+        if (request()->filled('test_event_code')) {
+            session(['meta_test_event_code' => request()->query('test_event_code')]);
+        }
+
         return Socialite::driver('google')->redirect();
     }
 
@@ -55,6 +59,8 @@ class MerchantGoogleAuthController extends Controller
             $owner = Owner::where('email', $email)->first();
         }
 
+        $wasJustVerified = false;
+
         if ($owner) {
             $updates = [];
 
@@ -64,6 +70,7 @@ class MerchantGoogleAuthController extends Controller
 
             if (! $owner->hasVerifiedEmail()) {
                 $updates['email_verified_at'] = now();
+                $wasJustVerified = true;
             }
 
             if (empty($owner->avatar) && ! empty($googleUser->getAvatar())) {
@@ -89,13 +96,25 @@ class MerchantGoogleAuthController extends Controller
         Auth::guard('owner')->login($owner, remember: true);
         request()->session()->regenerate();
 
-        if (! empty($isNewOwner)) {
+        if (! empty($isNewOwner) || ! empty($wasJustVerified)) {
+            $testCode = request()->query('test_event_code')
+                ?? session('meta_test_event_code')
+                ?? env('META_TEST_EVENT_CODE');
+
+            $pixelParams = [
+                'content_name' => 'Merchant Account Registered (Google OAuth)',
+                'status' => true,
+                'value' => 1.00,
+                'currency' => 'NGN',
+            ];
+
+            if (! empty($testCode)) {
+                $pixelParams['test_event_code'] = $testCode;
+            }
+
             request()->session()->put('pixel_event', [
                 'event' => 'CompleteRegistration',
-                'params' => [
-                    'content_name' => 'Merchant Account Registered (Google OAuth)',
-                    'status' => true,
-                ],
+                'params' => $pixelParams,
             ]);
         }
 

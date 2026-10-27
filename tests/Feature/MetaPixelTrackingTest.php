@@ -128,6 +128,8 @@ test('google oauth signup queues CompleteRegistration event only for brand new o
         'params' => [
             'content_name' => 'Merchant Account Registered (Google OAuth)',
             'status' => true,
+            'value' => 1.00,
+            'currency' => 'NGN',
         ],
     ]);
 

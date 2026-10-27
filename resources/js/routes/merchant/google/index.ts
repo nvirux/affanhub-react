@@ -79,7 +79,7 @@ redirect.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     redirect.form = redirectForm
 /**
 * @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::callback
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:28
+ * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:32
  * @route '/auth/google/callback'
  */
 export const callback = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ callback.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::callback
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:28
+ * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:32
  * @route '/auth/google/callback'
  */
 callback.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ callback.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::callback
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:28
+ * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:32
  * @route '/auth/google/callback'
  */
 callback.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,7 +112,7 @@ callback.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::callback
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:28
+ * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:32
  * @route '/auth/google/callback'
  */
 callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,7 +122,7 @@ callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::callback
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:28
+ * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:32
  * @route '/auth/google/callback'
  */
     const callbackForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,7 +132,7 @@ callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::callback
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:28
+ * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:32
  * @route '/auth/google/callback'
  */
         callbackForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,7 +141,7 @@ callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Auth\MerchantGoogleAuthController::callback
- * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:28
+ * @see app/Http/Controllers/Auth/MerchantGoogleAuthController.php:32
  * @route '/auth/google/callback'
  */
         callbackForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

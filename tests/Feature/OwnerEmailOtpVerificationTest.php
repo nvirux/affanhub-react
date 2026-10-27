@@ -85,6 +85,8 @@ test('submitting valid 6-digit OTP marks owner email as verified and redirects',
         'params' => [
             'content_name' => 'Merchant Account Verified',
             'status' => true,
+            'value' => 1.00,
+            'currency' => 'NGN',
         ],
     ]);
     Event::assertDispatched(Verified::class);

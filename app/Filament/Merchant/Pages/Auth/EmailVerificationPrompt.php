@@ -75,6 +75,8 @@ class EmailVerificationPrompt extends BasePrompt
         $pixelParams = [
             'content_name' => 'Merchant Account Verified',
             'status' => true,
+            'value' => 1.00,
+            'currency' => 'NGN',
         ];
 
         if (! empty($testCode)) {
