@@ -152,7 +152,12 @@
                     
                     <div style="margin: 0 0 1.15rem 0;">
                         <span style="font-size: clamp(2rem, 5vw, 2.5rem); font-weight: 900; color: #0f172a; letter-spacing: -0.03em;">
-                            {{ $interval === 'year' ? '₦50,000' : '₦5,000' }}
+                            @php
+                                $price = $interval === 'year' 
+                                    ? ($proPlan?->price_yearly ?? 50000) 
+                                    : ($proPlan?->price_monthly ?? 4999);
+                            @endphp
+                            ₦{{ number_format((float) $price, 0) }}
                         </span>
                         <span style="color: #64748b; font-size: 0.825rem; font-weight: 600;">
                             / {{ $interval === 'year' ? 'year' : 'month' }}

@@ -1,6 +1,7 @@
 <?php
 
 use App\Filament\Merchant\Pages\Auth\Register;
+use App\Filament\Merchant\Pages\Billing;
 use App\Models\Owner;
 use App\Models\Plan;
 use App\Models\Store;
@@ -242,6 +243,87 @@ test('failed subscription checkout verification does not queue Subscribe meta pi
         'tenant' => $store->public_id,
         'reference' => $reference,
     ]));
+
+    expect(session('pixel_event'))->toBeNull();
+});
+
+test('meta pixel component includes test_event_code when provided in session', function () {
+    session(['meta_test_event_code' => 'TEST54310']);
+
+    $rendered = Blade::render("@include('filament.merchant.components.meta-pixel')");
+
+    expect($rendered)
+        ->toContain('"TEST54310"')
+        ->toContain('test_event_code: storedTestCode');
+});
+
+test('paying subscription with store wallet balance tracks Subscribe meta pixel event', function () {
+    $owner = Owner::create([
+        'name' => 'Wallet Sub Owner',
+        'email' => 'walletsub@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    $store = Store::create([
+        'name' => 'Wallet Store',
+        'owner_id' => $owner->id,
+    ]);
+
+    $plan = Plan::create([
+        'name' => 'Pro Plan',
+        'slug' => 'pro',
+        'price_monthly' => 4999.00,
+        'price_yearly' => 49990.00,
+    ]);
+
+    // Fund store wallet
+    $store->mainWallet()->deposit(10000.00, 'Initial test funding');
+
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+    Filament::auth()->login($owner);
+    Filament::setTenant($store);
+
+    Livewire::test(Billing::class)
+        ->set('selectedPlanId', $plan->id)
+        ->call('confirmAndPay');
+
+    expect(session('pixel_event'))->toBe([
+        'event' => 'Subscribe',
+        'params' => [
+            'value' => 4999.00,
+            'currency' => 'NGN',
+            'predicted_ltv' => 4999.00,
+            'content_name' => 'Plan: Pro Plan',
+            'payment_method' => 'wallet',
+        ],
+    ]);
+});
+
+test('activating free Starter plan does not track Subscribe meta pixel event', function () {
+    $owner = Owner::create([
+        'name' => 'Free Owner',
+        'email' => 'freeowner@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    $store = Store::create([
+        'name' => 'Free Store',
+        'owner_id' => $owner->id,
+    ]);
+
+    $starterPlan = Plan::create([
+        'name' => 'Starter',
+        'slug' => 'starter',
+        'price_monthly' => 0.00,
+        'price_yearly' => 0.00,
+    ]);
+
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+    Filament::auth()->login($owner);
+    Filament::setTenant($store);
+
+    Livewire::test(Billing::class)
+        ->call('subscribe', $starterPlan->id);
 
     expect(session('pixel_event'))->toBeNull();
 });

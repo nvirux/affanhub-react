@@ -130,15 +130,25 @@ class BillingCheckoutCallbackController extends Controller
             // Clean up cache
             Cache::forget("billing_checkout_{$reference}");
 
+            $testCode = request()->query('test_event_code')
+                ?? session('meta_test_event_code')
+                ?? env('META_TEST_EVENT_CODE');
+
+            $pixelParams = [
+                'value' => (float) $price,
+                'currency' => 'NGN',
+                'predicted_ltv' => (float) $price,
+                'content_name' => "Plan: {$plan->name}",
+            ];
+
+            if (! empty($testCode)) {
+                $pixelParams['test_event_code'] = $testCode;
+            }
+
             // Flash Meta Pixel Subscribe event
             session()->put('pixel_event', [
                 'event' => 'Subscribe',
-                'params' => [
-                    'value' => (float) $price,
-                    'currency' => 'NGN',
-                    'predicted_ltv' => (float) $price,
-                    'content_name' => "Plan: {$plan->name}",
-                ],
+                'params' => $pixelParams,
             ]);
 
             Notification::make()

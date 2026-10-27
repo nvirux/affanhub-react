@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Pipeline;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -18,7 +19,13 @@ class HomeController extends Controller
     public function __invoke(Request $request): mixed
     {
         if (in_array($request->getHost(), config('tenancy.central_domains', []))) {
-            return inertia('Marketing/Home');
+            $proPlan = Plan::where('slug', 'pro')->first();
+
+            return inertia('Marketing/Home', [
+                'proPrice' => $proPlan && $proPlan->price_monthly !== null
+                    ? '₦'.number_format((float) $proPlan->price_monthly, 0)
+                    : '₦4,999',
+            ]);
         }
 
         return app(Pipeline::class)

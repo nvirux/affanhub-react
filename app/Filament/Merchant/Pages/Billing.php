@@ -215,6 +215,46 @@ class Billing extends Page
 
             $this->closePaymentModal();
 
+            // Track Meta Pixel Subscribe event for store wallet payment
+            $testCode = request()->query('test_event_code')
+                ?? session('meta_test_event_code')
+                ?? env('META_TEST_EVENT_CODE');
+
+            $pixelParams = [
+                'value' => (float) $price,
+                'currency' => 'NGN',
+                'predicted_ltv' => (float) $price,
+                'content_name' => "Plan: {$plan->name}",
+                'payment_method' => 'wallet',
+            ];
+
+            if (! empty($testCode)) {
+                $pixelParams['test_event_code'] = $testCode;
+            }
+
+            session()->put('pixel_event', [
+                'event' => 'Subscribe',
+                'params' => $pixelParams,
+            ]);
+
+            $jsonParams = json_encode($pixelParams);
+            $this->js("
+                try {
+                    if (typeof window.fbq === 'function') {
+                        const testCode = localStorage.getItem('meta_test_event_code');
+                        const params = {$jsonParams};
+                        if (testCode && !params.test_event_code) {
+                            params.test_event_code = testCode;
+                        }
+                        if (params.test_event_code) {
+                            window.fbq('track', 'Subscribe', params, { test_event_code: params.test_event_code });
+                        } else {
+                            window.fbq('track', 'Subscribe', params);
+                        }
+                    }
+                } catch(e) {}
+            ");
+
             Notification::make()
                 ->title("Upgraded to {$plan->name}!")
                 ->body('₦'.number_format($price, 2)." has been debited from your store wallet. Store {$tenant->name} is now upgraded to {$plan->name}!")

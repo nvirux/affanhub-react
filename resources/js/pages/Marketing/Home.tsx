@@ -122,9 +122,16 @@ const FAQS = [
 ];
 
 export default function MarketingHome() {
-    const { merchant_url } = usePage<any>().props;
+    const { merchant_url, proPrice } = usePage<any>().props;
     const [mobileOpen, setMobileOpen] = useState(false);
     const getMerchantUrl = (path = '') => resolveMerchantUrl(merchant_url, path);
+
+    const plans = PLANS.map(p => {
+        if (p.name === 'Pro' && proPrice) {
+            return { ...p, price: proPrice };
+        }
+        return p;
+    });
 
     return (
         <div className="min-h-screen bg-white text-slate-900 flex flex-col" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -381,7 +388,7 @@ export default function MarketingHome() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
-                            {PLANS.map(p => (
+                            {plans.map(p => (
                                 <div key={p.name} className={`rounded-2xl border p-7 flex flex-col gap-6 transition-all ${p.highlight ? 'bg-primary border-primary shadow-xl shadow-primary/15 text-white' : 'bg-white border-slate-200 hover:shadow-md hover:border-slate-300'}`}>
                                     <div>
                                         {p.highlight && (

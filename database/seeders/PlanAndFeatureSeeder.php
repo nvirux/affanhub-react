@@ -83,7 +83,7 @@ class PlanAndFeatureSeeder extends Seeder
                 'name' => 'Pro',
                 'slug' => 'pro',
                 'description' => 'Advanced features to scale your brand.',
-                'price_monthly' => 5000.00,
+                'price_monthly' => 4999.00,
                 'price_yearly' => 50000.00,
                 'trial_days' => 14,
             ],
