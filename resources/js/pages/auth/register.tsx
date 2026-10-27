@@ -174,6 +174,14 @@ export default function Register({ errors: serverErrors = {} }: Props) {
                 pin_confirmation: confirmVal,
             },
             {
+                onSuccess: () => {
+                    if (typeof window !== 'undefined' && typeof (window as any).fbq === 'function') {
+                        (window as any).fbq('track', 'CompleteRegistration', {
+                            content_name: 'Storefront User Registration',
+                            status: true,
+                        });
+                    }
+                },
                 onError: (errs) => {
                     setIsSubmitting(false);
                     // If errors are on name, email, or phone, seamlessly return user to Step 1

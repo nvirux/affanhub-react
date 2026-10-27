@@ -88,6 +88,10 @@ class MerchantPanelProvider extends PanelProvider
                 fn () => view('filament.merchant.components.social-login-buttons')
             )
             ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn () => view('filament.merchant.components.meta-pixel')
+            )
+            ->renderHook(
                 PanelsRenderHook::BODY_END,
                 fn () => view('filament.merchant.components.chatwoot-chat')
             )

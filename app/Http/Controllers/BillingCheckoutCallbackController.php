@@ -130,6 +130,17 @@ class BillingCheckoutCallbackController extends Controller
             // Clean up cache
             Cache::forget("billing_checkout_{$reference}");
 
+            // Flash Meta Pixel Subscribe event
+            session()->flash('pixel_event', [
+                'event' => 'Subscribe',
+                'params' => [
+                    'value' => (float) $price,
+                    'currency' => 'NGN',
+                    'predicted_ltv' => (float) $price,
+                    'content_name' => "Plan: {$plan->name}",
+                ],
+            ]);
+
             Notification::make()
                 ->title("Upgraded to {$plan->name}!")
                 ->body('Payment of ₦'.number_format($price, 2)." verified via PayMint. Store {$tenant->name} is now upgraded to {$plan->name}!")

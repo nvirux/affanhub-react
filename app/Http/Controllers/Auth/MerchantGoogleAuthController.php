@@ -74,6 +74,7 @@ class MerchantGoogleAuthController extends Controller
                 $owner->updateQuietly($updates);
             }
         } else {
+            $isNewOwner = true;
             $owner = Owner::create([
                 'name' => $googleUser->getName() ?: Str::headline(explode('@', $email)[0]),
                 'email' => $email,
@@ -87,6 +88,16 @@ class MerchantGoogleAuthController extends Controller
 
         Auth::guard('owner')->login($owner, remember: true);
         request()->session()->regenerate();
+
+        if (! empty($isNewOwner)) {
+            request()->session()->flash('pixel_event', [
+                'event' => 'CompleteRegistration',
+                'params' => [
+                    'content_name' => 'Merchant Account Registered (Google OAuth)',
+                    'status' => true,
+                ],
+            ]);
+        }
 
         if (empty($owner->phone)) {
             return redirect()->route('merchant.phone.complete');

@@ -113,4 +113,15 @@ class Register extends BaseRegister
             ->label('Create Account')
             ->submit('register');
     }
+
+    protected function afterRegister(): void
+    {
+        session()->flash('pixel_event', [
+            'event' => 'CompleteRegistration',
+            'params' => [
+                'content_name' => 'Merchant Account Registered',
+                'status' => true,
+            ],
+        ]);
+    }
 }
