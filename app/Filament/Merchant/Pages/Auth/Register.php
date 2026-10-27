@@ -2,14 +2,18 @@
 
 namespace App\Filament\Merchant\Pages\Auth;
 
+use App\Models\Owner;
 use Filament\Actions\Action;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Schema;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
+use Illuminate\Validation\Rules\Password;
 
 class Register extends BaseRegister
 {
@@ -107,10 +111,50 @@ class Register extends BaseRegister
             ->dehydrated(false);
     }
 
+    protected function getPasswordFormComponent(): Component
+    {
+        return TextInput::make('password')
+            ->label('Password')
+            ->password()
+            ->revealable(filament()->arePasswordsRevealable())
+            ->required()
+            ->rule(Password::min(8))
+            ->same('passwordConfirmation')
+            ->validationAttribute('password');
+    }
+
+    protected function getPasswordConfirmationFormComponent(): Component
+    {
+        return TextInput::make('passwordConfirmation')
+            ->label('Confirm Password')
+            ->password()
+            ->revealable(filament()->arePasswordsRevealable())
+            ->required()
+            ->dehydrated(false);
+    }
+
     public function getRegisterFormAction(): Action
     {
         return Action::make('register')
             ->label('Create Account')
             ->submit('register');
+    }
+
+    /**
+     * Send only the 6-digit OTP verification email, preventing the default link email.
+     */
+    protected function sendEmailVerificationNotification(Model $user): void
+    {
+        if (! $user instanceof MustVerifyEmail) {
+            return;
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return;
+        }
+
+        if ($user instanceof Owner) {
+            $user->sendEmailVerificationNotification();
+        }
     }
 }

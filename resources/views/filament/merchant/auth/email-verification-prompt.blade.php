@@ -1,59 +1,197 @@
 <x-filament-panels::page.simple>
-    <div class="mt-4 flex flex-col gap-y-6">
-        <form wire:submit.prevent="verifyCode" class="space-y-6">
-            <div>
-                <label for="otp-code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 text-center mb-3">
-                    Enter your 6-digit verification code
-                </label>
-                <div class="flex justify-center">
-                    <input
-                        id="otp-code"
-                        type="text"
-                        wire:model="code"
-                        maxlength="6"
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        autocomplete="one-time-code"
-                        autofocus
-                        placeholder="••••••"
-                        class="w-64 text-center text-3xl font-mono tracking-[0.4em] font-bold rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all outline-none"
-                    />
-                </div>
-                @error('code')
-                    <p class="text-center text-sm text-red-600 dark:text-red-400 mt-2 font-medium">
-                        {{ $message }}
-                    </p>
-                @enderror
+    <style>
+        .otp-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        .otp-input-field {
+            width: 100%;
+            max-width: 320px;
+            height: 60px;
+            text-align: center;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: 12px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            border-radius: 14px;
+            border: 2px solid #e5e7eb;
+            background-color: #ffffff;
+            color: #111827;
+            padding: 0 16px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease-in-out;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .otp-input-field:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.18);
+            background-color: #ffffff;
+        }
+        @media (prefers-color-scheme: dark) {
+            .otp-input-field {
+                background-color: #18181b;
+                border-color: #3f3f46;
+                color: #f4f4f5;
+            }
+            .otp-input-field:focus {
+                border-color: #f59e0b;
+                box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.25);
+                background-color: #27272a;
+            }
+        }
+        .otp-btn-submit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 320px;
+            height: 48px;
+            padding: 0 24px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+            transition: all 0.2s ease;
+        }
+        .otp-btn-submit:hover:not(:disabled) {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(217, 119, 6, 0.4);
+        }
+        .otp-btn-submit:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        .otp-btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .otp-error-msg {
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #dc2626;
+            text-align: center;
+        }
+        .otp-sub-actions {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #f3f4f6;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+            font-size: 13px;
+            color: #6b7280;
+        }
+        @media (prefers-color-scheme: dark) {
+            .otp-sub-actions {
+                border-top-color: #27272a;
+                color: #a1a1aa;
+            }
+        }
+        .otp-link-resend {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #d97706;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: 4px;
+        }
+        .otp-link-resend:hover {
+            color: #b45309;
+        }
+        .otp-link-signout {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #9ca3af;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: 4px;
+        }
+        .otp-link-signout:hover {
+            color: #6b7280;
+        }
+        .otp-spinner {
+            animation: otp-spin 1s linear infinite;
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            margin-right: 8px;
+        }
+        @keyframes otp-spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
+    <div class="otp-box">
+        <form wire:submit.prevent="verifyCode" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <p style="font-size: 14px; font-weight: 600; color: #4b5563; margin-bottom: 12px; text-align: center;">
+                Enter 6-digit verification code:
+            </p>
+
+            <div style="width: 100%; display: flex; justify-content: center; margin-bottom: 8px;">
+                <input
+                    type="text"
+                    wire:model="code"
+                    maxlength="6"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    autocomplete="one-time-code"
+                    autofocus
+                    placeholder="••••••"
+                    class="otp-input-field"
+                />
             </div>
 
-            <div>
+            @error('code')
+                <div class="otp-error-msg">
+                    {{ $message }}
+                </div>
+            @enderror
+
+            <div style="width: 100%; display: flex; justify-content: center; margin-top: 18px;">
                 <button
                     type="submit"
                     wire:loading.attr="disabled"
-                    class="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-semibold text-base shadow-sm hover:shadow transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="otp-btn-submit"
                 >
                     <span wire:loading.remove wire:target="verifyCode">
                         Verify Account
                     </span>
-                    <span wire:loading wire:target="verifyCode" class="inline-flex items-center gap-2">
-                        <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                    <span wire:loading wire:target="verifyCode" style="display: inline-flex; align-items: center;">
+                        <span class="otp-spinner"></span>
                         Verifying...
                     </span>
                 </button>
             </div>
         </form>
 
-        <div class="flex flex-col items-center gap-3 pt-4 text-center text-sm text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800">
+        <div class="otp-sub-actions">
             <div>
                 Didn't receive the code?
                 <button
                     type="button"
                     wire:click="resendCode"
                     wire:loading.attr="disabled"
-                    class="text-amber-600 dark:text-amber-400 font-semibold hover:underline inline-flex items-center gap-1 cursor-pointer disabled:opacity-50 ml-1"
+                    class="otp-link-resend"
                 >
                     <span wire:loading.remove wire:target="resendCode">Resend Code</span>
                     <span wire:loading wire:target="resendCode">Sending...</span>
@@ -65,7 +203,7 @@
                 <button
                     type="button"
                     wire:click="logout"
-                    class="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 underline cursor-pointer text-xs ml-1"
+                    class="otp-link-signout"
                 >
                     Sign out
                 </button>
