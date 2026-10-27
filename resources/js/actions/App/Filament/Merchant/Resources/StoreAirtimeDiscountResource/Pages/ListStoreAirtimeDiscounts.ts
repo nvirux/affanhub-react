@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeDiscountResource\Pages\ListStoreAirtimeDiscounts::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeDiscountResource/Pages/ListStoreAirtimeDiscounts.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-discounts'
+ * @route '//merchant.localhost/{tenant}/airtime-discounts'
  */
 const ListStoreAirtimeDiscounts = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreAirtimeDiscounts.url(args, options),
@@ -11,13 +11,13 @@ const ListStoreAirtimeDiscounts = (args: { tenant: string | number | { public_id
 
 ListStoreAirtimeDiscounts.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-airtime-discounts',
+    url: '//merchant.localhost/{tenant}/airtime-discounts',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeDiscountResource\Pages\ListStoreAirtimeDiscounts::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeDiscountResource/Pages/ListStoreAirtimeDiscounts.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-discounts'
+ * @route '//merchant.localhost/{tenant}/airtime-discounts'
  */
 ListStoreAirtimeDiscounts.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
@@ -50,7 +50,7 @@ ListStoreAirtimeDiscounts.url = (args: { tenant: string | number | { public_id: 
 /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeDiscountResource\Pages\ListStoreAirtimeDiscounts::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeDiscountResource/Pages/ListStoreAirtimeDiscounts.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-discounts'
+ * @route '//merchant.localhost/{tenant}/airtime-discounts'
  */
 ListStoreAirtimeDiscounts.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreAirtimeDiscounts.url(args, options),
@@ -59,7 +59,7 @@ ListStoreAirtimeDiscounts.get = (args: { tenant: string | number | { public_id: 
 /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeDiscountResource\Pages\ListStoreAirtimeDiscounts::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeDiscountResource/Pages/ListStoreAirtimeDiscounts.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-discounts'
+ * @route '//merchant.localhost/{tenant}/airtime-discounts'
  */
 ListStoreAirtimeDiscounts.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: ListStoreAirtimeDiscounts.url(args, options),
@@ -69,7 +69,7 @@ ListStoreAirtimeDiscounts.head = (args: { tenant: string | number | { public_id:
     /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeDiscountResource\Pages\ListStoreAirtimeDiscounts::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeDiscountResource/Pages/ListStoreAirtimeDiscounts.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-discounts'
+ * @route '//merchant.localhost/{tenant}/airtime-discounts'
  */
     const ListStoreAirtimeDiscountsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: ListStoreAirtimeDiscounts.url(args, options),
@@ -79,7 +79,7 @@ ListStoreAirtimeDiscounts.head = (args: { tenant: string | number | { public_id:
             /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeDiscountResource\Pages\ListStoreAirtimeDiscounts::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeDiscountResource/Pages/ListStoreAirtimeDiscounts.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-discounts'
+ * @route '//merchant.localhost/{tenant}/airtime-discounts'
  */
         ListStoreAirtimeDiscountsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreAirtimeDiscounts.url(args, options),
@@ -88,7 +88,7 @@ ListStoreAirtimeDiscounts.head = (args: { tenant: string | number | { public_id:
             /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeDiscountResource\Pages\ListStoreAirtimeDiscounts::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeDiscountResource/Pages/ListStoreAirtimeDiscounts.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-discounts'
+ * @route '//merchant.localhost/{tenant}/airtime-discounts'
  */
         ListStoreAirtimeDiscountsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreAirtimeDiscounts.url(args, {

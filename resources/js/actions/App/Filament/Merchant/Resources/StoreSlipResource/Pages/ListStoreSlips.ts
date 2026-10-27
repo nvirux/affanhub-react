@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Filament\Merchant\Resources\StoreSlipResource\Pages\ListStoreSlips::__invoke
  * @see app/Filament/Merchant/Resources/StoreSlipResource/Pages/ListStoreSlips.php:7
- * @route '//merchant.localhost/{tenant}/store-slips'
+ * @route '//merchant.localhost/{tenant}/slips'
  */
 const ListStoreSlips = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreSlips.url(args, options),
@@ -11,13 +11,13 @@ const ListStoreSlips = (args: { tenant: string | number | { public_id: string | 
 
 ListStoreSlips.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-slips',
+    url: '//merchant.localhost/{tenant}/slips',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Resources\StoreSlipResource\Pages\ListStoreSlips::__invoke
  * @see app/Filament/Merchant/Resources/StoreSlipResource/Pages/ListStoreSlips.php:7
- * @route '//merchant.localhost/{tenant}/store-slips'
+ * @route '//merchant.localhost/{tenant}/slips'
  */
 ListStoreSlips.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
@@ -50,7 +50,7 @@ ListStoreSlips.url = (args: { tenant: string | number | { public_id: string | nu
 /**
 * @see \App\Filament\Merchant\Resources\StoreSlipResource\Pages\ListStoreSlips::__invoke
  * @see app/Filament/Merchant/Resources/StoreSlipResource/Pages/ListStoreSlips.php:7
- * @route '//merchant.localhost/{tenant}/store-slips'
+ * @route '//merchant.localhost/{tenant}/slips'
  */
 ListStoreSlips.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreSlips.url(args, options),
@@ -59,7 +59,7 @@ ListStoreSlips.get = (args: { tenant: string | number | { public_id: string | nu
 /**
 * @see \App\Filament\Merchant\Resources\StoreSlipResource\Pages\ListStoreSlips::__invoke
  * @see app/Filament/Merchant/Resources/StoreSlipResource/Pages/ListStoreSlips.php:7
- * @route '//merchant.localhost/{tenant}/store-slips'
+ * @route '//merchant.localhost/{tenant}/slips'
  */
 ListStoreSlips.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: ListStoreSlips.url(args, options),
@@ -69,7 +69,7 @@ ListStoreSlips.head = (args: { tenant: string | number | { public_id: string | n
     /**
 * @see \App\Filament\Merchant\Resources\StoreSlipResource\Pages\ListStoreSlips::__invoke
  * @see app/Filament/Merchant/Resources/StoreSlipResource/Pages/ListStoreSlips.php:7
- * @route '//merchant.localhost/{tenant}/store-slips'
+ * @route '//merchant.localhost/{tenant}/slips'
  */
     const ListStoreSlipsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: ListStoreSlips.url(args, options),
@@ -79,7 +79,7 @@ ListStoreSlips.head = (args: { tenant: string | number | { public_id: string | n
             /**
 * @see \App\Filament\Merchant\Resources\StoreSlipResource\Pages\ListStoreSlips::__invoke
  * @see app/Filament/Merchant/Resources/StoreSlipResource/Pages/ListStoreSlips.php:7
- * @route '//merchant.localhost/{tenant}/store-slips'
+ * @route '//merchant.localhost/{tenant}/slips'
  */
         ListStoreSlipsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreSlips.url(args, options),
@@ -88,7 +88,7 @@ ListStoreSlips.head = (args: { tenant: string | number | { public_id: string | n
             /**
 * @see \App\Filament\Merchant\Resources\StoreSlipResource\Pages\ListStoreSlips::__invoke
  * @see app/Filament/Merchant/Resources/StoreSlipResource/Pages/ListStoreSlips.php:7
- * @route '//merchant.localhost/{tenant}/store-slips'
+ * @route '//merchant.localhost/{tenant}/slips'
  */
         ListStoreSlipsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreSlips.url(args, {

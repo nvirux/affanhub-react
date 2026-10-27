@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
- * @route '//merchant.localhost/{tenant}/store-data-plans'
+ * @route '//merchant.localhost/{tenant}/data-plans'
  */
 const ListStoreDataPlans = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreDataPlans.url(args, options),
@@ -11,13 +11,13 @@ const ListStoreDataPlans = (args: { tenant: string | number | { public_id: strin
 
 ListStoreDataPlans.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-data-plans',
+    url: '//merchant.localhost/{tenant}/data-plans',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
- * @route '//merchant.localhost/{tenant}/store-data-plans'
+ * @route '//merchant.localhost/{tenant}/data-plans'
  */
 ListStoreDataPlans.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
@@ -50,7 +50,7 @@ ListStoreDataPlans.url = (args: { tenant: string | number | { public_id: string 
 /**
 * @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
- * @route '//merchant.localhost/{tenant}/store-data-plans'
+ * @route '//merchant.localhost/{tenant}/data-plans'
  */
 ListStoreDataPlans.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreDataPlans.url(args, options),
@@ -59,7 +59,7 @@ ListStoreDataPlans.get = (args: { tenant: string | number | { public_id: string 
 /**
 * @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
- * @route '//merchant.localhost/{tenant}/store-data-plans'
+ * @route '//merchant.localhost/{tenant}/data-plans'
  */
 ListStoreDataPlans.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: ListStoreDataPlans.url(args, options),
@@ -69,7 +69,7 @@ ListStoreDataPlans.head = (args: { tenant: string | number | { public_id: string
     /**
 * @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
- * @route '//merchant.localhost/{tenant}/store-data-plans'
+ * @route '//merchant.localhost/{tenant}/data-plans'
  */
     const ListStoreDataPlansForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: ListStoreDataPlans.url(args, options),
@@ -79,7 +79,7 @@ ListStoreDataPlans.head = (args: { tenant: string | number | { public_id: string
             /**
 * @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
- * @route '//merchant.localhost/{tenant}/store-data-plans'
+ * @route '//merchant.localhost/{tenant}/data-plans'
  */
         ListStoreDataPlansForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreDataPlans.url(args, options),
@@ -88,7 +88,7 @@ ListStoreDataPlans.head = (args: { tenant: string | number | { public_id: string
             /**
 * @see \App\Filament\Merchant\Resources\StoreDataPlanResource\Pages\ListStoreDataPlans::__invoke
  * @see app/Filament/Merchant/Resources/StoreDataPlanResource/Pages/ListStoreDataPlans.php:7
- * @route '//merchant.localhost/{tenant}/store-data-plans'
+ * @route '//merchant.localhost/{tenant}/data-plans'
  */
         ListStoreDataPlansForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreDataPlans.url(args, {

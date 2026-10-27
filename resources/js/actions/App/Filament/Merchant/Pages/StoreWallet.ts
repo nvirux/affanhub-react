@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
 const StoreWallet = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: StoreWallet.url(args, options),
@@ -11,13 +11,13 @@ const StoreWallet = (args: { tenant: string | number | { public_id: string | num
 
 StoreWallet.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-wallet',
+    url: '//merchant.localhost/{tenant}/wallet',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
 StoreWallet.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
@@ -50,7 +50,7 @@ StoreWallet.url = (args: { tenant: string | number | { public_id: string | numbe
 /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
 StoreWallet.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: StoreWallet.url(args, options),
@@ -59,7 +59,7 @@ StoreWallet.get = (args: { tenant: string | number | { public_id: string | numbe
 /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
 StoreWallet.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: StoreWallet.url(args, options),
@@ -69,7 +69,7 @@ StoreWallet.head = (args: { tenant: string | number | { public_id: string | numb
     /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
     const StoreWalletForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: StoreWallet.url(args, options),
@@ -79,7 +79,7 @@ StoreWallet.head = (args: { tenant: string | number | { public_id: string | numb
             /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
         StoreWalletForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: StoreWallet.url(args, options),
@@ -88,7 +88,7 @@ StoreWallet.head = (args: { tenant: string | number | { public_id: string | numb
             /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
         StoreWalletForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: StoreWallet.url(args, {

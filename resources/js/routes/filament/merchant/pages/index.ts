@@ -717,24 +717,24 @@ referralProgram.head = (args: { tenant: string | number | { public_id: string | 
 /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
-export const storeActivityLogs = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: storeActivityLogs.url(args, options),
+export const activityLogs = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: activityLogs.url(args, options),
     method: 'get',
 })
 
-storeActivityLogs.definition = {
+activityLogs.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-activity-logs',
+    url: '//merchant.localhost/{tenant}/activity-logs',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
-storeActivityLogs.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
+activityLogs.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
@@ -757,7 +757,7 @@ storeActivityLogs.url = (args: { tenant: string | number | { public_id: string |
                 : args.tenant,
                 }
 
-    return storeActivityLogs.definition.url
+    return activityLogs.definition.url
             .replace('{tenant}', parsedArgs.tenant.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
@@ -765,48 +765,48 @@ storeActivityLogs.url = (args: { tenant: string | number | { public_id: string |
 /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
-storeActivityLogs.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: storeActivityLogs.url(args, options),
+activityLogs.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: activityLogs.url(args, options),
     method: 'get',
 })
 /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
-storeActivityLogs.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: storeActivityLogs.url(args, options),
+activityLogs.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: activityLogs.url(args, options),
     method: 'head',
 })
 
     /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
-    const storeActivityLogsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: storeActivityLogs.url(args, options),
+    const activityLogsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: activityLogs.url(args, options),
         method: 'get',
     })
 
             /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
-        storeActivityLogsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: storeActivityLogs.url(args, options),
+        activityLogsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: activityLogs.url(args, options),
             method: 'get',
         })
             /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
-        storeActivityLogsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: storeActivityLogs.url(args, {
+        activityLogsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: activityLogs.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -815,28 +815,28 @@ storeActivityLogs.head = (args: { tenant: string | number | { public_id: string 
             method: 'get',
         })
     
-    storeActivityLogs.form = storeActivityLogsForm
+    activityLogs.form = activityLogsForm
 /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
-export const storeSettings = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: storeSettings.url(args, options),
+export const settings = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: settings.url(args, options),
     method: 'get',
 })
 
-storeSettings.definition = {
+settings.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-settings',
+    url: '//merchant.localhost/{tenant}/settings',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
-storeSettings.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
+settings.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
@@ -859,7 +859,7 @@ storeSettings.url = (args: { tenant: string | number | { public_id: string | num
                 : args.tenant,
                 }
 
-    return storeSettings.definition.url
+    return settings.definition.url
             .replace('{tenant}', parsedArgs.tenant.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
@@ -867,48 +867,48 @@ storeSettings.url = (args: { tenant: string | number | { public_id: string | num
 /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
-storeSettings.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: storeSettings.url(args, options),
+settings.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: settings.url(args, options),
     method: 'get',
 })
 /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
-storeSettings.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: storeSettings.url(args, options),
+settings.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: settings.url(args, options),
     method: 'head',
 })
 
     /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
-    const storeSettingsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: storeSettings.url(args, options),
+    const settingsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: settings.url(args, options),
         method: 'get',
     })
 
             /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
-        storeSettingsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: storeSettings.url(args, options),
+        settingsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: settings.url(args, options),
             method: 'get',
         })
             /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
-        storeSettingsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: storeSettings.url(args, {
+        settingsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: settings.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -917,28 +917,28 @@ storeSettings.head = (args: { tenant: string | number | { public_id: string | nu
             method: 'get',
         })
     
-    storeSettings.form = storeSettingsForm
+    settings.form = settingsForm
 /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
-export const storeWallet = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: storeWallet.url(args, options),
+export const wallet = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: wallet.url(args, options),
     method: 'get',
 })
 
-storeWallet.definition = {
+wallet.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-wallet',
+    url: '//merchant.localhost/{tenant}/wallet',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
-storeWallet.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
+wallet.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { tenant: args }
     }
@@ -961,7 +961,7 @@ storeWallet.url = (args: { tenant: string | number | { public_id: string | numbe
                 : args.tenant,
                 }
 
-    return storeWallet.definition.url
+    return wallet.definition.url
             .replace('{tenant}', parsedArgs.tenant.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
@@ -969,48 +969,48 @@ storeWallet.url = (args: { tenant: string | number | { public_id: string | numbe
 /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
-storeWallet.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: storeWallet.url(args, options),
+wallet.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: wallet.url(args, options),
     method: 'get',
 })
 /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
-storeWallet.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: storeWallet.url(args, options),
+wallet.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: wallet.url(args, options),
     method: 'head',
 })
 
     /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
-    const storeWalletForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: storeWallet.url(args, options),
+    const walletForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: wallet.url(args, options),
         method: 'get',
     })
 
             /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
-        storeWalletForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: storeWallet.url(args, options),
+        walletForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: wallet.url(args, options),
             method: 'get',
         })
             /**
 * @see \App\Filament\Merchant\Pages\StoreWallet::__invoke
  * @see app/Filament/Merchant/Pages/StoreWallet.php:7
- * @route '//merchant.localhost/{tenant}/store-wallet'
+ * @route '//merchant.localhost/{tenant}/wallet'
  */
-        storeWalletForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: storeWallet.url(args, {
+        walletForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: wallet.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -1019,7 +1019,7 @@ storeWallet.head = (args: { tenant: string | number | { public_id: string | numb
             method: 'get',
         })
     
-    storeWallet.form = storeWalletForm
+    wallet.form = walletForm
 /**
 * @see \App\Filament\Merchant\Pages\WholesaleRates::__invoke
  * @see app/Filament/Merchant/Pages/WholesaleRates.php:7
@@ -1131,9 +1131,9 @@ mobileAppManager: Object.assign(mobileAppManager, mobileAppManager),
 onboarding: Object.assign(onboarding, onboarding),
 pushNotifications: Object.assign(pushNotifications, pushNotifications),
 referralProgram: Object.assign(referralProgram, referralProgram),
-storeActivityLogs: Object.assign(storeActivityLogs, storeActivityLogs),
-storeSettings: Object.assign(storeSettings, storeSettings),
-storeWallet: Object.assign(storeWallet, storeWallet),
+activityLogs: Object.assign(activityLogs, activityLogs),
+settings: Object.assign(settings, settings),
+wallet: Object.assign(wallet, wallet),
 wholesaleRates: Object.assign(wholesaleRates, wholesaleRates),
 }
 

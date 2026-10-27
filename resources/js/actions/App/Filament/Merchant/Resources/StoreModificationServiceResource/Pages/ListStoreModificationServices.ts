@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/ListStoreModificationServices.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services'
+ * @route '//merchant.localhost/{tenant}/modification-services'
  */
 const ListStoreModificationServices = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreModificationServices.url(args, options),
@@ -11,13 +11,13 @@ const ListStoreModificationServices = (args: { tenant: string | number | { publi
 
 ListStoreModificationServices.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-modification-services',
+    url: '//merchant.localhost/{tenant}/modification-services',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/ListStoreModificationServices.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services'
+ * @route '//merchant.localhost/{tenant}/modification-services'
  */
 ListStoreModificationServices.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
@@ -50,7 +50,7 @@ ListStoreModificationServices.url = (args: { tenant: string | number | { public_
 /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/ListStoreModificationServices.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services'
+ * @route '//merchant.localhost/{tenant}/modification-services'
  */
 ListStoreModificationServices.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreModificationServices.url(args, options),
@@ -59,7 +59,7 @@ ListStoreModificationServices.get = (args: { tenant: string | number | { public_
 /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/ListStoreModificationServices.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services'
+ * @route '//merchant.localhost/{tenant}/modification-services'
  */
 ListStoreModificationServices.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: ListStoreModificationServices.url(args, options),
@@ -69,7 +69,7 @@ ListStoreModificationServices.head = (args: { tenant: string | number | { public
     /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/ListStoreModificationServices.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services'
+ * @route '//merchant.localhost/{tenant}/modification-services'
  */
     const ListStoreModificationServicesForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: ListStoreModificationServices.url(args, options),
@@ -79,7 +79,7 @@ ListStoreModificationServices.head = (args: { tenant: string | number | { public
             /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/ListStoreModificationServices.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services'
+ * @route '//merchant.localhost/{tenant}/modification-services'
  */
         ListStoreModificationServicesForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreModificationServices.url(args, options),
@@ -88,7 +88,7 @@ ListStoreModificationServices.head = (args: { tenant: string | number | { public
             /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/ListStoreModificationServices.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services'
+ * @route '//merchant.localhost/{tenant}/modification-services'
  */
         ListStoreModificationServicesForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreModificationServices.url(args, {

@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
 const StoreSettings = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: StoreSettings.url(args, options),
@@ -11,13 +11,13 @@ const StoreSettings = (args: { tenant: string | number | { public_id: string | n
 
 StoreSettings.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-settings',
+    url: '//merchant.localhost/{tenant}/settings',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
 StoreSettings.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
@@ -50,7 +50,7 @@ StoreSettings.url = (args: { tenant: string | number | { public_id: string | num
 /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
 StoreSettings.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: StoreSettings.url(args, options),
@@ -59,7 +59,7 @@ StoreSettings.get = (args: { tenant: string | number | { public_id: string | num
 /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
 StoreSettings.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: StoreSettings.url(args, options),
@@ -69,7 +69,7 @@ StoreSettings.head = (args: { tenant: string | number | { public_id: string | nu
     /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
     const StoreSettingsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: StoreSettings.url(args, options),
@@ -79,7 +79,7 @@ StoreSettings.head = (args: { tenant: string | number | { public_id: string | nu
             /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
         StoreSettingsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: StoreSettings.url(args, options),
@@ -88,7 +88,7 @@ StoreSettings.head = (args: { tenant: string | number | { public_id: string | nu
             /**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-settings'
+ * @route '//merchant.localhost/{tenant}/settings'
  */
         StoreSettingsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: StoreSettings.url(args, {

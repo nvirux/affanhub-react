@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
  * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
- * @route '//merchant.localhost/{tenant}/store-announcements'
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
 const ListStoreAnnouncements = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreAnnouncements.url(args, options),
@@ -11,13 +11,13 @@ const ListStoreAnnouncements = (args: { tenant: string | number | { public_id: s
 
 ListStoreAnnouncements.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-announcements',
+    url: '//merchant.localhost/{tenant}/announcements',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
  * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
- * @route '//merchant.localhost/{tenant}/store-announcements'
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
 ListStoreAnnouncements.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
@@ -50,7 +50,7 @@ ListStoreAnnouncements.url = (args: { tenant: string | number | { public_id: str
 /**
 * @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
  * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
- * @route '//merchant.localhost/{tenant}/store-announcements'
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
 ListStoreAnnouncements.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreAnnouncements.url(args, options),
@@ -59,7 +59,7 @@ ListStoreAnnouncements.get = (args: { tenant: string | number | { public_id: str
 /**
 * @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
  * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
- * @route '//merchant.localhost/{tenant}/store-announcements'
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
 ListStoreAnnouncements.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: ListStoreAnnouncements.url(args, options),
@@ -69,7 +69,7 @@ ListStoreAnnouncements.head = (args: { tenant: string | number | { public_id: st
     /**
 * @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
  * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
- * @route '//merchant.localhost/{tenant}/store-announcements'
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
     const ListStoreAnnouncementsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: ListStoreAnnouncements.url(args, options),
@@ -79,7 +79,7 @@ ListStoreAnnouncements.head = (args: { tenant: string | number | { public_id: st
             /**
 * @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
  * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
- * @route '//merchant.localhost/{tenant}/store-announcements'
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
         ListStoreAnnouncementsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreAnnouncements.url(args, options),
@@ -88,7 +88,7 @@ ListStoreAnnouncements.head = (args: { tenant: string | number | { public_id: st
             /**
 * @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
  * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
- * @route '//merchant.localhost/{tenant}/store-announcements'
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
         ListStoreAnnouncementsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreAnnouncements.url(args, {

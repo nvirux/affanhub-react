@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeCashSettingResource\Pages\ListStoreAirtimeCashSettings::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeCashSettingResource/Pages/ListStoreAirtimeCashSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-cash-settings'
+ * @route '//merchant.localhost/{tenant}/airtime-cash-settings'
  */
 const ListStoreAirtimeCashSettings = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreAirtimeCashSettings.url(args, options),
@@ -11,13 +11,13 @@ const ListStoreAirtimeCashSettings = (args: { tenant: string | number | { public
 
 ListStoreAirtimeCashSettings.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-airtime-cash-settings',
+    url: '//merchant.localhost/{tenant}/airtime-cash-settings',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeCashSettingResource\Pages\ListStoreAirtimeCashSettings::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeCashSettingResource/Pages/ListStoreAirtimeCashSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-cash-settings'
+ * @route '//merchant.localhost/{tenant}/airtime-cash-settings'
  */
 ListStoreAirtimeCashSettings.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
@@ -50,7 +50,7 @@ ListStoreAirtimeCashSettings.url = (args: { tenant: string | number | { public_i
 /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeCashSettingResource\Pages\ListStoreAirtimeCashSettings::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeCashSettingResource/Pages/ListStoreAirtimeCashSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-cash-settings'
+ * @route '//merchant.localhost/{tenant}/airtime-cash-settings'
  */
 ListStoreAirtimeCashSettings.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ListStoreAirtimeCashSettings.url(args, options),
@@ -59,7 +59,7 @@ ListStoreAirtimeCashSettings.get = (args: { tenant: string | number | { public_i
 /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeCashSettingResource\Pages\ListStoreAirtimeCashSettings::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeCashSettingResource/Pages/ListStoreAirtimeCashSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-cash-settings'
+ * @route '//merchant.localhost/{tenant}/airtime-cash-settings'
  */
 ListStoreAirtimeCashSettings.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: ListStoreAirtimeCashSettings.url(args, options),
@@ -69,7 +69,7 @@ ListStoreAirtimeCashSettings.head = (args: { tenant: string | number | { public_
     /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeCashSettingResource\Pages\ListStoreAirtimeCashSettings::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeCashSettingResource/Pages/ListStoreAirtimeCashSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-cash-settings'
+ * @route '//merchant.localhost/{tenant}/airtime-cash-settings'
  */
     const ListStoreAirtimeCashSettingsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: ListStoreAirtimeCashSettings.url(args, options),
@@ -79,7 +79,7 @@ ListStoreAirtimeCashSettings.head = (args: { tenant: string | number | { public_
             /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeCashSettingResource\Pages\ListStoreAirtimeCashSettings::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeCashSettingResource/Pages/ListStoreAirtimeCashSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-cash-settings'
+ * @route '//merchant.localhost/{tenant}/airtime-cash-settings'
  */
         ListStoreAirtimeCashSettingsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreAirtimeCashSettings.url(args, options),
@@ -88,7 +88,7 @@ ListStoreAirtimeCashSettings.head = (args: { tenant: string | number | { public_
             /**
 * @see \App\Filament\Merchant\Resources\StoreAirtimeCashSettingResource\Pages\ListStoreAirtimeCashSettings::__invoke
  * @see app/Filament/Merchant/Resources/StoreAirtimeCashSettingResource/Pages/ListStoreAirtimeCashSettings.php:7
- * @route '//merchant.localhost/{tenant}/store-airtime-cash-settings'
+ * @route '//merchant.localhost/{tenant}/airtime-cash-settings'
  */
         ListStoreAirtimeCashSettingsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: ListStoreAirtimeCashSettings.url(args, {

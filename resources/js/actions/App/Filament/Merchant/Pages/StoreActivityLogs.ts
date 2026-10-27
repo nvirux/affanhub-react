@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
 const StoreActivityLogs = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: StoreActivityLogs.url(args, options),
@@ -11,13 +11,13 @@ const StoreActivityLogs = (args: { tenant: string | number | { public_id: string
 
 StoreActivityLogs.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-activity-logs',
+    url: '//merchant.localhost/{tenant}/activity-logs',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
 StoreActivityLogs.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
@@ -50,7 +50,7 @@ StoreActivityLogs.url = (args: { tenant: string | number | { public_id: string |
 /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
 StoreActivityLogs.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: StoreActivityLogs.url(args, options),
@@ -59,7 +59,7 @@ StoreActivityLogs.get = (args: { tenant: string | number | { public_id: string |
 /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
 StoreActivityLogs.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: StoreActivityLogs.url(args, options),
@@ -69,7 +69,7 @@ StoreActivityLogs.head = (args: { tenant: string | number | { public_id: string 
     /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
     const StoreActivityLogsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: StoreActivityLogs.url(args, options),
@@ -79,7 +79,7 @@ StoreActivityLogs.head = (args: { tenant: string | number | { public_id: string 
             /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
         StoreActivityLogsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: StoreActivityLogs.url(args, options),
@@ -88,7 +88,7 @@ StoreActivityLogs.head = (args: { tenant: string | number | { public_id: string 
             /**
 * @see \App\Filament\Merchant\Pages\StoreActivityLogs::__invoke
  * @see app/Filament/Merchant/Pages/StoreActivityLogs.php:7
- * @route '//merchant.localhost/{tenant}/store-activity-logs'
+ * @route '//merchant.localhost/{tenant}/activity-logs'
  */
         StoreActivityLogsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: StoreActivityLogs.url(args, {

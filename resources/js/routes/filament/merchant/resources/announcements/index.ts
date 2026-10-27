@@ -1,8 +1,8 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
-* @see \App\Filament\Merchant\Resources\SettlementAccountResource\Pages\ListSettlementAccounts::__invoke
- * @see app/Filament/Merchant/Resources/SettlementAccountResource/Pages/ListSettlementAccounts.php:7
- * @route '//merchant.localhost/{tenant}/settlement-accounts'
+* @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
+ * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
 export const index = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(args, options),
@@ -11,13 +11,13 @@ export const index = (args: { tenant: string | number | { public_id: string | nu
 
 index.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/settlement-accounts',
+    url: '//merchant.localhost/{tenant}/announcements',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Filament\Merchant\Resources\SettlementAccountResource\Pages\ListSettlementAccounts::__invoke
- * @see app/Filament/Merchant/Resources/SettlementAccountResource/Pages/ListSettlementAccounts.php:7
- * @route '//merchant.localhost/{tenant}/settlement-accounts'
+* @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
+ * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
 index.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
@@ -48,18 +48,18 @@ index.url = (args: { tenant: string | number | { public_id: string | number } } 
 }
 
 /**
-* @see \App\Filament\Merchant\Resources\SettlementAccountResource\Pages\ListSettlementAccounts::__invoke
- * @see app/Filament/Merchant/Resources/SettlementAccountResource/Pages/ListSettlementAccounts.php:7
- * @route '//merchant.localhost/{tenant}/settlement-accounts'
+* @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
+ * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
 index.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(args, options),
     method: 'get',
 })
 /**
-* @see \App\Filament\Merchant\Resources\SettlementAccountResource\Pages\ListSettlementAccounts::__invoke
- * @see app/Filament/Merchant/Resources/SettlementAccountResource/Pages/ListSettlementAccounts.php:7
- * @route '//merchant.localhost/{tenant}/settlement-accounts'
+* @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
+ * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
 index.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(args, options),
@@ -67,9 +67,9 @@ index.head = (args: { tenant: string | number | { public_id: string | number } }
 })
 
     /**
-* @see \App\Filament\Merchant\Resources\SettlementAccountResource\Pages\ListSettlementAccounts::__invoke
- * @see app/Filament/Merchant/Resources/SettlementAccountResource/Pages/ListSettlementAccounts.php:7
- * @route '//merchant.localhost/{tenant}/settlement-accounts'
+* @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
+ * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
     const indexForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: index.url(args, options),
@@ -77,18 +77,18 @@ index.head = (args: { tenant: string | number | { public_id: string | number } }
     })
 
             /**
-* @see \App\Filament\Merchant\Resources\SettlementAccountResource\Pages\ListSettlementAccounts::__invoke
- * @see app/Filament/Merchant/Resources/SettlementAccountResource/Pages/ListSettlementAccounts.php:7
- * @route '//merchant.localhost/{tenant}/settlement-accounts'
+* @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
+ * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
         indexForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: index.url(args, options),
             method: 'get',
         })
             /**
-* @see \App\Filament\Merchant\Resources\SettlementAccountResource\Pages\ListSettlementAccounts::__invoke
- * @see app/Filament/Merchant/Resources/SettlementAccountResource/Pages/ListSettlementAccounts.php:7
- * @route '//merchant.localhost/{tenant}/settlement-accounts'
+* @see \App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements::__invoke
+ * @see app/Filament/Merchant/Resources/StoreAnnouncementResource/Pages/ListStoreAnnouncements.php:7
+ * @route '//merchant.localhost/{tenant}/announcements'
  */
         indexForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: index.url(args, {
@@ -101,8 +101,8 @@ index.head = (args: { tenant: string | number | { public_id: string | number } }
         })
     
     index.form = indexForm
-const settlementAccounts = {
+const announcements = {
     index: Object.assign(index, index),
 }
 
-export default settlementAccounts
+export default announcements

@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\EditStoreModificationService::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/EditStoreModificationService.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services/{record}/edit'
+ * @route '//merchant.localhost/{tenant}/modification-services/{record}/edit'
  */
 const EditStoreModificationService = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditStoreModificationService.url(args, options),
@@ -11,13 +11,13 @@ const EditStoreModificationService = (args: { tenant: string | number | { public
 
 EditStoreModificationService.definition = {
     methods: ["get","head"],
-    url: '//merchant.localhost/{tenant}/store-modification-services/{record}/edit',
+    url: '//merchant.localhost/{tenant}/modification-services/{record}/edit',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\EditStoreModificationService::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/EditStoreModificationService.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services/{record}/edit'
+ * @route '//merchant.localhost/{tenant}/modification-services/{record}/edit'
  */
 EditStoreModificationService.url = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
@@ -45,7 +45,7 @@ EditStoreModificationService.url = (args: { tenant: string | number | { public_i
 /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\EditStoreModificationService::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/EditStoreModificationService.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services/{record}/edit'
+ * @route '//merchant.localhost/{tenant}/modification-services/{record}/edit'
  */
 EditStoreModificationService.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditStoreModificationService.url(args, options),
@@ -54,7 +54,7 @@ EditStoreModificationService.get = (args: { tenant: string | number | { public_i
 /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\EditStoreModificationService::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/EditStoreModificationService.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services/{record}/edit'
+ * @route '//merchant.localhost/{tenant}/modification-services/{record}/edit'
  */
 EditStoreModificationService.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: EditStoreModificationService.url(args, options),
@@ -64,7 +64,7 @@ EditStoreModificationService.head = (args: { tenant: string | number | { public_
     /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\EditStoreModificationService::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/EditStoreModificationService.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services/{record}/edit'
+ * @route '//merchant.localhost/{tenant}/modification-services/{record}/edit'
  */
     const EditStoreModificationServiceForm = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: EditStoreModificationService.url(args, options),
@@ -74,7 +74,7 @@ EditStoreModificationService.head = (args: { tenant: string | number | { public_
             /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\EditStoreModificationService::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/EditStoreModificationService.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services/{record}/edit'
+ * @route '//merchant.localhost/{tenant}/modification-services/{record}/edit'
  */
         EditStoreModificationServiceForm.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: EditStoreModificationService.url(args, options),
@@ -83,7 +83,7 @@ EditStoreModificationService.head = (args: { tenant: string | number | { public_
             /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\EditStoreModificationService::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/EditStoreModificationService.php:7
- * @route '//merchant.localhost/{tenant}/store-modification-services/{record}/edit'
+ * @route '//merchant.localhost/{tenant}/modification-services/{record}/edit'
  */
         EditStoreModificationServiceForm.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: EditStoreModificationService.url(args, {
