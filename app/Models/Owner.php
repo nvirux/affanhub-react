@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\OwnerEmailOtpNotification;
 use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthentication;
 use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecovery;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class Owner extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasDefaultTenant, HasTenants, MustVerifyEmail
 {
@@ -100,5 +102,52 @@ class Owner extends Authenticatable implements FilamentUser, HasAppAuthenticatio
     public function wallet(?string $name = 'main')
     {
         return $this->stores()->first()?->mainWallet();
+    }
+
+    /**
+     * Send 6-digit OTP verification email notification.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        $otp = (string) random_int(100000, 999999);
+
+        Cache::put("owner_email_otp_{$this->id}", hash('sha256', $otp), now()->addMinutes(15));
+        Cache::forget("owner_email_otp_attempts_{$this->id}");
+
+        $this->notify(new OwnerEmailOtpNotification($otp));
+    }
+
+    /**
+     * Verify the provided 6-digit OTP code against the cached code.
+     */
+    public function verifyEmailOtp(string $code): bool
+    {
+        $cacheKey = "owner_email_otp_{$this->id}";
+        $attemptsKey = "owner_email_otp_attempts_{$this->id}";
+
+        $cachedHash = Cache::get($cacheKey);
+        if (! $cachedHash) {
+            return false;
+        }
+
+        $attempts = (int) Cache::get($attemptsKey, 0);
+        if ($attempts >= 5) {
+            Cache::forget($cacheKey);
+            Cache::forget($attemptsKey);
+
+            return false;
+        }
+
+        if (hash_equals($cachedHash, hash('sha256', trim($code)))) {
+            Cache::forget($cacheKey);
+            Cache::forget($attemptsKey);
+            $this->markEmailAsVerified();
+
+            return true;
+        }
+
+        Cache::put($attemptsKey, $attempts + 1, now()->addMinutes(15));
+
+        return false;
     }
 }

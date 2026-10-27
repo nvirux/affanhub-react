@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt;
 use App\Filament\Merchant\Pages\Auth\Register;
 use App\Filament\Merchant\Pages\Dashboard;
 use App\Filament\Merchant\Pages\RegisterStore;
@@ -41,7 +42,7 @@ class MerchantPanelProvider extends PanelProvider
                     ->recoverable(),
             ])
             ->registration(Register::class)
-            ->emailVerification()
+            ->emailVerification(EmailVerificationPrompt::class)
             ->authGuard('owner')
             ->tenant(Store::class, slugAttribute: 'public_id')
             ->tenantRegistration(RegisterStore::class)
