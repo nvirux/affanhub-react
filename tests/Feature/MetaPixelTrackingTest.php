@@ -49,7 +49,7 @@ test('tenant website isolates and does not render meta pixel base code', functio
     $response->assertDontSee('connect.facebook.net/en_US/fbevents.js');
 });
 
-test('merchant registration queues CompleteRegistration pixel event in session', function () {
+test('unverified merchant registration form submission does not queue CompleteRegistration pixel event until OTP is verified', function () {
     Filament::setCurrentPanel(Filament::getPanel('merchant'));
 
     Livewire::test(Register::class)
@@ -64,13 +64,7 @@ test('merchant registration queues CompleteRegistration pixel event in session',
         ->call('register')
         ->assertHasNoFormErrors();
 
-    expect(session('pixel_event'))->toBe([
-        'event' => 'CompleteRegistration',
-        'params' => [
-            'content_name' => 'Merchant Account Registered',
-            'status' => true,
-        ],
-    ]);
+    expect(session('pixel_event'))->toBeNull();
 });
 
 test('failed merchant registration does not queue CompleteRegistration pixel event', function () {

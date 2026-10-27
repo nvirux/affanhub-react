@@ -67,6 +67,43 @@ class EmailVerificationPrompt extends BasePrompt
 
         event(new Verified($user));
 
+        // Track Meta Pixel CompleteRegistration for verified merchant account
+        $testCode = request()->query('test_event_code')
+            ?? session('meta_test_event_code')
+            ?? env('META_TEST_EVENT_CODE');
+
+        $pixelParams = [
+            'content_name' => 'Merchant Account Verified',
+            'status' => true,
+        ];
+
+        if (! empty($testCode)) {
+            $pixelParams['test_event_code'] = $testCode;
+        }
+
+        session()->put('pixel_event', [
+            'event' => 'CompleteRegistration',
+            'params' => $pixelParams,
+        ]);
+
+        $jsonParams = json_encode($pixelParams);
+        $this->js("
+            try {
+                if (typeof window.fbq === 'function') {
+                    const testCode = localStorage.getItem('meta_test_event_code');
+                    const params = {$jsonParams};
+                    if (testCode && !params.test_event_code) {
+                        params.test_event_code = testCode;
+                    }
+                    if (params.test_event_code) {
+                        window.fbq('track', 'CompleteRegistration', params, { test_event_code: params.test_event_code });
+                    } else {
+                        window.fbq('track', 'CompleteRegistration', params);
+                    }
+                }
+            } catch(e) {}
+        ");
+
         Notification::make()
             ->title('Email Verified!')
             ->body('Your email address has been verified successfully.')

@@ -80,6 +80,13 @@ test('submitting valid 6-digit OTP marks owner email as verified and redirects',
 
     expect($owner->fresh()->hasVerifiedEmail())->toBeTrue();
     expect(Cache::has("owner_email_otp_{$owner->id}"))->toBeFalse();
+    expect(session('pixel_event'))->toBe([
+        'event' => 'CompleteRegistration',
+        'params' => [
+            'content_name' => 'Merchant Account Verified',
+            'status' => true,
+        ],
+    ]);
     Event::assertDispatched(Verified::class);
 });
 
