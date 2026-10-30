@@ -135,6 +135,36 @@ test('verification fails if invalid transaction pin is entered', function () {
     ]);
 });
 
+test('verification fails and blocks overdraft if store main wallet balance is insufficient for wholesale cost', function () {
+    // Customer has ₦100,000 in wallet (e.g. from manual merchant credit)
+    $this->walletService->credit($this->mainWallet, 100000.00, 'manual_merchant_credit', 'Manual Credit');
+
+    // Store main wallet has ₦0.00
+    expect((float) $this->store->mainWallet()->balance)->toBe(0.00);
+
+    $this->actingAs($this->user);
+
+    $response = $this->postJson('http://demo.localhost/identity/nin/verify', [
+        'search_type' => 'nin',
+        'search_value' => '12345678901',
+        'slip_type' => 'standard',
+        'pin' => '1234',
+    ]);
+
+    $response->assertStatus(422);
+    $response->assertJson([
+        'success' => false,
+        'message' => 'Unable to process this order. Please contact store support for assistance.',
+    ]);
+
+    // Store main wallet must remain 0.00 and NEVER go negative
+    expect((float) $this->store->mainWallet()->fresh()->balance)->toBe(0.00);
+    // Store profit wallet must NOT receive any unbacked profit
+    expect((float) $this->store->profitWallet()->fresh()->balance)->toBe(0.00);
+    // Customer wallet was not debited
+    expect((float) $this->mainWallet->fresh()->balance)->toBe(100000.00);
+});
+
 test('verification succeeds and returns verified identity payload for both nin and phone modes', function () {
     $this->walletService->credit(
         $this->mainWallet,
@@ -143,6 +173,12 @@ test('verification succeeds and returns verified identity payload for both nin a
         'Wallet Funding',
         ['type' => 'test'],
         'REF-TEST-SUCCESS'
+    );
+    $this->walletService->credit(
+        $this->store->mainWallet(),
+        2000.00,
+        'deposit',
+        'Store wholesale fund'
     );
 
     $this->actingAs($this->user);
@@ -202,6 +238,12 @@ test('store custom slip selling price overrides default retail price', function 
         'Wallet Funding',
         ['type' => 'test'],
         'REF-TEST-OVERRIDE'
+    );
+    $this->walletService->credit(
+        $this->store->mainWallet(),
+        2000.00,
+        'deposit',
+        'Store wholesale fund'
     );
 
     // Find standard slip and create store slip override with custom price ₦450

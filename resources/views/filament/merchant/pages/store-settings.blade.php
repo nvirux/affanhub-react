@@ -399,11 +399,94 @@
             @if ($activeTab === 'branding')
                 <div class="settings-card">
                     <div>
-                        <h3 style="font-size: 1.125rem; font-weight: 800; color: #111827; margin: 0;">Theme & Brand Colors</h3>
-                        <p style="font-size: 0.8125rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">Customize your store's primary brand color and browser tab icon.</p>
+                        <h3 style="font-size: 1.125rem; font-weight: 800; color: #111827; margin: 0;">Storefront Theme & Branding</h3>
+                        <p style="font-size: 0.8125rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">Choose your storefront landing page template and brand colors.</p>
                     </div>
 
                     <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0;">
+
+                    {{-- Landing Page Template Picker --}}
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <label style="font-size: 0.875rem; font-weight: 700; color: #374151; display: block;">Landing Page Design</label>
+                                <span style="font-size: 0.75rem; color: #6b7280;">Choose the design and user flow for your customers when they visit your store.</span>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: #0284c7; background: #f0f9ff; padding: 0.125rem 0.5rem; border-radius: 9999px; border: 1px solid #bae6fd;">Instant Switch</span>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; width: 100%; box-sizing: border-box;">
+                            
+                            {{-- Option 1: Modern Fintech (Default) --}}
+                            @php $isDefault = ($landingPageTemplate ?? 'default') === 'default'; @endphp
+                            <div 
+                                wire:click="selectTemplate('default')"
+                                style="position: relative; border-radius: 14px; border: 2px solid {{ $isDefault ? '#10b981' : '#e2e8f0' }}; background: {{ $isDefault ? '#f0fdf4' : '#ffffff' }}; padding: 1rem; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 0.75rem; box-shadow: {{ $isDefault ? '0 4px 12px rgba(16, 185, 129, 0.12)' : 'none' }};"
+                            >
+                                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <div style="width: 36px; height: 36px; border-radius: 10px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 1.125rem;">
+                                            🏛️
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 0.875rem; font-weight: 700; color: #0f172a;">Modern Fintech</div>
+                                            <div style="font-size: 0.6875rem; color: #64748b;">Comprehensive & Brand-Focused</div>
+                                        </div>
+                                    </div>
+                                    @if($isDefault)
+                                        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.6875rem; font-weight: 700; color: #059669; background: #d1fae5; padding: 0.125rem 0.5rem; border-radius: 9999px;">
+                                            <svg style="width: 12px; height: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                            Active
+                                        </span>
+                                    @endif
+                                </div>
+                                <p style="font-size: 0.75rem; color: #475569; margin: 0; line-height: 1.4;">
+                                    Classic multi-section fintech layout featuring hero trust stats, live service catalogue, interactive steps, FAQs, and extensive brand highlights.
+                                </p>
+                                <div style="display: flex; gap: 0.375rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.5rem; border-top: 1px dashed {{ $isDefault ? '#86efac' : '#f1f5f9' }};">
+                                    <span style="font-size: 0.6875rem; background: #f1f5f9; color: #334155; padding: 0.125rem 0.375rem; border-radius: 4px; font-weight: 500;">Multi-Section</span>
+                                    <span style="font-size: 0.6875rem; background: #f1f5f9; color: #334155; padding: 0.125rem 0.375rem; border-radius: 4px; font-weight: 500;">Rich FAQs</span>
+                                </div>
+                            </div>
+
+
+
+                            {{-- Option 5: Yushpay Financial Hub --}}
+                            @php $isYushpay = ($landingPageTemplate ?? 'default') === 'yushpay'; @endphp
+                            <div 
+                                wire:click="selectTemplate('yushpay')"
+                                style="position: relative; border-radius: 14px; border: 2px solid {{ $isYushpay ? '#10b981' : '#e2e8f0' }}; background: {{ $isYushpay ? '#f0fdf4' : '#ffffff' }}; padding: 1rem; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 0.75rem; box-shadow: {{ $isYushpay ? '0 4px 12px rgba(16, 185, 129, 0.12)' : 'none' }};"
+                            >
+                                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <div style="width: 36px; height: 36px; border-radius: 10px; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-size: 1.125rem;">
+                                            💎
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 0.875rem; font-weight: 700; color: #0f172a;">Yushpay Financial Hub</div>
+                                            <div style="font-size: 0.6875rem; color: #64748b;">Sleek Multi-Channel Fintech</div>
+                                        </div>
+                                    </div>
+                                    @if($isYushpay)
+                                        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.6875rem; font-weight: 700; color: #059669; background: #d1fae5; padding: 0.125rem 0.5rem; border-radius: 9999px;">
+                                            <svg style="width: 12px; height: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                            Active
+                                        </span>
+                                    @endif
+                                </div>
+                                <p style="font-size: 0.75rem; color: #475569; margin: 0; line-height: 1.4;">
+                                    High-impact financial hub with APK download banner, mock dashboard wallet card, 6-card feature grid, 4 direct support channels, and dynamic merchant colors.
+                                </p>
+                                <div style="display: flex; gap: 0.375rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.5rem; border-top: 1px dashed {{ $isYushpay ? '#86efac' : '#f1f5f9' }};">
+                                    <span style="font-size: 0.6875rem; background: #e0e7ff; color: #3730a3; padding: 0.125rem 0.375rem; border-radius: 4px; font-weight: 600;">Hub Layout</span>
+                                    <span style="font-size: 0.6875rem; background: #f1f5f9; color: #334155; padding: 0.125rem 0.375rem; border-radius: 4px; font-weight: 500;">Support Grid</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0.5rem 0 0 0;">
 
                     {{-- Brand Color Presets (All Plans) --}}
                     <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">

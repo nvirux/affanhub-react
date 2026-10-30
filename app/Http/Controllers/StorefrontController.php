@@ -39,7 +39,16 @@ class StorefrontController extends Controller
             $storeArray['logo_url'] = null;
         }
 
-        return inertia('Storefront/Home', [
+        $template = $storeArray['landing_page_template'] ?? 'default';
+        $component = match ($template) {
+            'yushpay' => 'Storefront/Themes/Yushpay',
+            'cobalt' => 'Storefront/Themes/Cobalt',
+            'vantage' => 'Storefront/Themes/Vantage',
+            'refract' => 'Storefront/Themes/Refract',
+            default => 'Storefront/Themes/Default',
+        };
+
+        return inertia($component, [
             'store' => $storeArray,
         ]);
     }

@@ -55,6 +55,9 @@ class StoreSettings extends Page
     // Brand Colors & Favicon
     public ?string $primaryColor = ColorHelper::DEFAULT_HEX;
 
+    // Landing Page Template
+    public string $landingPageTemplate = 'default';
+
     public $favicon;
 
     public ?string $faviconPath = '';
@@ -100,6 +103,7 @@ class StoreSettings extends Page
         $this->socialWhatsapp = $store->social_whatsapp ?? '';
 
         $this->primaryColor = $store->primary_color ?? ColorHelper::DEFAULT_HEX;
+        $this->landingPageTemplate = $store->landing_page_template ?? 'default';
         $this->faviconPath = $store->favicon_path ?? '';
 
         $this->logoPath = $store->logo_path ?? '';
@@ -124,6 +128,13 @@ class StoreSettings extends Page
     public function selectPreset(string $hex): void
     {
         $this->primaryColor = ColorHelper::normalizeHex($hex);
+    }
+
+    public function selectTemplate(string $template): void
+    {
+        if (in_array($template, ['default', 'cobalt', 'vantage', 'refract', 'apex', 'nova', 'pulse', 'express', 'yushpay'], true)) {
+            $this->landingPageTemplate = $template;
+        }
     }
 
     public function removeLogo()
@@ -210,6 +221,7 @@ class StoreSettings extends Page
             'socialWhatsapp' => 'nullable|string',
 
             'primaryColor' => 'required|string',
+            'landingPageTemplate' => 'required|string|in:default,cobalt,vantage,refract,apex,nova,pulse,express,yushpay',
             'favicon' => 'nullable|file|mimes:png,ico,svg|max:2048',
             'logo' => 'nullable|file|mimes:jpeg,jpg,png,webp,svg|max:5120', // max 5MB
             'whatsappChatPhone' => 'nullable|string',
@@ -278,6 +290,7 @@ class StoreSettings extends Page
             'social_facebook' => $store->social_facebook,
             'social_whatsapp' => $store->social_whatsapp,
             'primary_color' => $store->primary_color,
+            'landing_page_template' => $store->landing_page_template ?? 'default',
             'favicon_path' => $store->favicon_path,
             'logo_path' => $store->logo_path,
             'whatsapp_chat_enabled' => (bool) ($store->whatsapp_chat_enabled ?? false),
@@ -329,6 +342,7 @@ class StoreSettings extends Page
         $store->social_whatsapp = $this->socialWhatsapp;
 
         $store->primary_color = ColorHelper::normalizeHex($this->primaryColor);
+        $store->landing_page_template = $this->landingPageTemplate;
 
         $store->whatsapp_chat_enabled = $this->whatsappChatEnabled;
         $store->whatsapp_chat_phone = $this->whatsappChatPhone;
@@ -354,6 +368,7 @@ class StoreSettings extends Page
             'social_facebook' => $this->socialFacebook,
             'social_whatsapp' => $this->socialWhatsapp,
             'primary_color' => $store->primary_color,
+            'landing_page_template' => $this->landingPageTemplate,
             'favicon_path' => $store->favicon_path,
             'logo_path' => $store->logo_path,
             'whatsapp_chat_enabled' => (bool) ($store->whatsapp_chat_enabled ?? false),

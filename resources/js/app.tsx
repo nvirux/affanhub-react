@@ -36,6 +36,7 @@ createInertiaApp({
     layout: (name) => {
         switch (true) {
             case name.startsWith('Marketing/'):
+            case name.startsWith('Storefront/Themes/'):
             case ['Storefront/Home', 'Storefront/PrivacyPolicy', 'Storefront/Contact'].includes(name):
                 return null;
             case name.startsWith('auth/'):

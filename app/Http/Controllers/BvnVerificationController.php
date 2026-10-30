@@ -195,6 +195,16 @@ class BvnVerificationController extends Controller
         $walletService = app(WalletService::class);
         $storeMainWallet = $store ? $store->mainWallet() : null;
 
+        // Check Store Main Wallet: Store must have sufficient vending balance for wholesale cost (just like Airtime and Data)
+        if (! $storeMainWallet || (float) $storeMainWallet->balance < $merchantCost) {
+            Log::warning("Store #{$store?->id} ({$store?->name}) vending wallet balance low (₦".($storeMainWallet?->balance ?? 0).") for wholesale cost (₦{$merchantCost}).");
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to process this order. Please contact store support for assistance.',
+            ], 422);
+        }
+
         // Atomic debit: Customer Wallet (full retail) and Store Main Wallet (wholesale cost)
         DB::beginTransaction();
         try {
@@ -214,7 +224,7 @@ class BvnVerificationController extends Controller
                 $reference
             );
 
-            // 2. Lock & Debit Store Main Wallet for Wholesale Cost
+            // 2. Lock & Debit Store Main Wallet for Wholesale Cost (Never allow negative balance)
             if ($storeMainWallet) {
                 $walletService->debit(
                     $storeMainWallet,
@@ -229,8 +239,7 @@ class BvnVerificationController extends Controller
                         'retail_price' => $retailPrice,
                         'wholesale_cost' => $merchantCost,
                     ],
-                    'WS_'.$reference,
-                    true
+                    'WS_'.$reference
                 );
             }
 
@@ -301,8 +310,7 @@ class BvnVerificationController extends Controller
                         'wholesale_cost' => $merchantCost,
                         'profit_margin' => $profit,
                     ],
-                    'SWP_'.$reference,
-                    true
+                    'SWP_'.$reference
                 );
 
                 // 2. Credit Store Profit Wallet (Withdrawable)

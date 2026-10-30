@@ -1,6 +1,7 @@
 <?php
 
 use App\Filament\Merchant\Pages\StoreSettings;
+use App\Http\Controllers\StorefrontController;
 use App\Models\Feature;
 use App\Models\Owner;
 use App\Models\Store;
@@ -10,6 +11,7 @@ use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Response;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
@@ -210,6 +212,86 @@ test('storefront blade view injects tenant css variables into head', function ()
         ->and($view)->toContain('--primary: #10B981 !important;')
         ->and($view)->toContain('--primary-foreground: #FFFFFF !important;')
         ->and($view)->toContain('--color-primary: #10B981 !important;');
+
+    tenancy()->end();
+});
+
+test('merchant can choose among multiple landing page templates in store settings', function () {
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+    $this->actingAs($this->owner, 'owner');
+    Filament::setTenant($this->store);
+
+    Livewire::test(StoreSettings::class)
+        ->assertSet('landingPageTemplate', 'default')
+        ->call('selectTemplate', 'cobalt')
+        ->assertSet('landingPageTemplate', 'cobalt')
+        ->call('saveSettings')
+        ->assertHasNoErrors();
+
+    $this->store->refresh();
+    expect($this->store->landing_page_template)->toBe('cobalt');
+
+    // Switch to vantage
+    Livewire::test(StoreSettings::class)
+        ->call('selectTemplate', 'vantage')
+        ->call('saveSettings')
+        ->assertHasNoErrors();
+
+    $this->store->refresh();
+    expect($this->store->landing_page_template)->toBe('vantage');
+
+    // Switch to refract
+    Livewire::test(StoreSettings::class)
+        ->call('selectTemplate', 'refract')
+        ->call('saveSettings')
+        ->assertHasNoErrors();
+
+    // Switch to yushpay
+    Livewire::test(StoreSettings::class)
+        ->call('selectTemplate', 'yushpay')
+        ->call('saveSettings')
+        ->assertHasNoErrors();
+
+    $this->store->refresh();
+    expect($this->store->landing_page_template)->toBe('yushpay');
+});
+
+test('storefront routes to appropriate theme when merchant selects template', function () {
+    // Yushpay
+    $this->store->landing_page_template = 'yushpay';
+    $this->store->save();
+
+    tenancy()->initialize($this->store);
+    $responseYushpay = (new StorefrontController)->index(request());
+    $property = (new ReflectionClass($responseYushpay))->getProperty('component');
+    $property->setAccessible(true);
+    expect($property->getValue($responseYushpay))->toBe('Storefront/Themes/Yushpay');
+
+    // Cobalt
+    $this->store->landing_page_template = 'cobalt';
+    $this->store->save();
+
+    $response = (new StorefrontController)->index(request());
+    expect($response)->toBeInstanceOf(Response::class);
+    expect($property->getValue($response))->toBe('Storefront/Themes/Cobalt');
+
+    // Vantage
+    $this->store->landing_page_template = 'vantage';
+    $this->store->save();
+    $responseVantage = (new StorefrontController)->index(request());
+    expect($property->getValue($responseVantage))->toBe('Storefront/Themes/Vantage');
+
+    // Refract
+    $this->store->landing_page_template = 'refract';
+    $this->store->save();
+    $responseRefract = (new StorefrontController)->index(request());
+    expect($property->getValue($responseRefract))->toBe('Storefront/Themes/Refract');
+
+    // Default
+    $this->store->landing_page_template = 'default';
+    $this->store->save();
+    $responseDefault = (new StorefrontController)->index(request());
+    expect($property->getValue($responseDefault))->toBe('Storefront/Themes/Default');
 
     tenancy()->end();
 });
