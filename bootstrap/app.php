@@ -4,6 +4,7 @@ use App\Http\Middleware\EnsureTransactionPinSet;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Models\Domain;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -47,6 +48,19 @@ return Application::configure(basePath: dirname(__DIR__))
             $host = $request->getHost();
             $port = $request->getPort();
             $portString = ($port && ! in_array($port, [80, 443])) ? ":{$port}" : '';
+
+            // Automatically redirect www <-> non-www if the counterpart is a registered store domain
+            if (str_starts_with($host, 'www.')) {
+                $nonWwwHost = substr($host, 4);
+                if (Domain::where('domain', $nonWwwHost)->exists()) {
+                    return redirect()->to("{$scheme}://{$nonWwwHost}{$portString}".$request->getRequestUri(), 301);
+                }
+            } else {
+                $wwwHost = 'www.'.$host;
+                if (Domain::where('domain', $wwwHost)->exists()) {
+                    return redirect()->to("{$scheme}://{$wwwHost}{$portString}".$request->getRequestUri(), 301);
+                }
+            }
 
             $appHost = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
             if (str_contains($host, 'localhost') || $host === '127.0.0.1') {

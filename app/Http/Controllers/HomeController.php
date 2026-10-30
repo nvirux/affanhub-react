@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Domain;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Pipeline;
@@ -18,7 +19,17 @@ class HomeController extends Controller
      */
     public function __invoke(Request $request): mixed
     {
-        if (in_array($request->getHost(), config('tenancy.central_domains', []))) {
+        $host = $request->getHost();
+
+        // Auto-redirect www. to non-www for custom domains before pipeline
+        if (str_starts_with($host, 'www.') && ! in_array($host, config('tenancy.central_domains', []))) {
+            $nonWwwHost = substr($host, 4);
+            if (Domain::where('domain', $nonWwwHost)->exists()) {
+                return redirect()->to($request->getScheme().'://'.$nonWwwHost.$request->getRequestUri(), 301);
+            }
+        }
+
+        if (in_array($host, config('tenancy.central_domains', []))) {
             $proPlan = Plan::where('slug', 'pro')->first();
 
             return inertia('Marketing/Home', [
