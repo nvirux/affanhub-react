@@ -13,33 +13,53 @@ class StorefrontController extends Controller
     public function index(Request $request)
     {
         $store = tenant();
-        $storeArray = $store ? $store->toArray() : [];
 
         // Normalize WhatsApp chat bubble phone number
-        if (! empty($storeArray['whatsapp_chat_phone'])) {
-            $phone = preg_replace('/\D/', '', $storeArray['whatsapp_chat_phone']);
+        $whatsappChatPhone = null;
+        if (! empty($store?->whatsapp_chat_phone)) {
+            $phone = preg_replace('/\D/', '', $store->whatsapp_chat_phone);
             if (str_starts_with($phone, '0')) {
                 $phone = '234'.substr($phone, 1);
             }
-            $storeArray['whatsapp_chat_phone'] = $phone;
+            $whatsappChatPhone = $phone;
         }
 
         // Normalize social WhatsApp contact link
-        if (! empty($storeArray['social_whatsapp'])) {
-            $phone = preg_replace('/\D/', '', $storeArray['social_whatsapp']);
+        $socialWhatsapp = null;
+        if (! empty($store?->social_whatsapp)) {
+            $phone = preg_replace('/\D/', '', $store->social_whatsapp);
             if (str_starts_with($phone, '0')) {
                 $phone = '234'.substr($phone, 1);
             }
-            $storeArray['social_whatsapp'] = $phone;
+            $socialWhatsapp = $phone;
         }
 
-        if ($store && $store->logo_path) {
-            $storeArray['logo_url'] = Storage::url($store->logo_path);
-        } else {
-            $storeArray['logo_url'] = null;
-        }
+        $template = $store?->landing_page_template ?? 'default';
 
-        $template = $storeArray['landing_page_template'] ?? 'default';
+        // Strictly whitelist only safe public visual branding fields
+        $publicStore = [
+            'id' => $store?->id,
+            'public_id' => $store?->public_id,
+            'name' => $store?->name ?? 'Store',
+            'description' => $store?->description ?? '',
+            'contact_email' => $store?->contact_email ?? '',
+            'contact_phone' => $store?->contact_phone ?? '',
+            'primary_color' => $store?->primary_color ?? '#F97316',
+            'dashboard_subtitle' => $store?->dashboard_subtitle ?? '',
+            'logo_url' => ($store && $store->logo_path) ? Storage::url($store->logo_path) : null,
+            'favicon_url' => ($store && $store->favicon_path) ? Storage::url($store->favicon_path) : null,
+            'whatsapp_chat_enabled' => (bool) ($store?->whatsapp_chat_enabled ?? false),
+            'whatsapp_chat_phone' => $whatsappChatPhone,
+            'whatsapp_chat_message' => $store?->whatsapp_chat_message ?? 'Hello',
+            'social_whatsapp' => $socialWhatsapp,
+            'social_instagram' => $store?->social_instagram ?? '',
+            'social_facebook' => $store?->social_facebook ?? '',
+            'tawk_chat_enabled' => (bool) ($store?->tawk_chat_enabled ?? false),
+            'tawk_property_id' => $store?->tawk_property_id ?? '',
+            'tawk_widget_id' => $store?->tawk_widget_id ?? '',
+            'landing_page_template' => $template,
+        ];
+
         $component = match ($template) {
             'yushpay' => 'Storefront/Themes/Yushpay',
             'cobalt' => 'Storefront/Themes/Cobalt',
@@ -49,7 +69,7 @@ class StorefrontController extends Controller
         };
 
         return inertia($component, [
-            'store' => $storeArray,
+            'store' => $publicStore,
         ]);
     }
 }

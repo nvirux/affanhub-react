@@ -20,6 +20,14 @@ class Store extends BaseTenant implements TenantWithDatabase
 
     protected $table = 'stores';
 
+    protected $hidden = [
+        'resend_api_key',
+        'resend_from_email',
+        'resend_from_name',
+        'owner_id',
+        'data',
+    ];
+
     public static function getCustomColumns(): array
     {
         return [
