@@ -30,36 +30,28 @@ class PayMintWebhookController extends Controller
             'payload' => $request->all(),
         ]);
 
-        // 1. Signature Verification
-        // Bypass signature check ONLY if running in local/testing console OR header X-Test-Bypass-Signature is true
-        $isLocalTesting = app()->environment('local', 'testing') || $request->header('X-Test-Bypass-Signature') === 'true';
+        // 1. Signature Verification (Fail-closed)
+        $secret = config('paymint.secret_key') ?? config('services.paymint.secret_key');
 
-        if (! $isLocalTesting) {
-            try {
-                if (class_exists(PayMint::class)) {
-                    $isValid = PayMint::webhooks()->verifySignature($payload, $signature);
-                    if (! $isValid) {
-                        Log::warning('PayMint Webhook Signature Invalid!');
+        // Never process webhooks if the secret key is not configured
+        if (empty($secret)) {
+            Log::critical('PayMint Webhook Rejected: PAYMINT_SECRET_KEY is not configured on this server.');
 
-                        return response()->json(['error' => 'Invalid signature detected.'], 401);
-                    }
-                } else {
-                    // Fallback HMAC verification if PayMint SDK facade is not loaded
-                    $secret = config('services.paymint.secret_key') ?? env('PAYMINT_SECRET_KEY');
-                    if ($secret) {
-                        $expectedSignature = hash_hmac('sha512', $payload, $secret);
-                        if (! hash_equals($expectedSignature, (string) $signature)) {
-                            Log::warning('PayMint Webhook Signature Mismatch!');
+            return response()->json(['error' => 'Webhook secret configuration missing.'], 500);
+        }
 
-                            return response()->json(['error' => 'Invalid signature.'], 401);
-                        }
-                    }
-                }
-            } catch (\Throwable $e) {
-                Log::error('PayMint Signature Verification Exception: '.$e->getMessage());
+        if (empty($signature)) {
+            Log::warning('PayMint Webhook Rejected: Missing X-Paymint-Signature header.');
 
-                return response()->json(['error' => 'Signature verification error.'], 401);
-            }
+            return response()->json(['error' => 'Missing signature header.'], 401);
+        }
+
+        // HMAC SHA512 signature verification (timing-attack safe)
+        $expectedSignature = hash_hmac('sha512', $payload, $secret);
+        if (! hash_equals($expectedSignature, (string) $signature)) {
+            Log::warning('PayMint Webhook Signature Mismatch!');
+
+            return response()->json(['error' => 'Invalid signature.'], 401);
         }
 
         $event = $request->input('event');

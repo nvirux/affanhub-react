@@ -71,4 +71,10 @@ return [
         'app_id' => env('ONESIGNAL_APP_ID', '340f8d56-0123-4030-8756-3c42c9282f1a'),
         'rest_api_key' => env('ONESIGNAL_REST_API_KEY'),
     ],
+
+    'paymint' => [
+        'secret_key' => env('PAYMINT_SECRET_KEY'),
+        'public_key' => env('PAYMINT_PUBLIC_KEY'),
+        'base_url' => env('PAYMINT_BASE_URL', 'https://api.paymint.ng'),
+    ],
 ];

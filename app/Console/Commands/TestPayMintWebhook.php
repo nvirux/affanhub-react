@@ -125,10 +125,29 @@ class TestPayMintWebhook extends Command
             ],
         ];
 
-        // 4. Pass Request with X-Test-Bypass-Signature header for local CLI testing
-        $request = new Request;
+        // 4. Generate valid HMAC-SHA512 signature for simulation
+        $secret = config('services.paymint.secret_key');
+        if (empty($secret)) {
+            $secret = 'simulated_test_secret_for_local_cli';
+            config(['services.paymint.secret_key' => $secret]);
+        }
+
+        $rawJson = json_encode($payload);
+        $signature = hash_hmac('sha512', $rawJson, $secret);
+
+        $request = Request::create(
+            route('webhooks.paymint'),
+            'POST',
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_X-PAYMINT-SIGNATURE' => $signature,
+            ],
+            $rawJson
+        );
         $request->replace($payload);
-        $request->headers->set('X-Test-Bypass-Signature', 'true');
 
         $controller = app(PayMintWebhookController::class);
         $response = $controller->handle($request, app(WalletService::class));
