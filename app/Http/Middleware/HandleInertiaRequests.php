@@ -42,9 +42,18 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => tenant() ? tenant('name') : config('app.name', 'AffanHub'),
-            'merchant_url' => (function () use ($request) {
-                $scheme = $request->getScheme();
+            'merchant_url' => function () use ($request) {
+                if (tenant()) {
+                    return null;
+                }
+
                 $host = $request->getHost();
+                $centralDomains = config('tenancy.central_domains', []);
+                if (! in_array($host, $centralDomains, true) && ! str_contains($host, 'localhost') && $host !== '127.0.0.1') {
+                    return null;
+                }
+
+                $scheme = $request->getScheme();
                 $port = $request->getPort();
                 $portString = ($port && ! in_array($port, [80, 443])) ? ":{$port}" : '';
 
@@ -53,7 +62,7 @@ class HandleInertiaRequests extends Middleware
                 }
 
                 return "{$scheme}://merchant.{$host}{$portString}";
-            })(),
+            },
             'store' => tenant() ? [
                 'name' => tenant('name'),
                 'description' => tenant('description'),

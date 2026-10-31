@@ -59,6 +59,7 @@ test('storefront landing page props do not leak api keys, internal domains, or d
         ->and($storeProp)->toHaveKey('name')
         ->and($storeProp)->toHaveKey('primary_color')
         ->and($storeProp)->toHaveKey('logo_url');
+    expect($page['props']['merchant_url'])->toBeNull();
 });
 
 test('virtual account model toArray hides internal columns', function () {
