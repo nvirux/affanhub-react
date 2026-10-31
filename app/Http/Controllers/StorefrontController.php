@@ -38,8 +38,6 @@ class StorefrontController extends Controller
 
         // Strictly whitelist only safe public visual branding fields
         $publicStore = [
-            'id' => $store?->id,
-            'public_id' => $store?->public_id,
             'name' => $store?->name ?? 'Store',
             'description' => $store?->description ?? '',
             'contact_email' => $store?->contact_email ?? '',

@@ -55,7 +55,6 @@ class HandleInertiaRequests extends Middleware
                 return "{$scheme}://merchant.{$host}{$portString}";
             })(),
             'store' => tenant() ? [
-                'id' => tenant('id'),
                 'name' => tenant('name'),
                 'description' => tenant('description'),
                 'contact_email' => tenant('contact_email'),
@@ -135,10 +134,12 @@ class HandleInertiaRequests extends Middleware
                         'name' => $user->name,
                         'email' => $user->email,
                         'phone' => $user->phone ?? null,
-                        'nin' => $user->nin ?? null,
-                        'bvn' => $user->bvn ?? null,
                         'wallet_balance' => $walletBalance,
-                        'virtual_account' => $virtualAccount,
+                        'virtual_account' => $virtualAccount ? [
+                            'bank_name' => $virtualAccount->bank_name,
+                            'account_number' => $virtualAccount->account_number,
+                            'account_name' => $virtualAccount->account_name,
+                        ] : null,
                     ];
                 },
             ],

@@ -46,12 +46,9 @@ class WalletController extends Controller
                 'status' => $wallet?->status ?? 'active',
             ],
             'virtual_account' => $virtualAccount ? [
-                'id' => $virtualAccount->id,
                 'bank_name' => $virtualAccount->bank_name,
                 'account_number' => $virtualAccount->account_number,
                 'account_name' => $virtualAccount->account_name,
-                'status' => $virtualAccount->status,
-                'provider' => $virtualAccount->provider ?? 'Automated',
             ] : null,
             'recent_transactions' => $recentTransactions,
         ]);

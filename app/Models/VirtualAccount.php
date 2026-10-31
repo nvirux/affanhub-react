@@ -9,6 +9,17 @@ class VirtualAccount extends Model
 {
     protected $guarded = [];
 
+    protected $hidden = [
+        'holder_type',
+        'holder_id',
+        'email_alias',
+        'provider',
+        'reference',
+        'meta',
+        'created_at',
+        'updated_at',
+    ];
+
     protected $casts = [
         'meta' => 'array',
     ];
