@@ -1,12 +1,13 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import './Yushpay.css';
+import './Default.css';
 
 interface StoreData {
     name?: string;
     description?: string;
     contact_email?: string;
     contact_phone?: string;
+    contact_phone_2?: string;
     whatsapp_chat_phone?: string;
     social_whatsapp?: string;
     social_instagram?: string;
@@ -30,28 +31,31 @@ interface PageProps {
     [key: string]: any;
 }
 
-export default function Yushpay() {
+export default function DefaultTheme() {
     const { store, auth } = usePage<PageProps>().props;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    const storeName = store?.name || 'YUSHPAY';
+    const storeName = store?.name || 'Your Store';
     const storeLogo = store?.logo_url;
     const storeDesc =
         store?.description ||
         'The smartest way to handle your digital payments, virtual accounts, and corporate onboarding.';
 
-    // Normalizing dynamic contact numbers with fallbacks
-    const rawWhatsapp = store?.whatsapp_chat_phone || store?.social_whatsapp || '2348101360986';
+    // Normalizing dynamic contact numbers from store settings (no hardcoded credentials)
+    const rawWhatsapp = store?.whatsapp_chat_phone || store?.contact_phone || '';
     const whatsappNum = rawWhatsapp.replace(/\D/g, '');
-    const whatsappDisplay = whatsappNum.startsWith('234')
-        ? '0' + whatsappNum.slice(3)
-        : whatsappNum.startsWith('0')
-          ? whatsappNum
-          : '0' + whatsappNum;
+    const whatsappDisplay = whatsappNum
+        ? whatsappNum.startsWith('234')
+            ? '0' + whatsappNum.slice(3)
+            : whatsappNum.startsWith('0')
+              ? whatsappNum
+              : '0' + whatsappNum
+        : null;
 
-    const contactPhone1 = store?.contact_phone || '08101360986';
-    const contactPhone2 = '09061730442';
-    const contactEmail = store?.contact_email || 'support@yushpay.com';
+    const contactPhone1 = store?.contact_phone || null;
+    const contactPhone2 = store?.contact_phone_2 || null;
+    const contactEmail = store?.contact_email || null;
+    const whatsappGroup = store?.social_whatsapp || null;
     const currentYear = new Date().getFullYear();
     const isLoggedIn = !!auth?.user;
 
@@ -100,8 +104,9 @@ export default function Yushpay() {
                                 Contact
                             </a>
                             <a
-                                href="/downloads/yushpay.apk"
-                                className="text-primary font-bold hover:text-primary-600 transition flex items-center gap-1"
+                                href="#"
+                                onClick={(e) => e.preventDefault()}
+                                className="text-primary font-bold hover:text-primary-600 transition flex items-center gap-1 cursor-default"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
@@ -198,8 +203,12 @@ export default function Yushpay() {
                                 Contact
                             </a>
                             <a
-                                href="/downloads/yushpay.apk"
-                                className="px-2 py-2 text-primary font-bold flex items-center gap-2"
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setMobileMenuOpen(false);
+                                }}
+                                className="px-2 py-2 text-primary font-bold flex items-center gap-2 cursor-default"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
@@ -274,8 +283,9 @@ export default function Yushpay() {
                                     </svg>
                                 </Link>
                                 <a
-                                    href="/downloads/yushpay.apk"
-                                    className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-medium text-lg transition flex items-center justify-center shadow-sm hover:shadow-md gap-2"
+                                    href="#"
+                                    onClick={(e) => e.preventDefault()}
+                                    className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-medium text-lg transition flex items-center justify-center shadow-sm hover:shadow-md gap-2 cursor-default"
                                 >
                                     <svg
                                         className="w-5 h-5 text-primary"
@@ -681,14 +691,20 @@ export default function Yushpay() {
                                     issues or account queries.
                                 </p>
                             </div>
-                            <a
-                                href={`https://wa.me/${whatsappNum}`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
-                            >
-                                Message {whatsappDisplay}
-                            </a>
+                            {whatsappNum ? (
+                                <a
+                                    href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent(store?.whatsapp_chat_message || 'Hello, I need assistance.')}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
+                                >
+                                    Message {whatsappDisplay || whatsappNum}
+                                </a>
+                            ) : (
+                                <span className="w-full py-3 bg-slate-100 text-slate-400 font-bold rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed text-sm">
+                                    Chat Unavailable
+                                </span>
+                            )}
                         </div>
 
                         {/* Phone Support */}
@@ -711,18 +727,27 @@ export default function Yushpay() {
                                 </p>
                             </div>
                             <div className="space-y-2">
-                                <a
-                                    href={`tel:${contactPhone1.replace(/\s+/g, '')}`}
-                                    className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
-                                >
-                                    Call {contactPhone1}
-                                </a>
-                                <a
-                                    href={`tel:${contactPhone2.replace(/\s+/g, '')}`}
-                                    className="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
-                                >
-                                    Call {contactPhone2}
-                                </a>
+                                {contactPhone1 && (
+                                    <a
+                                        href={`tel:${contactPhone1.replace(/\s+/g, '')}`}
+                                        className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
+                                    >
+                                        Call {contactPhone1}
+                                    </a>
+                                )}
+                                {contactPhone2 && (
+                                    <a
+                                        href={`tel:${contactPhone2.replace(/\s+/g, '')}`}
+                                        className="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
+                                    >
+                                        Call {contactPhone2}
+                                    </a>
+                                )}
+                                {!contactPhone1 && !contactPhone2 && (
+                                    <span className="w-full py-3 bg-slate-100 text-slate-400 font-bold rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed text-sm">
+                                        Support Lines Unavailable
+                                    </span>
+                                )}
                             </div>
                         </div>
 
@@ -745,14 +770,20 @@ export default function Yushpay() {
                                     updates, and access general help.
                                 </p>
                             </div>
-                            <a
-                                href="https://chat.whatsapp.com/JnyDtf6Dtj80imFMBbnKjW"
-                                target="_blank"
-                                rel="noreferrer"
-                                className="w-full py-3 bg-primary hover:bg-primary-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
-                            >
-                                Join WhatsApp Group
-                            </a>
+                            {whatsappGroup ? (
+                                <a
+                                    href={whatsappGroup}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-full py-3 bg-primary hover:bg-primary-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
+                                >
+                                    Join WhatsApp Group
+                                </a>
+                            ) : (
+                                <span className="w-full py-3 bg-slate-100 text-slate-400 font-bold rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed text-sm">
+                                    No Group Available
+                                </span>
+                            )}
                         </div>
 
                         {/* Email Support */}
@@ -774,12 +805,18 @@ export default function Yushpay() {
                                     reports.
                                 </p>
                             </div>
-                            <a
-                                href={`mailto:${contactEmail}`}
-                                className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2 truncate px-2"
-                            >
-                                {contactEmail}
-                            </a>
+                            {contactEmail ? (
+                                <a
+                                    href={`mailto:${contactEmail}`}
+                                    className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2 truncate px-2"
+                                >
+                                    {contactEmail}
+                                </a>
+                            ) : (
+                                <span className="w-full py-3 bg-slate-100 text-slate-400 font-bold rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed text-sm">
+                                    Email Unavailable
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>

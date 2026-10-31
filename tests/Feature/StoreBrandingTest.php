@@ -127,26 +127,27 @@ test('merchant store settings switches tabs cleanly', function () {
         ->assertSet('activeTab', 'profile')
         ->call('setTab', 'branding')
         ->assertSet('activeTab', 'branding')
-        ->call('setTab', 'contact')
-        ->assertSet('activeTab', 'contact')
-        ->call('setTab', 'chat')
-        ->assertSet('activeTab', 'chat');
+        ->call('setTab', 'email')
+        ->assertSet('activeTab', 'email');
 });
 
-test('starter store cannot upload favicon or custom hex without pro plan', function () {
+test('starter store can upload favicon but cannot use custom hex without pro plan', function () {
     Filament::setCurrentPanel(Filament::getPanel('merchant'));
     $this->actingAs($this->owner, 'owner');
     Filament::setTenant($this->store);
 
     $faviconFile = UploadedFile::fake()->create('favicon.png', 10, 'image/png');
 
-    // Starter plan trying to upload favicon
+    // Starter plan can upload favicon
     Livewire::test(StoreSettings::class)
         ->set('favicon', $faviconFile)
         ->call('saveSettings')
-        ->assertHasErrors(['favicon']);
+        ->assertHasNoErrors();
 
-    // Starter plan trying to set arbitrary custom hex not in presets
+    $this->store->refresh();
+    expect($this->store->favicon_path)->not->toBeNull();
+
+    // Starter plan trying to set arbitrary custom hex not in presets requires Pro
     Livewire::test(StoreSettings::class)
         ->set('primaryColor', '#123456')
         ->call('saveSettings')
@@ -201,7 +202,7 @@ test('storefront blade view injects tenant css variables into head', function ()
 
     $view = view('app', [
         'page' => [
-            'component' => 'Storefront/Home',
+            'component' => 'Storefront/Themes/Default',
             'props' => [],
             'url' => '/',
             'version' => '',
@@ -265,7 +266,7 @@ test('storefront routes to appropriate theme when merchant selects template', fu
     $responseYushpay = (new StorefrontController)->index(request());
     $property = (new ReflectionClass($responseYushpay))->getProperty('component');
     $property->setAccessible(true);
-    expect($property->getValue($responseYushpay))->toBe('Storefront/Themes/Yushpay');
+    expect($property->getValue($responseYushpay))->toBe('Storefront/Themes/Default');
 
     // Cobalt
     $this->store->landing_page_template = 'cobalt';
@@ -287,11 +288,40 @@ test('storefront routes to appropriate theme when merchant selects template', fu
     $responseRefract = (new StorefrontController)->index(request());
     expect($property->getValue($responseRefract))->toBe('Storefront/Themes/Refract');
 
-    // Default
+    // Default (modern hub theme)
     $this->store->landing_page_template = 'default';
     $this->store->save();
     $responseDefault = (new StorefrontController)->index(request());
     expect($property->getValue($responseDefault))->toBe('Storefront/Themes/Default');
 
+    // Classic / Legacy / v1 (renders Classic multi-section theme)
+    $this->store->landing_page_template = 'classic';
+    $this->store->save();
+    $responseClassic = (new StorefrontController)->index(request());
+    expect($property->getValue($responseClassic))->toBe('Storefront/Themes/Classic');
+
     tenancy()->end();
+});
+
+test('merchant can save primary and secondary contact phone numbers and whatsapp settings', function () {
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+    $this->actingAs($this->owner, 'owner');
+    Filament::setTenant($this->store);
+
+    Livewire::test(StoreSettings::class)
+        ->set('contactPhone', '08101360986')
+        ->set('contactPhone2', '09061730442')
+        ->set('whatsappChatPhone', '09025293759')
+        ->set('whatsappChatMessage', 'Hello from test')
+        ->set('socialWhatsapp', 'https://chat.whatsapp.com/testgroup')
+        ->call('saveSettings')
+        ->assertHasNoErrors();
+
+    $this->store->refresh();
+    expect($this->store->contact_phone)->toBe('08101360986')
+        ->and($this->store->contact_phone_2)->toBe('09061730442')
+        ->and($this->store->whatsapp_chat_phone)->toBe('09025293759')
+        ->and($this->store->whatsapp_chat_enabled)->toBeTrue()
+        ->and($this->store->whatsapp_chat_message)->toBe('Hello from test')
+        ->and($this->store->social_whatsapp)->toBe('https://chat.whatsapp.com/testgroup');
 });

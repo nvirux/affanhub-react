@@ -24,14 +24,19 @@ class StorefrontController extends Controller
             $whatsappChatPhone = $phone;
         }
 
-        // Normalize social WhatsApp contact link
+        // Normalize social WhatsApp contact link (preserves group links or formats phone numbers)
         $socialWhatsapp = null;
         if (! empty($store?->social_whatsapp)) {
-            $phone = preg_replace('/\D/', '', $store->social_whatsapp);
-            if (str_starts_with($phone, '0')) {
-                $phone = '234'.substr($phone, 1);
+            $val = trim($store->social_whatsapp);
+            if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://')) {
+                $socialWhatsapp = $val;
+            } else {
+                $phone = preg_replace('/\D/', '', $val);
+                if (str_starts_with($phone, '0')) {
+                    $phone = '234'.substr($phone, 1);
+                }
+                $socialWhatsapp = ! empty($phone) ? "https://wa.me/{$phone}" : null;
             }
-            $socialWhatsapp = $phone;
         }
 
         $template = $store?->landing_page_template ?? 'default';
@@ -42,27 +47,26 @@ class StorefrontController extends Controller
             'description' => $store?->description ?? '',
             'contact_email' => $store?->contact_email ?? '',
             'contact_phone' => $store?->contact_phone ?? '',
+            'contact_phone_2' => $store?->contact_phone_2 ?? '',
             'primary_color' => $store?->primary_color ?? '#F97316',
             'dashboard_subtitle' => $store?->dashboard_subtitle ?? '',
             'logo_url' => ($store && $store->logo_path) ? Storage::url($store->logo_path) : null,
             'favicon_url' => ($store && $store->favicon_path) ? Storage::url($store->favicon_path) : null,
-            'whatsapp_chat_enabled' => (bool) ($store?->whatsapp_chat_enabled ?? false),
+            'whatsapp_chat_enabled' => ! empty($whatsappChatPhone),
             'whatsapp_chat_phone' => $whatsappChatPhone,
             'whatsapp_chat_message' => $store?->whatsapp_chat_message ?? 'Hello',
             'social_whatsapp' => $socialWhatsapp,
             'social_instagram' => $store?->social_instagram ?? '',
             'social_facebook' => $store?->social_facebook ?? '',
-            'tawk_chat_enabled' => (bool) ($store?->tawk_chat_enabled ?? false),
-            'tawk_property_id' => $store?->tawk_property_id ?? '',
-            'tawk_widget_id' => $store?->tawk_widget_id ?? '',
             'landing_page_template' => $template,
         ];
 
         $component = match ($template) {
-            'yushpay' => 'Storefront/Themes/Yushpay',
+            'classic', 'legacy', 'v1' => 'Storefront/Themes/Classic',
             'cobalt' => 'Storefront/Themes/Cobalt',
             'vantage' => 'Storefront/Themes/Vantage',
             'refract' => 'Storefront/Themes/Refract',
+            'default', 'yushpay' => 'Storefront/Themes/Default',
             default => 'Storefront/Themes/Default',
         };
 

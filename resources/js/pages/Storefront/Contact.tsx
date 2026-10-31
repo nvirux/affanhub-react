@@ -9,60 +9,6 @@ import { dashboard } from '@/routes';
 
 export default function Contact() {
     const { store } = usePage<any>().props;
-    const [tawkLoaded, setTawkLoaded] = useState(false);
-    const [isChatOpening, setIsChatOpening] = useState(false);
-
-    // Initialize Tawk.to if configured for this store/tenant
-    useEffect(() => {
-        if (store?.tawk_chat_enabled && store?.tawk_property_id && store?.tawk_widget_id) {
-            // Check if Tawk is already injected
-            if ((window as any).Tawk_API) {
-                setTawkLoaded(true);
-                try {
-                    (window as any).Tawk_API.showWidget?.();
-                } catch (e) {}
-                return;
-            }
-
-            const s1 = document.createElement('script');
-            const s0 = document.getElementsByTagName('script')[0];
-            s1.async = true;
-            s1.src = `https://embed.tawk.to/${store.tawk_property_id}/${store.tawk_widget_id}`;
-            s1.charset = 'UTF-8';
-            s1.setAttribute('crossorigin', '*');
-            s1.onload = () => {
-                setTawkLoaded(true);
-            };
-            s0?.parentNode?.insertBefore(s1, s0);
-
-            return () => {
-                if ((window as any).Tawk_API) {
-                    try {
-                        (window as any).Tawk_API.hideWidget?.();
-                    } catch (e) {}
-                }
-            };
-        }
-    }, [store]);
-
-    const handleOpenTawk = () => {
-        setIsChatOpening(true);
-        if ((window as any).Tawk_API?.maximize) {
-            (window as any).Tawk_API.maximize();
-            setIsChatOpening(false);
-        } else if ((window as any).Tawk_API?.toggle) {
-            (window as any).Tawk_API.toggle();
-            setIsChatOpening(false);
-        } else {
-            // Wait brief moment for Tawk script to initialize
-            setTimeout(() => {
-                if ((window as any).Tawk_API?.maximize) {
-                    (window as any).Tawk_API.maximize();
-                }
-                setIsChatOpening(false);
-            }, 1000);
-        }
-    };
 
     const storeName = store?.name || 'Customer Support';
     const whatsappPhone = store?.whatsapp_chat_phone || store?.contact_phone?.replace(/\D/g, '');
@@ -121,42 +67,8 @@ export default function Contact() {
                     </p>
                 </div>
 
-                {/* 2. Contact & Live Chat Options */}
+                {/* 2. Contact & Support Options */}
                 <div className="space-y-3">
-
-                    {/* Tawk.to Live Chat Card (If enabled) */}
-                    {store?.tawk_chat_enabled && store?.tawk_property_id && store?.tawk_widget_id && (
-                        <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-5 shadow-xs flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-3.5 min-w-0">
-                                <div className="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                                    <MessageSquare className="w-5 h-5 stroke-[1.8]" />
-                                </div>
-                                <div className="min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">
-                                            Real-Time Live Chat
-                                        </h3>
-                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white">
-                                            Instant
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-                                        Chat directly with our support team on-screen
-                                    </p>
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={handleOpenTawk}
-                                disabled={isChatOpening}
-                                className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:opacity-90 active:scale-95 transition-all shrink-0 cursor-pointer shadow-xs flex items-center gap-1.5"
-                            >
-                                <span>{isChatOpening ? 'Opening...' : 'Start Chat'}</span>
-                                <ArrowUpRight className="w-3.5 h-3.5" />
-                            </button>
-                        </div>
-                    )}
 
                     {/* WhatsApp Chat Card */}
                     {store?.whatsapp_chat_enabled && whatsappUrl && (
@@ -187,7 +99,7 @@ export default function Contact() {
                         </div>
                     )}
 
-                    {/* Phone Support Card */}
+                    {/* Phone Support Card (Line 1) */}
                     {store?.contact_phone && (
                         <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-5 shadow-xs flex items-center justify-between gap-4">
                             <div className="flex items-center gap-3.5 min-w-0">
@@ -196,7 +108,7 @@ export default function Contact() {
                                 </div>
                                 <div className="min-w-0">
                                     <h3 className="text-sm font-bold text-gray-900 dark:text-white">
-                                        Customer Care Line
+                                        Customer Care Line 1
                                     </h3>
                                     <p className="text-xs font-mono font-medium text-gray-500 dark:text-gray-400 mt-0.5 truncate">
                                         {store.contact_phone}
@@ -206,6 +118,32 @@ export default function Contact() {
 
                             <a
                                 href={`tel:${store.contact_phone}`}
+                                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-zinc-800 text-gray-800 dark:text-gray-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-zinc-700 active:scale-95 transition-all shrink-0 cursor-pointer shadow-xs"
+                            >
+                                Call
+                            </a>
+                        </div>
+                    )}
+
+                    {/* Phone Support Card (Line 2) */}
+                    {store?.contact_phone_2 && (
+                        <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-5 shadow-xs flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3.5 min-w-0">
+                                <div className="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                    <Phone className="w-5 h-5 stroke-[1.8]" />
+                                </div>
+                                <div className="min-w-0">
+                                    <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                                        Customer Care Line 2
+                                    </h3>
+                                    <p className="text-xs font-mono font-medium text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                                        {store.contact_phone_2}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <a
+                                href={`tel:${store.contact_phone_2}`}
                                 className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-zinc-800 text-gray-800 dark:text-gray-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-zinc-700 active:scale-95 transition-all shrink-0 cursor-pointer shadow-xs"
                             >
                                 Call
@@ -240,7 +178,7 @@ export default function Contact() {
                     )}
 
                     {/* Fallback info when merchant hasn't filled custom contacts yet */}
-                    {!store?.tawk_chat_enabled && !whatsappUrl && !store?.contact_phone && !store?.contact_email && (
+                    {!whatsappUrl && !store?.contact_phone && !store?.contact_phone_2 && !store?.contact_email && (
                         <div className="bg-white dark:bg-[#181826] border border-gray-100 dark:border-gray-800 rounded-2xl p-6 shadow-xs text-center space-y-2">
                             <Headphones className="w-8 h-8 text-primary mx-auto" />
                             <h3 className="text-sm font-bold text-gray-900 dark:text-white">

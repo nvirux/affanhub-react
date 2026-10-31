@@ -68,11 +68,12 @@ class HandleInertiaRequests extends Middleware
                 'description' => tenant('description'),
                 'contact_email' => tenant('contact_email'),
                 'contact_phone' => tenant('contact_phone'),
+                'contact_phone_2' => tenant('contact_phone_2'),
                 'social_instagram' => tenant('social_instagram'),
                 'social_facebook' => tenant('social_facebook'),
                 'social_whatsapp' => tenant('social_whatsapp'),
                 'logo_url' => tenant('logo_path') ? Storage::url(tenant('logo_path')) : null,
-                'whatsapp_chat_enabled' => (bool) (tenant('whatsapp_chat_enabled') ?? false),
+                'whatsapp_chat_enabled' => ! empty(tenant('whatsapp_chat_phone')),
                 'whatsapp_chat_phone' => (function () {
                     $phone = tenant('whatsapp_chat_phone');
                     if (! $phone) {
@@ -86,9 +87,6 @@ class HandleInertiaRequests extends Middleware
                     return $phone;
                 })(),
                 'whatsapp_chat_message' => tenant('whatsapp_chat_message'),
-                'tawk_chat_enabled' => (bool) (tenant('tawk_chat_enabled') ?? false),
-                'tawk_property_id' => tenant('tawk_property_id'),
-                'tawk_widget_id' => tenant('tawk_widget_id'),
                 'dashboard_subtitle' => tenant('dashboard_subtitle'),
                 'primary_color' => tenant('primary_color') ?? ColorHelper::DEFAULT_HEX,
                 'primary_foreground_color' => ColorHelper::getContrastForeground(tenant('primary_color') ?? ColorHelper::DEFAULT_HEX),

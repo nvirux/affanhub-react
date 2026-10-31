@@ -23,9 +23,9 @@ class StoreSettings extends Page
 
     protected static ?string $slug = 'settings';
 
-    protected static ?string $title = 'Store Settings';
+    protected static ?string $title = 'General Settings';
 
-    protected static ?string $navigationLabel = 'Store Settings';
+    protected static ?string $navigationLabel = 'General Settings';
 
     protected static ?int $navigationSort = 1;
 
@@ -44,6 +44,8 @@ class StoreSettings extends Page
     public ?string $contactEmail = '';
 
     public ?string $contactPhone = '';
+
+    public ?string $contactPhone2 = '';
 
     // Social Links
     public ?string $socialInstagram = '';
@@ -74,12 +76,6 @@ class StoreSettings extends Page
 
     public ?string $whatsappChatMessage = '';
 
-    public bool $tawkChatEnabled = false;
-
-    public ?string $tawkPropertyId = '';
-
-    public ?string $tawkWidgetId = '';
-
     // Resend Email Integration
     public ?string $resendApiKey = '';
 
@@ -98,6 +94,7 @@ class StoreSettings extends Page
         $this->dashboardSubtitle = $store->dashboard_subtitle ?? '';
         $this->contactEmail = $store->contact_email ?? '';
         $this->contactPhone = $store->contact_phone ?? '';
+        $this->contactPhone2 = $store->contact_phone_2 ?? '';
         $this->socialInstagram = $store->social_instagram ?? '';
         $this->socialFacebook = $store->social_facebook ?? '';
         $this->socialWhatsapp = $store->social_whatsapp ?? '';
@@ -110,9 +107,6 @@ class StoreSettings extends Page
         $this->whatsappChatEnabled = (bool) ($store->whatsapp_chat_enabled ?? false);
         $this->whatsappChatPhone = $store->whatsapp_chat_phone ?? '';
         $this->whatsappChatMessage = $store->whatsapp_chat_message ?? '';
-        $this->tawkChatEnabled = (bool) ($store->tawk_chat_enabled ?? false);
-        $this->tawkPropertyId = $store->tawk_property_id ?? '';
-        $this->tawkWidgetId = $store->tawk_widget_id ?? '';
 
         $this->resendApiKey = $store->resend_api_key ?? '';
         $this->resendFromEmail = $store->resend_from_email ?? '';
@@ -132,7 +126,7 @@ class StoreSettings extends Page
 
     public function selectTemplate(string $template): void
     {
-        if (in_array($template, ['default', 'cobalt', 'vantage', 'refract', 'apex', 'nova', 'pulse', 'express', 'yushpay'], true)) {
+        if (in_array($template, ['default', 'classic', 'legacy', 'v1', 'cobalt', 'vantage', 'refract', 'apex', 'nova', 'pulse', 'express', 'yushpay'], true)) {
             $this->landingPageTemplate = $template;
         }
     }
@@ -213,21 +207,20 @@ class StoreSettings extends Page
         $this->validate([
             'name' => 'required|string|min:3|max:100',
             'contactEmail' => 'nullable|email',
-            'contactPhone' => 'nullable|string',
+            'contactPhone' => 'nullable|string|max:30',
+            'contactPhone2' => 'nullable|string|max:30',
             'description' => 'nullable|string|max:500',
             'dashboardSubtitle' => 'nullable|string|max:40',
-            'socialInstagram' => 'nullable|string',
-            'socialFacebook' => 'nullable|string',
-            'socialWhatsapp' => 'nullable|string',
+            'socialInstagram' => 'nullable|string|max:100',
+            'socialFacebook' => 'nullable|string|max:255',
+            'socialWhatsapp' => 'nullable|string|max:255',
 
             'primaryColor' => 'required|string',
-            'landingPageTemplate' => 'required|string|in:default,cobalt,vantage,refract,apex,nova,pulse,express,yushpay',
+            'landingPageTemplate' => 'required|string|in:default,classic,legacy,v1,cobalt,vantage,refract,apex,nova,pulse,express,yushpay',
             'favicon' => 'nullable|file|mimes:png,ico,svg|max:2048',
             'logo' => 'nullable|file|mimes:jpeg,jpg,png,webp,svg|max:5120', // max 5MB
-            'whatsappChatPhone' => 'nullable|string',
+            'whatsappChatPhone' => 'nullable|string|max:30',
             'whatsappChatMessage' => 'nullable|string|max:200',
-            'tawkPropertyId' => 'nullable|string',
-            'tawkWidgetId' => 'nullable|string',
         ]);
 
         if (! ColorHelper::isValidHex($this->primaryColor)) {
@@ -247,18 +240,6 @@ class StoreSettings extends Page
 
         if (! $hasCustomBranding && ColorHelper::findMatchingPreset($this->primaryColor) === null) {
             $this->addError('primaryColor', 'Custom HEX color codes require a Pro or Enterprise plan. Please select one of the curated presets or upgrade your plan.');
-
-            return;
-        }
-
-        if (! $hasCustomBranding && $this->favicon) {
-            $this->addError('favicon', 'Custom browser favicon upload requires a Pro or Enterprise plan.');
-
-            return;
-        }
-
-        if (! $hasCustomBranding && $this->tawkChatEnabled) {
-            $this->addError('tawkChatEnabled', 'Tawk.to Live Chat requires a Pro or Enterprise plan.');
 
             return;
         }
@@ -286,6 +267,7 @@ class StoreSettings extends Page
             'dashboard_subtitle' => $store->dashboard_subtitle,
             'contact_email' => $store->contact_email,
             'contact_phone' => $store->contact_phone,
+            'contact_phone_2' => $store->contact_phone_2,
             'social_instagram' => $store->social_instagram,
             'social_facebook' => $store->social_facebook,
             'social_whatsapp' => $store->social_whatsapp,
@@ -296,9 +278,6 @@ class StoreSettings extends Page
             'whatsapp_chat_enabled' => (bool) ($store->whatsapp_chat_enabled ?? false),
             'whatsapp_chat_phone' => $store->whatsapp_chat_phone,
             'whatsapp_chat_message' => $store->whatsapp_chat_message,
-            'tawk_chat_enabled' => (bool) ($store->tawk_chat_enabled ?? false),
-            'tawk_property_id' => $store->tawk_property_id,
-            'tawk_widget_id' => $store->tawk_widget_id,
             'resend_from_email' => $store->resend_from_email,
             'resend_from_name' => $store->resend_from_name,
         ];
@@ -337,6 +316,7 @@ class StoreSettings extends Page
         $store->dashboard_subtitle = $this->dashboardSubtitle;
         $store->contact_email = $this->contactEmail;
         $store->contact_phone = $this->contactPhone;
+        $store->contact_phone_2 = $this->contactPhone2;
         $store->social_instagram = $this->socialInstagram;
         $store->social_facebook = $this->socialFacebook;
         $store->social_whatsapp = $this->socialWhatsapp;
@@ -344,12 +324,10 @@ class StoreSettings extends Page
         $store->primary_color = ColorHelper::normalizeHex($this->primaryColor);
         $store->landing_page_template = $this->landingPageTemplate;
 
-        $store->whatsapp_chat_enabled = $this->whatsappChatEnabled;
+        $store->whatsapp_chat_enabled = ! empty(trim($this->whatsappChatPhone ?? ''));
         $store->whatsapp_chat_phone = $this->whatsappChatPhone;
         $store->whatsapp_chat_message = $this->whatsappChatMessage;
-        $store->tawk_chat_enabled = $this->tawkChatEnabled;
-        $store->tawk_property_id = $this->tawkPropertyId;
-        $store->tawk_widget_id = $this->tawkWidgetId;
+        $this->whatsappChatEnabled = $store->whatsapp_chat_enabled;
 
         // Resend email settings
         $store->resend_api_key = $this->resendApiKey ?: null;
@@ -364,6 +342,7 @@ class StoreSettings extends Page
             'dashboard_subtitle' => $this->dashboardSubtitle,
             'contact_email' => $this->contactEmail,
             'contact_phone' => $this->contactPhone,
+            'contact_phone_2' => $this->contactPhone2,
             'social_instagram' => $this->socialInstagram,
             'social_facebook' => $this->socialFacebook,
             'social_whatsapp' => $this->socialWhatsapp,

@@ -210,7 +210,25 @@
         }
     </style>
 
-    <div class="settings-container">
+    <div 
+        class="settings-container"
+        x-data="{
+            init() {
+                const updateTabFromHash = () => {
+                    const hash = window.location.hash.replace('#', '');
+                    if (['profile', 'branding', 'contact', 'email'].includes(hash)) {
+                        $wire.setTab(hash);
+                    }
+                };
+                updateTabFromHash();
+                window.addEventListener('hashchange', updateTabFromHash);
+            },
+            switchTab(tab) {
+                window.location.hash = tab;
+                $wire.setTab(tab);
+            }
+        }"
+    >
         
         {{-- Responsive 4-Tab Bar (2x2 tactile grid on mobile, horizontal pill row on tablet/desktop) --}}
         <div class="settings-tabs-wrapper">
@@ -218,7 +236,7 @@
             {{-- Tab 1: Profile --}}
             <button 
                 type="button" 
-                wire:click="setTab('profile')" 
+                @click="switchTab('profile')" 
                 class="settings-tab-btn {{ $activeTab === 'profile' ? 'is-active' : '' }}"
             >
                 <span>🏷️</span> Store Profile
@@ -227,34 +245,25 @@
             {{-- Tab 2: Theme & Branding --}}
             <button 
                 type="button" 
-                wire:click="setTab('branding')" 
+                @click="switchTab('branding')" 
                 class="settings-tab-btn {{ $activeTab === 'branding' ? 'is-active' : '' }}"
             >
-                <span>🎨</span> Theme & Colors
+                <span>🎨</span> Theme & Branding
             </button>
 
-            {{-- Tab 3: Contact & Social --}}
+            {{-- Tab 3: Contact & Support --}}
             <button 
                 type="button" 
-                wire:click="setTab('contact')" 
+                @click="switchTab('contact')" 
                 class="settings-tab-btn {{ $activeTab === 'contact' ? 'is-active' : '' }}"
             >
-                <span>📞</span> Contact & Social
+                <span>📞</span> Contact & Support
             </button>
 
-            {{-- Tab 4: Live Support --}}
+            {{-- Tab 4: Custom Email --}}
             <button 
                 type="button" 
-                wire:click="setTab('chat')" 
-                class="settings-tab-btn {{ $activeTab === 'chat' ? 'is-active' : '' }}"
-            >
-                <span>💬</span> Live Support
-            </button>
-
-            {{-- Tab 5: Custom Email --}}
-            <button 
-                type="button" 
-                wire:click="setTab('email')" 
+                @click="switchTab('email')" 
                 class="settings-tab-btn {{ $activeTab === 'email' ? 'is-active' : '' }}"
             >
                 <span>✉️</span> Custom Email
@@ -272,64 +281,26 @@
                 <div class="settings-card">
                     <div>
                         <h3 style="font-size: 1.125rem; font-weight: 800; color: #111827; margin: 0;">Store Profile</h3>
-                        <p style="font-size: 0.8125rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">Update your public storefront name, logo, and brand tagline.</p>
+                        <p style="font-size: 0.8125rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">Update your public storefront name, address, and mobile dashboard tagline.</p>
                     </div>
 
                     <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0;">
 
                     <div style="display: flex; flex-direction: column; gap: 1.25rem; width: 100%;">
-                        {{-- Store Logo Upload --}}
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
-                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151;">Store Logo</label>
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #f9fafb; padding: 1rem; border-radius: 12px; border: 1px dashed #d1d5db; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
-                                <div style="display: flex; align-items: center; gap: 1rem;">
-                                    @if ($logoPath)
-                                        <div style="position: relative; width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <img src="{{ \Illuminate\Support\Facades\Storage::url($logoPath) }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                            <span style="font-size: 0.875rem; font-weight: 600; color: #374151;">Logo uploaded</span>
-                                            <button type="button" wire:click="removeLogo" style="font-size: 0.75rem; font-weight: 700; color: #dc2626; text-align: left; background: none; border: none; cursor: pointer; padding: 0;">Remove Logo</button>
-                                        </div>
-                                    @elseif ($logo)
-                                        @php
-                                            $logoPreview = null;
-                                            try {
-                                                $logoPreview = $logo->temporaryUrl();
-                                            } catch (\Throwable) {
-                                                $logoPreview = null;
-                                            }
-                                        @endphp
-                                        <div style="position: relative; width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            @if ($logoPreview)
-                                                <img src="{{ $logoPreview }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-                                            @else
-                                                <span style="font-size: 1.5rem;">🖼️</span>
-                                            @endif
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                            <span style="font-size: 0.875rem; font-weight: 600; color: #374151;">New logo selected</span>
-                                            <span style="font-size: 0.75rem; color: #16a34a; font-weight: 600;">Ready to save</span>
-                                        </div>
-                                    @else
-                                        <div style="width: 56px; height: 56px; border-radius: 8px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 1.25rem; font-weight: 800; flex-shrink: 0;">
-                                            {{ substr($name, 0, 1) ?: 'S' }}
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                            <span style="font-size: 0.875rem; font-weight: 600; color: #374151;">No logo</span>
-                                            <span style="font-size: 0.75rem; color: #6b7280;">PNG / JPG / WEBP (max 5MB)</span>
-                                        </div>
-                                    @endif
+                        {{-- Quick Link to Brand Assets --}}
+                        <div style="background-color: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 14px; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 0.875rem;">
+                                <div style="width: 42px; height: 42px; border-radius: 10px; background-color: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+                                    🎨
                                 </div>
-                                
                                 <div>
-                                    <input type="file" id="logoInput" wire:model="logo" style="display: none;" accept="image/*">
-                                    <label for="logoInput" style="background-color: white; border: 1px solid #d1d5db; border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 700; color: #374151; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space: nowrap;">
-                                        Upload
-                                    </label>
+                                    <h4 style="font-size: 0.875rem; font-weight: 800; color: #0f172a; margin: 0;">Store Logo & Browser Favicon</h4>
+                                    <p style="font-size: 0.75rem; color: #64748b; margin: 0.2rem 0 0 0;">Upload your custom brand logo and browser tab icon in Theme & Branding.</p>
                                 </div>
                             </div>
-                            @error('logo') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
+                            <button type="button" @click="switchTab('branding')" style="display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; font-weight: 700; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; transition: all 0.15s ease;">
+                                Manage Brand Assets &rarr;
+                            </button>
                         </div>
 
                         {{-- Store Name --}}
@@ -400,10 +371,135 @@
                 <div class="settings-card">
                     <div>
                         <h3 style="font-size: 1.125rem; font-weight: 800; color: #111827; margin: 0;">Storefront Theme & Branding</h3>
-                        <p style="font-size: 0.8125rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">Choose your storefront landing page template and brand colors.</p>
+                        <p style="font-size: 0.8125rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">Customize your brand assets, storefront design template, and color palette.</p>
                     </div>
 
                     <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0;">
+
+                    {{-- Brand Visual Identity (Store Logo & Browser Favicon) --}}
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
+                        <div>
+                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151; display: block;">Brand Visual Identity</label>
+                            <span style="font-size: 0.75rem; color: #6b7280;">Upload your official store logo and browser favicon (tab icon) displayed on customer devices.</span>
+                        </div>
+
+                        <div class="settings-grid-2">
+                            {{-- Store Logo Upload --}}
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem; background: #ffffff; border: 1px solid #e5e7eb; padding: 1rem; border-radius: 12px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <label style="font-size: 0.8125rem; font-weight: 700; color: #374151;">Store Logo</label>
+                                    <span style="font-size: 0.7rem; color: #6b7280;">PNG / JPG / WEBP (max 5MB)</span>
+                                </div>
+                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; background: #f9fafb; padding: 0.75rem; border-radius: 10px; border: 1px dashed #d1d5db; min-height: 64px;">
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        @if ($logoPath)
+                                            <div style="position: relative; width: 48px; height: 48px; border-radius: 8px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                <img src="{{ \Illuminate\Support\Facades\Storage::url($logoPath) }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 0.125rem;">
+                                                <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Active Logo</span>
+                                                <button type="button" wire:click="removeLogo" style="font-size: 0.75rem; font-weight: 700; color: #dc2626; text-align: left; background: none; border: none; cursor: pointer; padding: 0;">Remove Logo</button>
+                                            </div>
+                                        @elseif ($logo)
+                                            @php
+                                                $logoPreview = null;
+                                                try {
+                                                    $logoPreview = $logo->temporaryUrl();
+                                                } catch (\Throwable) {
+                                                    $logoPreview = null;
+                                                }
+                                            @endphp
+                                            <div style="position: relative; width: 48px; height: 48px; border-radius: 8px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                @if ($logoPreview)
+                                                    <img src="{{ $logoPreview }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                                @else
+                                                    <span style="font-size: 1.25rem;">🖼️</span>
+                                                @endif
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 0.125rem;">
+                                                <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">New logo selected</span>
+                                                <span style="font-size: 0.75rem; color: #16a34a; font-weight: 600;">Ready to save</span>
+                                            </div>
+                                        @else
+                                            <div style="width: 48px; height: 48px; border-radius: 8px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 1.125rem; font-weight: 800; flex-shrink: 0;">
+                                                {{ substr($name, 0, 1) ?: 'S' }}
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 0.125rem;">
+                                                <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Default initial</span>
+                                                <span style="font-size: 0.7rem; color: #6b7280;">No custom logo</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <input type="file" id="logoInput" wire:model="logo" style="display: none;" accept="image/*">
+                                        <label for="logoInput" style="background-color: white; border: 1px solid #d1d5db; border-radius: 8px; padding: 0.4rem 0.75rem; font-size: 0.75rem; font-weight: 700; color: #374151; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space: nowrap;">
+                                            Upload
+                                        </label>
+                                    </div>
+                                </div>
+                                @error('logo') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
+                            </div>
+
+                            {{-- Browser Favicon Upload (Available for all plans) --}}
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem; background: #ffffff; border: 1px solid #e5e7eb; padding: 1rem; border-radius: 12px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <label style="font-size: 0.8125rem; font-weight: 700; color: #374151;">Browser Favicon (Tab Icon)</label>
+                                    <span style="font-size: 0.7rem; color: #6b7280;">.png, .ico, .svg (max 2MB)</span>
+                                </div>
+
+                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; background: #f9fafb; padding: 0.75rem; border-radius: 10px; border: 1px dashed #d1d5db; min-height: 64px;">
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        @if ($faviconPath)
+                                            <div style="width: 40px; height: 40px; border-radius: 6px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                <img src="{{ \Illuminate\Support\Facades\Storage::url($faviconPath) }}" style="max-width: 28px; max-height: 28px; object-fit: contain;">
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 0.125rem;">
+                                                <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Custom Favicon</span>
+                                                <button type="button" wire:click="removeFavicon" style="font-size: 0.75rem; font-weight: 700; color: #dc2626; text-align: left; background: none; border: none; cursor: pointer; padding: 0;">Remove</button>
+                                            </div>
+                                        @elseif ($favicon)
+                                            @php
+                                                $faviconPreview = null;
+                                                try {
+                                                    $faviconPreview = $favicon->temporaryUrl();
+                                                } catch (\Throwable) {
+                                                    $faviconPreview = null;
+                                                }
+                                            @endphp
+                                            <div style="width: 40px; height: 40px; border-radius: 6px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                @if ($faviconPreview)
+                                                    <img src="{{ $faviconPreview }}" style="max-width: 28px; max-height: 28px; object-fit: contain;">
+                                                @else
+                                                    <span style="font-size: 1.125rem;">🌐</span>
+                                                @endif
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 0.125rem;">
+                                                <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">New icon selected</span>
+                                                <span style="font-size: 0.75rem; color: #16a34a; font-weight: 600;">Ready to save</span>
+                                            </div>
+                                        @else
+                                            <div style="width: 40px; height: 40px; border-radius: 6px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 1rem; flex-shrink: 0;">
+                                                🌐
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 0.125rem;">
+                                                <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Default Icon</span>
+                                                <span style="font-size: 0.7rem; color: #6b7280;">Ready to customize</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <input type="file" id="faviconInput" wire:model="favicon" style="display: none;" accept=".png,.ico,.svg,image/png,image/x-icon,image/svg+xml">
+                                        <label for="faviconInput" style="background-color: white; border: 1px solid #d1d5db; border-radius: 8px; padding: 0.4rem 0.75rem; font-size: 0.75rem; font-weight: 700; color: #374151; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space: nowrap;">
+                                            Upload
+                                        </label>
+                                    </div>
+                                </div>
+                                @error('favicon') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0.5rem 0 0 0;">
 
                     {{-- Landing Page Template Picker --}}
                     <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
@@ -417,69 +513,106 @@
 
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; width: 100%; box-sizing: border-box;">
                             
-                            {{-- Option 1: Modern Fintech (Default) --}}
-                            @php $isDefault = ($landingPageTemplate ?? 'default') === 'default'; @endphp
+                            {{-- Option 1: Default Theme (Modern Hub) --}}
+                            @php 
+                                $currentTpl = $landingPageTemplate ?? 'default';
+                                $isDefaultTpl = in_array($currentTpl, ['default', 'yushpay'], true);
+                            @endphp
                             <div 
                                 wire:click="selectTemplate('default')"
-                                style="position: relative; border-radius: 14px; border: 2px solid {{ $isDefault ? '#10b981' : '#e2e8f0' }}; background: {{ $isDefault ? '#f0fdf4' : '#ffffff' }}; padding: 1rem; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 0.75rem; box-shadow: {{ $isDefault ? '0 4px 12px rgba(16, 185, 129, 0.12)' : 'none' }};"
+                                style="position: relative; border-radius: 16px; border: 2px solid {{ $isDefaultTpl ? '#10b981' : '#e2e8f0' }}; background: {{ $isDefaultTpl ? '#f0fdf4' : '#ffffff' }}; padding: 0.875rem; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 0.75rem; box-shadow: {{ $isDefaultTpl ? '0 8px 20px rgba(16, 185, 129, 0.15)' : '0 2px 6px rgba(0,0,0,0.03)' }};"
                             >
-                                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <div style="width: 36px; height: 36px; border-radius: 10px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 1.125rem;">
-                                            🏛️
-                                        </div>
-                                        <div>
-                                            <div style="font-size: 0.875rem; font-weight: 700; color: #0f172a;">Modern Fintech</div>
-                                            <div style="font-size: 0.6875rem; color: #64748b;">Comprehensive & Brand-Focused</div>
-                                        </div>
-                                    </div>
-                                    @if($isDefault)
-                                        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.6875rem; font-weight: 700; color: #059669; background: #d1fae5; padding: 0.125rem 0.5rem; border-radius: 9999px;">
-                                            <svg style="width: 12px; height: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                {{-- Theme Preview Image --}}
+                                <div style="position: relative; width: 100%; height: 160px; border-radius: 10px; overflow: hidden; background: #0f172a; border: 1px solid {{ $isDefaultTpl ? '#86efac' : '#e2e8f0' }};">
+                                    <img 
+                                        src="/images/themes/default-hub.jpg" 
+                                        alt="Default Theme Preview" 
+                                        style="width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform 0.3s ease;"
+                                        onmouseover="this.style.transform='scale(1.03)'"
+                                        onmouseout="this.style.transform='scale(1)'"
+                                    />
+                                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); color: #ffffff; font-size: 0.6875rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px;">
+                                        Default
+                                    </span>
+                                    @if($isDefaultTpl)
+                                        <span style="position: absolute; top: 8px; right: 8px; background: #10b981; color: white; font-size: 0.6875rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4); display: inline-flex; align-items: center; gap: 0.25rem;">
+                                            <svg style="width: 11px; height: 11px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                             Active
                                         </span>
                                     @endif
                                 </div>
-                                <p style="font-size: 0.75rem; color: #475569; margin: 0; line-height: 1.4;">
-                                    Classic multi-section fintech layout featuring hero trust stats, live service catalogue, interactive steps, FAQs, and extensive brand highlights.
+
+                                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
+                                    <div>
+                                        <div style="font-size: 0.9375rem; font-weight: 800; color: #0f172a;">Default Theme</div>
+                                        <div style="font-size: 0.72rem; color: #64748b; font-weight: 500;">Modern Fintech & Support Hub</div>
+                                    </div>
+                                    @if($isDefaultTpl)
+                                        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.6875rem; font-weight: 700; color: #059669; background: #d1fae5; padding: 0.125rem 0.5rem; border-radius: 9999px;">
+                                            Active
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <p style="font-size: 0.75rem; color: #475569; margin: 0; line-height: 1.45;">
+                                    High-impact financial hub with APK download banner, mock dashboard wallet card, 6-card feature grid, 4 direct support channels, and dynamic merchant colors.
                                 </p>
-                                <div style="display: flex; gap: 0.375rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.5rem; border-top: 1px dashed {{ $isDefault ? '#86efac' : '#f1f5f9' }};">
-                                    <span style="font-size: 0.6875rem; background: #f1f5f9; color: #334155; padding: 0.125rem 0.375rem; border-radius: 4px; font-weight: 500;">Multi-Section</span>
-                                    <span style="font-size: 0.6875rem; background: #f1f5f9; color: #334155; padding: 0.125rem 0.375rem; border-radius: 4px; font-weight: 500;">Rich FAQs</span>
+
+                                <div style="display: flex; gap: 0.375rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.5rem; border-top: 1px dashed {{ $isDefaultTpl ? '#86efac' : '#f1f5f9' }};">
+                                    <span style="font-size: 0.6875rem; background: #ecfdf5; color: #065f46; padding: 0.125rem 0.4rem; border-radius: 4px; font-weight: 600;">Hub Layout</span>
+                                    <span style="font-size: 0.6875rem; background: #f1f5f9; color: #334155; padding: 0.125rem 0.4rem; border-radius: 4px; font-weight: 500;">Support Grid</span>
+                                    <span style="font-size: 0.6875rem; background: #f1f5f9; color: #334155; padding: 0.125rem 0.4rem; border-radius: 4px; font-weight: 500;">APK Banner</span>
                                 </div>
                             </div>
 
-
-
-                            {{-- Option 5: Yushpay Financial Hub --}}
-                            @php $isYushpay = ($landingPageTemplate ?? 'default') === 'yushpay'; @endphp
+                            {{-- Option 2: Classic Fintech (v1) --}}
+                            @php 
+                                $isClassicTpl = in_array($currentTpl, ['classic', 'legacy', 'v1'], true);
+                            @endphp
                             <div 
-                                wire:click="selectTemplate('yushpay')"
-                                style="position: relative; border-radius: 14px; border: 2px solid {{ $isYushpay ? '#10b981' : '#e2e8f0' }}; background: {{ $isYushpay ? '#f0fdf4' : '#ffffff' }}; padding: 1rem; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 0.75rem; box-shadow: {{ $isYushpay ? '0 4px 12px rgba(16, 185, 129, 0.12)' : 'none' }};"
+                                wire:click="selectTemplate('classic')"
+                                style="position: relative; border-radius: 16px; border: 2px solid {{ $isClassicTpl ? '#10b981' : '#e2e8f0' }}; background: {{ $isClassicTpl ? '#f0fdf4' : '#ffffff' }}; padding: 0.875rem; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 0.75rem; box-shadow: {{ $isClassicTpl ? '0 8px 20px rgba(16, 185, 129, 0.15)' : '0 2px 6px rgba(0,0,0,0.03)' }};"
                             >
-                                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <div style="width: 36px; height: 36px; border-radius: 10px; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-size: 1.125rem;">
-                                            💎
-                                        </div>
-                                        <div>
-                                            <div style="font-size: 0.875rem; font-weight: 700; color: #0f172a;">Yushpay Financial Hub</div>
-                                            <div style="font-size: 0.6875rem; color: #64748b;">Sleek Multi-Channel Fintech</div>
-                                        </div>
-                                    </div>
-                                    @if($isYushpay)
-                                        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.6875rem; font-weight: 700; color: #059669; background: #d1fae5; padding: 0.125rem 0.5rem; border-radius: 9999px;">
-                                            <svg style="width: 12px; height: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                {{-- Theme Preview Image --}}
+                                <div style="position: relative; width: 100%; height: 160px; border-radius: 10px; overflow: hidden; background: #0f172a; border: 1px solid {{ $isClassicTpl ? '#86efac' : '#e2e8f0' }};">
+                                    <img 
+                                        src="/images/themes/classic-v1.jpg" 
+                                        alt="Classic Fintech v1 Preview" 
+                                        style="width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform 0.3s ease;"
+                                        onmouseover="this.style.transform='scale(1.03)'"
+                                        onmouseout="this.style.transform='scale(1)'"
+                                    />
+                                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); color: #ffffff; font-size: 0.6875rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px;">
+                                        Classic
+                                    </span>
+                                    @if($isClassicTpl)
+                                        <span style="position: absolute; top: 8px; right: 8px; background: #10b981; color: white; font-size: 0.6875rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4); display: inline-flex; align-items: center; gap: 0.25rem;">
+                                            <svg style="width: 11px; height: 11px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                             Active
                                         </span>
                                     @endif
                                 </div>
-                                <p style="font-size: 0.75rem; color: #475569; margin: 0; line-height: 1.4;">
-                                    High-impact financial hub with APK download banner, mock dashboard wallet card, 6-card feature grid, 4 direct support channels, and dynamic merchant colors.
+
+                                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
+                                    <div>
+                                        <div style="font-size: 0.9375rem; font-weight: 800; color: #0f172a;">Classic Fintech (v1)</div>
+                                        <div style="font-size: 0.72rem; color: #64748b; font-weight: 500;">Comprehensive & Brand-Focused</div>
+                                    </div>
+                                    @if($isClassicTpl)
+                                        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.6875rem; font-weight: 700; color: #059669; background: #d1fae5; padding: 0.125rem 0.5rem; border-radius: 9999px;">
+                                            Active
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <p style="font-size: 0.75rem; color: #475569; margin: 0; line-height: 1.45;">
+                                    Classic multi-section fintech layout featuring hero trust stats, live service catalogue, interactive steps, FAQs, and extensive brand highlights.
                                 </p>
-                                <div style="display: flex; gap: 0.375rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.5rem; border-top: 1px dashed {{ $isYushpay ? '#86efac' : '#f1f5f9' }};">
-                                    <span style="font-size: 0.6875rem; background: #e0e7ff; color: #3730a3; padding: 0.125rem 0.375rem; border-radius: 4px; font-weight: 600;">Hub Layout</span>
-                                    <span style="font-size: 0.6875rem; background: #f1f5f9; color: #334155; padding: 0.125rem 0.375rem; border-radius: 4px; font-weight: 500;">Support Grid</span>
+
+                                <div style="display: flex; gap: 0.375rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.5rem; border-top: 1px dashed {{ $isClassicTpl ? '#86efac' : '#f1f5f9' }};">
+                                    <span style="font-size: 0.6875rem; background: #f1f5f9; color: #334155; padding: 0.125rem 0.4rem; border-radius: 4px; font-weight: 500;">Multi-Section</span>
+                                    <span style="font-size: 0.6875rem; background: #f1f5f9; color: #334155; padding: 0.125rem 0.4rem; border-radius: 4px; font-weight: 500;">Rich FAQs</span>
+                                    <span style="font-size: 0.6875rem; background: #f1f5f9; color: #334155; padding: 0.125rem 0.4rem; border-radius: 4px; font-weight: 500;">Catalog Grid</span>
                                 </div>
                             </div>
 
@@ -594,103 +727,131 @@
 
                     </div>
 
-                    {{-- Browser Favicon Upload --}}
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; border-top: 1px dashed #e5e7eb; padding-top: 1rem; width: 100%;">
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151;">Browser Favicon (Tab Icon)</label>
-                            @if (! $hasCustomBranding)
-                                <span style="font-size: 0.75rem; font-weight: 700; color: #d97706; background: #fef3c7; padding: 0.125rem 0.5rem; border-radius: 9999px;">
-                                    🔒 Pro Feature
-                                </span>
-                            @endif
-                        </div>
 
-                        @if (! $hasCustomBranding)
-                            <div style="background-color: #f9fafb; border: 1px dashed #d1d5db; border-radius: 12px; padding: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <div style="width: 40px; height: 40px; border-radius: 8px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 1.125rem; flex-shrink: 0;">
-                                        🌐
-                                    </div>
-                                    <div>
-                                        <h5 style="font-size: 0.8125rem; font-weight: 700; color: #374151; margin: 0;">Default AffanHub Favicon</h5>
-                                        <p style="font-size: 0.75rem; color: #6b7280; margin: 0.125rem 0 0 0;">Upload custom browser icon on Pro.</p>
-                                    </div>
-                                </div>
-                                <a href="{{ \App\Filament\Merchant\Pages\Billing::getUrl() }}" style="background-color: #f59e0b; color: white; font-weight: 700; font-size: 0.75rem; padding: 0.5rem 0.875rem; border-radius: 8px; text-decoration: none; white-space: nowrap;">
-                                    Upgrade
-                                </a>
-                            </div>
-                        @else
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #f9fafb; padding: 1rem; border-radius: 12px; border: 1px dashed #d1d5db; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    @if ($faviconPath)
-                                        <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <img src="{{ \Illuminate\Support\Facades\Storage::url($faviconPath) }}" style="max-width: 32px; max-height: 32px; object-fit: contain;">
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                            <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Custom Favicon</span>
-                                            <button type="button" wire:click="removeFavicon" style="font-size: 0.75rem; font-weight: 700; color: #dc2626; text-align: left; background: none; border: none; cursor: pointer; padding: 0;">Remove</button>
-                                        </div>
-                                    @elseif ($favicon)
-                                        @php
-                                            $faviconPreview = null;
-                                            try {
-                                                $faviconPreview = $favicon->temporaryUrl();
-                                            } catch (\Throwable) {
-                                                $faviconPreview = null;
-                                            }
-                                        @endphp
-                                        <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            @if ($faviconPreview)
-                                                <img src="{{ $faviconPreview }}" style="max-width: 32px; max-height: 32px; object-fit: contain;">
-                                            @else
-                                                <span style="font-size: 1.25rem;">🌐</span>
-                                            @endif
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                            <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">New icon selected</span>
-                                            <span style="font-size: 0.75rem; color: #16a34a; font-weight: 600;">Ready to save</span>
-                                        </div>
-                                    @else
-                                        <div style="width: 44px; height: 44px; border-radius: 8px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 1.125rem; flex-shrink: 0;">
-                                            🌐
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                            <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Default Icon</span>
-                                            <span style="font-size: 0.75rem; color: #6b7280;">.png, .ico, .svg (max 512KB)</span>
-                                        </div>
-                                    @endif
-                                </div>
-                                
-                                <div>
-                                    <input type="file" id="faviconInput" wire:model="favicon" style="display: none;" accept=".png,.ico,.svg,image/png,image/x-icon,image/svg+xml">
-                                    <label for="faviconInput" style="background-color: white; border: 1px solid #d1d5db; border-radius: 8px; padding: 0.5rem 0.875rem; font-size: 0.75rem; font-weight: 700; color: #374151; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space: nowrap;">
-                                        Upload
-                                    </label>
-                                </div>
-                            </div>
-                            @error('favicon') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
-                        @endif
-                    </div>
                 </div>
             @endif
 
             {{-- ────────────────────────────────────────────────────────
-                TAB 3: CONTACT & SOCIAL
+                TAB 3: CONTACT & SUPPORT
                 ──────────────────────────────────────────────────────── --}}
             @if ($activeTab === 'contact')
                 <div class="settings-card">
                     <div>
-                        <h3 style="font-size: 1.125rem; font-weight: 800; color: #111827; margin: 0;">Contact Details & Social Media</h3>
-                        <p style="font-size: 0.8125rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">Direct customer support channels and social profile links shown on your storefront.</p>
+                        <h3 style="font-size: 1.125rem; font-weight: 800; color: #111827; margin: 0;">Contact & Support Channels</h3>
+                        <p style="font-size: 0.8125rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">Direct customer support channels, WhatsApp chat, and community links shown on your storefront.</p>
                     </div>
 
                     <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0;">
 
+                    {{-- Phone Support (Max 2 Numbers) --}}
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
+                        <div>
+                            <h4 style="font-size: 0.9375rem; font-weight: 800; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>📞</span> Phone Support Lines (Max 2 Numbers)
+                            </h4>
+                            <p style="font-size: 0.75rem; color: #64748b; margin: 0.25rem 0 0 0;">These numbers will appear as direct tap-to-call buttons on your storefront Phone Support card.</p>
+                        </div>
+
+                        <div class="settings-grid-2">
+                            <div style="display: flex; flex-direction: column; gap: 0.375rem; width: 100%;">
+                                <label style="font-size: 0.8125rem; font-weight: 700; color: #374151;">Phone Support Line 1 (Primary)</label>
+                                <input 
+                                    type="text" 
+                                    wire:model="contactPhone" 
+                                    placeholder="e.g. 08101360986 or +234 810 136 0986" 
+                                    class="settings-input"
+                                />
+                                @error('contactPhone') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 0.375rem; width: 100%;">
+                                <label style="font-size: 0.8125rem; font-weight: 700; color: #374151;">Phone Support Line 2 (Secondary, Optional)</label>
+                                <input 
+                                    type="text" 
+                                    wire:model="contactPhone2" 
+                                    placeholder="e.g. 09061730442 or +234 906 173 0442" 
+                                    class="settings-input"
+                                />
+                                @error('contactPhone2') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0.25rem 0 0 0;">
+
+                    {{-- WhatsApp Customer Support & Floating Bubble --}}
+                    <div style="display: flex; flex-direction: column; gap: 0.875rem; background: #f0fdf4; border: 1.5px solid #bbf7d0; padding: 1.25rem; border-radius: 14px; width: 100%; box-sizing: border-box;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;">
+                            <div>
+                                <h4 style="font-size: 0.95rem; font-weight: 800; color: #14532d; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                    <svg style="width: 18px; height: 18px; fill: #15803d; flex-shrink: 0;" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.963C16.588 2.02 14.12 1.002 11.5 1.002c-5.442 0-9.87 4.372-9.874 9.802-.001 1.769.471 3.498 1.362 5.031L2.002 21.5l5.727-1.492zm11.233-5.918c-.3-.15-1.771-.875-2.046-.975-.276-.1-.477-.15-.677.15-.2.3-.777.975-.951 1.175-.175.2-.35.225-.65.075-3.04-1.522-4.14-2.522-4.9-3.825-.2-.35-.022-.538.127-.687.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.677-1.625-.926-2.225-.244-.589-.493-.51-.677-.52l-.578-.01c-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.07 2.9 1.22 3.1c.15.2 2.105 3.213 5.098 4.5 1.205.52 2.146.83 2.875 1.06.73.23 1.396.197 1.92.12.584-.087 1.771-.725 2.021-1.425.25-.7.25-1.3 1.75-1.425-.075-.125-.375-.275-.675-.425z"/></svg>
+                                    WhatsApp Support & Floating Chat
+                                </h4>
+                                <p style="font-size: 0.8125rem; color: #166534; margin: 0.25rem 0 0 0;">Direct WhatsApp chat link on your storefront cards and floating chat bubble.</p>
+                            </div>
+                            <div>
+                                @if(! empty(trim($whatsappChatPhone ?? '')))
+                                    <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; font-weight: 700; color: #15803d; background: #dcfce7; border: 1px solid #86efac; padding: 0.25rem 0.65rem; border-radius: 9999px;">
+                                        <span style="width: 7px; height: 7px; border-radius: 9999px; background: #16a34a;"></span>
+                                        Active & Floating Chat Enabled
+                                    </span>
+                                @else
+                                    <span style="font-size: 0.72rem; color: #64748b; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.25rem 0.6rem; border-radius: 9999px;">
+                                        Add number to activate
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="settings-grid-2" style="margin-top: 0.25rem; border-top: 1px dashed #bbf7d0; padding-top: 0.875rem;">
+                            <div style="display: flex; flex-direction: column; gap: 0.25rem; width: 100%;">
+                                <label style="font-size: 0.75rem; font-weight: 700; color: #14532d;">WhatsApp Direct Support Number</label>
+                                <input 
+                                    type="text" 
+                                    wire:model.live="whatsappChatPhone" 
+                                    placeholder="e.g. 09025293759, 080..., or 2349025293759" 
+                                    class="settings-input"
+                                    style="border-color: #86efac; background: white; color: #14532d;"
+                                />
+                                <span style="font-size: 0.7rem; color: #166534;">You can type 090..., 080..., or 234... Adding a number automatically enables your WhatsApp support card and floating chat button.</span>
+                                @error('whatsappChatPhone') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 0.25rem; width: 100%;">
+                                <label style="font-size: 0.75rem; font-weight: 700; color: #14532d;">Pre-filled Greeting Message</label>
+                                <input 
+                                    type="text" 
+                                    wire:model="whatsappChatMessage" 
+                                    placeholder="e.g. Hello, I need assistance." 
+                                    class="settings-input"
+                                    style="border-color: #86efac; background: white; color: #14532d;"
+                                />
+                                <span style="font-size: 0.7rem; color: #166534;">Opens automatically when customers tap to chat on WhatsApp.</span>
+                                @error('whatsappChatMessage') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0.25rem 0 0 0;">
+
+                    {{-- Community & Social Links --}}
                     <div class="settings-grid-2">
+                        {{-- WhatsApp Community Link --}}
+                        <div class="settings-col-span-2" style="display: flex; flex-direction: column; gap: 0.375rem; width: 100%;">
+                            <label style="font-size: 0.8125rem; font-weight: 700; color: #374151;">WhatsApp Channel / Group Link</label>
+                            <input 
+                                type="text" 
+                                wire:model="socialWhatsapp" 
+                                placeholder="e.g. https://chat.whatsapp.com/..." 
+                                class="settings-input"
+                            />
+                            <span style="font-size: 0.7rem; color: #6b7280;">Official community or broadcast link shown on your WhatsApp Group support card.</span>
+                            @error('socialWhatsapp') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
+                        </div>
+
                         {{-- Contact Email --}}
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
-                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151;">Support Email Address</label>
+                        <div style="display: flex; flex-direction: column; gap: 0.375rem; width: 100%;">
+                            <label style="font-size: 0.8125rem; font-weight: 700; color: #374151;">Support Email Address</label>
                             <input 
                                 type="email" 
                                 wire:model="contactEmail" 
@@ -700,21 +861,9 @@
                             @error('contactEmail') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
                         </div>
 
-                        {{-- Contact Phone --}}
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
-                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151;">Support Phone Number</label>
-                            <input 
-                                type="text" 
-                                wire:model="contactPhone" 
-                                placeholder="e.g. +234 812 345 6789" 
-                                class="settings-input"
-                            />
-                            @error('contactPhone') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
-                        </div>
-
                         {{-- Instagram --}}
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
-                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151;">Instagram Handle</label>
+                        <div style="display: flex; flex-direction: column; gap: 0.375rem; width: 100%;">
+                            <label style="font-size: 0.8125rem; font-weight: 700; color: #374151;">Instagram Handle</label>
                             <div style="position: relative; display: flex; align-items: center; width: 100%;">
                                 <span style="position: absolute; left: 1rem; color: #9ca3af; font-size: 0.875rem; pointer-events: none;">@</span>
                                 <input 
@@ -729,8 +878,8 @@
                         </div>
 
                         {{-- Facebook --}}
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
-                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151;">Facebook Page URL</label>
+                        <div class="settings-col-span-2" style="display: flex; flex-direction: column; gap: 0.375rem; width: 100%;">
+                            <label style="font-size: 0.8125rem; font-weight: 700; color: #374151;">Facebook Page URL</label>
                             <input 
                                 type="text" 
                                 wire:model="socialFacebook" 
@@ -739,144 +888,12 @@
                             />
                             @error('socialFacebook') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
                         </div>
-
-                        {{-- WhatsApp Community --}}
-                        <div class="settings-col-span-2" style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
-                            <label style="font-size: 0.875rem; font-weight: 700; color: #374151;">WhatsApp Channel / Group Link</label>
-                            <input 
-                                type="text" 
-                                wire:model="socialWhatsapp" 
-                                placeholder="e.g. https://chat.whatsapp.com/..." 
-                                class="settings-input"
-                            />
-                            @error('socialWhatsapp') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
-                        </div>
                     </div>
                 </div>
             @endif
 
             {{-- ────────────────────────────────────────────────────────
-                TAB 4: LIVE SUPPORT WIDGETS
-                ──────────────────────────────────────────────────────── --}}
-            @if ($activeTab === 'chat')
-                <div class="settings-card">
-                    <div>
-                        <h3 style="font-size: 1.125rem; font-weight: 800; color: #111827; margin: 0;">Live Customer Support Widgets</h3>
-                        <p style="font-size: 0.8125rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">Configure floating chat bubbles to assist your customers instantly on the storefront.</p>
-                    </div>
-
-                    <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 0;">
-
-                    <div style="display: flex; flex-direction: column; gap: 1.25rem; width: 100%;">
-                        {{-- WhatsApp floating support (All Plans) --}}
-                        <div style="display: flex; flex-direction: column; gap: 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 1.25rem; border-radius: 12px; width: 100%; box-sizing: border-box;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
-                                <div>
-                                    <h4 style="font-size: 0.95rem; font-weight: 800; color: #14532d; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-                                        <svg style="width: 18px; height: 18px; fill: #15803d; flex-shrink: 0;" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.963C16.588 2.02 14.12 1.002 11.5 1.002c-5.442 0-9.87 4.372-9.874 9.802-.001 1.769.471 3.498 1.362 5.031L2.002 21.5l5.727-1.492zm11.233-5.918c-.3-.15-1.771-.875-2.046-.975-.276-.1-.477-.15-.677.15-.2.3-.777.975-.951 1.175-.175.2-.35.225-.65.075-3.04-1.522-4.14-2.522-4.9-3.825-.2-.35-.022-.538.127-.687.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.677-1.625-.926-2.225-.244-.589-.493-.51-.677-.52l-.578-.01c-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.07 2.9 1.22 3.1c.15.2 2.105 3.213 5.098 4.5 1.205.52 2.146.83 2.875 1.06.73.23 1.396.197 1.92.12.584-.087 1.771-.725 2.021-1.425.25-.7.25-1.3 1.75-1.425-.075-.125-.375-.275-.675-.425z"/></svg>
-                                        WhatsApp Floating Support
-                                    </h4>
-                                    <p style="font-size: 0.8125rem; color: #166534; margin: 0.25rem 0 0 0;">Adds a direct WhatsApp chat button to the storefront.</p>
-                                </div>
-                                <div>
-                                    <input type="checkbox" wire:model.live="whatsappChatEnabled" style="width: 1.25rem; height: 1.25rem; accent-color: #15803d; cursor: pointer;">
-                                </div>
-                            </div>
-                            
-                            @if ($whatsappChatEnabled)
-                                <div class="settings-grid-2" style="margin-top: 0.5rem; border-top: 1px dashed #bbf7d0; padding-top: 1rem;">
-                                    <div style="display: flex; flex-direction: column; gap: 0.25rem; width: 100%;">
-                                        <label style="font-size: 0.75rem; font-weight: 700; color: #14532d;">WhatsApp Phone Number</label>
-                                        <input 
-                                            type="text" 
-                                            wire:model="whatsappChatPhone" 
-                                            placeholder="e.g. 2348123456789" 
-                                            class="settings-input"
-                                            style="border-color: #86efac; background: white; color: #14532d;"
-                                        />
-                                        <span style="font-size: 0.7rem; color: #166534;">Include country code, no + signs or dashes (e.g. 234...).</span>
-                                    </div>
-                                    <div style="display: flex; flex-direction: column; gap: 0.25rem; width: 100%;">
-                                        <label style="font-size: 0.75rem; font-weight: 700; color: #14532d;">Pre-filled Greeting Message</label>
-                                        <input 
-                                            type="text" 
-                                            wire:model="whatsappChatMessage" 
-                                            placeholder="e.g. Hello, I need assistance." 
-                                            class="settings-input"
-                                            style="border-color: #86efac; background: white; color: #14532d;"
-                                        />
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-
-                        {{-- Tawk.to live chat widget (Pro / Enterprise) --}}
-                        <div style="display: flex; flex-direction: column; gap: 1rem; background: #eff6ff; border: 1px solid #bfdbfe; padding: 1.25rem; border-radius: 12px; width: 100%; box-sizing: border-box;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;">
-                                <div>
-                                    <h4 style="font-size: 0.95rem; font-weight: 800; color: #1e3a8a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-                                        <svg style="width: 18px; height: 18px; fill: #2563eb; flex-shrink: 0;" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-                                        Tawk.to Real-time Web Chat
-                                    </h4>
-                                    <p style="font-size: 0.8125rem; color: #1e40af; margin: 0.25rem 0 0 0;">Embed live customer support agent software directly into your web storefront.</p>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    @if (! $hasCustomBranding)
-                                        <span style="font-size: 0.75rem; font-weight: 700; color: #1e40af; background: #dbeafe; padding: 0.125rem 0.5rem; border-radius: 9999px;">
-                                            🔒 Pro Plan
-                                        </span>
-                                    @endif
-                                    <input 
-                                        type="checkbox" 
-                                        wire:model.live="tawkChatEnabled" 
-                                        {{ ! $hasCustomBranding ? 'disabled' : '' }}
-                                        style="width: 1.25rem; height: 1.25rem; accent-color: #2563eb; cursor: {{ $hasCustomBranding ? 'pointer' : 'not-allowed' }};"
-                                    >
-                                </div>
-                            </div>
-                            
-                            @if (! $hasCustomBranding)
-                                <div style="background-color: white; border: 1px solid #bfdbfe; border-radius: 10px; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;">
-                                    <span style="font-size: 0.8125rem; color: #1e3a8a;">
-                                        Tawk.to live chat is available on Pro & Enterprise plans.
-                                    </span>
-                                    <a href="{{ \App\Filament\Merchant\Pages\Billing::getUrl() }}" style="font-size: 0.75rem; font-weight: 700; color: #1d4ed8; text-decoration: underline; white-space: nowrap;">
-                                        Upgrade Plan
-                                    </a>
-                                </div>
-                            @elseif ($tawkChatEnabled)
-                                <div class="settings-grid-2" style="margin-top: 0.5rem; border-top: 1px dashed #bfdbfe; padding-top: 1rem;">
-                                    <div style="display: flex; flex-direction: column; gap: 0.25rem; width: 100%;">
-                                        <label style="font-size: 0.75rem; font-weight: 700; color: #1e3a8a;">Tawk.to Property ID</label>
-                                        <input 
-                                            type="text" 
-                                            wire:model="tawkPropertyId" 
-                                            placeholder="e.g. 64b8d78994af5e1234567890" 
-                                            class="settings-input"
-                                            style="border-color: #93c5fd; background: white; color: #1e3a8a;"
-                                        />
-                                        <span style="font-size: 0.7rem; color: #1e40af;">Available in your Tawk.to dashboard under Property settings.</span>
-                                    </div>
-                                    <div style="display: flex; flex-direction: column; gap: 0.25rem; width: 100%;">
-                                        <label style="font-size: 0.75rem; font-weight: 700; color: #1e3a8a;">Tawk.to Widget ID</label>
-                                        <input 
-                                            type="text" 
-                                            wire:model="tawkWidgetId" 
-                                            placeholder="e.g. default" 
-                                            class="settings-input"
-                                            style="border-color: #93c5fd; background: white; color: #1e3a8a;"
-                                        />
-                                        <span style="font-size: 0.7rem; color: #1e40af;">Typically 'default' or a short code next to the property.</span>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            {{-- ────────────────────────────────────────────────────────
-                TAB 5: CUSTOM EMAIL (RESEND)
+                TAB 4: CUSTOM EMAIL (RESEND)
                 ──────────────────────────────────────────────────────── --}}
             @if ($activeTab === 'email')
                 <div class="settings-card">

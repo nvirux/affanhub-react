@@ -5,32 +5,11 @@ import {
     Check
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import './Default.css';
+import './Classic.css';
 
-export default function DefaultTheme() {
+export default function ClassicTheme() {
     const { store } = usePage<any>().props;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-    useEffect(() => {
-        if (store?.tawk_chat_enabled && store?.tawk_property_id && store?.tawk_widget_id) {
-            const s1 = document.createElement("script");
-            const s0 = document.getElementsByTagName("script")[0];
-            s1.async = true;
-            s1.src = `https://embed.tawk.to/${store.tawk_property_id}/${store.tawk_widget_id}`;
-            s1.charset = 'UTF-8';
-            s1.setAttribute('crossorigin', '*');
-            s0?.parentNode?.insertBefore(s1, s0);
-
-            return () => {
-                s1.remove();
-                if ((window as any).Tawk_API) {
-                    try {
-                        (window as any).Tawk_API.hideWidget();
-                    } catch (e) {}
-                }
-            };
-        }
-    }, [store]);
 
     const storeName = store?.name || 'Your Store';
     const storeInitial = storeName.charAt(0).toUpperCase();
@@ -668,9 +647,7 @@ export default function DefaultTheme() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label="Chat with us on WhatsApp"
-                    className={`fixed right-6 z-[var(--z-sticky)] bg-[var(--color-wa)] text-white p-3.5 rounded-full hover:opacity-90 active:opacity-80 transition-opacity motion-reduce:transition-none duration-[var(--dur-short)] flex items-center justify-center focus-visible:outline-2 focus-visible:outline-primary ${
-                        store?.tawk_chat_enabled ? 'bottom-24' : 'bottom-6'
-                    }`}
+                    className="fixed right-6 bottom-6 z-[var(--z-sticky)] bg-[var(--color-wa)] text-white p-3.5 rounded-full hover:opacity-90 active:opacity-80 transition-opacity motion-reduce:transition-none duration-[var(--dur-short)] flex items-center justify-center focus-visible:outline-2 focus-visible:outline-primary"
                 >
                     <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.963C16.588 2.02 14.12 1.002 11.5 1.002c-5.442 0-9.87 4.372-9.874 9.802-.001 1.769.471 3.498 1.362 5.031L2.002 21.5l5.727-1.492zm11.233-5.918c-.3-.15-1.771-.875-2.046-.975-.276-.1-.477-.15-.677.15-.2.3-.777.975-.951 1.175-.175.2-.35.225-.65.075-3.04-1.522-4.14-2.522-4.9-3.825-.2-.35-.022-.538.127-.687.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.677-1.625-.926-2.225-.244-.589-.493-.51-.677-.52l-.578-.01c-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.07 2.9 1.22 3.1c.15.2 2.105 3.213 5.098 4.5 1.205.52 2.146.83 2.875 1.06.73.23 1.396.197 1.92.12.584-.087 1.771-.725 2.021-1.425.25-.7.25-1.3 1.75-1.425-.075-.125-.375-.275-.675-.425z"/>
