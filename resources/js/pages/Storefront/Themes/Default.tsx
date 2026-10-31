@@ -1,696 +1,947 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import {
-    Smartphone, Wifi, Tv, GraduationCap, ShieldCheck, FileBadge,
-    Building2, CreditCard, Menu, X, ArrowUpRight, Zap, Lock, Clock,
-    Check
-} from 'lucide-react';
-import { useState, useEffect } from 'react';
-import './Default.css';
+import { useState } from 'react';
+import './Yushpay.css';
 
-export default function DefaultTheme() {
-    const { store } = usePage<any>().props;
+interface StoreData {
+    name?: string;
+    description?: string;
+    contact_email?: string;
+    contact_phone?: string;
+    whatsapp_chat_phone?: string;
+    social_whatsapp?: string;
+    social_instagram?: string;
+    social_facebook?: string;
+    logo_url?: string | null;
+    primary_color?: string;
+    landing_page_template?: string;
+    [key: string]: any;
+}
+
+interface PageProps {
+    store?: StoreData;
+    auth?: {
+        user?: {
+            id: number;
+            name: string;
+            email: string;
+            [key: string]: any;
+        } | null;
+    };
+    [key: string]: any;
+}
+
+export default function Yushpay() {
+    const { store, auth } = usePage<PageProps>().props;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    useEffect(() => {
-        if (store?.tawk_chat_enabled && store?.tawk_property_id && store?.tawk_widget_id) {
-            const s1 = document.createElement("script");
-            const s0 = document.getElementsByTagName("script")[0];
-            s1.async = true;
-            s1.src = `https://embed.tawk.to/${store.tawk_property_id}/${store.tawk_widget_id}`;
-            s1.charset = 'UTF-8';
-            s1.setAttribute('crossorigin', '*');
-            s0?.parentNode?.insertBefore(s1, s0);
+    const storeName = store?.name || 'YUSHPAY';
+    const storeLogo = store?.logo_url;
+    const storeDesc =
+        store?.description ||
+        'The smartest way to handle your digital payments, virtual accounts, and corporate onboarding.';
 
-            return () => {
-                s1.remove();
-                if ((window as any).Tawk_API) {
-                    try {
-                        (window as any).Tawk_API.hideWidget();
-                    } catch (e) {}
-                }
-            };
-        }
-    }, [store]);
+    // Normalizing dynamic contact numbers with fallbacks
+    const rawWhatsapp = store?.whatsapp_chat_phone || store?.social_whatsapp || '2348101360986';
+    const whatsappNum = rawWhatsapp.replace(/\D/g, '');
+    const whatsappDisplay = whatsappNum.startsWith('234')
+        ? '0' + whatsappNum.slice(3)
+        : whatsappNum.startsWith('0')
+          ? whatsappNum
+          : '0' + whatsappNum;
 
-    const storeName = store?.name || 'Your Store';
-    const storeInitial = storeName.charAt(0).toUpperCase();
-    const storeDescription = store?.description || `Welcome to ${storeName}. Airtime, data bundles, utility bills, and identity verifications delivered with automated speed 24/7.`;
-
-    const providers = ['MTN', 'Airtel', 'GLO', '9Mobile', 'DSTV', 'GOtv', 'Startimes', 'WAEC', 'JAMB', 'NECO'];
+    const contactPhone1 = store?.contact_phone || '08101360986';
+    const contactPhone2 = '09061730442';
+    const contactEmail = store?.contact_email || 'support@yushpay.com';
+    const currentYear = new Date().getFullYear();
+    const isLoggedIn = !!auth?.user;
 
     return (
-        <div className="storefront-theme min-h-screen flex flex-col bg-white text-slate-900 selection:bg-primary/15 selection:text-slate-900">
-            <Head title={`${storeName} | Digital Services & Verification`}>
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&family=Host+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <div className="theme-yushpay min-h-screen bg-white text-slate-600 font-sans antialiased selection:bg-primary selection:text-white">
+            <Head title={`${storeName} - Your Ultimate Financial Hub`}>
+                <meta name="theme-color" content={store?.primary_color || '#0A4D8C'} />
+                <link rel="preconnect" href="https://fonts.bunny.net" />
+                <link
+                    href="https://fonts.bunny.net/css?family=dm-sans:400,500,700|sora:400,600,700,800"
+                    rel="stylesheet"
+                />
             </Head>
 
-            {/* ─── NAVIGATION BAR ─── */}
-            <header className="sticky top-0 z-[var(--z-sticky-nav)] border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
-                <div className="max-w-[var(--container)] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-6">
-                    {/* Brand Identifier */}
-                    <div className="flex items-center gap-3 shrink-0">
-                        {store?.logo_url ? (
-                            <img src={store.logo_url} alt={storeName} className="h-8 max-w-[150px] object-contain" />
-                        ) : (
-                            <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm tracking-tight shadow-sm shadow-primary/20">
-                                    {storeInitial}
+            {/* Navigation */}
+            <nav className="border-b border-slate-100 bg-white/90 backdrop-blur-md fixed w-full z-50 transition-all duration-300">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-20">
+                        {/* Logo & Store Name */}
+                        <Link href="/" className="flex items-center gap-3 group">
+                            {storeLogo ? (
+                                <img
+                                    src={storeLogo}
+                                    alt={`${storeName} Logo`}
+                                    className="w-10 h-10 rounded-xl object-contain bg-white shadow-lg shadow-primary/30 p-1 border border-slate-100"
+                                />
+                            ) : (
+                                <div className="w-10 h-10 rounded-xl bg-primary text-white font-sora font-bold text-xl flex items-center justify-center shadow-lg shadow-primary/30 transition-transform group-hover:scale-105">
+                                    {storeName.charAt(0).toUpperCase()}
                                 </div>
-                                <span className="font-semibold text-slate-900 text-sm tracking-tight">{storeName}</span>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Desktop Navigation Links */}
-                    <nav className="hidden md:flex items-center gap-6" aria-label="Main Navigation">
-                        <a href="#services" className="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors duration-[var(--dur-short)]">
-                            Services
-                        </a>
-                        <a href="#how-it-works" className="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors duration-[var(--dur-short)]">
-                            How it works
-                        </a>
-                    </nav>
-
-                    {/* Desktop User Actions */}
-                    <div className="hidden md:flex items-center gap-3">
-                        <Link
-                            href="/login"
-                            className="px-3.5 py-1.5 text-xs font-medium text-slate-700 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-[var(--radius-pill)] transition-colors duration-[var(--dur-short)] focus-visible:outline-2 focus-visible:outline-primary"
-                        >
-                            Sign in
+                            )}
+                            <span className="font-sora font-bold text-2xl tracking-tight text-slate-900 group-hover:text-primary transition-colors">
+                                {storeName}
+                            </span>
                         </Link>
-                        <Link
-                            href="/register"
-                            className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded-[var(--radius-pill)] hover:opacity-90 shadow-sm shadow-primary/20 transition-opacity duration-[var(--dur-short)] focus-visible:outline-2 focus-visible:outline-primary"
-                        >
-                            <span>Get started</span>
-                            <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
-                        </Link>
-                    </div>
 
-                    {/* Mobile Drawer Toggle */}
-                    <button
-                        type="button"
-                        aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-                        className="md:hidden p-2 text-slate-600 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50 disabled:pointer-events-none"
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    >
-                        {mobileMenuOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Menu className="w-5 h-5" aria-hidden="true" />}
-                    </button>
-                </div>
-
-                {/* Mobile Drawer */}
-                {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-slate-100 bg-white px-4 py-4 space-y-3">
-                        <div className="space-y-1">
+                        {/* Desktop Links */}
+                        <div className="hidden md:flex items-center gap-8 font-medium">
+                            <a href="#features" className="text-slate-500 hover:text-primary transition">
+                                Features
+                            </a>
+                            <a href="#how-it-works" className="text-slate-500 hover:text-primary transition">
+                                How it Works
+                            </a>
+                            <a href="#contact" className="text-slate-500 hover:text-primary transition">
+                                Contact
+                            </a>
                             <a
-                                href="#services"
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="block px-3 py-2 text-sm text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-[var(--radius-pill)] transition-colors duration-[var(--dur-short)]"
+                                href="/downloads/yushpay.apk"
+                                className="text-primary font-bold hover:text-primary-600 transition flex items-center gap-1"
                             >
-                                Services
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                    />
+                                </svg>
+                                Download APK
+                            </a>
+                        </div>
+
+                        {/* Auth Buttons */}
+                        <div className="hidden md:flex items-center gap-4">
+                            {isLoggedIn ? (
+                                <Link
+                                    href="/dashboard"
+                                    className="bg-primary hover:bg-primary-600 text-white px-5 py-2.5 rounded-lg font-medium transition shadow-lg shadow-primary/25"
+                                >
+                                    Dashboard
+                                </Link>
+                            ) : (
+                                <>
+                                    <Link
+                                        href="/login"
+                                        className="text-slate-600 hover:text-primary transition font-medium"
+                                    >
+                                        Log in
+                                    </Link>
+                                    <Link
+                                        href="/register"
+                                        className="bg-primary hover:bg-primary-600 text-white px-5 py-2.5 rounded-lg font-medium transition shadow-lg shadow-primary/25"
+                                    >
+                                        Get Started
+                                    </Link>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Mobile Menu Button */}
+                        <div className="md:hidden flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                className="p-2 text-slate-600 hover:text-slate-900 focus:outline-none"
+                                aria-label="Toggle navigation"
+                            >
+                                {mobileMenuOpen ? (
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M6 18L18 6M6 6l12 12"
+                                        />
+                                    </svg>
+                                ) : (
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M4 6h16M4 12h16M4 18h16"
+                                        />
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Mobile Drawer */}
+                    {mobileMenuOpen && (
+                        <div className="md:hidden py-4 border-t border-slate-100 flex flex-col gap-3 font-medium">
+                            <a
+                                href="#features"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="px-2 py-2 text-slate-600 hover:text-primary transition"
+                            >
+                                Features
                             </a>
                             <a
                                 href="#how-it-works"
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="block px-3 py-2 text-sm text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-[var(--radius-pill)] transition-colors duration-[var(--dur-short)]"
+                                className="px-2 py-2 text-slate-600 hover:text-primary transition"
                             >
-                                How it works
+                                How it Works
                             </a>
-                        </div>
-                        <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                            <Link
-                                href="/login"
-                                className="w-full text-center px-3 py-2 text-sm font-medium text-slate-700 border border-slate-200 rounded-[var(--radius-pill)]"
+                            <a
+                                href="#contact"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="px-2 py-2 text-slate-600 hover:text-primary transition"
                             >
-                                Sign in
-                            </Link>
-                            <Link
-                                href="/register"
-                                className="w-full text-center px-4 py-2.5 bg-primary text-primary-foreground text-sm font-semibold rounded-[var(--radius-pill)] shadow-sm shadow-primary/20"
+                                Contact
+                            </a>
+                            <a
+                                href="/downloads/yushpay.apk"
+                                className="px-2 py-2 text-primary font-bold flex items-center gap-2"
                             >
-                                Get started
-                            </Link>
-                        </div>
-                    </div>
-                )}
-            </header>
-
-            <main className="flex-1">
-                {/* ─── HERO: STAGE COMPOSITION ─── */}
-                <section className="relative border-b border-slate-200/80 bg-white pt-16 pb-20 md:pt-24 md:pb-28">
-                    {/* Subtle merchant-colored glow */}
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                        <div
-                            className="absolute -top-32 left-1/2 -translate-x-1/2 w-[720px] h-[480px] rounded-full opacity-[0.06] blur-3xl"
-                            style={{ background: 'var(--primary, var(--color-accent))' }}
-                        />
-                    </div>
-
-                    <div className="relative max-w-[var(--container)] mx-auto px-4 sm:px-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-                            {/* Headline & Actions (Columns 1-7) */}
-                            <div className="lg:col-span-7">
-                                <h1 className="text-3xl sm:text-4xl md:text-[52px] font-medium leading-[1.05] tracking-tight text-slate-900 mb-5 [overflow-wrap:break-word] min-w-0">
-                                    Instant digital services and verified identity access.
-                                </h1>
-
-                                <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl mb-8">
-                                    {storeDescription}
-                                </p>
-
-                                <div className="flex flex-wrap items-center gap-3 mb-10">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                    />
+                                </svg>
+                                Download APK
+                            </a>
+                            <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
+                                {isLoggedIn ? (
                                     <Link
-                                        href="/register"
-                                        className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-semibold text-sm rounded-[var(--radius-pill)] hover:opacity-90 shadow-md shadow-primary/25 transition-opacity duration-[var(--dur-short)] focus-visible:outline-2 focus-visible:outline-primary"
+                                        href="/dashboard"
+                                        className="w-full text-center bg-primary text-white py-2.5 rounded-lg font-medium shadow-md shadow-primary/25"
                                     >
-                                        <span>Create free account</span>
-                                        <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+                                        Dashboard
                                     </Link>
-                                    <Link
-                                        href="/login"
-                                        className="inline-flex items-center gap-2 px-5 py-3 border border-slate-200 text-slate-800 font-medium text-sm rounded-[var(--radius-pill)] bg-white hover:bg-slate-50 transition-colors duration-[var(--dur-short)] focus-visible:outline-2 focus-visible:outline-primary"
-                                    >
-                                        Sign in
-                                    </Link>
-                                </div>
-
-                                {/* Operational Guarantees */}
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-slate-200/80">
-                                    <div className="flex items-center gap-2 text-xs text-slate-600">
-                                        <Check className="w-4 h-4 text-emerald-600 shrink-0" aria-hidden="true" />
-                                        <span>Instant delivery</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-xs text-slate-600">
-                                        <Check className="w-4 h-4 text-emerald-600 shrink-0" aria-hidden="true" />
-                                        <span>Secured wallet</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-xs text-slate-600">
-                                        <Check className="w-4 h-4 text-emerald-600 shrink-0" aria-hidden="true" />
-                                        <span>No hidden fees</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Live Telemetry Stage (Columns 8-12) */}
-                            <div className="lg:col-span-5">
-                                <div className="bg-white border border-slate-200/90 rounded-[var(--radius-card)] shadow-lg shadow-slate-200/40 overflow-hidden">
-                                    {/* Panel Header */}
-                                    <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between text-xs">
-                                        <span className="text-slate-600 font-medium">Platform telemetry</span>
-                                        <span className="measured text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60 font-semibold flex items-center gap-1.5 text-[11px]">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                            routing: active
-                                        </span>
-                                    </div>
-
-                                    {/* Telemetry Metrics */}
-                                    <div className="p-5 space-y-4">
-                                        <div className="bg-primary/5 border border-primary/20 rounded-[var(--radius-pill)] p-4">
-                                            <div className="text-xs text-slate-600 mb-1 font-medium">Account wallet balance</div>
-                                            <div className="measured text-2xl font-bold text-slate-900">₦ 14,850.00</div>
-                                            <div className="measured text-xs text-emerald-700 font-semibold mt-1 flex items-center gap-1.5">
-                                                <Check className="w-3.5 h-3.5" aria-hidden="true" />
-                                                <span>Funded & active</span>
-                                            </div>
-                                        </div>
-
-                                        {/* Instrument Readout Grid */}
-                                        <div className="grid grid-cols-2 gap-2 text-xs">
-                                            <div className="bg-slate-50 border border-slate-100 rounded-[var(--radius-pill)] p-3">
-                                                <div className="text-slate-500 font-medium">Avg delivery</div>
-                                                <div className="measured text-base font-bold text-slate-900 mt-0.5">&lt; 3.0s</div>
-                                            </div>
-                                            <div className="bg-slate-50 border border-slate-100 rounded-[var(--radius-pill)] p-3">
-                                                <div className="text-slate-500 font-medium">Verified uptime</div>
-                                                <div className="measured text-base font-bold text-slate-900 mt-0.5">99.9%</div>
-                                            </div>
-                                        </div>
-
-                                        {/* Recent Transaction Ledger */}
-                                        <div className="space-y-1.5 pt-2 border-t border-slate-100">
-                                            <div className="flex items-center justify-between text-xs py-1 text-slate-600">
-                                                <span className="font-medium">Airtime: MTN ₦500</span>
-                                                <span className="measured text-emerald-700 font-semibold">confirmed</span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-xs py-1 text-slate-600">
-                                                <span className="font-medium">Data: Airtel 1GB</span>
-                                                <span className="measured text-emerald-700 font-semibold">confirmed</span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-xs py-1 text-slate-600">
-                                                <span className="font-medium">NIN verification</span>
-                                                <span className="measured text-primary font-semibold">verified</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                ) : (
+                                    <>
+                                        <Link
+                                            href="/login"
+                                            className="w-full text-center py-2.5 text-slate-700 border border-slate-200 rounded-lg font-medium"
+                                        >
+                                            Log in
+                                        </Link>
+                                        <Link
+                                            href="/register"
+                                            className="w-full text-center bg-primary text-white py-2.5 rounded-lg font-medium shadow-md shadow-primary/25"
+                                        >
+                                            Get Started
+                                        </Link>
+                                    </>
+                                )}
                             </div>
                         </div>
-                    </div>
-                </section>
+                    )}
+                </div>
+            </nav>
 
-                {/* ─── SYSTEM PERFORMANCE LEDGER ─── */}
-                <section className="border-b border-slate-200/80 bg-slate-50/70 py-8">
-                    <div className="max-w-[var(--container)] mx-auto px-4 sm:px-6">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x md:divide-slate-200">
-                            <div className="text-center md:px-4">
-                                <div className="measured text-2xl sm:text-3xl font-bold text-slate-900">&lt; 3s</div>
-                                <div className="text-xs text-slate-500 mt-1 font-medium">Avg. delivery time</div>
-                            </div>
-                            <div className="text-center md:px-4">
-                                <div className="measured text-2xl sm:text-3xl font-bold text-slate-900">99.9%</div>
-                                <div className="text-xs text-slate-500 mt-1 font-medium">Platform uptime</div>
-                            </div>
-                            <div className="text-center md:px-4">
-                                <div className="measured text-2xl sm:text-3xl font-bold text-slate-900">8+</div>
-                                <div className="text-xs text-slate-500 mt-1 font-medium">Service categories</div>
-                            </div>
-                            <div className="text-center md:px-4">
-                                <div className="measured text-2xl sm:text-3xl font-bold text-slate-900">24/7</div>
-                                <div className="text-xs text-slate-500 mt-1 font-medium">System availability</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+            {/* Hero Section */}
+            <main className="pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-slate-50 relative">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+                    {/* Background decorative shapes */}
+                    <div className="absolute top-10 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute bottom-10 left-10 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
 
-                {/* ─── PROVIDER RECOGNITION ─── */}
-                <section className="border-b border-slate-200/80 bg-white py-6">
-                    <div className="max-w-[var(--container)] mx-auto px-4 sm:px-6">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <span className="text-xs font-semibold text-slate-500 shrink-0">Supported networks and service providers</span>
-                            <div className="flex flex-wrap items-center gap-2">
-                                {providers.map(provider => (
-                                    <span
-                                        key={provider}
-                                        className="measured px-3 py-1 text-xs border border-slate-200 rounded-full bg-slate-50 text-slate-700 font-semibold"
-                                    >
-                                        {provider}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* ─── SERVICES SUITE ─── */}
-                <section id="services" className="border-b border-slate-200/80 bg-white py-20 md:py-28">
-                    <div className="max-w-[var(--container)] mx-auto px-4 sm:px-6">
-                        <div className="max-w-2xl mb-14">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight text-slate-900 mb-3 [overflow-wrap:break-word] min-w-0">
-                                Direct telecom and verification catalog.
-                            </h2>
-                            <p className="text-base text-slate-600 leading-relaxed">
-                                Automated API connectivity with primary telecom gateways and regulatory systems for real-time order completion.
+                    <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+                        {/* Left text */}
+                        <div className="text-center lg:text-left">
+                            <h1 className="font-sora text-5xl lg:text-6xl xl:text-7xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
+                                The ultimate <span className="gradient-primary-text">financial hub</span>
+                            </h1>
+                            <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                                Seamlessly manage data &amp; airtime top-ups, utility bills, bulk SMS, exam pins, and
+                                identity verification—all in one powerful platform.
                             </p>
-                        </div>
-
-                        {/* Utilities & Telecoms Grid */}
-                        <div className="mb-14">
-                            <div className="text-xs font-semibold text-slate-500 mb-4">Telecom utilities and vouchers</div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-5 hover:border-slate-300 transition-colors duration-[var(--dur-short)]">
-                                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4">
-                                        <Smartphone className="w-4 h-4" aria-hidden="true" />
-                                    </div>
-                                    <h3 className="font-semibold text-sm text-slate-900 mb-1">Airtime</h3>
-                                    <p className="text-xs text-slate-500 leading-relaxed">MTN, Airtel, GLO, and 9Mobile instant top-ups.</p>
-                                </div>
-
-                                <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-5 hover:border-slate-300 transition-colors duration-[var(--dur-short)]">
-                                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4">
-                                        <Wifi className="w-4 h-4" aria-hidden="true" />
-                                    </div>
-                                    <h3 className="font-semibold text-sm text-slate-900 mb-1">Data bundles</h3>
-                                    <p className="text-xs text-slate-500 leading-relaxed">High-volume SME and direct data delivered automatically.</p>
-                                </div>
-
-                                <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-5 hover:border-slate-300 transition-colors duration-[var(--dur-short)]">
-                                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4">
-                                        <Tv className="w-4 h-4" aria-hidden="true" />
-                                    </div>
-                                    <h3 className="font-semibold text-sm text-slate-900 mb-1">TV subscription</h3>
-                                    <p className="text-xs text-slate-500 leading-relaxed">DSTV, GOtv, and Startimes renewal with zero delay.</p>
-                                </div>
-
-                                <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-5 hover:border-slate-300 transition-colors duration-[var(--dur-short)]">
-                                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4">
-                                        <GraduationCap className="w-4 h-4" aria-hidden="true" />
-                                    </div>
-                                    <h3 className="font-semibold text-sm text-slate-900 mb-1">Education pins</h3>
-                                    <p className="text-xs text-slate-500 leading-relaxed">WAEC, NECO, and JAMB validation tokens on demand.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Identity & Verification Grid */}
-                        <div>
-                            <div className="text-xs font-semibold text-slate-500 mb-4">Identity verification and funding</div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-5 hover:border-slate-300 transition-colors duration-[var(--dur-short)]">
-                                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4">
-                                        <FileBadge className="w-4 h-4" aria-hidden="true" />
-                                    </div>
-                                    <h3 className="font-semibold text-sm text-slate-900 mb-1">NIN services</h3>
-                                    <p className="text-xs text-slate-500 leading-relaxed">Direct National Identity Number lookup and data confirmation.</p>
-                                </div>
-
-                                <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-5 hover:border-slate-300 transition-colors duration-[var(--dur-short)]">
-                                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4">
-                                        <ShieldCheck className="w-4 h-4" aria-hidden="true" />
-                                    </div>
-                                    <h3 className="font-semibold text-sm text-slate-900 mb-1">BVN validation</h3>
-                                    <p className="text-xs text-slate-500 leading-relaxed">Real-time Bank Verification Number check across banking nodes.</p>
-                                </div>
-
-                                <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-5 hover:border-slate-300 transition-colors duration-[var(--dur-short)]">
-                                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4">
-                                        <Building2 className="w-4 h-4" aria-hidden="true" />
-                                    </div>
-                                    <h3 className="font-semibold text-sm text-slate-900 mb-1">CAC lookup</h3>
-                                    <p className="text-xs text-slate-500 leading-relaxed">Corporate Affairs Commission business name confirmation.</p>
-                                </div>
-
-                                <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-5 hover:border-slate-300 transition-colors duration-[var(--dur-short)]">
-                                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4">
-                                        <CreditCard className="w-4 h-4" aria-hidden="true" />
-                                    </div>
-                                    <h3 className="font-semibold text-sm text-slate-900 mb-1">Wallet funding</h3>
-                                    <p className="text-xs text-slate-500 leading-relaxed">Dedicated virtual accounts with instant settlement.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* ─── INFRASTRUCTURE RELIABILITY (WHY US) ─── */}
-                <section className="border-b border-slate-200/80 bg-slate-50/70 py-20 md:py-28">
-                    <div className="max-w-[var(--container)] mx-auto px-4 sm:px-6">
-                        <div className="max-w-2xl mb-12">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight text-slate-900 mb-3 [overflow-wrap:break-word] min-w-0">
-                                Built for speed. Secured by design.
-                            </h2>
-                            <p className="text-base text-slate-600 leading-relaxed">
-                                We’ve engineered every layer of the platform for reliability. Your funds are protected, your data is encrypted, and our systems run around the clock.
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-6 shadow-sm">
-                                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4">
-                                    <Zap className="w-4 h-4" aria-hidden="true" />
-                                </div>
-                                <h3 className="font-semibold text-base text-slate-900 mb-2">Lightning fast processing</h3>
-                                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                    Automated API routing completes transactions in under 3 seconds on average.
-                                </p>
-                            </div>
-
-                            <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-6 shadow-sm">
-                                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4">
-                                    <Lock className="w-4 h-4" aria-hidden="true" />
-                                </div>
-                                <h3 className="font-semibold text-base text-slate-900 mb-2">Bank-grade security</h3>
-                                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                    End-to-end encryption protects every transaction and identity record.
-                                </p>
-                            </div>
-
-                            <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-6 shadow-sm">
-                                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4">
-                                    <Clock className="w-4 h-4" aria-hidden="true" />
-                                </div>
-                                <h3 className="font-semibold text-base text-slate-900 mb-2">Always available</h3>
-                                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                    99.9% uptime with 24/7 automated monitoring and fail-overs.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* ─── PROCESS WORKFLOW ─── */}
-                <section id="how-it-works" className="border-b border-slate-200/80 bg-white py-20 md:py-28">
-                    <div className="max-w-[var(--container)] mx-auto px-4 sm:px-6">
-                        <div className="max-w-2xl mb-12">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight text-slate-900 mb-3 [overflow-wrap:break-word] min-w-0">
-                                Start in minutes, not days.
-                            </h2>
-                            <p className="text-base text-slate-600 leading-relaxed">
-                                No complicated onboarding. Create an account, fund your wallet, and start transacting.
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="bg-slate-50/70 border border-slate-200/80 rounded-[var(--radius-card)] p-6">
-                                <div className="measured text-xs font-bold text-slate-400 mb-3">01</div>
-                                <h3 className="font-semibold text-base text-slate-900 mb-2">Create an account</h3>
-                                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                    Sign up in under 60 seconds with just your email address. No paperwork required.
-                                </p>
-                            </div>
-
-                            <div className="bg-slate-50/70 border border-slate-200/80 rounded-[var(--radius-card)] p-6">
-                                <div className="measured text-xs font-bold text-slate-400 mb-3">02</div>
-                                <h3 className="font-semibold text-base text-slate-900 mb-2">Fund your wallet</h3>
-                                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                    Get a unique virtual account number. Transfer any amount and your balance updates instantly.
-                                </p>
-                            </div>
-
-                            <div className="bg-primary/5 border border-primary/30 rounded-[var(--radius-card)] p-6 shadow-sm">
-                                <div className="measured text-xs font-bold text-primary mb-3">03</div>
-                                <h3 className="font-semibold text-base text-slate-900 mb-2">Start transacting</h3>
-                                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                    Buy airtime, data, pay bills, or run identity checks, all from one clean dashboard.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* ─── CUSTOMER TESTIMONIALS ─── */}
-                <section className="border-b border-slate-200/80 bg-slate-50/70 py-20 md:py-28">
-                    <div className="max-w-[var(--container)] mx-auto px-4 sm:px-6">
-                        <div className="max-w-2xl mb-12">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight text-slate-900 mb-3 [overflow-wrap:break-word] min-w-0">
-                                Feedback from active accounts.
-                            </h2>
-                            <p className="text-base text-slate-600 leading-relaxed">
-                                Verified experiences across daily personal and business operations.
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <TestimonialCard
-                                quote="“I fund my wallet once and handle airtime, data, and TV from one screen. Incredibly fast.”"
-                                name="Fatima A."
-                                role="Business Owner"
-                            />
-                            <TestimonialCard
-                                quote="“The NIN verification was done in seconds. I was skeptical at first but this platform genuinely delivers.”"
-                                name="Emeka O."
-                                role="Freelancer"
-                            />
-                            <TestimonialCard
-                                quote="“Finally a service with zero excuses. My data subscription renews instantly every time.”"
-                                name="Aisha M."
-                                role="Student"
-                            />
-                        </div>
-                    </div>
-                </section>
-
-                {/* ─── CALL TO ACTION BANNER ─── */}
-                <section className="bg-white py-16 md:py-24">
-                    <div className="max-w-[var(--container)] mx-auto px-4 sm:px-6">
-                        <div className="bg-slate-900 rounded-[var(--radius-card)] p-8 sm:p-12 md:p-16 text-center max-w-3xl mx-auto shadow-xl">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight text-white mb-4 [overflow-wrap:break-word] min-w-0">
-                                Ready to get started?
-                            </h2>
-                            <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-lg mx-auto mb-8">
-                                Join {storeName} today. Create your free account and start making instant transactions in under 5 minutes.
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                                 <Link
                                     href="/register"
-                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-semibold text-sm rounded-[var(--radius-pill)] hover:opacity-90 shadow-md shadow-primary/30 transition-opacity duration-[var(--dur-short)] focus-visible:outline-2 focus-visible:outline-primary"
+                                    className="w-full sm:w-auto px-8 py-4 bg-primary hover:bg-primary-600 text-white rounded-xl font-medium text-lg transition shadow-xl shadow-primary/30 flex items-center justify-center gap-2 transform hover:-translate-y-1"
                                 >
-                                    <span>Create free account</span>
-                                    <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+                                    Create Free Account
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M13 7l5 5m0 0l-5 5m5-5H6"
+                                        />
+                                    </svg>
                                 </Link>
-                                <Link
-                                    href="/login"
-                                    className="inline-flex items-center justify-center gap-2 px-5 py-3 border border-slate-700 text-slate-200 font-medium text-sm rounded-[var(--radius-pill)] bg-slate-800 hover:bg-slate-700 transition-colors duration-[var(--dur-short)] focus-visible:outline-2 focus-visible:outline-primary"
+                                <a
+                                    href="/downloads/yushpay.apk"
+                                    className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-medium text-lg transition flex items-center justify-center shadow-sm hover:shadow-md gap-2"
                                 >
-                                    Already have an account?
-                                </Link>
+                                    <svg
+                                        className="w-5 h-5 text-primary"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                        />
+                                    </svg>
+                                    Download APK
+                                </a>
+                            </div>
+
+                            <div className="mt-10 flex items-center justify-center lg:justify-start gap-4 text-sm text-slate-500">
+                                <div className="flex -space-x-2">
+                                    {/* User 1 */}
+                                    <div className="w-10 h-10 rounded-full border-2 border-white bg-blue-100 text-blue-500 flex items-center justify-center overflow-hidden">
+                                        <svg className="w-6 h-6 mt-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                    </div>
+                                    {/* User 2 */}
+                                    <div className="w-10 h-10 rounded-full border-2 border-white bg-rose-100 text-rose-500 flex items-center justify-center overflow-hidden">
+                                        <svg className="w-6 h-6 mt-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                    </div>
+                                    {/* User 3 */}
+                                    <div className="w-10 h-10 rounded-full border-2 border-white bg-amber-100 text-amber-500 flex items-center justify-center overflow-hidden">
+                                        <svg className="w-6 h-6 mt-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600 shadow-sm">
+                                        +10k
+                                    </div>
+                                </div>
+                                <p>Trusted by merchants nationwide</p>
+                            </div>
+                        </div>
+
+                        {/* Right Mockup */}
+                        <div className="hidden lg:block relative">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-primary-100 to-white rounded-3xl transform rotate-3 scale-105 pointer-events-none" />
+                            <div className="relative bg-white p-6 rounded-3xl shadow-2xl border border-slate-100">
+                                {/* Fake App Dashboard UI */}
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
+                                            <svg
+                                                className="w-5 h-5"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div className="text-sm font-bold text-slate-900">John Doe Ent.</div>
+                                            <div className="text-xs text-slate-500">Verified Merchant</div>
+                                        </div>
+                                    </div>
+                                    <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">
+                                        Active
+                                    </div>
+                                </div>
+
+                                <div className="bg-slate-900 text-white p-6 rounded-2xl mb-6 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-primary rounded-full blur-2xl opacity-50" />
+                                    <div className="text-sm text-slate-300 mb-1">Available Balance</div>
+                                    <div className="text-3xl font-sora font-bold mb-4">₦2,450,000.00</div>
+                                    <div className="flex gap-2">
+                                        <button className="bg-primary hover:bg-primary-600 flex-1 py-2 rounded-lg text-sm font-medium transition cursor-pointer">
+                                            Fund Wallet
+                                        </button>
+                                        <button className="bg-slate-800 hover:bg-slate-700 flex-1 py-2 rounded-lg text-sm font-medium transition cursor-pointer">
+                                            Transfer
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 border border-slate-100 rounded-xl hover:shadow-md transition cursor-pointer">
+                                        <div className="w-8 h-8 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-2">
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div className="text-sm font-bold text-slate-900">Buy Airtime</div>
+                                    </div>
+                                    <div className="p-4 border border-slate-100 rounded-xl hover:shadow-md transition cursor-pointer">
+                                        <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-2">
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div className="text-sm font-bold text-slate-900">Buy Data</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </section>
+                </div>
             </main>
 
-            {/* ─── FOOTER ─── */}
-            <footer className="border-t border-slate-200/80 bg-slate-50 py-12 text-xs">
-                <div className="max-w-[var(--container)] mx-auto px-4 sm:px-6">
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-10">
-                        {/* Store Info (Cols 1-5) */}
-                        <div className="md:col-span-5 space-y-3">
-                            <div className="flex items-center gap-2.5">
-                                {store?.logo_url ? (
-                                    <img src={store.logo_url} alt={storeName} className="h-7 max-w-[140px] object-contain" />
-                                ) : (
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-6 h-6 rounded-md bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">
-                                            {storeInitial}
-                                        </div>
-                                        <span className="font-semibold text-slate-900 text-sm">{storeName}</span>
-                                    </div>
-                                )}
+            {/* Stats Section */}
+            <section className="py-12 border-b border-slate-100 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-slate-100">
+                        <div>
+                            <div className="text-4xl font-sora font-extrabold text-slate-900 mb-2">99.9%</div>
+                            <div className="text-slate-500 font-medium">Uptime Guarantee</div>
+                        </div>
+                        <div>
+                            <div className="text-4xl font-sora font-extrabold text-slate-900 mb-2">2M+</div>
+                            <div className="text-slate-500 font-medium">Transactions Processed</div>
+                        </div>
+                        <div>
+                            <div className="text-4xl font-sora font-extrabold text-slate-900 mb-2">&lt;1s</div>
+                            <div className="text-slate-500 font-medium">Average API Latency</div>
+                        </div>
+                        <div>
+                            <div className="text-4xl font-sora font-extrabold text-slate-900 mb-2">24/7</div>
+                            <div className="text-slate-500 font-medium">Customer Support</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* How It Works Section */}
+            <section id="how-it-works" className="scroll-mt-20 py-16 md:py-24 bg-slate-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12 md:mb-16 px-4">
+                        <h2 className="font-sora text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-4 sm:mb-6">
+                            Start transacting in minutes
+                        </h2>
+                        <p className="text-slate-600 text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+                            We&apos;ve streamlined the process so you can focus on what matters: growing your business
+                            and managing your finances.
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-12 relative">
+                        {/* Connecting line */}
+                        <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 gradient-step-line" />
+
+                        {/* Step 1 */}
+                        <div className="relative text-center">
+                            <div className="w-24 h-24 mx-auto bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-6 relative z-10">
+                                <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center text-primary font-sora text-2xl font-bold">
+                                    1
+                                </div>
                             </div>
-
-                            <p className="text-slate-600 leading-relaxed max-w-sm">
-                                {storeDescription}
+                            <h3 className="font-sora text-xl font-bold text-slate-900 mb-3">Create an Account</h3>
+                            <p className="text-slate-600">
+                                Sign up in seconds. All you need is your basic information to get started on{' '}
+                                {storeName}.
                             </p>
+                        </div>
 
-                            <div className="flex flex-wrap gap-4 pt-1">
-                                {store?.social_instagram && (
-                                    <a
-                                        href={`https://instagram.com/${store.social_instagram}`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="text-slate-500 hover:text-slate-900 transition-colors duration-[var(--dur-short)] focus-visible:outline-2 focus-visible:outline-primary"
-                                    >
-                                        Instagram
-                                    </a>
-                                )}
-                                {store?.social_facebook && (
-                                    <a
-                                        href={store.social_facebook}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="text-slate-500 hover:text-slate-900 transition-colors duration-[var(--dur-short)] focus-visible:outline-2 focus-visible:outline-primary"
-                                    >
-                                        Facebook
-                                    </a>
-                                )}
-                                {store?.social_whatsapp && (
-                                    <a
-                                        href={`https://wa.me/${store.social_whatsapp}`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="text-slate-500 hover:text-slate-900 transition-colors duration-[var(--dur-short)] focus-visible:outline-2 focus-visible:outline-primary"
-                                    >
-                                        WhatsApp
-                                    </a>
-                                )}
+                        {/* Step 2 */}
+                        <div className="relative text-center">
+                            <div className="w-24 h-24 mx-auto bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-6 relative z-10">
+                                <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center text-primary font-sora text-2xl font-bold">
+                                    2
+                                </div>
+                            </div>
+                            <h3 className="font-sora text-xl font-bold text-slate-900 mb-3">Verify Identity</h3>
+                            <p className="text-slate-600">
+                                Complete our automated KYC process securely using your BVN or NIN for full platform
+                                access.
+                            </p>
+                        </div>
+
+                        {/* Step 3 */}
+                        <div className="relative text-center">
+                            <div className="w-24 h-24 mx-auto bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-6 relative z-10">
+                                <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center text-primary font-sora text-2xl font-bold">
+                                    3
+                                </div>
+                            </div>
+                            <h3 className="font-sora text-xl font-bold text-slate-900 mb-3">Start Transacting</h3>
+                            <p className="text-slate-600">
+                                Fund your wallet via your dedicated virtual account and instantly pay bills or purchase
+                                VTU.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Features Section */}
+            <section id="features" className="scroll-mt-20 py-16 md:py-24 bg-slate-50 border-t border-slate-200/60 relative z-10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12 md:mb-16 px-4">
+                        <h2 className="font-sora text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-4 sm:mb-6">
+                            Everything you need, in one place
+                        </h2>
+                        <p className="text-slate-600 text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+                            We provide a comprehensive suite of digital services designed to make your daily
+                            transactions fast, secure, and incredibly rewarding.
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                        {/* Feature 1: Airtime & Data */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 flex flex-col justify-between transform hover:-translate-y-1 transition duration-300">
+                            <div>
+                                <div className="w-14 h-14 bg-primary-50 text-primary rounded-2xl flex items-center justify-center mb-6">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                                        />
+                                    </svg>
+                                </div>
+                                <h3 className="font-sora text-2xl font-bold text-slate-900 mb-3">Airtime &amp; Data</h3>
+                                <p className="text-slate-600 leading-relaxed">
+                                    Instant top-ups for MTN, Glo, Airtel, and 9mobile. Enjoy ultra-fast delivery and highly
+                                    discounted rates on all data bundles.
+                                </p>
                             </div>
                         </div>
 
-                        {/* Navigation Links (Cols 6-8) */}
-                        <div className="md:col-span-3 space-y-2.5">
-                            <div className="text-slate-900 font-semibold">Platform</div>
-                            <ul className="space-y-2 text-slate-600">
+                        {/* Feature 2: Utilities */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 flex flex-col justify-between transform hover:-translate-y-1 transition duration-300">
+                            <div>
+                                <div className="w-14 h-14 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mb-6">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                                        />
+                                    </svg>
+                                </div>
+                                <h3 className="font-sora text-2xl font-bold text-slate-900 mb-3">Cable &amp; Electricity</h3>
+                                <p className="text-slate-600 leading-relaxed">
+                                    Pay IKEDC, EKEDC, KEDCO bills and subscribe to DSTV, GOTV, and StarTimes instantly. Never
+                                    miss a moment or stay in the dark.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Feature 3: Bulk SMS */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 flex flex-col justify-between transform hover:-translate-y-1 transition duration-300">
+                            <div>
+                                <div className="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-6">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                                        />
+                                    </svg>
+                                </div>
+                                <h3 className="font-sora text-2xl font-bold text-slate-900 mb-3">Bulk SMS Service</h3>
+                                <p className="text-slate-600 leading-relaxed">
+                                    Reach thousands instantly. Send customized SMS with your own dedicated Sender ID.
+                                    Includes robust DND bypass support.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Feature 4: Airtime to Cash */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 flex flex-col justify-between transform hover:-translate-y-1 transition duration-300">
+                            <div>
+                                <div className="w-14 h-14 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center mb-6">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                                        />
+                                    </svg>
+                                </div>
+                                <h3 className="font-sora text-2xl font-bold text-slate-900 mb-3">Airtime to Cash</h3>
+                                <p className="text-slate-600 leading-relaxed">
+                                    Made a mistake while recharging? Easily convert your excess airtime back into real cash
+                                    deposited straight into your wallet.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Feature 5: Exam Pins */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 flex flex-col justify-between transform hover:-translate-y-1 transition duration-300">
+                            <div>
+                                <div className="w-14 h-14 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-6">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                        />
+                                    </svg>
+                                </div>
+                                <h3 className="font-sora text-2xl font-bold text-slate-900 mb-3">Exam Pins</h3>
+                                <p className="text-slate-600 leading-relaxed">
+                                    Instantly generate valid result checker pins and registration tokens for WAEC, NECO,
+                                    NABTEB, and JAMB.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Feature 6: KYC & Identity */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 flex flex-col justify-between transform hover:-translate-y-1 transition duration-300">
+                            <div>
+                                <div className="w-14 h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-6">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                                        />
+                                    </svg>
+                                </div>
+                                <h3 className="font-sora text-2xl font-bold text-slate-900 mb-3">Identity &amp; KYC</h3>
+                                <p className="text-slate-600 leading-relaxed">
+                                    Robust BVN and NIN verification systems ensuring absolute compliance, account security,
+                                    and trust for all platform users.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Contact Section */}
+            <section id="contact" className="scroll-mt-20 py-16 md:py-24 bg-slate-50 relative overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="text-center mb-12 md:mb-16 px-4">
+                        <h2 className="font-sora text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-4 sm:mb-6">
+                            Connect with us
+                        </h2>
+                        <p className="text-slate-600 text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+                            Have questions or need support? Reach out to us through our direct communication channels.
+                        </p>
+                    </div>
+
+                    {/* Contact Channels Grid */}
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                        {/* WhatsApp Support */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 flex flex-col justify-between transform hover:-translate-y-1 transition duration-300">
+                            <div>
+                                <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6">
+                                    <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.456L0 24zm5.835-4.117c1.62.962 3.2 1.488 4.916 1.489 5.482.002 9.943-4.461 9.945-9.947.002-2.657-1.026-5.155-2.897-7.029C16.086 2.522 13.593 1.49 10.932 1.49c-5.485 0-9.946 4.463-9.948 9.949-.001 1.83.499 3.619 1.447 5.233l-1.01 3.687 3.836-.989z" />
+                                    </svg>
+                                </div>
+                                <h3 className="font-sora text-2xl font-bold text-slate-900 mb-3">WhatsApp Support</h3>
+                                <p className="text-slate-500 text-sm leading-relaxed mb-6">
+                                    Chat directly with our support team for quick resolution of transaction-related
+                                    issues or account queries.
+                                </p>
+                            </div>
+                            <a
+                                href={`https://wa.me/${whatsappNum}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
+                            >
+                                Message {whatsappDisplay}
+                            </a>
+                        </div>
+
+                        {/* Phone Support */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 flex flex-col justify-between transform hover:-translate-y-1 transition duration-300">
+                            <div>
+                                <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                                        />
+                                    </svg>
+                                </div>
+                                <h3 className="font-sora text-2xl font-bold text-slate-900 mb-3">Phone Support</h3>
+                                <p className="text-slate-500 text-sm leading-relaxed mb-6">
+                                    Speak directly with a representative for immediate assistance. Support lines are
+                                    active during work hours.
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <a
+                                    href={`tel:${contactPhone1.replace(/\s+/g, '')}`}
+                                    className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
+                                >
+                                    Call {contactPhone1}
+                                </a>
+                                <a
+                                    href={`tel:${contactPhone2.replace(/\s+/g, '')}`}
+                                    className="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
+                                >
+                                    Call {contactPhone2}
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* WhatsApp Group */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 flex flex-col justify-between transform hover:-translate-y-1 transition duration-300">
+                            <div>
+                                <div className="w-14 h-14 bg-primary-50 text-primary-600 rounded-2xl flex items-center justify-center mb-6">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                                        />
+                                    </svg>
+                                </div>
+                                <h3 className="font-sora text-2xl font-bold text-slate-900 mb-3">WhatsApp Group</h3>
+                                <p className="text-slate-500 text-sm leading-relaxed mb-6">
+                                    Join our official community group. Connect with other users, receive general
+                                    updates, and access general help.
+                                </p>
+                            </div>
+                            <a
+                                href="https://chat.whatsapp.com/JnyDtf6Dtj80imFMBbnKjW"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="w-full py-3 bg-primary hover:bg-primary-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2"
+                            >
+                                Join WhatsApp Group
+                            </a>
+                        </div>
+
+                        {/* Email Support */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 flex flex-col justify-between transform hover:-translate-y-1 transition duration-300">
+                            <div>
+                                <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                        />
+                                    </svg>
+                                </div>
+                                <h3 className="font-sora text-2xl font-bold text-slate-900 mb-3">Email Support</h3>
+                                <p className="text-slate-500 text-sm leading-relaxed mb-6">
+                                    Send us an email for corporate proposals, general inquiries, or detailed bug
+                                    reports.
+                                </p>
+                            </div>
+                            <a
+                                href={`mailto:${contactEmail}`}
+                                className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-center transition flex items-center justify-center gap-2 truncate px-2"
+                            >
+                                {contactEmail}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="py-24 bg-primary relative overflow-hidden mt-12 lg:m-8 lg:rounded-[3rem]">
+                <div className="absolute inset-0 gradient-primary-cta pointer-events-none" />
+                {/* Decorative circle */}
+                <div className="absolute top-0 right-0 -mr-32 -mt-32 w-[30rem] h-[30rem] bg-white/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-[30rem] h-[30rem] bg-blue-900/20 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                    <h2 className="font-sora text-4xl md:text-6xl font-extrabold text-white mb-6 tracking-tight">
+                        Ready to revolutionize your payments?
+                    </h2>
+                    <p className="text-xl md:text-2xl text-primary-50 mb-12 font-medium">
+                        Join thousands of users who trust {storeName} for their daily financial needs.
+                    </p>
+                    <div className="flex flex-col sm:flex-row justify-center gap-4">
+                        <Link
+                            href="/register"
+                            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-slate-50 text-primary rounded-xl font-bold text-lg transition shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                        >
+                            Start Your Journey Today
+                            <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                />
+                            </svg>
+                        </Link>
+                        <a
+                            href="#how-it-works"
+                            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-700/50 hover:bg-primary-700 backdrop-blur-sm text-white rounded-xl font-bold text-lg transition border border-primary-400"
+                        >
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="bg-white pt-20 pb-10 border-t border-slate-100">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                        <div className="col-span-1 md:col-span-2">
+                            <div className="flex items-center gap-3 mb-6">
+                                {storeLogo ? (
+                                    <img
+                                        src={storeLogo}
+                                        alt={`${storeName} Logo`}
+                                        className="w-10 h-10 rounded-xl object-contain bg-white shadow-md p-1 border border-slate-100"
+                                    />
+                                ) : (
+                                    <div className="w-10 h-10 rounded-xl bg-primary text-white font-sora font-bold text-xl flex items-center justify-center shadow-md">
+                                        {storeName.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
+                                <span className="font-sora font-bold text-2xl text-slate-900">{storeName}</span>
+                            </div>
+                            <p className="text-slate-500 text-lg max-w-sm leading-relaxed">{storeDesc}</p>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-slate-900 mb-4 uppercase tracking-wider text-sm">Platform</h4>
+                            <ul className="space-y-3 text-slate-500">
                                 <li>
-                                    <a href="#services" className="hover:text-slate-900 transition-colors duration-[var(--dur-short)]">
-                                        Services
+                                    <a href="#features" className="hover:text-primary transition">
+                                        Features
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#how-it-works" className="hover:text-slate-900 transition-colors duration-[var(--dur-short)]">
+                                    <a href="#how-it-works" className="hover:text-primary transition">
                                         How it works
                                     </a>
                                 </li>
                                 <li>
-                                    <Link href="/register" className="hover:text-slate-900 transition-colors duration-[var(--dur-short)]">
-                                        Register
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/login" className="hover:text-slate-900 transition-colors duration-[var(--dur-short)]">
-                                        Sign in
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* Contact & Legal (Cols 9-12) */}
-                        <div className="md:col-span-4 space-y-2.5">
-                            <div className="text-slate-900 font-semibold">Contact and legal</div>
-                            <ul className="space-y-2 text-slate-600">
-                                {store?.contact_email && (
-                                    <li>
-                                        <a href={`mailto:${store.contact_email}`} className="hover:text-slate-900 transition-colors duration-[var(--dur-short)]">
-                                            {store.contact_email}
-                                        </a>
-                                    </li>
-                                )}
-                                {store?.contact_phone && (
-                                    <li>
-                                        <span>{store.contact_phone}</span>
-                                    </li>
-                                )}
-                                <li>
-                                    <Link href="/privacy-policy" className="hover:text-slate-900 transition-colors duration-[var(--dur-short)]">
-                                        Privacy Policy
-                                    </Link>
-                                </li>
-                                <li>
-                                    <a href="#" className="hover:text-slate-900 transition-colors duration-[var(--dur-short)]">
-                                        Terms of Service
+                                    <a href="#pricing" className="hover:text-primary transition">
+                                        Pricing
                                     </a>
                                 </li>
                             </ul>
                         </div>
+                        <div>
+                            <h4 className="font-bold text-slate-900 mb-4 uppercase tracking-wider text-sm">Company</h4>
+                            <ul className="space-y-3 text-slate-500">
+                                <li>
+                                    <a href="#about" className="hover:text-primary transition">
+                                        About Us
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#contact" className="hover:text-primary transition">
+                                        Contact
+                                    </a>
+                                </li>
+                                <li>
+                                    <Link href="/privacy" className="hover:text-primary transition">
+                                        Privacy Policy
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/delete-account" className="hover:text-primary transition">
+                                        Delete Account
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/terms" className="hover:text-primary transition">
+                                        Terms of Service
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-
-                    <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500">
-                        <p>&copy; {new Date().getFullYear()} {storeName}. All rights reserved.</p>
-                        <p>
-                            Powered by{' '}
+                    <div className="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+                        <div className="text-slate-400 text-sm">
+                            <p className="mb-1">
+                                &copy; {currentYear} {storeName}. All rights reserved.
+                            </p>
+                            <p>
+                                Developed by{' '}
+                                <a
+                                    href="https://netvirux.dev/"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-primary hover:text-primary-700 font-medium transition"
+                                >
+                                    Umar Net Viruz
+                                </a>
+                            </p>
+                        </div>
+                        <div className="flex gap-4">
+                            {/* Twitter / X */}
                             <a
-                                href="https://affanhub.com"
-                                className="text-slate-700 hover:text-slate-900 transition-colors duration-[var(--dur-short)] font-medium"
+                                href={store?.social_instagram || '#'}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="w-10 h-10 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition"
+                                aria-label="Social Link"
                             >
-                                AffanHub
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+                                </svg>
                             </a>
-                        </p>
+                            {/* Facebook */}
+                            <a
+                                href={store?.social_facebook || '#'}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="w-10 h-10 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition"
+                                aria-label="Facebook Link"
+                            >
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm3 8h-1.35c-.538 0-.65.221-.65.778v1.222h2l-.209 2h-1.791v7h-3v-7h-2v-2h2v-2.308c0-1.769.931-2.692 3.029-2.692h1.971v3z" />
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </footer>
-
-            {/* ─── WHATSAPP FLOATING TRIGGER ─── */}
-            {store?.whatsapp_chat_enabled && store?.whatsapp_chat_phone && (
-                <a
-                    href={`https://wa.me/${store.whatsapp_chat_phone}?text=${encodeURIComponent(store.whatsapp_chat_message || 'Hello, I have a question.')}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="Chat with us on WhatsApp"
-                    className={`fixed right-6 z-[var(--z-sticky)] bg-[var(--color-wa)] text-white p-3.5 rounded-full hover:opacity-90 active:opacity-80 transition-opacity motion-reduce:transition-none duration-[var(--dur-short)] flex items-center justify-center focus-visible:outline-2 focus-visible:outline-primary ${
-                        store?.tawk_chat_enabled ? 'bottom-24' : 'bottom-6'
-                    }`}
-                >
-                    <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.963C16.588 2.02 14.12 1.002 11.5 1.002c-5.442 0-9.87 4.372-9.874 9.802-.001 1.769.471 3.498 1.362 5.031L2.002 21.5l5.727-1.492zm11.233-5.918c-.3-.15-1.771-.875-2.046-.975-.276-.1-.477-.15-.677.15-.2.3-.777.975-.951 1.175-.175.2-.35.225-.65.075-3.04-1.522-4.14-2.522-4.9-3.825-.2-.35-.022-.538.127-.687.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.677-1.625-.926-2.225-.244-.589-.493-.51-.677-.52l-.578-.01c-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.07 2.9 1.22 3.1c.15.2 2.105 3.213 5.098 4.5 1.205.52 2.146.83 2.875 1.06.73.23 1.396.197 1.92.12.584-.087 1.771-.725 2.021-1.425.25-.7.25-1.3 1.75-1.425-.075-.125-.375-.275-.675-.425z"/>
-                    </svg>
-                </a>
-            )}
-        </div>
-    );
-}
-
-function TestimonialCard({ quote, name, role }: { quote: string; name: string; role: string }) {
-    return (
-        <div className="bg-white border border-slate-200/80 rounded-[var(--radius-card)] p-6 shadow-sm flex flex-col justify-between">
-            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed mb-6">
-                {quote}
-            </p>
-            <div className="pt-4 border-t border-slate-100">
-                <div className="font-semibold text-xs text-slate-900">{name}</div>
-                <div className="text-[11px] text-slate-500">{role}</div>
-            </div>
         </div>
     );
 }
