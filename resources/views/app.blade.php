@@ -115,7 +115,6 @@
         <script>
             (function() {
                 const storeColor = '{{ $storeThemeColor }}';
-                // Sync with Native Android Status Bar if running inside the AffanHub Native Mobile App
                 if (window.AffanBridge && typeof window.AffanBridge.setStatusBarColor === 'function') {
                     window.AffanBridge.setStatusBarColor(storeColor);
                 }
