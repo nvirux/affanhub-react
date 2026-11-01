@@ -100,7 +100,12 @@ class Register extends BaseRegister
             ->label('Phone Number')
             ->tel()
             ->required()
-            ->maxLength(15)
+            ->length(11)
+            ->rules(['digits:11', 'regex:/^0[789][01]\d{8}$/'])
+            ->validationMessages([
+                'digits' => 'Phone number must be exactly 11 digits.',
+                'regex' => 'Please enter a valid 11-digit Nigerian phone number (e.g. 08012345678).',
+            ])
             ->unique($this->getUserModel())
             ->placeholder('08012345678')
             ->helperText('Used for important security and account recovery notifications.');

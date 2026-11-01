@@ -935,19 +935,8 @@ export default function DefaultTheme() {
                     </div>
                     <div className="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
                         <div className="text-slate-400 text-sm">
-                            <p className="mb-1">
-                                &copy; {currentYear} {storeName}. All rights reserved.
-                            </p>
                             <p>
-                                Developed by{' '}
-                                <a
-                                    href="https://netvirux.dev/"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-primary hover:text-primary-700 font-medium transition"
-                                >
-                                    Umar Net Viruz
-                                </a>
+                                &copy; {currentYear} {storeName}. All rights reserved.
                             </p>
                         </div>
                         <div className="flex gap-4">

@@ -72,13 +72,18 @@ class RegisterStore extends RegisterTenant
                                 ->label('Store Subdomain / Web Address')
                                 ->placeholder('annur')
                                 ->required()
-                                ->alphaDash()
+                                ->minLength(3)
+                                ->maxLength(30)
+                                ->rules(['regex:/^[a-zA-Z]([a-zA-Z0-9\-]*[a-zA-Z0-9])?$/'])
                                 ->live(debounce: 400)
                                 ->prefix('https://')
                                 ->suffix('.'.$baseDomain)
                                 ->notIn(config('tenancy.reserved_tenant_ids', []))
                                 ->validationMessages([
                                     'not_in' => 'This store URL is reserved by AffanHub and cannot be used.',
+                                    'regex' => 'The store web address must start with a letter and contain only letters, numbers, and hyphens (cannot be purely numbers or end with a hyphen).',
+                                    'min' => 'The store web address must be at least 3 characters.',
+                                    'max' => 'The store web address cannot exceed 30 characters.',
                                 ])
                                 ->rule(function () use ($baseDomain) {
                                     return function (string $attribute, $value, \Closure $fail) use ($baseDomain) {
@@ -89,8 +94,16 @@ class RegisterStore extends RegisterTenant
                                     };
                                 })
                                 ->helperText(function (?string $state) use ($baseDomain): ?HtmlString {
-                                    if (blank($state) || ! preg_match('/^[a-zA-Z0-9_-]+$/', $state)) {
+                                    if (blank($state)) {
                                         return new HtmlString('Enter a unique web address for your customers to visit.');
+                                    }
+
+                                    if (! preg_match('/^[a-zA-Z]([a-zA-Z0-9\-]*[a-zA-Z0-9])?$/', $state)) {
+                                        return new HtmlString("<span style='color: #dc2626; font-weight: 600;'>✗ Subdomain must start with a letter and contain only letters, numbers, and hyphens (cannot be purely numbers).</span>");
+                                    }
+
+                                    if (strlen($state) < 3) {
+                                        return new HtmlString("<span style='color: #dc2626; font-weight: 600;'>✗ Subdomain must be at least 3 characters.</span>");
                                     }
 
                                     $fullDomain = strtolower(trim($state)).'.'.$baseDomain;

@@ -107,8 +107,13 @@ class StaffInvitationController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:70'],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'digits:11', 'regex:/^0[789][01]\d{8}$/', 'unique:owners,phone'],
             'password' => ['required', 'confirmed', Password::min(8)],
+        ], [
+            'phone.required' => 'Phone number is required.',
+            'phone.digits' => 'Phone number must be exactly 11 digits.',
+            'phone.regex' => 'Please enter a valid 11-digit Nigerian phone number (e.g. 08012345678).',
+            'phone.unique' => 'This phone number is already registered to another merchant account.',
         ]);
 
         $store = $invitation->store;

@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Merchant\Pages\Auth\EditProfile;
 use App\Filament\Merchant\Pages\Auth\Register;
 use App\Filament\Merchant\Pages\OnboardingPlan;
 use App\Filament\Merchant\Pages\RegisterStore;
@@ -140,6 +141,32 @@ test('store registration prevents duplicate subdomains', function () {
         ->call('register')
         ->assertHasFormErrors(['subdomain']);
 });
+
+test('store registration rejects invalid or numeric subdomains and requires starting with a letter', function (string $invalidSubdomain) {
+    $owner = Owner::create([
+        'name' => 'Subdomain Test Owner',
+        'email' => 'subdomain_test_'.uniqid().'@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+    $this->actingAs($owner, 'owner');
+
+    Livewire::test(RegisterStore::class)
+        ->fillForm([
+            'name' => 'Subdomain Test Store',
+            'subdomain' => $invalidSubdomain,
+        ])
+        ->call('register')
+        ->assertHasFormErrors(['subdomain']);
+})->with([
+    'pure numeric 5 digits' => '12345',
+    'ip-like number' => '167',
+    'starts with number' => '9store',
+    'starts with hyphen' => '-store',
+    'ends with hyphen' => 'store-',
+    'too short' => 'ab',
+]);
 
 test('owner can view onboarding plan selection page and continue with starter plan', function () {
     $owner = Owner::create([
@@ -354,4 +381,60 @@ test('merchant registration blocks more than 3 accounts from same IP per 24 hour
     $this->assertDatabaseMissing('owners', [
         'email' => 'merchant4@gmail.com',
     ]);
+});
+
+test('merchant registration rejects phone numbers not exactly 11 digits', function () {
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+
+    // Less than 11 digits
+    Livewire::test(Register::class)
+        ->fillForm([
+            'name' => 'Valid Name',
+            'email' => 'validname@gmail.com',
+            'phone' => '08012345',
+            'password' => 'secret12345',
+            'passwordConfirmation' => 'secret12345',
+            'terms' => true,
+        ])
+        ->call('register')
+        ->assertHasFormErrors(['phone']);
+
+    // More than 11 digits
+    Livewire::test(Register::class)
+        ->fillForm([
+            'name' => 'Valid Name',
+            'email' => 'validname2@gmail.com',
+            'phone' => '0801234567890123',
+            'password' => 'secret12345',
+            'passwordConfirmation' => 'secret12345',
+            'terms' => true,
+        ])
+        ->call('register')
+        ->assertHasFormErrors(['phone']);
+});
+
+test('merchant profile has email disabled and cannot update email directly', function () {
+    $owner = Owner::create([
+        'name' => 'Profile Owner',
+        'email' => 'original@gmail.com',
+        'phone' => '08011112222',
+        'password' => bcrypt('password123'),
+        'email_verified_at' => now(),
+    ]);
+
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+    $this->actingAs($owner, 'owner');
+
+    Livewire::test(EditProfile::class)
+        ->assertFormFieldIsDisabled('email')
+        ->fillForm([
+            'name' => 'Updated Profile Name',
+            'phone' => '08099998888',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($owner->fresh()->name)->toBe('Updated Profile Name');
+    expect($owner->fresh()->phone)->toBe('08099998888');
+    expect($owner->fresh()->email)->toBe('original@gmail.com');
 });

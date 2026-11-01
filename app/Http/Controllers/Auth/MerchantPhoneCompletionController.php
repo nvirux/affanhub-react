@@ -50,17 +50,15 @@ class MerchantPhoneCompletionController extends Controller
             'phone' => [
                 'required',
                 'string',
-                'min:10',
-                'max:15',
-                'regex:/^[0-9+\s\-]+$/',
+                'digits:11',
+                'regex:/^0[789][01]\d{8}$/',
                 'unique:owners,phone,'.$owner->id,
             ],
         ], [
             'phone.required' => 'Please enter your phone number to continue.',
             'phone.unique' => 'This phone number is already registered to another merchant account.',
-            'phone.regex' => 'Please enter a valid phone number (e.g. 08012345678).',
-            'phone.min' => 'Please enter a valid phone number with at least 10 digits.',
-            'phone.max' => 'The phone number cannot exceed 15 digits.',
+            'phone.digits' => 'Phone number must be exactly 11 digits.',
+            'phone.regex' => 'Please enter a valid 11-digit Nigerian phone number (e.g. 08012345678).',
         ]);
 
         $sanitizedPhone = preg_replace('/[^\d+]/', '', $validated['phone']);

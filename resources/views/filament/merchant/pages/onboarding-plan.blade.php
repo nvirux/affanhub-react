@@ -248,10 +248,10 @@
                     </div>
                 </div>
 
-                <button wire:click="contactEnterprise" type="button" 
-                        style="width: 100%; min-height: 46px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #0f172a; font-weight: 800; font-size: 0.9rem; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0.75rem 0.5rem; word-break: break-word;">
+                <a href="https://wa.me/2347011507950?text={{ urlencode("Hello AffanHub Sales, I would like to subscribe to the Enterprise Plan for my store '{$tenant->name}' (ID: {$tenant->public_id}).") }}" target="_blank"
+                   style="width: 100%; min-height: 46px; text-decoration: none; border: 1.5px solid #cbd5e1; background: #ffffff; color: #0f172a; font-weight: 800; font-size: 0.9rem; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0.75rem 0.5rem; word-break: break-word; box-sizing: border-box;">
                     Contact Enterprise Sales 📞
-                </button>
+                </a>
             </div>
 
         </div>
