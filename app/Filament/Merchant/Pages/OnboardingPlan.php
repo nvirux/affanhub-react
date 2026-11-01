@@ -99,7 +99,22 @@ class OnboardingPlan extends Page
     {
         $tenant = Filament::getTenant();
         $plan = Plan::findOrFail($planId);
+
+        if (! $plan->isSelfServe() || $plan->slug === 'enterprise') {
+            Notification::make()
+                ->title('Invalid Plan')
+                ->body('This plan requires a custom agreement and cannot be self-activated.')
+                ->danger()
+                ->send();
+
+            return null;
+        }
+
         $price = (float) ($this->interval === 'year' ? $plan->price_yearly : $plan->price_monthly);
+
+        if ($price <= 0) {
+            return null;
+        }
 
         $owner = $tenant->owner;
         $email = $owner?->email ?? 'merchant@store.com';

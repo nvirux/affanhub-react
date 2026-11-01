@@ -18,6 +18,15 @@ class CheckTenantAccess
                 abort(403, 'This storefront has been suspended by the platform administrator.');
             }
 
+            // 2. Strict multi-tenant session isolation: Prevent cross-store customer session reuse
+            if ($request->user('web') && (int) $request->user('web')->store_id !== (int) $tenant->id) {
+                auth()->guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return redirect()->guest(route('login'));
+            }
+
             // 2. Custom domain check: If accessing via a verified custom domain for this store, allow it to serve!
             $currentHost = $request->getHost();
             $baseDomain = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
