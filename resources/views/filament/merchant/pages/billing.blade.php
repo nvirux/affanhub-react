@@ -247,10 +247,10 @@
                             <button disabled style="width: 100%; border: none; background-color: #f3f4f6; color: #9ca3af; font-weight: 700; padding: 0.875rem 1rem; border-radius: 12px; cursor: not-allowed; text-align: center;">
                                 Downgrade Disabled
                             </button>
-                        @elseif($plan->slug === 'enterprise')
-                            <button wire:click="subscribe({{ $plan->id }})" style="width: 100%; border: none; background-color: #111827; color: white; font-weight: 700; padding: 0.875rem 1rem; border-radius: 12px; cursor: pointer; transition: background-color 0.2s; text-align: center;">
-                                Contact Sales
-                            </button>
+                        @elseif($plan->slug === 'enterprise' || ! $plan->isSelfServe())
+                            <a href="https://wa.me/2347011507950?text={{ urlencode('Hello AffanHub Sales, I am interested in Enterprise Plan pricing for my store: ' . $tenant->name) }}" target="_blank" style="display: block; width: 100%; text-decoration: none; background-color: #111827; color: white; font-weight: 700; padding: 0.875rem 1rem; border-radius: 12px; cursor: pointer; transition: background-color 0.2s; text-align: center; box-sizing: border-box;">
+                                Contact Sales &rarr;
+                            </a>
                         @else
                             <button wire:click="openPaymentModal({{ $plan->id }})" style="width: 100%; border: none; background-color: #f59e0b; color: white; font-weight: 700; padding: 0.875rem 1rem; border-radius: 12px; cursor: pointer; transition: background-color 0.2s; text-align: center; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.15);">
                                 Upgrade to {{ $plan->name }}

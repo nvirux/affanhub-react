@@ -17,6 +17,7 @@ class Plan extends Model
         'price_yearly',
         'trial_days',
         'is_active',
+        'is_self_serve',
     ];
 
     protected $casts = [
@@ -24,7 +25,15 @@ class Plan extends Model
         'price_yearly' => 'decimal:2',
         'trial_days' => 'integer',
         'is_active' => 'boolean',
+        'is_self_serve' => 'boolean',
     ];
+
+    public function isSelfServe(): bool
+    {
+        return (bool) ($this->is_self_serve ?? true)
+            && $this->slug !== 'enterprise'
+            && ($this->slug === 'starter' || ($this->price_monthly !== null && (float) $this->price_monthly > 0));
+    }
 
     public function planFeatures(): HasMany
     {

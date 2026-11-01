@@ -55,10 +55,10 @@ class Billing extends Page
     {
         $plan = Plan::findOrFail($planId);
 
-        if ($plan->slug === 'enterprise') {
+        if (! $plan->isSelfServe() || $plan->slug === 'enterprise') {
             Notification::make()
                 ->title('Enterprise Plan Request')
-                ->body('Our enterprise plan requires a custom agreement. Our sales team has been notified and will contact you soon!')
+                ->body('Our enterprise plan requires a custom agreement. Please contact our sales team.')
                 ->info()
                 ->send();
 
@@ -67,9 +67,19 @@ class Billing extends Page
 
         $price = (float) ($this->interval === 'year' ? $plan->price_yearly : $plan->price_monthly);
 
-        // If the plan is free (e.g. Starter), activate immediately without charging
-        if ($price <= 0) {
+        // Only the default Starter plan can be activated without charging
+        if ($price <= 0 && $plan->slug === 'starter') {
             $this->activateFreePlan($plan);
+
+            return;
+        }
+
+        if ($price <= 0) {
+            Notification::make()
+                ->title('Invalid Plan')
+                ->body('This plan cannot be self-activated. Please contact support.')
+                ->danger()
+                ->send();
 
             return;
         }
@@ -95,7 +105,28 @@ class Billing extends Page
 
         $tenant = Filament::getTenant();
         $plan = Plan::findOrFail($this->selectedPlanId);
+
+        if (! $plan->isSelfServe() || $plan->slug === 'enterprise') {
+            Notification::make()
+                ->title('Invalid Plan')
+                ->body('This plan requires a custom agreement and cannot be self-activated.')
+                ->danger()
+                ->send();
+
+            return null;
+        }
+
         $price = (float) ($this->interval === 'year' ? $plan->price_yearly : $plan->price_monthly);
+
+        if ($price <= 0) {
+            Notification::make()
+                ->title('Invalid Plan Price')
+                ->body('Cannot checkout a plan without a valid subscription fee.')
+                ->danger()
+                ->send();
+
+            return null;
+        }
 
         $owner = $tenant->owner;
         $email = $owner?->email ?? 'merchant@store.com';
@@ -172,7 +203,28 @@ class Billing extends Page
 
         $tenant = Filament::getTenant();
         $plan = Plan::findOrFail($this->selectedPlanId);
+
+        if (! $plan->isSelfServe() || $plan->slug === 'enterprise') {
+            Notification::make()
+                ->title('Invalid Plan Selection')
+                ->body('This plan requires a custom agreement and cannot be self-activated.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
         $price = (float) ($this->interval === 'year' ? $plan->price_yearly : $plan->price_monthly);
+
+        if ($price <= 0) {
+            Notification::make()
+                ->title('Invalid Plan Price')
+                ->body('Cannot purchase a plan without a valid subscription fee.')
+                ->danger()
+                ->send();
+
+            return;
+        }
 
         $wallet = $tenant->mainWallet();
 
@@ -275,6 +327,16 @@ class Billing extends Page
      */
     protected function activateFreePlan(Plan $plan): void
     {
+        if ($plan->slug !== 'starter' || ! $plan->isSelfServe()) {
+            Notification::make()
+                ->title('Unauthorized Plan Activation')
+                ->body('Only the free Starter plan can be self-activated without payment.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
         $tenant = Filament::getTenant();
 
         // Cancel previous active subscriptions

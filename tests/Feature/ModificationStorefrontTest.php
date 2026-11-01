@@ -192,3 +192,56 @@ test('merchant can reject modification order and refund customer wallet', functi
     expect($modRequest->fresh()->status)->toBe('rejected');
     expect((float) $this->mainWallet->fresh()->balance)->toBe($balanceBefore + 3500.00);
 });
+
+test('customer without valid pin or with empty pin cannot submit modification request', function () {
+    StoreModificationService::seedDefaultsForStore($this->store);
+    $service = StoreModificationService::where('store_id', $this->store->id)->first();
+
+    $this->walletService->credit($this->mainWallet, 10000.00, 'deposit', 'Initial deposit', [], 'DEP_PIN_TEST');
+
+    // 1. Submit with empty pin
+    $response = $this->actingAs($this->user)->postJson('http://demo.localhost/identity/modification', [
+        'service_id' => $service->id,
+        'identifier' => '12345678901',
+        'fields' => ['Full Name' => 'John Doe'],
+        'pin' => '',
+    ]);
+
+    $response->assertStatus(422);
+
+    // 2. Submit with wrong pin
+    $responseWrong = $this->actingAs($this->user)->postJson('http://demo.localhost/identity/modification', [
+        'service_id' => $service->id,
+        'identifier' => '12345678901',
+        'fields' => ['Full Name' => 'John Doe'],
+        'pin' => '0000',
+    ]);
+
+    $responseWrong->assertStatus(422);
+});
+
+test('modification upload rejects disguised HTML file and saves valid documents with safe extension', function () {
+    StoreModificationService::seedDefaultsForStore($this->store);
+    $service = StoreModificationService::where('store_id', $this->store->id)->first();
+
+    $this->walletService->credit($this->mainWallet, 10000.00, 'deposit', 'Initial deposit', [], 'DEP_UPLOAD_TEST');
+
+    // Upload an HTML file disguised with png extension
+    $htmlProbe = UploadedFile::fake()->createWithContent('exploit.png', '<!DOCTYPE html><html><body><script>alert(1)</script></body></html>');
+
+    $docs = [];
+    foreach ($service->getNormalizedDocuments() as $doc) {
+        $docs[$doc['name']] = $htmlProbe;
+    }
+
+    $response = $this->actingAs($this->user)->postJson('http://demo.localhost/identity/modification', [
+        'service_id' => $service->id,
+        'identifier' => '12345678901',
+        'fields' => ['Full Name' => 'John Doe'],
+        'documents' => $docs,
+        'pin' => '1234',
+    ]);
+
+    // Must be rejected because mime is text/html
+    $response->assertStatus(422);
+});

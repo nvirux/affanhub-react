@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -163,17 +164,15 @@ class ModificationController extends Controller
             'transaction_pin' => ['nullable', 'string', 'digits:4'],
         ]);
 
-        // Verify transaction PIN if customer has one configured
+        // Verify transaction PIN - strictly mandatory for wallet operations
         $pin = $request->input('transaction_pin') ?? $request->input('pin');
-        if ($user->hasTransactionPin()) {
-            if (empty($pin) || ! Hash::check($pin, $user->transaction_pin_hash)) {
-                return $this->returnErrorResponse(
-                    $request,
-                    'Invalid transaction PIN. Please enter your correct 4-digit PIN.',
-                    422,
-                    ['transaction_pin' => 'Incorrect transaction PIN. Please try again.']
-                );
-            }
+        if (! $user->hasTransactionPin() || empty($pin) || ! Hash::check($pin, $user->transaction_pin_hash)) {
+            return $this->returnErrorResponse(
+                $request,
+                'Valid 4-digit transaction PIN is required to submit a modification request.',
+                422,
+                ['transaction_pin' => 'Valid 4-digit transaction PIN is required. Please enter your correct PIN.']
+            );
         }
 
         // Fetch modification service
@@ -255,11 +254,21 @@ class ModificationController extends Controller
                 continue; // Optional document not provided
             }
 
-            $extension = strtolower($file->getClientOriginalExtension());
-            if (! in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'pdf'])) {
+            $allowedMimes = [
+                'image/jpeg' => 'jpg',
+                'image/pjpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/webp' => 'webp',
+                'application/pdf' => 'pdf',
+            ];
+
+            $detectedMime = strtolower($file->getMimeType() ?? '');
+            $clientExt = strtolower($file->getClientOriginalExtension());
+
+            if (! in_array($clientExt, ['jpg', 'jpeg', 'png', 'webp', 'pdf']) || ! array_key_exists($detectedMime, $allowedMimes)) {
                 return $this->returnErrorResponse(
                     $request,
-                    "Document '{$docName}' must be an image (JPG, PNG) or PDF file.",
+                    "Document '{$docName}' must be a valid image (JPG, PNG, WEBP) or PDF file.",
                     422
                 );
             }
@@ -272,7 +281,9 @@ class ModificationController extends Controller
                 );
             }
 
-            $path = $file->store("modifications/store_{$store?->id}/".date('Y_m'), 'central_public');
+            $safeExtension = $allowedMimes[$detectedMime];
+            $safeFilename = Str::random(40).'.'.$safeExtension;
+            $path = $file->storeAs("modifications/store_{$store?->id}/".date('Y_m'), $safeFilename, 'central_public');
             $uploadedPaths[$docName] = $path;
         }
 

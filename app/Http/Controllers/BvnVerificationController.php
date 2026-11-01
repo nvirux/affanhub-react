@@ -151,14 +151,12 @@ class BvnVerificationController extends Controller
 
         $pin = $request->input('transaction_pin') ?? $request->input('pin');
 
-        // Check PIN if provided and user has transaction pin set
-        if (! empty($pin) && $user->hasTransactionPin()) {
-            if (! Hash::check($pin, $user->transaction_pin_hash)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid transaction PIN. Please try again.',
-                ], 422);
-            }
+        if (! $user->hasTransactionPin() || empty($pin) || ! Hash::check($pin, $user->transaction_pin_hash)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid transaction PIN. Please try again.',
+                'errors' => ['transaction_pin' => ['Valid 4-digit transaction PIN is required. Please enter your correct PIN.']],
+            ], 422);
         }
 
         // Resolve slip from database dynamically

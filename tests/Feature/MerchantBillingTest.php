@@ -223,3 +223,26 @@ test('billing callback rejects unsuccessful payment verification', function () {
     // Subscription must NOT be active
     expect($this->store->subscriptions()->where('plan_id', $proPlan->id)->where('status', 'active')->count())->toBe(0);
 });
+
+test('enterprise or non-self-serve plan cannot be self-activated or subscribed directly', function () {
+    $enterprisePlan = Plan::create([
+        'name' => 'Enterprise',
+        'slug' => 'enterprise',
+        'price_monthly' => null,
+        'price_yearly' => null,
+        'trial_days' => 0,
+        'is_self_serve' => false,
+        'is_active' => true,
+    ]);
+
+    Livewire::test(Billing::class)
+        ->call('openPaymentModal', $enterprisePlan->id)
+        ->assertSet('showPaymentModal', false)
+        ->assertNotified('Enterprise Plan Request');
+
+    Livewire::test(Billing::class)
+        ->call('subscribe', $enterprisePlan->id)
+        ->assertSet('showPaymentModal', false);
+
+    expect($this->store->subscriptions()->where('plan_id', $enterprisePlan->id)->where('status', 'active')->count())->toBe(0);
+});
