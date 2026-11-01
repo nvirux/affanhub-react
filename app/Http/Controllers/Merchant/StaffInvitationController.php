@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Merchant;
 use App\Http\Controllers\Controller;
 use App\Models\Owner;
 use App\Models\StaffInvitation;
+use App\Rules\TrustedEmailDomain;
 use Filament\Facades\Filament;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\Validation\Rules\Password;
 
@@ -118,6 +120,14 @@ class StaffInvitationController extends Controller
 
         $store = $invitation->store;
         $email = strtolower(trim($invitation->email));
+
+        $emailValidator = Validator::make(['email' => $email], [
+            'email' => ['required', 'email', new TrustedEmailDomain],
+        ]);
+
+        if ($emailValidator->fails()) {
+            return back()->withErrors(['email' => $emailValidator->errors()->first('email')]);
+        }
 
         // Create the Owner account
         $newOwner = Owner::create([

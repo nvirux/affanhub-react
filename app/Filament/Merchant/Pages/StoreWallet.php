@@ -31,6 +31,19 @@ class StoreWallet extends Page
 
     protected static ?int $navigationSort = 1;
 
+    public static function canAccess(): bool
+    {
+        $tenant = Filament::getTenant();
+        $user = auth()->user();
+
+        if (! $tenant || ! $user) {
+            return false;
+        }
+
+        // Store Owner or Managers can access Wallet
+        return $user->id === $tenant->owner_id || $tenant->members()->where('owners.id', $user->id)->whereIn('role', ['owner', 'manager'])->exists();
+    }
+
     // Active tab state: 'overview', 'payouts', 'policy'
     public string $activeTab = 'overview';
 
@@ -185,6 +198,17 @@ class StoreWallet extends Page
             return;
         }
 
+        $user = auth()->user();
+        if (! $user || $user->id !== $store->owner_id) {
+            Notification::make()
+                ->title('Unauthorized Action')
+                ->body('Only the Store Owner is permitted to request profit withdrawals.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
         $settlement = SettlementAccount::where('store_id', $store->id)
             ->where('status', 'approved')
             ->where('is_active', true)
@@ -312,6 +336,17 @@ class StoreWallet extends Page
         $store = Filament::getTenant();
         if (! $store) {
             Notification::make()->title('Store context not found.')->danger()->send();
+
+            return;
+        }
+
+        $user = auth()->user();
+        if (! $user || $user->id !== $store->owner_id) {
+            Notification::make()
+                ->title('Unauthorized Action')
+                ->body('Only the Store Owner is permitted to update settlement bank details.')
+                ->danger()
+                ->send();
 
             return;
         }

@@ -29,6 +29,19 @@ class StoreSettings extends Page
 
     protected static ?int $navigationSort = 1;
 
+    public static function canAccess(): bool
+    {
+        $tenant = Filament::getTenant();
+        $user = auth()->user();
+
+        if (! $tenant || ! $user) {
+            return false;
+        }
+
+        // Only Store Owner or Managers can access Store Settings
+        return $user->id === $tenant->owner_id || $tenant->members()->where('owners.id', $user->id)->whereIn('role', ['owner', 'manager'])->exists();
+    }
+
     protected string $view = 'filament.merchant.pages.store-settings';
 
     // Active Tab Navigation

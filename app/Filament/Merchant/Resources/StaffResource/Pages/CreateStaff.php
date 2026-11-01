@@ -4,12 +4,14 @@ namespace App\Filament\Merchant\Resources\StaffResource\Pages;
 
 use App\Filament\Merchant\Resources\StaffResource;
 use App\Models\Owner;
+use App\Rules\TrustedEmailDomain;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class CreateStaff extends CreateRecord
@@ -50,6 +52,20 @@ class CreateStaff extends CreateRecord
 
         $email = strtolower(trim($data['email']));
         $tenant = Filament::getTenant();
+
+        $validator = Validator::make(['email' => $email], [
+            'email' => ['required', 'email', new TrustedEmailDomain],
+        ]);
+
+        if ($validator->fails()) {
+            Notification::make()
+                ->title('Registration Denied')
+                ->body($validator->errors()->first('email'))
+                ->danger()
+                ->send();
+
+            $this->halt();
+        }
 
         $existing = Owner::where('email', $email)->first();
 

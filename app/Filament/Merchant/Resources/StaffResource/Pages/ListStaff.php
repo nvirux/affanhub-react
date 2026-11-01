@@ -6,6 +6,7 @@ use App\Filament\Merchant\Resources\StaffResource;
 use App\Mail\StaffInvitationMail;
 use App\Models\Owner;
 use App\Models\StaffInvitation;
+use App\Rules\TrustedEmailDomain;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
@@ -74,8 +75,9 @@ class ListStaff extends ListRecords
                         ->label('Staff Email Address')
                         ->email()
                         ->required()
-                        ->placeholder('e.g. colleague@example.com')
-                        ->helperText('The invitee will receive an email invitation to accept. If they are already on AffanHub, they can simply log in.'),
+                        ->rules([new TrustedEmailDomain])
+                        ->placeholder('e.g. colleague@gmail.com')
+                        ->helperText('Only verified public email providers (Gmail, Yahoo, Outlook, etc.) are permitted. The invitee will receive an email invitation to accept.'),
 
                     Select::make('role')
                         ->label('Store Role')

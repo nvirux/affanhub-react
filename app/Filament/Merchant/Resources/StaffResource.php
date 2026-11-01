@@ -5,6 +5,7 @@ namespace App\Filament\Merchant\Resources;
 use App\Filament\Merchant\Resources\StaffResource\Pages\EditStaff;
 use App\Filament\Merchant\Resources\StaffResource\Pages\ListStaff;
 use App\Models\Owner;
+use App\Rules\TrustedEmailDomain;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -17,6 +18,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use UnitEnum;
 
@@ -50,6 +52,21 @@ class StaffResource extends Resource
         return $user->id === $tenant->owner_id;
     }
 
+    public static function canCreate(): bool
+    {
+        return static::canViewAny();
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return static::canViewAny();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canViewAny();
+    }
+
     public static function getNavigationBadge(): ?string
     {
         $store = Filament::getTenant();
@@ -68,8 +85,13 @@ class StaffResource extends Resource
                 ->email()
                 ->required()
                 ->maxLength(255)
-                ->placeholder('e.g. jane@example.com')
-                ->helperText('If the user already has an account, they will be invited without creating a duplicate.'),
+                ->rules([new TrustedEmailDomain])
+                ->disabled(fn (string $operation): bool => $operation === 'edit')
+                ->dehydrated(fn (string $operation): bool => $operation !== 'edit')
+                ->placeholder('e.g. jane@gmail.com')
+                ->helperText(fn (string $operation): string => $operation === 'edit'
+                    ? 'Email address cannot be changed directly for security reasons.'
+                    : 'Only verified public email providers (Gmail, Yahoo, Outlook, etc.) are permitted.'),
             TextInput::make('phone')
                 ->tel()
                 ->maxLength(255)

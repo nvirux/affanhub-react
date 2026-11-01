@@ -57,7 +57,7 @@ class EditStaff extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $role = $data['role'] ?? null;
-        unset($data['role']);
+        unset($data['role'], $data['email']);
 
         $record->update($data);
 

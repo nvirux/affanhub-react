@@ -29,7 +29,7 @@ test('merchant google redirect initiates oauth flow', function () {
 test('merchant google callback registers new owner and redirects to phone completion', function () {
     $googleUser = Mockery::mock(SocialiteUser::class);
     $googleUser->shouldReceive('getId')->andReturn('google-id-123');
-    $googleUser->shouldReceive('getEmail')->andReturn('newmerchant@example.com');
+    $googleUser->shouldReceive('getEmail')->andReturn('newmerchant@gmail.com');
     $googleUser->shouldReceive('getName')->andReturn('New Merchant');
     $googleUser->shouldReceive('getAvatar')->andReturn('https://google.com/avatar.png');
 
@@ -41,12 +41,12 @@ test('merchant google callback registers new owner and redirects to phone comple
     $response = $this->get(route('merchant.google.callback'));
 
     $this->assertDatabaseHas('owners', [
-        'email' => 'newmerchant@example.com',
+        'email' => 'newmerchant@gmail.com',
         'google_id' => 'google-id-123',
         'name' => 'New Merchant',
     ]);
 
-    $owner = Owner::where('email', 'newmerchant@example.com')->first();
+    $owner = Owner::where('email', 'newmerchant@gmail.com')->first();
     expect($owner->email_verified_at)->not->toBeNull()
         ->and($owner->phone)->toBeNull();
 
@@ -54,6 +54,27 @@ test('merchant google callback registers new owner and redirects to phone comple
 
     // Must be redirected to phone completion
     $response->assertRedirect(route('merchant.phone.complete'));
+});
+
+test('merchant google callback blocks unpermitted email domains', function () {
+    $googleUser = Mockery::mock(SocialiteUser::class);
+    $googleUser->shouldReceive('getId')->andReturn('google-id-untrusted');
+    $googleUser->shouldReceive('getEmail')->andReturn('attacker@fldubai.com');
+    $googleUser->shouldReceive('getName')->andReturn('Attacker');
+    $googleUser->shouldReceive('getAvatar')->andReturn(null);
+
+    $provider = Mockery::mock(GoogleProvider::class);
+    $provider->shouldReceive('user')->once()->andReturn($googleUser);
+
+    Socialite::shouldReceive('driver')->with('google')->once()->andReturn($provider);
+
+    $response = $this->get(route('merchant.google.callback'));
+
+    $this->assertDatabaseMissing('owners', [
+        'email' => 'attacker@fldubai.com',
+    ]);
+
+    $response->assertSessionHas('error');
 });
 
 test('merchant must enter a valid phone number before accessing store setup', function () {

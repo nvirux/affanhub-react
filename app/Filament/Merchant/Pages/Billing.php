@@ -27,6 +27,19 @@ class Billing extends Page
 
     protected static ?int $navigationSort = 3;
 
+    public static function canAccess(): bool
+    {
+        $tenant = Filament::getTenant();
+        $user = auth()->user();
+
+        if (! $tenant || ! $user) {
+            return false;
+        }
+
+        // Only Store Owner or Managers can access Billing and Plans
+        return $user->id === $tenant->owner_id || $tenant->members()->where('owners.id', $user->id)->whereIn('role', ['owner', 'manager'])->exists();
+    }
+
     public string $interval = 'month'; // 'month' or 'year'
 
     public bool $showPaymentModal = false;

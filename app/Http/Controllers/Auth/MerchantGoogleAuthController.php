@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Owner;
+use App\Rules\TrustedEmailDomain;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User;
@@ -81,6 +83,14 @@ class MerchantGoogleAuthController extends Controller
                 $owner->updateQuietly($updates);
             }
         } else {
+            $emailValidator = Validator::make(['email' => $email], [
+                'email' => ['required', 'email', new TrustedEmailDomain],
+            ]);
+
+            if ($emailValidator->fails()) {
+                return redirect()->to($loginUrl)->with('error', $emailValidator->errors()->first('email'));
+            }
+
             $isNewOwner = true;
             $owner = Owner::create([
                 'name' => $googleUser->getName() ?: Str::headline(explode('@', $email)[0]),

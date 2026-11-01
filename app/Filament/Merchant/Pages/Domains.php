@@ -70,14 +70,32 @@ class Domains extends Page
         }
     }
 
+    public static function canAccess(): bool
+    {
+        $tenant = Filament::getTenant();
+        $user = auth()->user();
+
+        if (! $tenant || ! $user) {
+            return false;
+        }
+
+        // Only Store Owner or Managers can access custom domain management
+        return $user->id === $tenant->owner_id || $tenant->members()->where('owners.id', $user->id)->whereIn('role', ['owner', 'manager'])->exists();
+    }
+
     public function verifyDomain(int $id, CustomDomainOnboardingService $service): void
     {
-        $domain = Domain::findOrFail($id);
+        $tenant = Filament::getTenant();
+        if (! $tenant) {
+            return;
+        }
+
+        $domain = $tenant->domains()->findOrFail($id);
 
         try {
             $success = $service->verifyAndProvision($domain);
             if ($success) {
-                ActivityLogger::log('domain_verified', "Verified custom domain {$domain->domain}", ['domain' => $domain->domain]);
+                ActivityLogger::log('domain_verified', "Verified custom domain {$domain->domain}", ['domain' => $domain->domain], $tenant->id);
                 Notification::make()
                     ->title('Domain Connected')
                     ->body('Your custom domain is verified and active.')
@@ -101,8 +119,12 @@ class Domains extends Page
 
     public function makePrimary(int $id): void
     {
-        $domain = Domain::findOrFail($id);
         $tenant = Filament::getTenant();
+        if (! $tenant) {
+            return;
+        }
+
+        $domain = $tenant->domains()->findOrFail($id);
 
         if (! $domain->isHealthy()) {
             Notification::make()
@@ -114,12 +136,12 @@ class Domains extends Page
             return;
         }
 
-        Domain::where('tenant_id', $tenant->id)
+        $tenant->domains()
             ->where('is_primary', true)
             ->update(['is_primary' => false]);
 
         $domain->update(['is_primary' => true]);
-        ActivityLogger::log('domain_primary_changed', "Set custom domain {$domain->domain} as primary", ['domain' => $domain->domain]);
+        ActivityLogger::log('domain_primary_changed', "Set custom domain {$domain->domain} as primary", ['domain' => $domain->domain], $tenant->id);
 
         Notification::make()
             ->title('Primary Domain Updated')
@@ -130,12 +152,17 @@ class Domains extends Page
 
     public function deleteDomain(int $id, CustomDomainOnboardingService $service): void
     {
-        $domain = Domain::findOrFail($id);
+        $tenant = Filament::getTenant();
+        if (! $tenant) {
+            return;
+        }
+
+        $domain = $tenant->domains()->findOrFail($id);
 
         try {
             $domainName = $domain->domain;
             $service->removeDomain($domain);
-            ActivityLogger::log('domain_removed', "Removed custom domain {$domainName}", ['domain' => $domainName]);
+            ActivityLogger::log('domain_removed', "Removed custom domain {$domainName}", ['domain' => $domainName], $tenant->id);
 
             Notification::make()
                 ->title('Domain Removed')
