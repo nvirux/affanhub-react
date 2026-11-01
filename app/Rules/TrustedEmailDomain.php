@@ -31,6 +31,15 @@ class TrustedEmailDomain implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (! is_string($value) || ! filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            $fail('Please enter a valid email address.');
+
+            return;
+        }
+
+        // Disallow quotes or escape characters often used by automated fuzzers
+        if (str_contains($value, '"') || str_contains($value, "'") || str_contains($value, '\\')) {
+            $fail('Please enter a standard email address without quotation marks or special characters.');
+
             return;
         }
 

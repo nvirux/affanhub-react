@@ -413,6 +413,27 @@ test('merchant registration rejects phone numbers not exactly 11 digits', functi
         ->assertHasFormErrors(['phone']);
 });
 
+test('merchant registration rejects untrusted email domains and quoted emails', function (string $invalidEmail) {
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+
+    Livewire::test(Register::class)
+        ->fillForm([
+            'name' => 'Valid Owner Name',
+            'email' => $invalidEmail,
+            'phone' => '08012345678',
+            'password' => 'secret12345',
+            'passwordConfirmation' => 'secret12345',
+            'terms' => true,
+        ])
+        ->call('register')
+        ->assertHasFormErrors(['email']);
+})->with([
+    'untrusted custom domain' => 'attacker@fldubai.com',
+    'quoted local-part fldubai' => '"authb82e4u0fef2"@fldubai.com',
+    'temp mail 1' => 'bot@mailinator.com',
+    'temp mail 2' => 'bot@guerrillamail.com',
+]);
+
 test('merchant profile has email disabled and cannot update email directly', function () {
     $owner = Owner::create([
         'name' => 'Profile Owner',
