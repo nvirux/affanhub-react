@@ -8,6 +8,7 @@ import {
     BadgeCheck, Lock, Layers, ZoomIn, Building2
 } from 'lucide-react';
 import { ConfirmPaymentSheet, PaymentDetailItem } from '@/components/confirm-payment-sheet';
+import { TransactionPinSheet } from '@/components/transaction-pin-sheet';
 import {
     Dialog,
     DialogContent,
@@ -77,6 +78,8 @@ export default function BvnVerificationPage({
 
     // Sheets & Verification States
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isPinSheetOpen, setIsPinSheetOpen] = useState(false);
+    const [pinError, setPinError] = useState<string | null>(null);
     const [isVerifying, setIsVerifying] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -134,8 +137,15 @@ export default function BvnVerificationPage({
         setIsConfirmOpen(true);
     };
 
-    const handleConfirmVerification = async () => {
+    const handleConfirmVerification = () => {
+        setIsConfirmOpen(false);
+        setPinError(null);
+        setIsPinSheetOpen(true);
+    };
+
+    const handlePinSubmit = async (pin: string) => {
         setIsVerifying(true);
+        setPinError(null);
         setErrorMessage(null);
 
         try {
@@ -150,20 +160,25 @@ export default function BvnVerificationPage({
                     search_type: 'bvn',
                     search_value: searchValue,
                     slip_type: selectedSlip.id,
+                    transaction_pin: pin,
                 }),
             });
 
             const data = await response.json();
 
             if (!response.ok || !data.success) {
-                const msg = data.message || 'Verification failed. Please check the details and try again.';
-                setErrorMessage(msg);
-                setIsConfirmOpen(false);
+                const msg = data.message || data.errors?.transaction_pin?.[0] || 'Verification failed. Please check the details and try again.';
+                if (msg.toLowerCase().includes('pin')) {
+                    setPinError(msg);
+                } else {
+                    setIsPinSheetOpen(false);
+                    setErrorMessage(msg);
+                }
                 setIsVerifying(false);
                 return;
             }
 
-            setIsConfirmOpen(false);
+            setIsPinSheetOpen(false);
             if (data.redirect_url) {
                 window.location.href = data.redirect_url;
                 return;
@@ -173,7 +188,7 @@ export default function BvnVerificationPage({
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (err: any) {
             setIsVerifying(false);
-            setIsConfirmOpen(false);
+            setIsPinSheetOpen(false);
             setErrorMessage('Network connection error. Please try again.');
         }
     };
@@ -798,6 +813,24 @@ export default function BvnVerificationPage({
                 isSubmitting={isVerifying}
                 onConfirm={handleConfirmVerification}
                 fundWalletUrl="/wallet"
+            />
+
+            {/* TRANSACTION PIN SHEET */}
+            <TransactionPinSheet
+                isOpen={isPinSheetOpen}
+                onOpenChange={setIsPinSheetOpen}
+                title="Authorize BVN Verification"
+                description="Enter your 4-digit Transaction PIN to complete verification"
+                summary={
+                    <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">{selectedSlip.name} (BVN)</span>
+                        <span className="font-bold text-foreground">₦{selectedSlip.price.toLocaleString()} &rarr; {searchValue}</span>
+                    </div>
+                }
+                isSubmitting={isVerifying}
+                error={pinError}
+                onClearError={() => setPinError(null)}
+                onSubmitPin={handlePinSubmit}
             />
 
             {/* HIGH-RES SAMPLE SLIP LIGHTBOX MODAL */}
