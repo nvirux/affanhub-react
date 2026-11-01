@@ -4,7 +4,7 @@ namespace App\Filament\Merchant\Pages\Auth;
 
 use App\Models\Owner;
 use App\Rules\MerchantRegistrationThrottle;
-use App\Rules\NotDisposableEmail;
+use App\Rules\TrustedEmailDomain;
 use Filament\Actions\Action;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Checkbox;
@@ -87,10 +87,11 @@ class Register extends BaseRegister
             ->maxLength(255)
             ->unique($this->getUserModel())
             ->rules([
-                new NotDisposableEmail,
+                new TrustedEmailDomain,
                 new MerchantRegistrationThrottle(3, 86400),
             ])
-            ->placeholder('alamin@example.com');
+            ->placeholder('alamin@gmail.com')
+            ->helperText('Please use your real and active email address. A 6-digit verification code will be sent to your inbox to verify your account.');
     }
 
     protected function getPhoneFormComponent(): Component

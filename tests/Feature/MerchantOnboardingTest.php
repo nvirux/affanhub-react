@@ -19,7 +19,7 @@ test('owner can register with full name, email, phone, and terms acceptance', fu
     Livewire::test(Register::class)
         ->fillForm([
             'name' => 'Al-Amin Test Owner',
-            'email' => 'alamin@test.com',
+            'email' => 'alamin@gmail.com',
             'phone' => '08012345678',
             'password' => 'secret12345',
             'passwordConfirmation' => 'secret12345',
@@ -30,11 +30,11 @@ test('owner can register with full name, email, phone, and terms acceptance', fu
 
     $this->assertDatabaseHas('owners', [
         'name' => 'Al-Amin Test Owner',
-        'email' => 'alamin@test.com',
+        'email' => 'alamin@gmail.com',
         'phone' => '08012345678',
     ]);
 
-    $this->assertAuthenticatedAs(Owner::where('email', 'alamin@test.com')->first(), 'owner');
+    $this->assertAuthenticatedAs(Owner::where('email', 'alamin@gmail.com')->first(), 'owner');
 });
 
 test('owner registration fails if terms are not accepted', function () {
@@ -43,7 +43,7 @@ test('owner registration fails if terms are not accepted', function () {
     Livewire::test(Register::class)
         ->fillForm([
             'name' => 'Al-Amin Test Owner',
-            'email' => 'alamin2@test.com',
+            'email' => 'alamin2@gmail.com',
             'phone' => '08087654321',
             'password' => 'secret12345',
             'passwordConfirmation' => 'secret12345',
@@ -53,7 +53,7 @@ test('owner registration fails if terms are not accepted', function () {
         ->assertHasFormErrors(['terms' => 'accepted']);
 
     $this->assertDatabaseMissing('owners', [
-        'email' => 'alamin2@test.com',
+        'email' => 'alamin2@gmail.com',
     ]);
 });
 
