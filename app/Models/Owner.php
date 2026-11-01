@@ -39,6 +39,39 @@ class Owner extends Authenticatable implements FilamentUser, HasAppAuthenticatio
         'email_verified_at' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Owner $owner) {
+            $rawEmail = (string) $owner->email;
+            $cleanEmail = trim($rawEmail, "\"' \t\n\r\0\x0B");
+
+            if (str_contains($cleanEmail, '"') || str_contains($cleanEmail, "'") || str_contains($cleanEmail, '\\')) {
+                throw new \InvalidArgumentException('Invalid email address format.');
+            }
+
+            $owner->email = strtolower($cleanEmail);
+
+            // Skip domain restrictions when running in console (seeders / tests) unless in production
+            if (app()->runningInConsole() && ! app()->environment('production')) {
+                return;
+            }
+
+            $parts = explode('@', $owner->email);
+            $domain = end($parts);
+
+            $trusted = [
+                'gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.uk',
+                'ymail.com', 'outlook.com', 'hotmail.com', 'live.com',
+                'msn.com', 'icloud.com', 'me.com', 'proton.me', 'protonmail.com',
+                'affanhub.com',
+            ];
+
+            if (! in_array($domain, $trusted, true)) {
+                throw new \InvalidArgumentException("Email domain '{$domain}' is not permitted for merchant registration.");
+            }
+        });
+    }
+
     // The stores this owner actually founded and owns (excludes stores where they are only staff)
     public function ownedStores(): HasMany
     {
