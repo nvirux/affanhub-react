@@ -3,6 +3,8 @@
 namespace App\Filament\Merchant\Pages\Auth;
 
 use App\Models\Owner;
+use App\Rules\MerchantRegistrationThrottle;
+use App\Rules\NotDisposableEmail;
 use Filament\Actions\Action;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Checkbox;
@@ -12,6 +14,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\Rules\Password;
 
@@ -83,6 +86,10 @@ class Register extends BaseRegister
             ->required()
             ->maxLength(255)
             ->unique($this->getUserModel())
+            ->rules([
+                new NotDisposableEmail,
+                new MerchantRegistrationThrottle(3, 86400),
+            ])
             ->placeholder('alamin@example.com');
     }
 
@@ -138,6 +145,15 @@ class Register extends BaseRegister
         return Action::make('register')
             ->label('Create Account')
             ->submit('register');
+    }
+
+    /**
+     * Record successful registration against network IP rate limit.
+     */
+    protected function afterRegister(): void
+    {
+        $ip = request()->ip() ?: '127.0.0.1';
+        RateLimiter::hit('merchant_register_ip:'.$ip, 86400); // 24 hours decay
     }
 
     /**

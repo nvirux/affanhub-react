@@ -8,6 +8,7 @@ use App\Models\Plan;
 use App\Models\Store;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
@@ -306,4 +307,51 @@ test('being a staff member in other stores does not count against owner store li
     expect($owner->stores()->count())->toBe(3);
     expect($owner->ownedStores()->count())->toBe(0);
     expect($owner->canCreateMoreStores())->toBeTrue();
+});
+
+test('merchant registration rejects disposable email domains including fldubai.com', function () {
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+
+    Livewire::test(Register::class)
+        ->fillForm([
+            'name' => 'Bot Tester',
+            'email' => 'ptcp2tsyt3fy@fldubai.com',
+            'phone' => '08090519568',
+            'password' => 'secret12345',
+            'passwordConfirmation' => 'secret12345',
+            'terms' => true,
+        ])
+        ->call('register')
+        ->assertHasFormErrors(['email']);
+
+    $this->assertDatabaseMissing('owners', [
+        'email' => 'ptcp2tsyt3fy@fldubai.com',
+    ]);
+});
+
+test('merchant registration blocks more than 3 accounts from same IP per 24 hours', function () {
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+    RateLimiter::clear('merchant_register_ip:127.0.0.1');
+
+    // Simulate 3 previous registrations from this IP within 24 hours
+    RateLimiter::hit('merchant_register_ip:127.0.0.1', 86400);
+    RateLimiter::hit('merchant_register_ip:127.0.0.1', 86400);
+    RateLimiter::hit('merchant_register_ip:127.0.0.1', 86400);
+
+    // 4th attempt from same IP must be blocked by rate limiter
+    Livewire::test(Register::class)
+        ->fillForm([
+            'name' => 'Fourth Merchant',
+            'email' => 'merchant4@gmail.com',
+            'phone' => '08099998888',
+            'password' => 'secret12345',
+            'passwordConfirmation' => 'secret12345',
+            'terms' => true,
+        ])
+        ->call('register')
+        ->assertHasFormErrors(['email']);
+
+    $this->assertDatabaseMissing('owners', [
+        'email' => 'merchant4@gmail.com',
+    ]);
 });

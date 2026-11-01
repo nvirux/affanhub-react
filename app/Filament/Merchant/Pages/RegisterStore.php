@@ -17,6 +17,7 @@ use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -170,6 +171,18 @@ class RegisterStore extends RegisterTenant
 
     protected function handleRegistration(array $data): Model
     {
+        $ip = request()->ip() ?? '127.0.0.1';
+        $throttleKey = 'merchant_store_create_ip:'.$ip;
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 3)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            $hours = max(1, (int) ceil($seconds / 3600));
+
+            throw ValidationException::withMessages([
+                'data.name' => "Too many stores have been created from your network. Please try again in {$hours} hour(s) or contact support.",
+            ]);
+        }
+
         $owner = auth()->user();
 
         if ($owner && ! $owner->canCreateMoreStores()) {
@@ -186,6 +199,8 @@ class RegisterStore extends RegisterTenant
             'whatsapp_chat_phone' => $data['whatsapp_chat_phone'] ?? null,
             'primary_color' => $data['primary_color'] ?? '#f59e0b',
         ]);
+
+        RateLimiter::hit($throttleKey, 86400); // 24 hours decay
 
         if ($owner) {
             $owner->stores()->attach($store->id, ['role' => 'owner']);

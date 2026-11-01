@@ -55,6 +55,7 @@ class NotDisposableEmail implements ValidationRule
         'tmpmail.net',
         'tmpmail.org',
         'disposablemail.com',
+        'fldubai.com',
     ];
 
     /**
