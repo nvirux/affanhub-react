@@ -1,7 +1,7 @@
 <x-filament-panels::page>
     @php
         $tenant = \Filament\Facades\Filament::getTenant();
-        $activeSub = $tenant->activeSubscription;
+        $activeSub = $tenant?->activeSubscription;
         $currentPlan = $activeSub ? $activeSub->plan : \App\Models\Plan::where('slug', 'starter')->first();
         // Custom Plan Order: Pro first, then Enterprise, then Starter
         $plans = \App\Models\Plan::all()->sortBy(function($plan) {
@@ -25,7 +25,7 @@
                     </div>
                     <div>
                         <h2 style="font-size: 1.35rem; font-weight: 800; margin: 0; letter-spacing: -0.01em;">
-                            Your store <span style="color: #f59e0b;">{{ $tenant->name }}</span> is ready!
+                            Your store <span style="color: #f59e0b;">{{ $tenant?->name ?? 'Store' }}</span> is ready!
                         </h2>
                         <p style="font-size: 0.875rem; color: #9ca3af; margin: 0.25rem 0 0 0;">
                             Select a plan below to activate your wholesale rates and features, or continue free on Starter. You can upgrade anytime.
@@ -109,7 +109,7 @@
                     </div>
 
                     {{-- Custom Domains --}}
-                    @php $hasCustomDomain = $tenant->hasFeature('custom_domain'); @endphp
+                    @php $hasCustomDomain = $tenant?->hasFeature('custom_domain') ?? false; @endphp
                     <div style="padding: 1rem; border-radius: 12px; background-color: #f9fafb; border: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; flex-direction: column;">
                             <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Custom Domains</span>
@@ -121,7 +121,7 @@
                     </div>
 
                     {{-- Custom Margin Settings --}}
-                    @php $hasCustomMargins = $tenant->hasFeature('custom_pricing_margins'); @endphp
+                    @php $hasCustomMargins = $tenant?->hasFeature('custom_pricing_margins') ?? false; @endphp
                     <div style="padding: 1rem; border-radius: 12px; background-color: #f9fafb; border: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; flex-direction: column;">
                             <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Custom Margins</span>
@@ -133,7 +133,7 @@
                     </div>
 
                     {{-- Developer API --}}
-                    @php $hasApi = $tenant->hasFeature('api_access'); @endphp
+                    @php $hasApi = $tenant?->hasFeature('api_access') ?? false; @endphp
                     <div style="padding: 1rem; border-radius: 12px; background-color: #f9fafb; border: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; flex-direction: column;">
                             <span style="font-size: 0.8125rem; font-weight: 600; color: #374151;">Developer API</span>

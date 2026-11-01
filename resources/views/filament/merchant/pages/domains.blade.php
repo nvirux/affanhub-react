@@ -366,7 +366,7 @@
                             Connect your own brand domain name to replace your default AffanHub address. Upgrade to a Pro or Enterprise plan to unlock custom domains.
                         </span>
                     </div>
-                    <a href="{{ \App\Filament\Merchant\Pages\Billing::getUrl() }}" class="domain-btn btn-primary">
+                    <a href="{{ $tenant ? route('filament.merchant.pages.billing', ['tenant' => $tenant]) : '#' }}" class="domain-btn btn-primary">
                         Upgrade Plan
                     </a>
                 </div>

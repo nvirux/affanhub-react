@@ -1,8 +1,8 @@
 <x-filament-panels::page>
     @php
         $tenant = \Filament\Facades\Filament::getTenant();
-        $hasCustomBranding = $tenant->hasFeature('custom_branding');
-        $hasCustomEmail = $tenant->hasFeature('custom_email');
+        $hasCustomBranding = $tenant?->hasFeature('custom_branding') ?? false;
+        $hasCustomEmail = $tenant?->hasFeature('custom_email') ?? false;
     @endphp
 
     <style>

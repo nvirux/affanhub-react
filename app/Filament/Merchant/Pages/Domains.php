@@ -27,6 +27,8 @@ class Domains extends Page
 
     public ?string $newDomain = '';
 
+    public ?array $data = [];
+
     public function addDomain(CustomDomainOnboardingService $service): void
     {
         $tenant = Filament::getTenant();
