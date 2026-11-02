@@ -5,10 +5,12 @@ namespace App\Filament\Merchant\Pages\Auth;
 use App\Models\Owner;
 use App\Rules\MerchantRegistrationThrottle;
 use App\Rules\TrustedEmailDomain;
+use App\Rules\TurnstileRule;
 use Filament\Actions\Action;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -59,7 +61,17 @@ class Register extends BaseRegister
                 $this->getPasswordFormComponent(),
                 $this->getPasswordConfirmationFormComponent(),
                 $this->getTermsFormComponent(),
+                $this->getTurnstileFormComponent(),
             ]);
+    }
+
+    protected function getTurnstileFormComponent(): Component
+    {
+        return ViewField::make('turnstile_token')
+            ->hiddenLabel()
+            ->view('filament.components.turnstile')
+            ->rule(new TurnstileRule('merchant_auth'))
+            ->dehydrated(false);
     }
 
     protected function getNameFormComponent(): Component

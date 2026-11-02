@@ -55,6 +55,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 if (Domain::where('domain', $nonWwwHost)->exists()) {
                     return redirect()->to("{$scheme}://{$nonWwwHost}{$portString}".$request->getRequestUri(), 301);
                 }
+
+                $configuredAppHost = parse_url(config('app.url'), PHP_URL_HOST) ?? 'affanhub.com';
+                $cleanAppHost = preg_replace('/^www\./i', '', $configuredAppHost);
+                if ($nonWwwHost === $cleanAppHost || $host === 'www.affanhub.com') {
+                    $targetHost = $cleanAppHost ?: 'affanhub.com';
+
+                    return redirect()->to("{$scheme}://{$targetHost}{$portString}".$request->getRequestUri(), 301);
+                }
             } else {
                 $wwwHost = 'www.'.$host;
                 if (Domain::where('domain', $wwwHost)->exists()) {

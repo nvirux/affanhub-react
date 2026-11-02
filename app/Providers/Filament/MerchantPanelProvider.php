@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Merchant\Pages\Auth\EditProfile;
 use App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt;
+use App\Filament\Merchant\Pages\Auth\Login;
 use App\Filament\Merchant\Pages\Auth\Register;
 use App\Filament\Merchant\Pages\Dashboard;
 use App\Filament\Merchant\Pages\RegisterStore;
@@ -36,7 +37,7 @@ class MerchantPanelProvider extends PanelProvider
         return $panel
             ->id('merchant')->domain('merchant.'.(parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost'))
             ->path('')
-            ->login()->profile(EditProfile::class)
+            ->login(Login::class)->profile(EditProfile::class)
             ->multiFactorAuthentication([
                 AppAuthentication::make()
                     ->brandName('AffanHub Merchant')

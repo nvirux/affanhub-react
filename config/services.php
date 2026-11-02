@@ -77,4 +77,9 @@ return [
         'public_key' => env('PAYMINT_PUBLIC_KEY'),
         'base_url' => env('PAYMINT_BASE_URL', 'https://api.paymint.ng'),
     ],
+
+    'turnstile' => [
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+    ],
 ];

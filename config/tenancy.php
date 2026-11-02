@@ -14,6 +14,7 @@ use Stancl\Tenancy\TenantDatabaseManagers\SQLiteDatabaseManager;
 // use Stancl\Tenancy\Database\Models\Tenant;
 
 $appHost = parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST);
+$cleanHost = $appHost ? preg_replace('/^www\./i', '', $appHost) : null;
 
 return [
     'tenant_model' => Store::class,
@@ -28,9 +29,10 @@ return [
      */
     'central_domains' => array_values(array_unique(array_filter([
         '127.0.0.1',
-        $appHost,
-        $appHost ? 'merchant.'.$appHost : 'merchant.localhost', // Filament Merchant Panel Domain
-        $appHost ? 'admin.'.$appHost : 'admin.localhost', // Filament Admin Panel Domain
+        $cleanHost ?: $appHost,
+        $cleanHost ? 'www.'.$cleanHost : null,
+        $cleanHost ? 'merchant.'.$cleanHost : 'merchant.localhost', // Filament Merchant Panel Domain
+        $cleanHost ? 'admin.'.$cleanHost : 'admin.localhost', // Filament Admin Panel Domain
     ]))),
 
     /**

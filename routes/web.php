@@ -13,6 +13,20 @@ use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Canonical 301 Redirect from www to main domain
+$appHost = parse_url(config('app.url'), PHP_URL_HOST);
+$cleanHost = $appHost ? preg_replace('/^www\./i', '', $appHost) : null;
+if ($cleanHost && $cleanHost !== 'localhost' && $cleanHost !== '127.0.0.1') {
+    Route::domain('www.'.$cleanHost)->group(function () use ($cleanHost) {
+        Route::any('/{any?}', function () use ($cleanHost) {
+            $scheme = request()->getScheme();
+            $path = request()->getRequestUri();
+
+            return redirect("{$scheme}://{$cleanHost}{$path}", 301);
+        })->where('any', '.*');
+    });
+}
+
 Route::get('/', HomeController::class)->name('home');
 
 // Impersonation Routes

@@ -46,3 +46,14 @@ test('visiting an unregistered domain still renders store-not-found 404', functi
     $response->assertStatus(404);
     $response->assertSee('Store Not Found');
 });
+
+test('visiting www on central domain automatically 301 redirects to root domain', function () {
+    $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+    if (! $appHost || $appHost === 'localhost' || $appHost === '127.0.0.1') {
+        config(['app.url' => 'https://affanhub.com']);
+    }
+
+    $response = $this->get('http://www.affanhub.com/');
+    $response->assertStatus(301);
+    $response->assertRedirect('http://affanhub.com/');
+});
