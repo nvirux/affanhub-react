@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::show
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:20
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:22
  * @route '/invitations/{token}'
  */
 export const show = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::show
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:20
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:22
  * @route '/invitations/{token}'
  */
 show.url = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -44,7 +44,7 @@ show.url = (args: { token: string | number } | [token: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::show
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:20
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:22
  * @route '/invitations/{token}'
  */
 show.get = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -53,7 +53,7 @@ show.get = (args: { token: string | number } | [token: string | number ] | strin
 })
 /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::show
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:20
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:22
  * @route '/invitations/{token}'
  */
 show.head = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -63,7 +63,7 @@ show.head = (args: { token: string | number } | [token: string | number ] | stri
 
     /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::show
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:20
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:22
  * @route '/invitations/{token}'
  */
     const showForm = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -73,7 +73,7 @@ show.head = (args: { token: string | number } | [token: string | number ] | stri
 
             /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::show
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:20
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:22
  * @route '/invitations/{token}'
  */
         showForm.get = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ show.head = (args: { token: string | number } | [token: string | number ] | stri
         })
             /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::show
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:20
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:22
  * @route '/invitations/{token}'
  */
         showForm.head = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -98,7 +98,7 @@ show.head = (args: { token: string | number } | [token: string | number ] | stri
     show.form = showForm
 /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::acceptExisting
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:46
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:48
  * @route '/invitations/{token}/accept'
  */
 export const acceptExisting = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ acceptExisting.definition = {
 
 /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::acceptExisting
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:46
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:48
  * @route '/invitations/{token}/accept'
  */
 acceptExisting.url = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -141,7 +141,7 @@ acceptExisting.url = (args: { token: string | number } | [token: string | number
 
 /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::acceptExisting
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:46
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:48
  * @route '/invitations/{token}/accept'
  */
 acceptExisting.post = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -151,7 +151,7 @@ acceptExisting.post = (args: { token: string | number } | [token: string | numbe
 
     /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::acceptExisting
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:46
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:48
  * @route '/invitations/{token}/accept'
  */
     const acceptExistingForm = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -161,7 +161,7 @@ acceptExisting.post = (args: { token: string | number } | [token: string | numbe
 
             /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::acceptExisting
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:46
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:48
  * @route '/invitations/{token}/accept'
  */
         acceptExistingForm.post = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -172,7 +172,7 @@ acceptExisting.post = (args: { token: string | number } | [token: string | numbe
     acceptExisting.form = acceptExistingForm
 /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::registerAndAccept
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:100
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:102
  * @route '/invitations/{token}/register'
  */
 export const registerAndAccept = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -187,7 +187,7 @@ registerAndAccept.definition = {
 
 /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::registerAndAccept
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:100
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:102
  * @route '/invitations/{token}/register'
  */
 registerAndAccept.url = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -215,7 +215,7 @@ registerAndAccept.url = (args: { token: string | number } | [token: string | num
 
 /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::registerAndAccept
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:100
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:102
  * @route '/invitations/{token}/register'
  */
 registerAndAccept.post = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -225,7 +225,7 @@ registerAndAccept.post = (args: { token: string | number } | [token: string | nu
 
     /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::registerAndAccept
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:100
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:102
  * @route '/invitations/{token}/register'
  */
     const registerAndAcceptForm = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -235,7 +235,7 @@ registerAndAccept.post = (args: { token: string | number } | [token: string | nu
 
             /**
 * @see \App\Http\Controllers\Merchant\StaffInvitationController::registerAndAccept
- * @see app/Http/Controllers/Merchant/StaffInvitationController.php:100
+ * @see app/Http/Controllers/Merchant/StaffInvitationController.php:102
  * @route '/invitations/{token}/register'
  */
         registerAndAcceptForm.post = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

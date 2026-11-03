@@ -161,7 +161,7 @@ bvn.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     bvn.form = bvnForm
 /**
 * @see \App\Http\Controllers\ModificationController::ninModification
- * @see app/Http/Controllers/ModificationController.php:25
+ * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
 export const ninModification = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -176,7 +176,7 @@ ninModification.definition = {
 
 /**
 * @see \App\Http\Controllers\ModificationController::ninModification
- * @see app/Http/Controllers/ModificationController.php:25
+ * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
 ninModification.url = (options?: RouteQueryOptions) => {
@@ -185,7 +185,7 @@ ninModification.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ModificationController::ninModification
- * @see app/Http/Controllers/ModificationController.php:25
+ * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
 ninModification.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -194,7 +194,7 @@ ninModification.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => (
 })
 /**
 * @see \App\Http\Controllers\ModificationController::ninModification
- * @see app/Http/Controllers/ModificationController.php:25
+ * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
 ninModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -204,7 +204,7 @@ ninModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
 
     /**
 * @see \App\Http\Controllers\ModificationController::ninModification
- * @see app/Http/Controllers/ModificationController.php:25
+ * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
     const ninModificationForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -214,7 +214,7 @@ ninModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
 
             /**
 * @see \App\Http\Controllers\ModificationController::ninModification
- * @see app/Http/Controllers/ModificationController.php:25
+ * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
         ninModificationForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -223,7 +223,7 @@ ninModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
         })
             /**
 * @see \App\Http\Controllers\ModificationController::ninModification
- * @see app/Http/Controllers/ModificationController.php:25
+ * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
         ninModificationForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -239,7 +239,7 @@ ninModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
     ninModification.form = ninModificationForm
 /**
 * @see \App\Http\Controllers\ModificationController::bvnModification
- * @see app/Http/Controllers/ModificationController.php:33
+ * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
 export const bvnModification = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -254,7 +254,7 @@ bvnModification.definition = {
 
 /**
 * @see \App\Http\Controllers\ModificationController::bvnModification
- * @see app/Http/Controllers/ModificationController.php:33
+ * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
 bvnModification.url = (options?: RouteQueryOptions) => {
@@ -263,7 +263,7 @@ bvnModification.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ModificationController::bvnModification
- * @see app/Http/Controllers/ModificationController.php:33
+ * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
 bvnModification.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -272,7 +272,7 @@ bvnModification.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => (
 })
 /**
 * @see \App\Http\Controllers\ModificationController::bvnModification
- * @see app/Http/Controllers/ModificationController.php:33
+ * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
 bvnModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -282,7 +282,7 @@ bvnModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
 
     /**
 * @see \App\Http\Controllers\ModificationController::bvnModification
- * @see app/Http/Controllers/ModificationController.php:33
+ * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
     const bvnModificationForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -292,7 +292,7 @@ bvnModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
 
             /**
 * @see \App\Http\Controllers\ModificationController::bvnModification
- * @see app/Http/Controllers/ModificationController.php:33
+ * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
         bvnModificationForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -301,7 +301,7 @@ bvnModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
         })
             /**
 * @see \App\Http\Controllers\ModificationController::bvnModification
- * @see app/Http/Controllers/ModificationController.php:33
+ * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
         bvnModificationForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -317,7 +317,7 @@ bvnModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
     bvnModification.form = bvnModificationForm
 /**
 * @see \App\Http\Controllers\ModificationController::modification
- * @see app/Http/Controllers/ModificationController.php:41
+ * @see app/Http/Controllers/ModificationController.php:42
  * @route '/identity/modification'
  */
 export const modification = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -332,7 +332,7 @@ modification.definition = {
 
 /**
 * @see \App\Http\Controllers\ModificationController::modification
- * @see app/Http/Controllers/ModificationController.php:41
+ * @see app/Http/Controllers/ModificationController.php:42
  * @route '/identity/modification'
  */
 modification.url = (options?: RouteQueryOptions) => {
@@ -341,7 +341,7 @@ modification.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ModificationController::modification
- * @see app/Http/Controllers/ModificationController.php:41
+ * @see app/Http/Controllers/ModificationController.php:42
  * @route '/identity/modification'
  */
 modification.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -350,7 +350,7 @@ modification.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\ModificationController::modification
- * @see app/Http/Controllers/ModificationController.php:41
+ * @see app/Http/Controllers/ModificationController.php:42
  * @route '/identity/modification'
  */
 modification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -360,7 +360,7 @@ modification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\ModificationController::modification
- * @see app/Http/Controllers/ModificationController.php:41
+ * @see app/Http/Controllers/ModificationController.php:42
  * @route '/identity/modification'
  */
     const modificationForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -370,7 +370,7 @@ modification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\ModificationController::modification
- * @see app/Http/Controllers/ModificationController.php:41
+ * @see app/Http/Controllers/ModificationController.php:42
  * @route '/identity/modification'
  */
         modificationForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -379,7 +379,7 @@ modification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\ModificationController::modification
- * @see app/Http/Controllers/ModificationController.php:41
+ * @see app/Http/Controllers/ModificationController.php:42
  * @route '/identity/modification'
  */
         modificationForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

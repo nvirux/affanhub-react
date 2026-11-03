@@ -8,7 +8,7 @@
         $virtualAccount = $store ? \App\Models\VirtualAccount::where('holder_type', get_class($store))->where('holder_id', $store->id)->first() : null;
         $transactions = $mainWallet?->transactions()->latest()->take(15)->get() ?? collect();
         $settlement = $store ? \App\Models\SettlementAccount::where('store_id', $store->id)->latest()->first() : null;
-        $withdrawals = $store ? \App\Models\Withdrawal::where('store_id', $store->id)->latest()->take(15)->get() ?? collect();
+        $withdrawals = $store ? \App\Models\Withdrawal::where('store_id', $store->id)->latest()->take(15)->get() : collect();
     @endphp
 
     <style>

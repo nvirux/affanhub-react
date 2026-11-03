@@ -212,8 +212,8 @@ logout.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     
     logout.form = logoutForm
 /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EditProfile::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EditProfile.php:7
  * @route '//merchant.localhost/profile'
  */
 export const profile = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -227,8 +227,8 @@ profile.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EditProfile::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EditProfile.php:7
  * @route '//merchant.localhost/profile'
  */
 profile.url = (options?: RouteQueryOptions) => {
@@ -236,8 +236,8 @@ profile.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EditProfile::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EditProfile.php:7
  * @route '//merchant.localhost/profile'
  */
 profile.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -245,8 +245,8 @@ profile.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EditProfile::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EditProfile.php:7
  * @route '//merchant.localhost/profile'
  */
 profile.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -255,8 +255,8 @@ profile.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EditProfile::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EditProfile.php:7
  * @route '//merchant.localhost/profile'
  */
     const profileForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -265,8 +265,8 @@ profile.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EditProfile::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EditProfile.php:7
  * @route '//merchant.localhost/profile'
  */
         profileForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -274,8 +274,8 @@ profile.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
+* @see \App\Filament\Merchant\Pages\Auth\EditProfile::__invoke
+ * @see app/Filament/Merchant/Pages/Auth/EditProfile.php:7
  * @route '//merchant.localhost/profile'
  */
         profileForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
