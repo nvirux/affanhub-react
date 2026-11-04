@@ -27,6 +27,7 @@ const CARRIERS = [
     { name: 'Glo Mobile', key: 'Glo', time: '2.1s', desc: 'High-speed retail and corporate data', lanes: ['Normal'], status: 'Active', live: false },
     { name: '9mobile', key: '9mobile', time: '1.9s', desc: 'Corporate gifting & retail airtime', lanes: ['Standard'], status: 'Active', live: false },
     { name: '11 Electricity Discos', key: 'Power', time: '1.2s', desc: 'IKEDC, EKEDC, AEDC token generation', lanes: ['Tokens', 'Instant'], status: 'Active', live: false },
+    { name: 'Identity & Business Services', key: 'Identity', time: 'Instant', desc: 'NIN/BVN verification slips, record modifications, and CAC lookups', lanes: ['Verifications', 'Modifications', 'CAC Registry'], status: 'Active', live: true },
 ];
 
 const AUTHENTIC_FAQS = [
@@ -62,7 +63,7 @@ const AUTHENTIC_FAQS = [
 
 export default function Home({ merchant_url = 'https://merchant.affanhub.com', proPrice = '₦4,999', faqs = [] }: HomeProps) {
     const displayFaqs = faqs && faqs.length > 0 ? faqs : AUTHENTIC_FAQS;
-    const [selectedSlot, setSelectedSlot] = useState<'mtn' | 'airtel' | 'ikedc' | 'waec'>('mtn');
+    const [selectedSlot, setSelectedSlot] = useState<'mtn' | 'airtel' | 'ikedc' | 'identity'>('mtn');
     const [openFaq, setOpenFaq] = useState<number | null>(0);
     const [storeSlug, setStoreSlug] = useState('');
     const [slugStatus, setSlugStatus] = useState<'idle' | 'available'>('idle');
@@ -260,11 +261,12 @@ void main(){
     return (
         <div className="refract-page">
             <Head>
-                <title>AffanHub: Cloud Telecom Infrastructure for Digital Resellers</title>
+                <title>AffanHub: Cloud Telecom & Identity Infrastructure for Digital Resellers</title>
                 <meta
                     name="description"
-                    content="Launch your branded digital telecom store with automated Moniepoint virtual bank accounts, direct carrier pipelines, and custom domains in Nigeria."
+                    content="Launch your branded digital store with automated virtual accounts, telecom pipelines, record modifications, and CAC business lookups in Nigeria."
                 />
+                <meta name="theme-color" content="#fbfaf7" />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
                 <link
@@ -389,13 +391,13 @@ void main(){
                                     <input
                                         type="radio"
                                         name="slot"
-                                        value="waec"
-                                        checked={selectedSlot === 'waec'}
-                                        onChange={() => setSelectedSlot('waec')}
+                                        value="identity"
+                                        checked={selectedSlot === 'identity'}
+                                        onChange={() => setSelectedSlot('identity')}
                                     />
-                                    <span className="slot__time num">1.9s</span>
-                                    <span className="slot__name">WAEC Scratch PIN<small>Direct verification PIN</small></span>
-                                    <span className="slot__left num">Available</span>
+                                    <span className="slot__time num">Instant</span>
+                                    <span className="slot__name">Identity & CAC Services<small>NIN/BVN slips, modifications & CAC</small></span>
+                                    <span className="slot__left num">High margin</span>
                                 </label>
                             </fieldset>
 
@@ -665,7 +667,7 @@ void main(){
                             <dl className="visit__list">
                                 <div><dt>Storefront</dt><dd>Free yourname.affanhub.com subdomain or custom .ng domain</dd></div>
                                 <div><dt>Payments</dt><dd>Automated Moniepoint virtual accounts for customers</dd></div>
-                                <div><dt>Inventory</dt><dd>Connected directly to MTN, Airtel, Glo, and 9mobile</dd></div>
+                                <div><dt>Services</dt><dd>Telecom, electricity, record modifications & CAC lookups</dd></div>
                             </dl>
                         </div>
                     </div>
