@@ -316,10 +316,10 @@ void main(){
                     <div className="container hero__grid">
                         <div className="hero__text">
                             <h1 id="hero-head">
-                                Launch your <span className="hero__highlight">branded</span> telecom store.
+                                Launch your <span className="hero__highlight">branded</span> VTU & telecom store.
                             </h1>
                             <p className="lead">
-                                White-label storefront, automated virtual bank accounts, and direct carrier infrastructure.
+                                White-label storefront, automated virtual bank accounts, and instant carrier delivery.
                             </p>
                             <div className="hero__actions">
                                 <a className="btn" href={`${merchant_url}/register`}>
