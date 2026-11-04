@@ -1,1084 +1,700 @@
 /*
- * Hallmark · v2.0.0
- * theme: modern-minimal / affanhub-cobalt · brand: AffanHub
- * shape: Split Studio · hero: Counter · nav: edge-aligned · footer: colophon block
- * material: real (telecom carrier icons, live margin controller, authentic plans and limits)
- * critique: authoritative fintech SaaS, structured hierarchy, high readability, accessible contrast
- * answered: 46a verified from project's original StatBox and architecture
+ * Hallmark · shape: Timetable-led · genre: atmospheric · theme: Refract (by request) · job: sign up · draw: 539e81
+ * hero: Stage · nav: floating clear pill · footer: statement · imagery: the product · signature: the pool floor in sun, live caustics inside a hard pool edge, the dispatch panel lying on the water · refract: water/pool
+ * axes: light/grotesk-sans/cool · posture: restrained · contrast: pass · fold: pass · v2.8.0
  */
 
-import { Head, Link, usePage } from '@inertiajs/react';
-import {
-    ArrowRight, Menu, X, CheckCircle2, Zap, Users, BarChart3,
-    Globe, Shield, Wallet, Store, Smartphone, Wifi, Tv, GraduationCap,
-    FileBadge, ShieldCheck, ExternalLink, Check, Sliders
-} from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { Head, Link } from '@inertiajs/react';
+import { useState, useEffect, useRef, FormEvent } from 'react';
 
-interface NavLink {
-    label: string;
-    href: string;
+interface FaqItem {
+    id?: number;
+    question?: string;
+    answer?: string;
+    q?: string;
+    a?: string;
 }
 
-const NAV_LINKS: NavLink[] = [
-    { label: 'Features', href: '#features' },
-    { label: 'Live preview', href: '#preview' },
-    { label: 'Services', href: '#services' },
-    { label: 'Profit calculator', href: '#calculator' },
-    { label: 'How it works', href: '#how-it-works' },
-    { label: 'Pricing', href: '#pricing' },
-    { label: 'FAQs', href: '#faqs' },
-    { label: 'Guides', href: '/blog' },
+interface HomeProps {
+    merchant_url?: string;
+    proPrice?: string;
+    faqs?: FaqItem[];
+}
+
+const CARRIERS = [
+    { name: 'MTN Nigeria', key: 'MTN', time: '1.4s', desc: 'SME, Corporate Gifting, Direct', lanes: ['Fast', 'Sub-2s'], status: 'Active', live: true },
+    { name: 'Airtel Nigeria', key: 'Airtel', time: '1.8s', desc: 'Direct gifting and CG bundles', lanes: ['Fast', 'Wholesale'], status: 'Active', live: true },
+    { name: 'Glo Mobile', key: 'Glo', time: '2.1s', desc: 'High-speed retail and corporate data', lanes: ['Normal'], status: 'Active', live: false },
+    { name: '9mobile', key: '9mobile', time: '1.9s', desc: 'Corporate gifting & retail airtime', lanes: ['Standard'], status: 'Active', live: false },
+    { name: '11 Electricity Discos', key: 'Power', time: '1.2s', desc: 'IKEDC, EKEDC, AEDC token generation', lanes: ['Tokens', 'Instant'], status: 'Active', live: false },
 ];
 
-const FEATURES = [
+const AUTHENTIC_FAQS = [
     {
-        icon: <Globe className="size-5 text-primary" />,
-        title: 'Custom domains and automated SSL',
-        desc: 'Connect your own .com or .ng domain with 1-click Cloudflare DNS. Your customers see only your brand name.',
+        q: 'Can I really start with ₦0 capital / no money?',
+        a: 'Yes, 100%! Setting up your storefront on AffanHub is completely free with zero upfront capital required. When your customers deposit money into your store dedicated virtual accounts to buy airtime or data, those customer deposits automatically fund your working balance to cover the wholesale purchase, while your profit markup is credited immediately for you to withdraw!',
     },
     {
-        icon: <BarChart3 className="size-5 text-primary" />,
-        title: 'Total margin and pricing control',
-        desc: 'Set custom retail markups per service. Live cost tracking ensures every automated sale remains profitable.',
+        q: 'Why is AffanHub better than buying a custom VTU script?',
+        a: 'Traditional VTU scripts force you to pay monthly cPanel or VPS hosting fees, deal with bug-ridden code, hire expensive developers, and constantly stress about hackers stealing your wallet balance. With AffanHub, you never manage hosting or servers. We provide 100% bank-grade security, enterprise uptime, automated Cloudflare SSL, and direct telecom connections completely hands-free.',
     },
     {
-        icon: <Wallet className="size-5 text-primary" />,
-        title: 'Automated virtual bank accounts',
-        desc: 'Dedicated Moniepoint and Wema accounts generated for every customer. Deposits fund orders in under 5 seconds.',
+        q: 'What happens when new telecom services or provider APIs are added?',
+        a: 'You never have to touch code or pay developers for upgrades. Whenever telecom networks change their APIs, or whenever AffanHub rolls out new services (like new data types, electricity discos, exam pins, or identity services), your store updates automatically with zero downtime.',
     },
     {
-        icon: <Shield className="size-5 text-primary" />,
-        title: 'Multi-tenant staff permissions',
-        desc: 'Assign operator roles, restrict sensitive actions, and inspect detailed audit trails without security risks.',
+        q: 'How do I make money and withdraw my profit?',
+        a: 'You set your own customer-facing prices directly from your merchant dashboard. For example, if a 1GB MTN data plan costs you ₦215 wholesale, you can sell it for ₦260 and earn ₦45 clear profit per gigabyte. You can withdraw your accumulated profits to any Nigerian bank account anytime with instant settlement.',
     },
     {
-        icon: <Users className="size-5 text-primary" />,
-        title: 'Customer management and wallet audits',
-        desc: 'Manage customer accounts, verify transaction histories, and resolve customer requests directly from one console.',
+        q: 'Can I connect my own custom domain name?',
+        a: 'Yes! On Pro and Enterprise plans, you can connect your own brand domain (e.g., yourbrand.ng or vtu.yourdomain.com) with 1-click Cloudflare automated SSL. Your storefront is 100% white-labeled — customers never see AffanHub.',
     },
     {
-        icon: <Zap className="size-5 text-primary" />,
-        title: 'Instant telecom delivery pipeline',
-        desc: 'Direct carrier integrations with automatic failover ensure airtime, data, and tokens deliver in under 3 seconds.',
-    },
-];
-
-const SERVICES = [
-    { icon: <Smartphone className="size-4" />, name: 'Airtime VTU', networks: 'MTN, Airtel, Glo, 9mobile', plan: 'All plans' },
-    { icon: <Wifi className="size-4" />, name: 'Data bundles', networks: 'SME, Corporate Gifting, Direct', plan: 'All plans' },
-    { icon: <Tv className="size-4" />, name: 'Cable television', networks: 'DStv, GOtv, Startimes renewals', plan: 'All plans' },
-    { icon: <Zap className="size-4" />, name: 'Electricity tokens', networks: 'All 11 Nigerian electricity Discos', plan: 'All plans' },
-    { icon: <GraduationCap className="size-4" />, name: 'Education PINs', networks: 'WAEC and JAMB registrations', plan: 'All plans' },
-    { icon: <FileBadge className="size-4" />, name: 'NIN verification', networks: 'National identity lookups and slips', plan: 'Pro & Enterprise' },
-    { icon: <ShieldCheck className="size-4" />, name: 'BVN verification', networks: 'Instant bank verification number lookup', plan: 'Pro & Enterprise' },
-    { icon: <Store className="size-4" />, name: 'CAC registry', networks: 'Business name registration filings', plan: 'Pro & Enterprise' },
-];
-
-const PLANS = [
-    {
-        name: 'Starter',
-        price: '₦0',
-        sub: 'Zero upfront payment',
-        desc: 'Essential features to launch your branded digital store.',
-        highlight: false,
-        features: [
-            '2 staff accounts',
-            '1,000 customer capacity',
-            'Standard AffanHub subdomain',
-            'Core telecom and utility services',
-            'Direct bank withdrawals enabled',
-        ],
-        cta: 'Start for free',
-        href: '/register',
+        q: 'How do customer wallet fundings work?',
+        a: 'AffanHub generates dedicated, automated virtual bank accounts (Wema, Moniepoint, etc.) for each of your customers. When they transfer money via USSD or mobile app, their wallet updates in real time in under 5 seconds.',
     },
     {
-        name: 'Pro',
-        price: '₦4,999',
-        sub: 'per month',
-        desc: 'Advanced branding and custom domain for scaling merchants.',
-        highlight: true,
-        features: [
-            '10 staff accounts',
-            '5,000 customer capacity',
-            'Custom domain connection (yourbrand.ng)',
-            'Full white-label branding',
-            'Custom profit margins and pricing control',
-            'Customer referral rewards program',
-            'Priority support SLA',
-        ],
-        cta: 'Start 14-day free trial',
-        href: '/register',
-    },
-    {
-        name: 'Enterprise',
-        price: 'Custom',
-        sub: 'volume based',
-        desc: 'Bespoke infrastructure for aggregator operations and fintechs.',
-        highlight: false,
-        features: [
-            'Unlimited staff accounts',
-            'Unlimited customer volume',
-            'Direct developer API access and webhooks',
-            'Dedicated account manager',
-            'Custom SLA and failover infrastructure',
-        ],
-        cta: 'Contact enterprise sales',
-        href: 'mailto:sales@affanhub.com',
+        q: 'Do I need technical skills or a laptop to start?',
+        a: 'No technical coding skills or laptop required! You can set up your store, change margins, monitor sales, and withdraw profits directly from your smartphone in under 2 minutes.',
     },
 ];
 
-const STEPS = [
-    {
-        step: '01',
-        title: 'Create your account',
-        desc: 'Register in under 2 minutes and claim your free storefront subdomain on AffanHub.',
-    },
-    {
-        step: '02',
-        title: 'Configure prices and branding',
-        desc: 'Upload your store logo, connect your custom domain, and choose your wholesale markup margins.',
-    },
-    {
-        step: '03',
-        title: 'Serve customers and withdraw profits',
-        desc: 'Customers fund dedicated virtual accounts, orders deliver automatically, and profits settle instantly to your bank.',
-    },
-];
+export default function Home({ merchant_url = 'https://merchant.affanhub.com', proPrice = '₦4,999', faqs = [] }: HomeProps) {
+    const displayFaqs = faqs && faqs.length > 0 ? faqs : AUTHENTIC_FAQS;
+    const [selectedSlot, setSelectedSlot] = useState<'mtn' | 'airtel' | 'ikedc' | 'waec'>('mtn');
+    const [openFaq, setOpenFaq] = useState<number | null>(0);
+    const [storeSlug, setStoreSlug] = useState('');
+    const [slugStatus, setSlugStatus] = useState<'idle' | 'available'>('idle');
 
-const FAQS = [
-    {
-        q: 'Can I really start with ₦0 upfront capital?',
-        a: 'Yes. Setting up your storefront on AffanHub is free with zero upfront fees. When customers deposit money into their dedicated virtual accounts, those deposits fund your working balance for the wholesale order, while your profit markup is credited immediately to your merchant wallet.',
-    },
-    {
-        q: 'Why is AffanHub better than purchasing a VTU PHP script?',
-        a: 'Traditional scripts require ongoing cPanel or VPS hosting, manual security patches, fragile telecom APIs, and developer maintenance. AffanHub runs a modern multi-tenant cloud platform with automated Cloudflare SSL, 99.9% uptime, failover telecom routes, and automatic feature updates with zero maintenance required from you.',
-    },
-    {
-        q: 'What happens when telecom APIs or prices change?',
-        a: 'You never manage code or pay developers for upgrades. Whenever telecom networks alter their APIs or AffanHub adds new services (such as new electricity Discos, exam PINs, or identity verification), your store updates automatically with zero downtime.',
-    },
-    {
-        q: 'How do I set my prices and withdraw my profits?',
-        a: 'You define customer retail prices directly from your merchant console. For example, if 1GB of MTN SME data costs ₦215 wholesale, you can sell it for ₦260 and keep ₦45 net profit per gigabyte. You can withdraw your wallet balance to any Nigerian commercial or microfinance bank with instant settlement.',
-    },
-    {
-        q: 'Can I connect my own custom brand domain name?',
-        a: 'Yes. On Pro and Enterprise plans, you can connect your custom domain (such as yourbrand.ng or yourbrand.com) with automated Cloudflare SSL. Your storefront is completely white-labeled, and customers never see AffanHub.',
-    },
-    {
-        q: 'How do automated customer wallet deposits work?',
-        a: 'AffanHub generates dedicated virtual bank accounts (Moniepoint, Wema Bank) for each registered customer. When they transfer funds through their mobile banking app or USSD, their customer wallet credits automatically in under 5 seconds.',
-    },
-    {
-        q: 'Do I need technical programming skills or a computer?',
-        a: 'No programming skills or computer are required. The entire merchant management console is fully responsive, allowing you to configure markups, track customer transactions, and withdraw earnings directly from any smartphone.',
-    },
-];
+    const waterCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-const resolveMerchantUrl = (merchantBase?: string, path = '') => {
-    if (merchantBase) return `${merchantBase}${path}`;
-    if (typeof window !== 'undefined') {
-        const host = window.location.host;
-        const protocol = window.location.protocol;
-        if (host.includes('localhost') || host.includes('127.0.0.1')) {
-            return `${protocol}//merchant.localhost:8000${path}`;
-        }
-        return `${protocol}//merchant.${host}${path}`;
+    // WebGL Pool Water Shader: exactly matching Hallmark Refract scene.js
+    useEffect(() => {
+        const canvas = waterCanvasRef.current;
+        if (!canvas) return;
+
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const gl = canvas.getContext('webgl', { premultipliedAlpha: true, antialias: false, alpha: true });
+        if (!gl) return;
+
+        const VERT = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }';
+        const FRAG = `
+precision highp float;
+uniform vec2 uRes; uniform float uDpr; uniform float uTime;
+uniform vec3 uShade; uniform vec3 uDeep; uniform vec3 uLight; uniform vec3 uGrout;
+uniform float uStrength; uniform float uTile; uniform float uCell; uniform float uSplit;
+uniform vec3 uRip[4]; uniform float uClock;
+
+float h1(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+vec2 h2(vec2 p){ return fract(sin(vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)))) * 43758.5453); }
+float vnoise(vec2 p){
+  vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(h1(i), h1(i + vec2(1.0, 0.0)), u.x), mix(h1(i + vec2(0.0, 1.0)), h1(i + vec2(1.0, 1.0)), u.x), u.y);
+}
+vec2 warp(vec2 p, float t){
+  return vec2(vnoise(p * 0.32 + vec2(t * 0.05, 0.0)), vnoise(p * 0.32 + vec2(5.2, t * 0.043))) - 0.5;
+}
+float web(vec2 p, float t){
+  vec2 q = p * 1.7 - 250.0; vec2 i = q; float c = 1.0; float inten = 0.0048;
+  for (int n = 0; n < 5; n++) {
+    float tt = t * (1.0 - 3.5 / float(n + 1));
+    i = q + vec2(cos(tt - i.x) + sin(tt + i.y), sin(tt - i.y) + cos(tt + i.x));
+    c += 1.0 / length(vec2(q.x / (sin(i.x + tt) / inten), q.y / (cos(i.y + tt) / inten)));
+  }
+  c /= 5.0; c = 1.17 - pow(c, 1.4);
+  return pow(abs(c), 9.0);
+}
+float caustic(vec2 p, float t){
+  p += warp(p, t) * 0.6;
+  float lit = 0.55 + 0.6 * smoothstep(0.1, 0.9, vnoise(p * 0.8 + vec2(t * 0.05, -t * 0.04)));
+  return min(web(p, t * 0.42 + 23.0) * 1.5, 1.7) * lit;
+}
+
+void main(){
+  vec2 px = gl_FragCoord.xy / uDpr;
+  vec2 size = uRes / uDpr;
+  float t = uTime;
+  vec2 bend = vec2(0.0); float glint = 0.0;
+  for (int i = 0; i < 4; i++) {
+    vec3 r = uRip[i];
+    float age = uClock - r.z;
+    if (r.z > 0.0 && age < 3.5) {
+      vec2 dv = px - r.xy; float d = length(dv) + 0.001;
+      float front = d - age * 210.0;
+      float ring = sin(front * 0.07) * exp(-front * front / 12000.0) * exp(-age * 0.9) * exp(-d / 700.0);
+      bend += dv / d * ring; glint += ring;
     }
-    return `http://merchant.localhost:8000${path}`;
-};
+  }
+  vec2 p = (px + bend * 30.0) / uCell;
+  vec2 sun = vec2(0.62, 0.38) * uSplit;
+  vec3 c = vec3(caustic(p + sun, t), caustic(p, t), caustic(p - sun, t));
+  vec2 q = px + warp(p * 1.6, t) * 9.0;
+  vec2 g = abs(fract(q / uTile) - 0.5);
+  float grout = smoothstep(0.465, 0.492, max(g.x, g.y));
+  float depth = vnoise(px / 420.0 + vec2(t * 0.006, 0.0));
+  vec3 base = mix(uDeep, uShade, 0.55 + 0.45 * depth);
+  base = mix(base, uGrout, grout * 0.28);
+  float sunlit = 0.82 + 0.28 * (px.x / size.x) * 0.5 + 0.28 * (px.y / size.y) * 0.5;
+  vec3 col = base * (0.94 + 0.06 * c.g + glint * 0.07) + uLight * c * uStrength * sunlit;
+  gl_FragColor = vec4(min(col, vec3(1.0)), 1.0);
+}`;
 
-export default function MarketingHome() {
-    const { merchant_url, proPrice } = usePage<any>().props;
-    const [mobileOpen, setMobileOpen] = useState(false);
-    const [previewTab, setPreviewTab] = useState<'console' | 'storefront'>('console');
+        const sh = (type: number, src: string) => {
+            const s = gl.createShader(type);
+            if (!s) return null;
+            gl.shaderSource(s, src);
+            gl.compileShader(s);
+            return s;
+        };
 
-    // Interactive Profit Estimator
-    const [dailyOrders, setDailyOrders] = useState<number>(120);
-    const [marginPerOrder, setMarginPerOrder] = useState<number>(45);
+        const prog = gl.createProgram();
+        if (!prog) return;
+        const vs = sh(gl.VERTEX_SHADER, VERT);
+        const fs = sh(gl.FRAGMENT_SHADER, FRAG);
+        if (!vs || !fs) return;
+        gl.attachShader(prog, vs);
+        gl.attachShader(prog, fs);
+        gl.linkProgram(prog);
+        gl.useProgram(prog);
 
-    const monthlyEstimatedProfit = useMemo(() => {
-        return dailyOrders * marginPerOrder * 30;
-    }, [dailyOrders, marginPerOrder]);
+        const buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+        const loc = gl.getAttribLocation(prog, 'p');
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
-    const getMerchantUrl = (path = '') => resolveMerchantUrl(merchant_url, path);
+        const U = (n: string) => gl.getUniformLocation(prog, n);
+        const u = {
+            uRes: U('uRes'), uDpr: U('uDpr'), uTime: U('uTime'),
+            uShade: U('uShade'), uDeep: U('uDeep'), uLight: U('uLight'), uGrout: U('uGrout'),
+            uStrength: U('uStrength'), uTile: U('uTile'), uCell: U('uCell'), uSplit: U('uSplit'),
+            uRip: U('uRip'), uClock: U('uClock')
+        };
 
-    const plans = PLANS.map((p) => {
-        if (p.name === 'Pro' && proPrice) {
-            return { ...p, price: proPrice };
+        // Refract water colors: shade, deep pool blue, white light, clean grout
+        gl.uniform3fv(u.uShade, [0.65, 0.88, 0.94]);
+        gl.uniform3fv(u.uDeep, [0.45, 0.76, 0.88]);
+        gl.uniform3fv(u.uLight, [1.0, 1.0, 1.0]);
+        gl.uniform3fv(u.uGrout, [0.90, 0.97, 0.99]);
+        gl.uniform1f(u.uStrength, 0.72);
+        gl.uniform1f(u.uTile, 30.0);
+        gl.uniform1f(u.uCell, 118.0);
+        gl.uniform1f(u.uSplit, 0.045);
+
+        let animId: number;
+        const rip = new Float32Array(12);
+        let ripN = 0;
+        let dpr = 1;
+        let w = 0;
+        let h = 0;
+
+        const resize = () => {
+            const r = canvas.getBoundingClientRect();
+            dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+            w = Math.max(1, Math.round(r.width * dpr));
+            h = Math.max(1, Math.round(r.height * dpr));
+            if (canvas.width !== w || canvas.height !== h) {
+                canvas.width = w;
+                canvas.height = h;
+                gl.viewport(0, 0, w, h);
+            }
+        };
+
+        resize();
+        window.addEventListener('resize', resize);
+
+        // Ripples on pointer interaction across the pool
+        const heroElem = canvas.closest('.hero');
+        const handlePointer = (e: MouseEvent) => {
+            if (reduce) return;
+            const r = canvas.getBoundingClientRect();
+            const x = e.clientX - r.left;
+            const y = r.bottom - e.clientY;
+            if (x < 0 || y < 0 || x > r.width || y > r.height) return;
+            const k = (ripN++ % 4) * 3;
+            rip[k] = x;
+            rip[k + 1] = y;
+            rip[k + 2] = performance.now() / 1000;
+        };
+
+        if (heroElem) {
+            heroElem.addEventListener('mousemove', (e) => handlePointer(e as MouseEvent));
+            heroElem.addEventListener('mousedown', (e) => handlePointer(e as MouseEvent));
         }
-        return p;
-    });
+
+        const start = performance.now();
+        const render = (now: number) => {
+            const elapsed = reduce ? 0 : (now - start) / 1000;
+            gl.uniform2f(u.uRes, w, h);
+            gl.uniform1f(u.uDpr, dpr);
+            gl.uniform1f(u.uTime, elapsed * 0.85); // calm swimming-pool speed
+            gl.uniform1f(u.uClock, now / 1000);
+            gl.uniform3fv(u.uRip, rip);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+            canvas.classList.add('is-on');
+
+            if (!reduce) {
+                animId = requestAnimationFrame(render);
+            }
+        };
+
+        animId = requestAnimationFrame(render);
+
+        return () => {
+            window.removeEventListener('resize', resize);
+            if (animId) cancelAnimationFrame(animId);
+        };
+    }, []);
+
+    const handleClaim = (e: FormEvent) => {
+        e.preventDefault();
+        if (storeSlug.trim()) {
+            setSlugStatus('available');
+        }
+    };
+
+    const cleanSlug = storeSlug.toLowerCase().replace(/[^a-z0-9-]/g, '');
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-primary/20 selection:text-primary">
-            <Head title="AffanHub — Launch Your White-Label VTU Business in Nigeria" />
+        <div className="refract-page">
+            <Head>
+                <title>AffanHub: Cloud Telecom Infrastructure for Digital Resellers</title>
+                <meta
+                    name="description"
+                    content="Launch your branded digital telecom store with automated Moniepoint virtual bank accounts, direct carrier pipelines, and custom domains in Nigeria."
+                />
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300;400;500&family=Funnel+Sans:wght@400;500&display=swap"
+                    rel="stylesheet"
+                />
+            </Head>
 
-            {/* STICKY MAIN NAVIGATION */}
-            <header className="sticky top-0 inset-x-0 z-50 bg-white border-b border-slate-200">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-                    <Link
-                        href="/"
-                        className="flex items-center gap-2 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md active:translate-y-px"
-                        aria-label="AffanHub home"
-                    >
+            <a className="skip" href="#main">Skip to content</a>
+
+            {/* Nav: The Refract signature floating clear pill */}
+            <header className="nav" data-nav>
+                <div className="nav__pill">
+                    <Link href="/" className="wordmark" aria-label="AffanHub, home">
                         <img
                             src="/images/affan-logo.png"
                             alt="AffanHub"
-                            className="h-8 sm:h-9 w-auto object-contain"
+                            style={{ height: '30px', width: 'auto', objectFit: 'contain' }}
                         />
+
                     </Link>
-
-                    {/* Desktop Navigation Links */}
-                    <nav className="hidden lg:flex items-center gap-1 text-xs font-medium text-slate-600">
-                        {NAV_LINKS.map((l) => (
-                            l.href.startsWith('/') ? (
-                                <Link
-                                    key={l.label}
-                                    href={l.href}
-                                    className="px-3 py-1.5 rounded-md hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px"
-                                >
-                                    {l.label}
-                                </Link>
-                            ) : (
-                                <a
-                                    key={l.label}
-                                    href={l.href}
-                                    className="px-3 py-1.5 rounded-md hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px"
-                                >
-                                    {l.label}
-                                </a>
-                            )
-                        ))}
+                    <nav className="nav__links" aria-label="Main">
+                        <a href="#demo">Live Demo</a>
+                        <a href="#pipelines">Pipelines</a>
+                        <a href="#statement">Uptime</a>
+                        <a href="#prices">Pricing</a>
+                        <a href="#faqs">FAQs</a>
+                        <Link href="/blog">Blog</Link>
                     </nav>
-
-                    {/* Desktop Actions */}
-                    <div className="hidden md:flex items-center gap-3">
-                        <a
-                            href={getMerchantUrl('/login')}
-                            className="text-xs font-semibold text-slate-700 hover:text-slate-900 px-3 py-2 rounded-md hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px"
-                        >
-                            Merchant sign in
+                    <div className="nav__actions">
+                        <a className="nav__login" href={`${merchant_url}/login`}>
+                            Login
                         </a>
-                        <a
-                            href={getMerchantUrl('/register')}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-xs font-semibold rounded-md hover:bg-blue-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shadow-xs active:translate-y-px"
-                        >
-                            Start for free <ArrowRight className="size-3.5" />
+                        <a className="btn btn--sm" href={`${merchant_url}/register`}>
+                            Start for free
                         </a>
                     </div>
-
-                    {/* Mobile Menu Button */}
-                    <button
-                        type="button"
-                        className="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-md hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px"
-                        onClick={() => setMobileOpen(!mobileOpen)}
-                        aria-expanded={mobileOpen}
-                        aria-label="Toggle navigation menu"
-                    >
-                        {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-                    </button>
                 </div>
-
-                {/* Mobile Menu Dropdown */}
-                {mobileOpen && (
-                    <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-2 shadow-lg">
-                        {NAV_LINKS.map((l) => (
-                            l.href.startsWith('/') ? (
-                                <Link
-                                    key={l.label}
-                                    href={l.href}
-                                    onClick={() => setMobileOpen(false)}
-                                    className="block px-3 py-2 text-sm font-medium text-slate-700 rounded-md hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px"
-                                >
-                                    {l.label}
-                                </Link>
-                            ) : (
-                                <a
-                                    key={l.label}
-                                    href={l.href}
-                                    onClick={() => setMobileOpen(false)}
-                                    className="block px-3 py-2 text-sm font-medium text-slate-700 rounded-md hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px"
-                                >
-                                    {l.label}
-                                </a>
-                            )
-                        ))}
-                        <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                            <a
-                                href={getMerchantUrl('/login')}
-                                className="block px-3 py-2 text-sm font-semibold text-slate-700 text-center rounded-md border border-slate-200 hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px"
-                            >
-                                Merchant sign in
-                            </a>
-                            <a
-                                href={getMerchantUrl('/register')}
-                                className="block px-4 py-2.5 bg-primary text-white text-sm font-semibold rounded-md text-center hover:bg-blue-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shadow-xs active:translate-y-px"
-                            >
-                                Start for free
-                            </a>
-                        </div>
-                    </div>
-                )}
             </header>
 
-            <main className="flex-1">
+            <main id="main">
+                {/* Hero: The Stage deck on left, the Pool on right */}
+                <section className="hero" id="top" aria-labelledby="hero-head">
+                    <div className="pool" aria-hidden="true">
+                        <canvas ref={waterCanvasRef} className="water" data-water="ground"></canvas>
+                        <div className="pool__wall"></div>
+                    </div>
 
-                {/* HERO SECTION */}
-                <section className="relative pt-12 pb-16 md:pt-20 md:pb-24 bg-white border-b border-slate-200">
-                    <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+                    <div className="container hero__grid">
+                        <div className="hero__text">
+                            <h1 id="hero-head">
+                                Launch your <span className="hero__highlight">branded</span> telecom store.
+                            </h1>
+                            <p className="lead">
+                                White-label storefront, automated virtual bank accounts, and direct carrier infrastructure.
+                            </p>
+                            <div className="hero__actions">
+                                <a className="btn" href={`${merchant_url}/register`}>
+                                    Start for free
+                                </a>
+                                <a className="btn btn--clear" href="#demo">
+                                    Explore live demo
+                                </a>
+                            </div>
+                            <p className="hero__fine">
+                                Direct carrier pipelines, sub-2s automated delivery
+                            </p>
+                        </div>
 
-                        {/* Primary Headline (Hallmark budget: 5 words, 33 characters) */}
-                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-[1.08] tracking-tight max-w-3xl mx-auto">
-                            Launch your branded VTU business
-                        </h1>
+                        {/* Today: The Dispatch Panel lying on the water */}
+                        <form className="clear today" onSubmit={handleClaim} aria-labelledby="today-title">
+                            <div className="today__head">
+                                <div>
+                                    <p className="today__title" id="today-title">Live Storefront</p>
+                                    <p className="today__date">Real-time order dispatch</p>
+                                </div>
+                                <dl className="today__temps">
+                                    <div><dt>Uptime</dt><dd className="num">99.98%</dd></div>
+                                    <div><dt>Latency</dt><dd className="num">1.4s</dd></div>
+                                </dl>
+                            </div>
 
-                        {/* Subhead (Hallmark budget: 9 words) */}
-                        <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-xl mx-auto leading-relaxed mt-4 mb-8">
-                            Sell airtime, data, and bill payments with zero code.
+                            <fieldset className="slots">
+                                <legend className="visually-hidden">Pick a package</legend>
+                                <label className="slot">
+                                    <input
+                                        type="radio"
+                                        name="slot"
+                                        value="mtn"
+                                        checked={selectedSlot === 'mtn'}
+                                        onChange={() => setSelectedSlot('mtn')}
+                                    />
+                                    <span className="slot__time num">1.4s</span>
+                                    <span className="slot__name">MTN SME 5.0 GB<small>Moniepoint virtual account</small></span>
+                                    <span className="slot__left num">₦1,420</span>
+                                </label>
+                                <label className="slot">
+                                    <input
+                                        type="radio"
+                                        name="slot"
+                                        value="airtel"
+                                        checked={selectedSlot === 'airtel'}
+                                        onChange={() => setSelectedSlot('airtel')}
+                                    />
+                                    <span className="slot__time num">1.8s</span>
+                                    <span className="slot__name">Airtel Corporate 2.0 GB<small>Direct network gifting</small></span>
+                                    <span className="slot__left num">₦580</span>
+                                </label>
+                                <label className="slot">
+                                    <input
+                                        type="radio"
+                                        name="slot"
+                                        value="ikedc"
+                                        checked={selectedSlot === 'ikedc'}
+                                        onChange={() => setSelectedSlot('ikedc')}
+                                    />
+                                    <span className="slot__time num">2.1s</span>
+                                    <span className="slot__name">IKEDC Prepaid Token<small>Prepaid electricity unit</small></span>
+                                    <span className="slot__left num">Instant</span>
+                                </label>
+                                <label className="slot">
+                                    <input
+                                        type="radio"
+                                        name="slot"
+                                        value="waec"
+                                        checked={selectedSlot === 'waec'}
+                                        onChange={() => setSelectedSlot('waec')}
+                                    />
+                                    <span className="slot__time num">1.9s</span>
+                                    <span className="slot__name">WAEC Scratch PIN<small>Direct verification PIN</small></span>
+                                    <span className="slot__left num">Available</span>
+                                </label>
+                            </fieldset>
+
+                            <div className="today__foot">
+                                <p className="today__price">
+                                    <span className="num">₦0</span>
+                                    <small>Starter plan, forever free</small>
+                                </p>
+                                <a className="btn" href={`${merchant_url}/register`}>
+                                    Claim your store
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                {/* Section 2: Live Demo Storefront Section */}
+                <section className="section demo-section" id="demo" aria-labelledby="demo-head">
+                    <div className="container demo__grid">
+                        <div className="demo__text">
+                            <h2 id="demo-head">Experience the customer buying journey</h2>
+                            <p className="lead">
+                                Explore an actual live AffanHub storefront. Test real airtime and data bundle selection, automated Moniepoint virtual bank accounts, and instant wallet top-ups.
+                            </p>
+                            <ul className="facts" style={{ marginTop: 'var(--space-lg)' }}>
+                                <li><span>Branding</span><b>0% AffanHub watermarks or logos</b></li>
+                                <li><span>Checkout</span><b>Automated 5-second customer wallet credit</b></li>
+                                <li><span>Mobile</span><b>100% responsive for smartphones and tablets</b></li>
+                            </ul>
+                            <div className="demo__actions">
+                                <a className="btn" href="https://demo.affanhub.com" target="_blank" rel="noopener noreferrer">
+                                    Open live demo
+                                </a>
+                                <a className="btn btn--clear" href={`${merchant_url}/register`}>
+                                    Launch yours free
+                                </a>
+                            </div>
+                        </div>
+
+                        <a
+                            className="demo__frame"
+                            href="https://demo.affanhub.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Open AffanHub Live Demo Store"
+                        >
+                            <img
+                                src="/images/themes/default-hub.jpg"
+                                alt="AffanHub Storefront Theme Preview"
+                                loading="lazy"
+                            />
+                        </a>
+                    </div>
+                </section>
+
+                {/* Section 3: Ruled lanes (Carrier Pipelines) */}
+                <section className="section lanes" id="pipelines" aria-labelledby="lanes-head">
+                    <div className="container">
+                        <div className="head head--split">
+                            <h2 id="lanes-head">Direct carrier routing, pipeline by pipeline</h2>
+                            <p className="lead">Multi-carrier automatic failover routing across all major networks in Nigeria.</p>
+                        </div>
+                        <ol className="timetable">
+                            {CARRIERS.map((c) => (
+                                <li key={c.key} className={`row ${c.live ? 'is-next' : ''}`}>
+                                    <span className="row__time num">{c.time}</span>
+                                    <span className="row__name">
+                                        {c.name}
+                                        <small>{c.desc}</small>
+                                    </span>
+                                    <span className="row__lanes">
+                                        {c.lanes.map((l) => (
+                                            <i key={l}>{l}</i>
+                                        ))}
+                                    </span>
+                                    <a className={`pill ${c.live ? 'pill--live' : ''}`} href={`${merchant_url}/register`}>
+                                        <span className="num">{c.time}</span> delivery
+                                    </a>
+                                </li>
+                            ))}
+                        </ol>
+                    </div>
+                </section>
+
+                {/* Section 4: The Statement (Figure in sun: 99.98% - balanced scale) */}
+                <section className="section warm" id="statement" aria-labelledby="warm-head">
+                    <div className="container warm__grid">
+                        <p className="warm__fig num" aria-hidden="true">
+                            99.98<span>%</span>
                         </p>
-
-                        {/* Call to Actions */}
-                        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                            <a
-                                href={getMerchantUrl('/register')}
-                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-primary text-white font-semibold rounded-lg text-sm sm:text-base hover:bg-blue-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shadow-sm active:translate-y-px"
-                            >
-                                Start for free <ArrowRight className="size-4" />
-                            </a>
-                            <a
-                                href="https://demo.affanhub.com"
-                                target="_blank"
-                                rel="noreferrer"
-                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-slate-700 bg-white font-semibold rounded-lg text-sm sm:text-base border border-slate-300 hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 active:translate-y-px"
-                            >
-                                Explore live demo <ExternalLink className="size-4 text-slate-400" />
-                            </a>
-                        </div>
-
-                        {/* Concrete Guarantees */}
-                        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-600">
-                            <span className="inline-flex items-center gap-1.5 font-medium">
-                                <Check className="size-4 text-emerald-600" /> Sub-3s automated delivery
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 font-medium">
-                                <Check className="size-4 text-emerald-600" /> Dedicated virtual accounts
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 font-medium">
-                                <Check className="size-4 text-emerald-600" /> Store setup in 2 minutes
-                            </span>
-                        </div>
-                    </div>
-                </section>
-
-                {/* ARCHITECTURE METRICS STRIP */}
-                <section className="bg-slate-50 border-b border-slate-200 py-8">
-                    <div className="max-w-5xl mx-auto px-4 sm:px-6">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x md:divide-slate-200">
-                            <div className="text-center md:px-4">
-                                <p className="text-2xl sm:text-3xl font-extrabold text-slate-900">2 min</p>
-                                <p className="text-xs text-slate-600 mt-0.5">Average store setup time</p>
-                            </div>
-                            <div className="text-center md:px-4">
-                                <p className="text-2xl sm:text-3xl font-extrabold text-slate-900">8 lines</p>
-                                <p className="text-xs text-slate-600 mt-0.5">Digital services ready to sell</p>
-                            </div>
-                            <div className="text-center md:px-4">
-                                <p className="text-2xl sm:text-3xl font-extrabold text-slate-900">99.9%</p>
-                                <p className="text-xs text-slate-600 mt-0.5">API failover uptime rate</p>
-                            </div>
-                            <div className="text-center md:px-4">
-                                <p className="text-2xl sm:text-3xl font-extrabold text-slate-900">36 states</p>
-                                <p className="text-xs text-slate-600 mt-0.5">Instant settlement across Nigeria</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* DUAL CONSOLE SHOWCASE */}
-                <section id="preview" className="py-16 md:py-24 bg-white border-b border-slate-200">
-                    <div className="max-w-6xl mx-auto px-4 sm:px-6">
-                        <div className="text-center max-w-2xl mx-auto mb-10">
-                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                                Two interfaces built for Nigerian merchants
-                            </h2>
-                            <p className="text-slate-600 text-sm sm:text-base mt-2">
-                                You manage wholesale markups and customers from your back-office console, while your buyers experience a fast mobile shopping checkout.
+                        <div className="warm__text">
+                            <h2 id="warm-head">Zero server management. 100% cloud uptime.</h2>
+                            <p className="lead">
+                                Automated Moniepoint and Wema virtual bank accounts, edge Cloudflare SSL, and high-frequency carrier APIs.
                             </p>
+                            <ul className="facts">
+                                <li><span>Delivery</span><b>Sub-2s automated telecom dispatch</b></li>
+                                <li><span>Banking</span><b>Dedicated virtual accounts for every customer</b></li>
+                                <li><span>Storefront</span><b>Your custom domain with 0% platform branding</b></li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
 
-                            {/* View Switcher Controls */}
-                            <div className="inline-flex p-1 bg-slate-100 rounded-lg border border-slate-200 mt-6">
-                                <button
-                                    type="button"
-                                    onClick={() => setPreviewTab('console')}
-                                    className={`px-4 py-2 rounded-md text-xs font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed ${
-                                        previewTab === 'console'
-                                            ? 'bg-white text-slate-900 shadow-xs'
-                                            : 'text-slate-600 hover:text-slate-900'
-                                    }`}
-                                >
-                                    Merchant console
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setPreviewTab('storefront')}
-                                    className={`px-4 py-2 rounded-md text-xs font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed ${
-                                        previewTab === 'storefront'
-                                            ? 'bg-white text-slate-900 shadow-xs'
-                                            : 'text-slate-600 hover:text-slate-900'
-                                    }`}
-                                >
-                                    Customer storefront
-                                </button>
+                {/* Section 5: Prices board */}
+                <section className="section prices" id="prices" aria-labelledby="prices-head">
+                    <div className="container prices__grid">
+                        <div className="prices__main">
+                            <div className="head">
+                                <h2 id="prices-head">Transparent pricing for digital vendors</h2>
+                                <p className="lead">Start free to test customer demand, then upgrade when ready.</p>
+                            </div>
+                            <div className="clear board">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Tier</th>
+                                            <th scope="col" className="r">Monthly</th>
+                                            <th scope="col" className="r">Platform fee</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">
+                                                Starter Plan
+                                                <small>Free yourname.affanhub.com subdomain</small>
+                                            </th>
+                                            <td className="r num">₦0</td>
+                                            <td className="r num">1.0%</td>
+                                        </tr>
+                                        <tr className="is-lead">
+                                            <th scope="row">
+                                                Pro Merchant
+                                                <small>Custom domain, priority routing, start for free</small>
+                                            </th>
+                                            <td className="r num">{proPrice}</td>
+                                            <td className="r num">0.0%</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                Enterprise Aggregator
+                                                <small>Direct carrier API & dedicated server cluster</small>
+                                            </th>
+                                            <td className="r num">Custom</td>
+                                            <td className="r num">Wholesale</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
-                        {/* Interactive Console Mockup */}
-                        {previewTab === 'console' ? (
-                            <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden text-slate-200 max-w-4xl mx-auto">
-                                <div className="bg-slate-950 px-5 py-3 flex items-center justify-between border-b border-slate-800">
-                                    <div className="flex items-center gap-2">
-                                        <span className="size-2.5 rounded-full bg-rose-500 inline-block" />
-                                        <span className="size-2.5 rounded-full bg-amber-500 inline-block" />
-                                        <span className="size-2.5 rounded-full bg-emerald-500 inline-block" />
-                                        <span className="ml-3 text-xs text-slate-400">console.affanhub.com/dashboard</span>
-                                    </div>
-                                    <span className="text-xs bg-slate-800 text-slate-300 font-medium px-2.5 py-0.5 rounded border border-slate-700">
-                                        Merchant back-office
-                                    </span>
-                                </div>
-                                <div className="p-6 sm:p-8 space-y-6">
-                                    {/* Console Stats */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                                            <p className="text-xs text-slate-400">Today store sales</p>
-                                            <p className="text-xl font-bold text-white mt-1">₦348,250.00</p>
-                                            <span className="text-xs text-emerald-400">+18.4% compared to yesterday</span>
-                                        </div>
-                                        <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                                            <p className="text-xs text-slate-400">Retained margin profit</p>
-                                            <p className="text-xl font-bold text-emerald-400 mt-1">+₦41,890.00</p>
-                                            <span className="text-xs text-slate-400">Available for instant bank payout</span>
-                                        </div>
-                                        <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                                            <p className="text-xs text-slate-400">Registered customers</p>
-                                            <p className="text-xl font-bold text-white mt-1">1,240 users</p>
-                                            <span className="text-xs text-blue-400">98 active today</span>
-                                        </div>
-                                    </div>
+                        <figure className="prices__photo" style={{ overflow: 'hidden' }}>
+                            <img
+                                src="/images/themes/default-hub.jpg"
+                                alt="AffanHub live storefront theme preview"
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                loading="lazy"
+                            />
+                        </figure>
+                    </div>
+                </section>
 
-                                    {/* Wholesale Margin Overrides Table */}
-                                    <div className="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-3">
-                                        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                            <p className="text-xs font-semibold text-white flex items-center gap-2">
-                                                <Sliders className="size-4 text-primary" /> Live wholesale margin overrides
-                                            </p>
-                                            <span className="text-xs text-emerald-400">Applied instantly</span>
-                                        </div>
-                                        <div className="space-y-2">
-                                            {[
-                                                { service: 'MTN SME Data (1GB)', cost: '₦215.00', retail: '₦260.00', profit: '+₦45.00 (+20.9%)' },
-                                                { service: 'Airtel Corporate Data (2GB)', cost: '₦430.00', retail: '₦520.00', profit: '+₦90.00 (+20.9%)' },
-                                                { service: 'DStv Compact Renewal', cost: '₦15,500.00', retail: '₦15,750.00', profit: '+₦250.00 convenience fee' },
-                                                { service: 'Moniepoint Virtual Account', cost: '₦0.00 fee', retail: 'Sub-5s credit', profit: 'Automated wallet funding' },
-                                            ].map((row, i) => (
-                                                <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between text-xs py-2.5 px-3 rounded-lg bg-slate-900 border border-slate-800 gap-2">
-                                                    <div>
-                                                        <p className="font-semibold text-slate-200">{row.service}</p>
-                                                        <p className="text-xs text-slate-400">Wholesale cost: {row.cost}</p>
-                                                    </div>
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="text-left sm:text-right">
-                                                            <p className="font-bold text-white">Your retail price: {row.retail}</p>
-                                                            <p className="text-xs text-emerald-400 font-medium">{row.profit}</p>
-                                                        </div>
-                                                        <span className="px-2 py-1 bg-slate-800 rounded text-xs text-slate-300 border border-slate-700">
-                                                            Active
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            /* Customer Storefront View */
-                            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden max-w-md mx-auto text-slate-900 shadow-md">
-                                <div className="bg-slate-900 text-white px-5 py-3 flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <span className="size-2 rounded-full bg-emerald-400" />
-                                        <span className="text-xs font-semibold">quickdata.ng</span>
-                                    </div>
-                                    <span className="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
-                                        Customer storefront
-                                    </span>
-                                </div>
-                                <div className="p-6 space-y-4 bg-slate-50">
-                                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
-                                        <div>
-                                            <p className="text-xs text-slate-500">Dedicated virtual wallet</p>
-                                            <p className="text-lg font-bold text-slate-900">₦12,450.00</p>
-                                            <p className="text-xs text-slate-400">Wema Bank account: 8219042812</p>
-                                        </div>
+                {/* Section 6: Comprehensive Project FAQs */}
+                <section className="section faqs" id="faqs" aria-labelledby="faq-head">
+                    <div className="container">
+                        <div className="head head--split">
+                            <h2 id="faq-head">Frequently asked questions</h2>
+                            <p className="lead">Direct answers on capital requirements, custom domains, banking, and carrier dispatch.</p>
+                        </div>
+
+                        <div className="faq__list">
+                            {displayFaqs.map((faq, idx) => {
+                                const question = faq.question || faq.q || '';
+                                const answer = faq.answer || faq.a || '';
+                                const isOpen = openFaq === idx;
+                                return (
+                                    <div key={faq.id || idx} className="faq__item">
                                         <button
                                             type="button"
-                                            className="px-3 py-1.5 bg-primary text-white text-xs font-semibold rounded-md hover:bg-blue-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="faq__btn"
+                                            onClick={() => setOpenFaq(isOpen ? null : idx)}
+                                            aria-expanded={isOpen}
                                         >
-                                            + Fund wallet
+                                            <span>{question}</span>
+                                            <span className="faq__icon" aria-hidden="true">
+                                                {isOpen ? '−' : '+'}
+                                            </span>
                                         </button>
-                                    </div>
-
-                                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-3">
-                                        <p className="text-xs font-bold text-slate-800">Select telecom network</p>
-                                        <div className="grid grid-cols-4 gap-2">
-                                            {[
-                                                { name: 'MTN', logo: '/images/icons/mtn.png', active: true },
-                                                { name: 'Airtel', logo: '/images/icons/airtel.png', active: false },
-                                                { name: 'Glo', logo: '/images/icons/glo.png', active: false },
-                                                { name: '9mobile', logo: '/images/icons/9mobile.png', active: false },
-                                            ].map((carrier) => (
-                                                <button
-                                                    key={carrier.name}
-                                                    type="button"
-                                                    className={`py-2 px-1 text-xs font-semibold rounded-lg border text-center flex flex-col items-center gap-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed ${
-                                                        carrier.active
-                                                            ? 'bg-blue-50 border-primary text-primary font-bold'
-                                                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-                                                    }`}
-                                                >
-                                                    <img
-                                                        src={carrier.logo}
-                                                        alt={carrier.name}
-                                                        className="size-5 object-contain"
-                                                    />
-                                                    <span>{carrier.name}</span>
-                                                </button>
-                                            ))}
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label htmlFor="selected-plan-input" className="text-xs font-medium text-slate-600">Selected data plan</label>
-                                            <div id="selected-plan-input" className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center text-xs">
-                                                <span className="font-semibold text-slate-800">1.0 GB SME Data (30 days)</span>
-                                                <span className="font-bold text-primary">₦260.00</span>
+                                        {isOpen && (
+                                            <div className="faq__ans">
+                                                <p style={{ whiteSpace: 'pre-line' }}>{answer}</p>
                                             </div>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            className="w-full py-2.5 bg-slate-900 text-white font-semibold rounded-lg text-xs flex items-center justify-center gap-1.5 hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            Purchase bundle <ArrowRight className="size-3.5" />
-                                        </button>
+                                        )}
                                     </div>
-                                    <p className="text-xs text-center text-slate-500">
-                                        100% white-labeled. Your customers never see AffanHub.
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </section>
-
-                {/* CORE PLATFORM FEATURES & BENEFITS */}
-                <section id="features" className="py-16 md:py-24 bg-slate-50 border-b border-slate-200">
-                    <div className="max-w-6xl mx-auto px-4 sm:px-6">
-                        <div className="text-center max-w-2xl mx-auto mb-14">
-                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                                Built for serious digital entrepreneurs
-                            </h2>
-                            <p className="text-slate-600 text-sm sm:text-base mt-2">
-                                Bank-grade tools designed specifically for Nigerian resellers and telecom businesses.
-                            </p>
+                                );
+                            })}
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {FEATURES.map((b) => (
-                                <div
-                                    key={b.title}
-                                    className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs hover:border-slate-300 transition-colors"
-                                >
-                                    <div className="size-10 rounded-lg bg-blue-50 text-primary flex items-center justify-center mb-4">
-                                        {b.icon}
-                                    </div>
-                                    <h3 className="font-bold text-slate-900 text-base mb-2">
-                                        {b.title}
-                                    </h3>
-                                    <p className="text-sm text-slate-600 leading-relaxed">
-                                        {b.desc}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* DIGITAL SERVICES GRID */}
-                <section id="services" className="py-16 md:py-24 bg-white border-b border-slate-200">
-                    <div className="max-w-6xl mx-auto px-4 sm:px-6">
-                        <div className="text-center max-w-2xl mx-auto mb-14">
-                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                                Complete catalogue of digital services
-                            </h2>
-                            <p className="text-slate-600 text-sm sm:text-base mt-2">
-                                Ready to sell immediately upon registration with automated provider connections.
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {SERVICES.map((s) => (
-                                <div
-                                    key={s.name}
-                                    className="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:bg-slate-100/70 transition-colors"
-                                >
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className="size-8 rounded-lg bg-white border border-slate-200 text-primary flex items-center justify-center">
-                                            {s.icon}
-                                        </div>
-                                        <span className="text-xs text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
-                                            {s.plan}
-                                        </span>
-                                    </div>
-                                    <h3 className="font-bold text-slate-900 text-sm">
-                                        {s.name}
-                                    </h3>
-                                    <p className="text-xs text-slate-500 mt-1">
-                                        {s.networks}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* INTERACTIVE PROFIT ESTIMATOR */}
-                <section id="calculator" className="py-16 md:py-24 bg-slate-50 border-b border-slate-200">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6">
-                        <div className="text-center max-w-xl mx-auto mb-12">
-                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                                Estimate your monthly reseller profit
-                            </h2>
-                            <p className="text-slate-600 text-sm sm:text-base mt-2">
-                                You determine your own retail prices. Adjust the controls to project your earnings.
-                            </p>
-                        </div>
-
-                        <div className="bg-slate-900 text-white rounded-2xl p-6 sm:p-10 border border-slate-800">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                                <div className="space-y-6">
-                                    {/* Slider 1: Daily Orders */}
-                                    <div>
-                                        <div className="flex justify-between items-center mb-2">
-                                            <label htmlFor="daily-orders-slider" className="text-xs font-semibold text-slate-300">
-                                                Daily customer orders
-                                            </label>
-                                            <span className="text-sm font-bold text-white bg-slate-800 px-2.5 py-1 rounded border border-slate-700">
-                                                {dailyOrders} orders per day
-                                            </span>
-                                        </div>
-                                        <input
-                                            id="daily-orders-slider"
-                                            type="range"
-                                            min="10"
-                                            max="1000"
-                                            step="10"
-                                            value={dailyOrders}
-                                            onChange={(e) => setDailyOrders(Number(e.target.value))}
-                                            className="w-full accent-primary h-2 bg-slate-800 rounded-lg cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                                        />
-                                        <div className="flex justify-between text-xs text-slate-400 mt-1">
-                                            <span>10 orders</span>
-                                            <span>500 orders</span>
-                                            <span>1,000+ orders</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Slider 2: Average Profit per Order */}
-                                    <div>
-                                        <div className="flex justify-between items-center mb-2">
-                                            <label htmlFor="margin-slider" className="text-xs font-semibold text-slate-300">
-                                                Average profit margin per sale
-                                            </label>
-                                            <span className="text-sm font-bold text-emerald-400 bg-slate-800 px-2.5 py-1 rounded border border-slate-700">
-                                                ₦{marginPerOrder} per sale
-                                            </span>
-                                        </div>
-                                        <input
-                                            id="margin-slider"
-                                            type="range"
-                                            min="15"
-                                            max="200"
-                                            step="5"
-                                            value={marginPerOrder}
-                                            onChange={(e) => setMarginPerOrder(Number(e.target.value))}
-                                            className="w-full accent-emerald-500 h-2 bg-slate-800 rounded-lg cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        />
-                                        <div className="flex justify-between text-xs text-slate-400 mt-1">
-                                            <span>₦15 (Airtime/SME)</span>
-                                            <span>₦100 (Bills/TV)</span>
-                                            <span>₦200+ (Services)</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-xs text-slate-300 leading-relaxed">
-                                        Example: Selling 100GB of MTN SME data daily at ₦45 margin yields ₦135,000 monthly profit from data bundles alone.
-                                    </div>
-                                </div>
-
-                                {/* Projected Total Card */}
-                                <div className="bg-slate-950 p-6 sm:p-8 rounded-xl border border-slate-800 text-center flex flex-col justify-between">
-                                    <div>
-                                        <p className="text-xs text-slate-400 font-medium">Projected monthly net profit</p>
-                                        <div className="text-4xl sm:text-5xl font-black text-emerald-400 tracking-tight my-3">
-                                            ₦{monthlyEstimatedProfit.toLocaleString()}
-                                        </div>
-                                        <p className="text-xs text-slate-400">
-                                            Approximately ₦{(dailyOrders * marginPerOrder).toLocaleString()} net profit deposited each day
-                                        </p>
-                                    </div>
-
-                                    <div className="mt-8 pt-6 border-t border-slate-800">
-                                        <a
-                                            href={getMerchantUrl('/register')}
-                                            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 active:translate-y-px"
-                                        >
-                                            Start earning today <ArrowRight className="size-4" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* HOW IT WORKS */}
-                <section id="how-it-works" className="py-16 md:py-24 bg-white border-b border-slate-200">
-                    <div className="max-w-5xl mx-auto px-4 sm:px-6">
-                        <div className="text-center max-w-2xl mx-auto mb-14">
-                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                                Go live in three straightforward steps
-                            </h2>
-                            <p className="text-slate-600 text-sm sm:text-base mt-2">
-                                We handle the telecom pipeline while you focus on acquiring and serving your customers.
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {STEPS.map((s) => (
-                                <div
-                                    key={s.step}
-                                    className="bg-slate-50 border border-slate-200 rounded-xl p-6 relative"
-                                >
-                                    <span className="inline-block text-xs font-bold text-primary bg-blue-50 px-2.5 py-1 rounded mb-3">
-                                        Step {s.step}
-                                    </span>
-                                    <h3 className="font-bold text-slate-900 text-base mb-2">
-                                        {s.title}
-                                    </h3>
-                                    <p className="text-sm text-slate-600 leading-relaxed">
-                                        {s.desc}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Demo Store Sandbox Box */}
-                        <div className="mt-12 bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-                            <div className="space-y-1 text-center md:text-left">
-                                <h3 className="font-bold text-slate-900 text-base sm:text-lg">
-                                    Test the customer checkout before launching
-                                </h3>
-                                <p className="text-slate-600 text-xs sm:text-sm max-w-xl">
-                                    Open our live demo store to simulate real wallet fundings, purchase airtime, and verify delivery speed firsthand.
-                                </p>
-                            </div>
-                            <a
-                                href="https://demo.affanhub.com"
-                                target="_blank"
-                                rel="noreferrer"
-                                className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 active:translate-y-px"
-                            >
-                                Open live demo <ExternalLink className="size-4" />
-                            </a>
-                        </div>
-                    </div>
-                </section>
-
-                {/* PRICING SECTION */}
-                <section id="pricing" className="py-16 md:py-24 bg-slate-50 border-b border-slate-200">
-                    <div className="max-w-5xl mx-auto px-4 sm:px-6">
-                        <div className="text-center max-w-2xl mx-auto mb-14">
-                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                                Transparent subscription plans
-                            </h2>
-                            <p className="text-slate-600 text-sm sm:text-base mt-2">
-                                Start with our free tier, then upgrade as your customer volume expands.
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-                            {plans.map((p) => (
-                                <div
-                                    key={p.name}
-                                    className={`rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-colors relative ${
-                                        p.highlight
-                                            ? 'bg-slate-900 border border-slate-800 text-white shadow-lg'
-                                            : 'bg-white border border-slate-200 shadow-xs'
-                                    }`}
-                                >
-                                    {p.highlight && (
-                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-emerald-500 text-slate-950 text-xs font-bold rounded-full">
-                                            Most popular
-                                        </div>
-                                    )}
-
-                                    <div>
-                                        <div className="flex items-center justify-between mb-1 mt-1">
-                                            <h3 className={`font-bold text-lg ${p.highlight ? 'text-white' : 'text-slate-900'}`}>{p.name}</h3>
-                                            <span className={`text-xs px-2 py-0.5 rounded font-medium ${
-                                                p.highlight ? 'bg-slate-800 text-emerald-400' : 'bg-slate-100 text-slate-600'
-                                            }`}>
-                                                {p.name === 'Starter' ? 'Free forever' : p.name === 'Pro' ? '14-day trial' : 'High volume'}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-baseline gap-1 my-3">
-                                            <span className={`text-3xl sm:text-4xl font-extrabold ${p.highlight ? 'text-white' : 'text-slate-900'}`}>{p.price}</span>
-                                            <span className={`text-xs ${p.highlight ? 'text-slate-400' : 'text-slate-500'}`}>{p.sub}</span>
-                                        </div>
-                                        <p className={`text-xs mb-6 ${p.highlight ? 'text-slate-400' : 'text-slate-500'}`}>{p.desc}</p>
-                                        
-                                        <div className={`h-px mb-6 ${p.highlight ? 'bg-slate-800' : 'bg-slate-100'}`} />
-
-                                        <ul className={`space-y-3 mb-8 text-xs sm:text-sm ${p.highlight ? 'text-slate-200' : 'text-slate-600'}`}>
-                                            {p.features.map((feature) => (
-                                                <li key={feature} className="flex items-start gap-2.5">
-                                                    <CheckCircle2 className={`size-4 shrink-0 mt-0.5 ${p.highlight ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                                                    <span>{feature}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-
-                                    {p.name === 'Enterprise' ? (
-                                        <a
-                                            href={p.href}
-                                            className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-xs sm:text-sm font-semibold rounded-lg bg-slate-900 hover:bg-slate-800 text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 active:translate-y-px"
-                                        >
-                                            {p.cta} <ArrowRight className="size-3.5" />
-                                        </a>
-                                    ) : (
-                                        <a
-                                            href={getMerchantUrl(p.href)}
-                                            className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-xs sm:text-sm font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:translate-y-px ${
-                                                p.highlight
-                                                    ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold focus-visible:ring-emerald-400'
-                                                    : 'bg-primary hover:bg-blue-700 text-white focus-visible:ring-primary'
-                                            }`}
-                                        >
-                                            {p.cta} <ArrowRight className="size-3.5" />
-                                        </a>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* FAQS SECTION */}
-                <section id="faqs" className="py-16 md:py-24 bg-white border-b border-slate-200">
-                    <div className="max-w-3xl mx-auto px-4 sm:px-6">
-                        <div className="text-center max-w-xl mx-auto mb-12">
-                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                                Frequently asked questions
-                            </h2>
-                            <p className="text-slate-600 text-sm sm:text-base mt-2">
-                                Clear answers about launching your VTU business on AffanHub.
-                            </p>
-                        </div>
-
-                        <div className="space-y-3">
-                            {FAQS.map((faq, idx) => (
-                                <FaqRow key={idx} question={faq.q} answer={faq.a} />
-                            ))}
-                        </div>
-
-                        {/* Guides Callout Box */}
-                        <div className="mt-12 p-6 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+                        <div
+                            style={{
+                                marginTop: 'var(--space-2xl)',
+                                padding: 'var(--space-lg)',
+                                borderRadius: 'var(--radius-inner)',
+                                background: 'var(--color-paper-2)',
+                                border: '1px solid var(--color-rule)',
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 'var(--space-md)',
+                            }}
+                        >
                             <div>
-                                <h3 className="font-bold text-slate-900 text-sm">
-                                    Need step-by-step strategy guidance?
-                                </h3>
-                                <p className="text-xs text-slate-600 mt-0.5">
-                                    Read setup walkthroughs, profit strategy tips, and tutorials on the blog.
+                                <p style={{ fontWeight: 500, color: 'var(--color-ink)' }}>Have more questions or need step-by-step guidance?</p>
+                                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-muted)', marginTop: 'var(--space-2xs)' }}>
+                                    Explore our tutorials and strategy guides on the official blog.
                                 </p>
                             </div>
-                            <Link
-                                href="/blog"
-                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-md text-xs font-semibold hover:bg-blue-700 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary shadow-xs active:translate-y-px"
-                            >
-                                Read guides <ArrowRight className="size-3.5" />
+                            <Link href="/blog" className="btn btn--sm">
+                                Read blog guides
                             </Link>
                         </div>
                     </div>
                 </section>
 
-                {/* FINAL REGISTRATION CALL TO ACTION */}
-                <section className="py-16 md:py-24 bg-slate-900 text-white">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-                        <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">
-                            Ready to launch your digital services business?
-                        </h2>
-                        <p className="text-slate-400 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed">
-                            Start selling Airtime, Data, and Utilities today. Your branded storefront can be live in under 2 minutes.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                            <a
-                                href={getMerchantUrl('/register')}
-                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-primary text-white font-semibold rounded-lg text-sm sm:text-base hover:bg-blue-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shadow-sm active:translate-y-px"
-                            >
-                                Start for free <ArrowRight className="size-4" />
-                            </a>
-                            <a
-                                href="mailto:hello@affanhub.com"
-                                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 text-slate-300 font-semibold rounded-lg text-sm sm:text-base border border-slate-700 hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 active:translate-y-px"
-                            >
-                                Speak with sales
-                            </a>
+                {/* Section 7: The Close (Book store address) */}
+                <section className="section book" id="claim" aria-labelledby="book-head">
+                    <div className="container book__grid">
+                        <form className="clear booker" onSubmit={handleClaim} aria-labelledby="book-head">
+                            <h2 id="book-head">Claim your store web address</h2>
+                            <p className="lead" style={{ marginTop: 'var(--space-xs)' }}>
+                                Provision your white-label telecom storefront in under 5 minutes.
+                            </p>
+
+                            <div className="booker__foot" style={{ marginTop: 'var(--space-lg)', paddingTop: 'var(--space-lg)' }}>
+                                <label className="field">
+                                    <span>Store subdomain</span>
+                                    <div className="subdomain-box">
+                                        <input
+                                            type="text"
+                                            value={storeSlug}
+                                            onChange={(e) => {
+                                                setStoreSlug(e.target.value);
+                                                setSlugStatus('idle');
+                                            }}
+                                            placeholder="yourbrand"
+                                            required
+                                        />
+                                        <span>.affanhub.com</span>
+                                    </div>
+                                </label>
+                                <button className="btn" type="submit">
+                                    Check availability
+                                </button>
+                            </div>
+
+                            {slugStatus === 'available' && cleanSlug && (
+                                <p className="booker__done" role="status">
+                                    <strong>{cleanSlug}.affanhub.com</strong> is available. <a href={`${merchant_url}/register?slug=${cleanSlug}`} style={{ textDecoration: 'underline', fontWeight: 600 }}>Create your store now</a>
+                                </p>
+                            )}
+                        </form>
+
+                        <div className="visit">
+                            <h3>Store setup checklist</h3>
+                            <p className="visit__addr">Launch ready on day one without writing a single line of code.</p>
+                            <dl className="visit__list">
+                                <div><dt>Storefront</dt><dd>Free yourname.affanhub.com subdomain or custom .ng domain</dd></div>
+                                <div><dt>Payments</dt><dd>Automated Moniepoint virtual accounts for customers</dd></div>
+                                <div><dt>Inventory</dt><dd>Connected directly to MTN, Airtel, Glo, and 9mobile</dd></div>
+                            </dl>
                         </div>
                     </div>
                 </section>
             </main>
 
-            {/* FOOTER */}
-            <footer className="bg-slate-950 border-t border-slate-800 py-14 text-slate-400 text-xs">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-                        <div className="md:col-span-2 space-y-4">
-                            <div className="bg-white rounded-lg px-3 py-1.5 inline-block">
-                                <img
-                                    src="/images/affan-logo.png"
-                                    alt="AffanHub"
-                                    className="h-7 w-auto object-contain"
-                                />
-                            </div>
-                            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-md">
-                                Multi-tenant white-label telecom platform for Nigerian entrepreneurs and resellers to operate custom-branded digital utilities with automated delivery.
-                            </p>
-                            <div className="flex items-center gap-2 text-xs text-slate-400">
-                                <span className="size-2 rounded-full bg-emerald-500 inline-block" />
-                                <span>Operational across all 36 Nigerian states and the FCT</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p className="text-xs font-bold text-white mb-3">Platform</p>
-                            <ul className="space-y-2">
-                                <li>
-                                    <a href="#features" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Features
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#preview" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Live preview
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#services" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Services
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#calculator" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Profit calculator
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#how-it-works" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        How it works
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#pricing" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Pricing
-                                    </a>
-                                </li>
-                                <li>
-                                    <Link href="/blog" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Guides and articles
-                                    </Link>
-                                </li>
-                                <li>
-                                    <a href="https://demo.affanhub.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Live demo store
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <p className="text-xs font-bold text-white mb-3">Account and legal</p>
-                            <ul className="space-y-2">
-                                <li>
-                                    <a href={getMerchantUrl('/login')} className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Merchant sign in
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href={getMerchantUrl('/register')} className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Create account free
-                                    </a>
-                                </li>
-                                <li>
-                                    <Link href="/privacy" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Privacy policy
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/terms" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Terms of service
-                                    </Link>
-                                </li>
-                                <li>
-                                    <a href="mailto:support@affanhub.com" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded active:translate-y-px">
-                                        Support desk
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-xs">
-                        <p>&copy; {new Date().getFullYear()} AffanHub Technologies. All rights reserved.</p>
-                        <p className="text-slate-400">Built for Nigerian telecom resellers and digital entrepreneurs.</p>
+            {/* Footer: Refract statement line + Comprehensive platform & policy links */}
+            <footer className="foot">
+                <div className="container">
+                    <p className="foot__line">See you in the cloud.</p>
+                    <div className="foot__row">
+                        <nav className="foot__links" aria-label="Footer Navigation">
+                            <a href="#demo">Live Demo</a>
+                            <a href="#pipelines">Pipelines</a>
+                            <a href="#statement">Uptime</a>
+                            <a href="#prices">Pricing</a>
+                            <a href="#faqs">FAQs</a>
+                            <Link href="/blog">Blog & Guides</Link>
+                            <Link href="/privacy-policy">Privacy Policy</Link>
+                            <a href="mailto:support@affanhub.com">Support</a>
+                            <a href={`${merchant_url}/login`}>Merchant login</a>
+                            <a href={`${merchant_url}/register`}>Start for free</a>
+                        </nav>
+                        <p className="foot__fine">
+                            Affan Digital Technologies Limited. Licensed telecom carrier aggregator pipelines and automated Palmpay virtual accounts. &copy; {new Date().getFullYear()} AffanHub.
+                        </p>
                     </div>
                 </div>
             </footer>
-        </div>
-    );
-}
-
-function FaqRow({ question, answer }: { question: string; answer: string }) {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-        <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden transition-colors">
-            <button
-                type="button"
-                className="w-full flex items-center justify-between text-left font-bold text-slate-900 px-5 py-4 hover:bg-slate-100 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-px"
-                onClick={() => setIsOpen(!isOpen)}
-                aria-expanded={isOpen}
-            >
-                <span className="pr-4 text-sm sm:text-base font-semibold text-slate-900">{question}</span>
-                <span className="size-6 rounded-md bg-white border border-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">
-                    {isOpen ? '−' : '+'}
-                </span>
-            </button>
-            {isOpen && (
-                <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-200 bg-white">
-                    {answer}
-                </div>
-            )}
         </div>
     );
 }

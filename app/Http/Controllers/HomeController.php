@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Domain;
+use App\Models\Faq;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Pipeline;
@@ -31,11 +32,13 @@ class HomeController extends Controller
 
         if (in_array($host, config('tenancy.central_domains', []))) {
             $proPlan = Plan::where('slug', 'pro')->first();
+            $faqs = Faq::active()->forMerchant()->get(['id', 'question', 'answer']);
 
             return inertia('Marketing/Home', [
                 'proPrice' => $proPlan && $proPlan->price_monthly !== null
                     ? '₦'.number_format((float) $proPlan->price_monthly, 0)
                     : '₦4,999',
+                'faqs' => $faqs,
             ]);
         }
 
