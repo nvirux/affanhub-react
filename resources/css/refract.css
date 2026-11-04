@@ -1100,6 +1100,13 @@
 
 @media (max-width: 60rem) {
   :root { --nav-h: 56px; }
+  .refract-page {
+    --gutter: 24px;
+    --gap-columns: 20px;
+    --section-gap-s: 64px;
+    --section-gap: 80px;
+    --section-gap-l: 96px;
+  }
   .refract-page .nav__links { display: none; }
   .refract-page .nav__pill { justify-content: space-between; padding-left: var(--space-md); }
   .refract-page .nav__actions { margin-left: auto; gap: var(--space-xs); }
@@ -1164,6 +1171,20 @@
 }
 
 @media (max-width: 40rem) {
+  .refract-page {
+    --gutter: 16px;
+    --gap-columns: 16px;
+    --section-gap-s: 40px;
+    --section-gap: 48px;
+    --section-gap-l: 60px;
+  }
+  .refract-page .hero {
+    padding-block: calc(var(--nav-h) + var(--space-lg)) 0;
+  }
+  .refract-page .hero__grid {
+    row-gap: var(--space-xl);
+    padding: 0 var(--gutter) var(--space-xl);
+  }
   .refract-page .nav__pill { padding: 0 var(--space-2xs) 0 var(--space-sm); gap: var(--space-xs); }
   .refract-page .nav__actions { gap: var(--space-3xs); }
   .refract-page .nav__login { font-size: var(--text-sm); padding: var(--space-2xs) var(--space-xs); }
@@ -1195,9 +1216,19 @@
     min-height: 44px;
     white-space: nowrap;
   }
-  .refract-page .today { padding: var(--space-md); }
+  .refract-page .today {
+    width: 100%;
+    max-width: 100%;
+    padding: var(--space-md) var(--space-sm);
+  }
+  .refract-page .timetable {
+    margin-top: var(--space-lg);
+  }
   .refract-page .slot { grid-template-columns: 52px minmax(0, 1fr) auto; gap: var(--space-sm); padding-inline: var(--space-xs); }
-  .refract-page .row { grid-template-columns: minmax(0, 1fr) auto; }
+  .refract-page .row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: var(--space-md) var(--space-sm);
+  }
   .refract-page .row__time { grid-column: 1; }
   .refract-page .row__name { grid-column: 1; grid-row: 2; }
   .refract-page .row__lanes { grid-column: 1 / -1; grid-row: 3; }
@@ -1209,10 +1240,11 @@
   .refract-page .warm__text {
     text-align: center;
   }
-  .refract-page .booker { padding: var(--space-lg); }
-  .refract-page .booker__foot { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+  .refract-page .booker { padding: var(--space-md); }
+  .refract-page .booker__foot { flex-direction: column; align-items: stretch; gap: var(--space-sm); margin-top: var(--space-lg); padding-top: var(--space-lg); }
   .refract-page .booker__foot .btn { width: 100%; }
   .refract-page .board {
+    margin-top: var(--space-lg);
     padding: var(--space-xs) var(--space-sm);
   }
   .refract-page .board th,
