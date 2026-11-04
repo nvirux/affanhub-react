@@ -37,6 +37,7 @@ class Owner extends Authenticatable implements FilamentUser, HasAppAuthenticatio
     protected $casts = [
         'max_stores' => 'integer',
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
 
     protected static function booted(): void

@@ -36,7 +36,9 @@ class MerchantPanelProvider extends PanelProvider
         return $panel
             ->id('merchant')->domain('merchant.'.(parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost'))
             ->path('')
-            ->login()->profile(EditProfile::class)
+            ->login()
+            ->passwordReset()
+            ->profile(EditProfile::class)
             ->multiFactorAuthentication([
                 AppAuthentication::make()
                     ->brandName('AffanHub Merchant')
@@ -45,6 +47,7 @@ class MerchantPanelProvider extends PanelProvider
             ->registration(Register::class)
             ->emailVerification(EmailVerificationPrompt::class)
             ->authGuard('owner')
+            ->authPasswordBroker('owners')
             ->tenant(Store::class, slugAttribute: 'public_id')
             ->tenantRegistration(RegisterStore::class)
             ->tenantMiddleware([
