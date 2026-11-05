@@ -79,7 +79,7 @@ consume.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     consume.form = consumeForm
 /**
 * @see \App\Http\Controllers\ImpersonationController::leave
- * @see app/Http/Controllers/ImpersonationController.php:58
+ * @see app/Http/Controllers/ImpersonationController.php:59
  * @route '/impersonate/leave'
  */
 export const leave = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ leave.definition = {
 
 /**
 * @see \App\Http\Controllers\ImpersonationController::leave
- * @see app/Http/Controllers/ImpersonationController.php:58
+ * @see app/Http/Controllers/ImpersonationController.php:59
  * @route '/impersonate/leave'
  */
 leave.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ leave.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ImpersonationController::leave
- * @see app/Http/Controllers/ImpersonationController.php:58
+ * @see app/Http/Controllers/ImpersonationController.php:59
  * @route '/impersonate/leave'
  */
 leave.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,7 +112,7 @@ leave.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\ImpersonationController::leave
- * @see app/Http/Controllers/ImpersonationController.php:58
+ * @see app/Http/Controllers/ImpersonationController.php:59
  * @route '/impersonate/leave'
  */
 leave.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,7 +122,7 @@ leave.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\ImpersonationController::leave
- * @see app/Http/Controllers/ImpersonationController.php:58
+ * @see app/Http/Controllers/ImpersonationController.php:59
  * @route '/impersonate/leave'
  */
     const leaveForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,7 +132,7 @@ leave.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\ImpersonationController::leave
- * @see app/Http/Controllers/ImpersonationController.php:58
+ * @see app/Http/Controllers/ImpersonationController.php:59
  * @route '/impersonate/leave'
  */
         leaveForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,7 +141,7 @@ leave.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\ImpersonationController::leave
- * @see app/Http/Controllers/ImpersonationController.php:58
+ * @see app/Http/Controllers/ImpersonationController.php:59
  * @route '/impersonate/leave'
  */
         leaveForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

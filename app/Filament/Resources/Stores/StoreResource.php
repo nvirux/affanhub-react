@@ -48,6 +48,7 @@ class StoreResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\WalletsRelationManager::class,
             RelationManagers\DomainsRelationManager::class,
             RelationManagers\SubscriptionsRelationManager::class,
             RelationManagers\FeatureOverridesRelationManager::class,

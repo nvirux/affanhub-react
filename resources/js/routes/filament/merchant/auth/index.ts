@@ -1,4 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import passwordReset from './password-reset'
 import emailVerification from './email-verification'
 /**
 * @see \Filament\Auth\Pages\Login::__invoke
@@ -291,6 +292,7 @@ profile.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     profile.form = profileForm
 const auth = {
     login: Object.assign(login, login),
+passwordReset: Object.assign(passwordReset, passwordReset),
 register: Object.assign(register, register),
 logout: Object.assign(logout, logout),
 profile: Object.assign(profile, profile),

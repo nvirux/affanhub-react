@@ -7,12 +7,12 @@ use App\Filament\Resources\Domains\Pages\EditDomain;
 use App\Filament\Resources\Domains\Pages\ListDomains;
 use App\Filament\Resources\Domains\Schemas\DomainForm;
 use App\Filament\Resources\Domains\Tables\DomainsTable;
+use App\Models\Domain;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Stancl\Tenancy\Database\Models\Domain;
 use UnitEnum;
 
 class DomainResource extends Resource
@@ -24,6 +24,11 @@ class DomainResource extends Resource
     protected static UnitEnum|string|null $navigationGroup = '🏬 Tenancy & Stores';
 
     protected static ?int $navigationSort = 3;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Domain::count();
+    }
 
     public static function form(Schema $schema): Schema
     {

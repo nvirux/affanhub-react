@@ -2,6 +2,7 @@
 
 namespace App\Filament\Merchant\Pages\Auth;
 
+use App\Mail\MerchantWelcomeMail;
 use App\Models\Owner;
 use App\Rules\MerchantRegistrationThrottle;
 use App\Rules\TrustedEmailDomain;
@@ -14,6 +15,8 @@ use Filament\Schemas\Schema;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\Rules\Password;
@@ -154,12 +157,21 @@ class Register extends BaseRegister
     }
 
     /**
-     * Record successful registration against network IP rate limit.
+     * Record successful registration against network IP rate limit and send welcome email.
      */
     protected function afterRegister(): void
     {
         $ip = request()->ip() ?: '127.0.0.1';
         RateLimiter::hit('merchant_register_ip:'.$ip, 86400); // 24 hours decay
+
+        $user = auth()->user();
+        if ($user instanceof Owner && filled($user->email)) {
+            try {
+                Mail::to($user->email)->queue(new MerchantWelcomeMail($user));
+            } catch (\Throwable $e) {
+                Log::warning('Failed to dispatch welcome email: '.$e->getMessage());
+            }
+        }
     }
 
     /**

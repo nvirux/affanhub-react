@@ -24,10 +24,31 @@ class CustomDomainOnboardingService
 
         $domainName = $this->dns->normalizeDomain($domainName);
 
-        // Conflict check: Check if domain is used by ANY other tenant (active or soft deleted)
-        // We normalize by removing www. for the comparison to prevent root/www overlap across tenants
+        // Normalize by removing www. for comparison
         $normalizedForComparison = preg_replace('/^www\./i', '', $domainName);
 
+        // Prevent tenants from attaching platform domains or subdomains of the platform (e.g. demo2.affanhub.com, localhost)
+        $appHost = parse_url(config('app.url', 'http://localhost'), PHP_URL_HOST) ?: 'localhost';
+        $cleanAppHost = strtolower(preg_replace('/^www\./i', '', $appHost));
+
+        $restrictedRoots = array_unique(array_filter([
+            'affanhub.com',
+            'localhost',
+            '127.0.0.1',
+            $cleanAppHost,
+            ...array_map(function ($d) {
+                return strtolower(preg_replace('/^(www|admin|merchant)\./i', '', $d));
+            }, config('tenancy.central_domains', [])),
+        ]));
+
+        foreach ($restrictedRoots as $root) {
+            if ($normalizedForComparison === $root || str_ends_with($normalizedForComparison, '.'.$root)) {
+                throw new \Exception("You cannot connect an AffanHub platform domain or subdomain ({$domainName}) as a custom domain. Please enter your own external custom domain (e.g. yourbrand.com).");
+            }
+        }
+
+        // Conflict check: Check if domain is used by ANY other tenant (active or soft deleted)
+        // We normalize by removing www. for the comparison to prevent root/www overlap across tenants
         $conflict = Domain::where(function ($query) use ($domainName, $normalizedForComparison) {
             $query->where('domain', $domainName)
                 ->orWhere('domain', 'www.'.$normalizedForComparison)

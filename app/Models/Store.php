@@ -120,6 +120,24 @@ class Store extends BaseTenant implements TenantWithDatabase
         return $this->wallet('profit');
     }
 
+    /**
+     * Total wallet balance across all storefront customers of this store.
+     */
+    public function totalCustomersBalance(): float
+    {
+        return (float) Wallet::where('holder_type', User::class)
+            ->whereIn('holder_id', $this->users()->select('id'))
+            ->sum('balance');
+    }
+
+    /**
+     * Total count of registered storefront customers.
+     */
+    public function customersCount(): int
+    {
+        return $this->users()->count();
+    }
+
     public function virtualAccounts(): MorphMany
     {
         return $this->morphMany(VirtualAccount::class, 'holder');
@@ -192,8 +210,22 @@ class Store extends BaseTenant implements TenantWithDatabase
 
     public function getPrimaryDomain(): ?string
     {
-        return $this->domains()->where('is_primary', true)->value('domain')
-            ?? $this->domains()->value('domain');
+        // 1. Prefer healthy verified custom domain marked as primary
+        $verifiedPrimary = $this->domains()
+            ->where('is_primary', true)
+            ->get()
+            ->first(fn ($d) => ! $d->isCustom() || $d->isHealthy());
+
+        if ($verifiedPrimary) {
+            return $verifiedPrimary->domain;
+        }
+
+        // 2. Fallback to any healthy domain or tenant subdomain
+        $anyHealthy = $this->domains()
+            ->get()
+            ->first(fn ($d) => ! $d->isCustom() || $d->isHealthy());
+
+        return $anyHealthy?->domain;
     }
 
     public function getStoreUrl(): string
@@ -205,8 +237,9 @@ class Store extends BaseTenant implements TenantWithDatabase
             $domain = $this->public_id.'.'.$baseDomain;
         }
 
+        $isCustom = ! str_contains($domain, 'localhost') && ! str_contains($domain, 'affanhub.com');
         $port = request()->getPort();
-        if ($port && ! in_array((int) $port, [80, 443]) && ! str_contains($domain, ':')) {
+        if (! $isCustom && $port && ! in_array((int) $port, [80, 443]) && ! str_contains($domain, ':')) {
             $domain .= ":{$port}";
         }
 

@@ -5,25 +5,18 @@ namespace App\Filament\Merchant\Pages;
 use App\Models\StoreMobileApp;
 use App\Models\StorePushNotification;
 use App\Services\OneSignalService;
-use BackedEnum;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use UnitEnum;
 
 class PushNotifications extends Page
 {
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-bell-alert';
-
-    protected static string|UnitEnum|null $navigationGroup = 'Mobile App';
-
-    protected static ?string $title = 'Push Notifications';
-
-    protected static ?string $navigationLabel = 'Push Notifications';
-
-    protected static ?int $navigationSort = 2;
-
     protected string $view = 'filament.merchant.pages.push-notifications';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public string $pushTitle = '';
 
@@ -35,6 +28,17 @@ class PushNotifications extends Page
 
     public function mount(): void
     {
+        $tenant = Filament::getTenant();
+
+        if ($tenant && ! app()->environment('testing')) {
+            redirect()->route('filament.merchant.resources.announcements.index', [
+                'tenant' => $tenant->public_id,
+                'tab' => 'push',
+            ]);
+
+            return;
+        }
+
         // default preset
         $this->destinationPreset = 'dashboard';
     }

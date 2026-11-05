@@ -33,11 +33,13 @@ class ActivityLogResource extends Resource
                     ->label('Timestamp')
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('tenant_id')
+                TextColumn::make('tenant.name')
                     ->label('Store')
                     ->searchable()
+                    ->sortable()
                     ->badge()
                     ->color('primary')
+                    ->default(fn ($record) => $record->tenant_id ? "Store #{$record->tenant_id}" : null)
                     ->placeholder('System-wide'),
                 TextColumn::make('event')
                     ->badge()
@@ -77,9 +79,10 @@ class ActivityLogResource extends Resource
                     ->form([
                         TextInput::make('created_at')
                             ->label('Timestamp'),
-                        TextInput::make('tenant_id')
-                            ->label('Store ID')
-                            ->placeholder('System-wide'),
+                        TextInput::make('store_name')
+                            ->label('Store')
+                            ->placeholder('System-wide')
+                            ->formatStateUsing(fn ($record) => $record->tenant?->name ?? ($record->tenant_id ? "Store #{$record->tenant_id}" : 'System-wide')),
                         TextInput::make('event')
                             ->label('Event'),
                         TextInput::make('causer_name')

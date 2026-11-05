@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Stancl\Tenancy\Database\Models\Domain as BaseDomain;
 
 class Domain extends BaseDomain
 {
     public const STATUS_PENDING = 'pending';
+
+    public const STATUS_ACTIVE = 'active';
 
     public const STATUS_VERIFIED = 'verified';
 
@@ -140,11 +143,54 @@ class Domain extends BaseDomain
         return $this->isVerified() && $this->isApproved() && $this->verification_status === self::VERIFY_ACTIVE;
     }
 
+    public static function platformDomainPatterns(): array
+    {
+        $patterns = ['affanhub.com', 'localhost'];
+        $appHost = parse_url(config('app.url', 'http://localhost'), PHP_URL_HOST);
+        if ($appHost) {
+            $cleanHost = strtolower(preg_replace('/^(www|admin|merchant)\./i', '', $appHost));
+            if ($cleanHost) {
+                $patterns[] = $cleanHost;
+            }
+        }
+
+        foreach (config('tenancy.central_domains', []) as $central) {
+            $cleanCentral = strtolower(preg_replace('/^(www|admin|merchant)\./i', '', $central));
+            if ($cleanCentral) {
+                $patterns[] = $cleanCentral;
+            }
+        }
+
+        return array_values(array_unique(array_filter($patterns)));
+    }
+
+    public function scopeSubdomains(Builder $query): Builder
+    {
+        $patterns = self::platformDomainPatterns();
+
+        return $query->where(function (Builder $q) use ($patterns) {
+            foreach ($patterns as $pattern) {
+                $q->orWhere('domain', 'like', '%.'.$pattern);
+            }
+        });
+    }
+
+    public function scopeCustom(Builder $query): Builder
+    {
+        $patterns = self::platformDomainPatterns();
+
+        return $query->where(function (Builder $q) use ($patterns) {
+            foreach ($patterns as $pattern) {
+                $q->where('domain', 'not like', '%.'.$pattern);
+            }
+        });
+    }
+
     public function isCustom(): bool
     {
-        $centralDomains = config('tenancy.central_domains', []);
-        foreach ($centralDomains as $central) {
-            if (str_ends_with($this->domain, '.'.$central)) {
+        $patterns = self::platformDomainPatterns();
+        foreach ($patterns as $pattern) {
+            if (str_ends_with($this->domain, '.'.$pattern)) {
                 return false;
             }
         }

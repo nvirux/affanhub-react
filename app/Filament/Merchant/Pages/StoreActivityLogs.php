@@ -38,7 +38,9 @@ class StoreActivityLogs extends Page implements HasTable
     {
         return $table
             ->query(
-                ActivityLog::query()->where('tenant_id', Filament::getTenant()?->getKey())
+                ActivityLog::query()
+                    ->where('tenant_id', Filament::getTenant()?->getKey())
+                    ->where('event', 'not like', 'admin_impersonate_%')
             )
             ->columns([
                 TextColumn::make('created_at')

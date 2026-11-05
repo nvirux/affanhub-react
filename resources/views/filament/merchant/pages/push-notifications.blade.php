@@ -5,7 +5,9 @@
         $isReady = $app && $app->isReady();
         $presets = $this->destinationPresets;
         $recentBroadcasts = $this->recentPushNotifications;
+        $destinationPreset = $this->destinationPreset;
     @endphp
+
 
     <style>
         .pn-container {
@@ -168,7 +170,7 @@
                                 Notification Title <span style="color: #dc2626;">*</span>
                             </label>
                             <span style="font-size: 0.7rem; color: #94a3b8;">
-                                {{ strlen($pushTitle) }}/100 chars
+                                {{ strlen($this->pushTitle ?? '') }}/100 chars
                             </span>
                         </div>
                         <input type="text" 
@@ -189,7 +191,7 @@
                                 Message Content <span style="color: #dc2626;">*</span>
                             </label>
                             <span style="font-size: 0.7rem; color: #94a3b8;">
-                                {{ strlen($pushMessage) }}/255 chars
+                                {{ strlen($this->pushMessage ?? '') }}/255 chars
                             </span>
                         </div>
                         <textarea wire:model.live.debounce.150ms="pushMessage" 

@@ -43,6 +43,7 @@ class ImpersonationController extends Controller
         session()->put('impersonated_admin_name', $data['admin_name']);
         session()->put('impersonated_store_id', $data['store_id']);
         session()->put('impersonated_store_name', $data['store_name']);
+        session()->put('impersonate_anonymous', (bool) ($data['anonymous'] ?? false));
 
         $scheme = $request->getScheme();
         $host = $request->getHost();
@@ -60,18 +61,21 @@ class ImpersonationController extends Controller
         if (session()->has('impersonated_by_admin')) {
             $adminId = session()->get('impersonated_by_admin');
             $storeId = session()->get('impersonated_store_id');
+            $isAnonymous = (bool) session()->get('impersonate_anonymous', false);
 
-            ActivityLog::create([
-                'tenant_id' => $storeId,
-                'causer_type' => Admin::class,
-                'causer_id' => $adminId,
-                'event' => 'admin_impersonate_store_end',
-                'description' => 'Super Admin ended impersonation session.',
-                'properties' => [
-                    'store_id' => $storeId,
-                    'admin_id' => $adminId,
-                ],
-            ]);
+            if (! $isAnonymous) {
+                ActivityLog::create([
+                    'tenant_id' => $storeId,
+                    'causer_type' => Admin::class,
+                    'causer_id' => $adminId,
+                    'event' => 'admin_impersonate_store_end',
+                    'description' => 'Super Admin ended impersonation session.',
+                    'properties' => [
+                        'store_id' => $storeId,
+                        'admin_id' => $adminId,
+                    ],
+                ]);
+            }
 
             Auth::guard('owner')->logout();
             session()->forget([
@@ -79,6 +83,7 @@ class ImpersonationController extends Controller
                 'impersonated_admin_name',
                 'impersonated_store_id',
                 'impersonated_store_name',
+                'impersonate_anonymous',
             ]);
         }
 

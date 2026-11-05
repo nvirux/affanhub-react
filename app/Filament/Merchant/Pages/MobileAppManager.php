@@ -149,11 +149,33 @@ class MobileAppManager extends Page
         return null;
     }
 
+    public ?string $selectedDomain = null;
+
+    public function getAvailableDomains(): array
+    {
+        $tenant = Filament::getTenant();
+        if (! $tenant) {
+            return [];
+        }
+
+        return $tenant->domains()
+            ->get()
+            ->filter(fn ($d) => ! $d->isCustom() || $d->isHealthy())
+            ->pluck('domain', 'domain')
+            ->toArray();
+    }
+
     public function getResolvedStoreUrl(): string
     {
         $tenant = Filament::getTenant();
         if (! $tenant) {
             return url('/dashboard');
+        }
+
+        if (! empty($this->selectedDomain)) {
+            $scheme = str_contains($this->selectedDomain, 'localhost') ? 'http' : 'https';
+
+            return "{$scheme}://{$this->selectedDomain}/dashboard";
         }
 
         // 1. Prefer verified custom domain if available
@@ -187,6 +209,25 @@ class MobileAppManager extends Page
         }
     }
 
+    public function updatedAppIcon(): void
+    {
+        $this->validateOnly('appIcon', [
+            'appIcon' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:3072'],
+        ], [
+            'appIcon.image' => 'The app icon must be a valid image file.',
+            'appIcon.mimes' => 'The app launcher icon must be a PNG, JPG, JPEG, or WebP file.',
+            'appIcon.max' => 'The app launcher icon must not exceed 3MB.',
+        ]);
+
+        $this->iconChoice = 'custom';
+    }
+
+    public function resetToStoreLogo(): void
+    {
+        $this->iconChoice = 'store_logo';
+        $this->appIcon = null;
+    }
+
     public function setPaymentMethod(string $method): void
     {
         $this->paymentMethod = $method;
@@ -200,12 +241,20 @@ class MobileAppManager extends Page
         $this->setupPrice = (float) PlatformSetting::get('mobile_app_setup_fee', 0.00);
         $this->playstorePrice = (float) PlatformSetting::get('mobile_app_playstore_fee', 30000.00);
 
+        $available = array_keys($this->getAvailableDomains());
+        $customDomain = $tenant->domains()->get()->first(fn ($d) => $d->isCustom() && $d->isHealthy());
+        if ($customDomain) {
+            $this->selectedDomain = $customDomain->domain;
+        } elseif (! empty($available)) {
+            $this->selectedDomain = $available[0];
+        }
+
         if ($this->mobileApp) {
             $this->appName = $this->mobileApp->app_name;
-            $this->iconChoice = 'custom';
+            $this->iconChoice = ! empty($this->mobileApp->app_icon_path) ? 'custom' : (! empty($tenant->logo_path) ? 'store_logo' : 'custom');
             $this->includePlaystore = false;
         } else {
-            $this->appName = $tenant->name;
+            $this->appName = '';
             $this->iconChoice = ! empty($tenant->logo_path) ? 'store_logo' : 'custom';
             $this->includePlaystore = false;
         }
@@ -231,10 +280,11 @@ class MobileAppManager extends Page
     protected function resolveIconPath(MobileAppBuilderService $builder): ?string
     {
         $tenant = Filament::getTenant();
+        $storeKey = $tenant->public_id ?: (string) $tenant->id;
 
         if ($this->iconChoice === 'store_logo') {
             if (! empty($tenant->logo_path)) {
-                return $builder->processAndStoreAppIcon($tenant->logo_path, $tenant->id);
+                return $builder->processAndStoreAppIcon($tenant->logo_path, $storeKey);
             }
 
             return null;
@@ -245,7 +295,7 @@ class MobileAppManager extends Page
                 $builder->deleteOldIcon($this->mobileApp->app_icon_path);
             }
 
-            return $builder->processAndStoreAppIcon($this->appIcon, $tenant->id);
+            return $builder->processAndStoreAppIcon($this->appIcon, $storeKey);
         }
 
         if ($this->mobileApp?->app_icon_path) {
@@ -253,7 +303,7 @@ class MobileAppManager extends Page
         }
 
         if (! empty($tenant->logo_path)) {
-            return $builder->processAndStoreAppIcon($tenant->logo_path, $tenant->id);
+            return $builder->processAndStoreAppIcon($tenant->logo_path, $storeKey);
         }
 
         return null;
@@ -288,7 +338,7 @@ class MobileAppManager extends Page
 
         $rules = [
             'appName' => 'required|string|min:2|max:30',
-            'appIcon' => 'nullable|image|max:3072',
+            'appIcon' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:3072',
         ];
 
         $this->validate($rules);
@@ -367,7 +417,7 @@ class MobileAppManager extends Page
 
         $rules = [
             'appName' => 'required|string|min:2|max:30',
-            'appIcon' => 'nullable|image|max:3072',
+            'appIcon' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:3072',
         ];
 
         $this->validate($rules);
@@ -706,7 +756,7 @@ class MobileAppManager extends Page
 
         $this->validate([
             'appName' => 'required|string|min:2|max:30',
-            'appIcon' => 'nullable|image|max:3072',
+            'appIcon' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:3072',
         ]);
 
         $tenant = Filament::getTenant();

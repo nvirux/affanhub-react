@@ -42,7 +42,13 @@ class MobileAppDownloadController extends Controller
         $storageDisk = ! empty(config('filesystems.disks.r2.bucket'))
             ? 'r2'
             : (! empty(config('filesystems.disks.s3.bucket')) ? 's3' : config('filesystems.default'));
-        $storedRelativePath = "apps/{$store->id}/{$fileName}";
+
+        $publicIdPath = "apps/{$store->public_id}/{$fileName}";
+        $legacyIdPath = "apps/{$store->id}/{$fileName}";
+
+        $storedRelativePath = (Storage::disk($storageDisk)->exists($publicIdPath) || Storage::disk('public')->exists($publicIdPath))
+            ? $publicIdPath
+            : (Storage::disk($storageDisk)->exists($legacyIdPath) || Storage::disk('public')->exists($legacyIdPath) ? $legacyIdPath : $publicIdPath);
 
         // 1. If the extracted .apk is already cached on storage, download it directly
         if (Storage::disk($storageDisk)->exists($storedRelativePath)) {

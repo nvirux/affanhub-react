@@ -78,11 +78,11 @@ class MerchantPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::USER_MENU_BEFORE,
-                fn () => view('filament.merchant.components.header-store-switcher')
+                fn () => view('filament.merchant.components.impersonation-banner')
             )
             ->renderHook(
-                PanelsRenderHook::PAGE_START,
-                fn () => view('filament.merchant.components.impersonation-banner')
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn () => view('filament.merchant.components.header-store-switcher')
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,

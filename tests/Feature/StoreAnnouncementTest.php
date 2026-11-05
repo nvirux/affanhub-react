@@ -1,11 +1,15 @@
 <?php
 
+use App\Filament\Merchant\Resources\StoreAnnouncementResource\Pages\ListStoreAnnouncements;
 use App\Models\Owner;
 use App\Models\Store;
 use App\Models\StoreAnnouncement;
+use App\Models\StoreMobileApp;
+use App\Models\StorePushNotification;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
@@ -112,4 +116,60 @@ test('active store announcement is shared with storefront via inertia', function
             ->etc()
         )
     );
+});
+
+test('merchant announcements page renders with storefront notices and mobile push tabs', function () {
+    Filament\Facades\Filament::setCurrentPanel(Filament\Facades\Filament::getPanel('merchant'));
+    $this->actingAs($this->owner, 'owner');
+    Filament\Facades\Filament::setTenant($this->store);
+
+    Livewire\Livewire::test(ListStoreAnnouncements::class)
+        ->assertSuccessful()
+        ->assertSee('Storefront Notices')
+        ->assertSee('App Push Notifications')
+        ->set('activeTab', 'push')
+        ->assertSee('Compose App Broadcast')
+        ->assertSee('Live Phone Preview');
+});
+
+test('merchant can broadcast mobile push notification directly from announcements page', function () {
+    Filament\Facades\Filament::setCurrentPanel(Filament\Facades\Filament::getPanel('merchant'));
+    $this->actingAs($this->owner, 'owner');
+    Filament\Facades\Filament::setTenant($this->store);
+
+    StoreMobileApp::create([
+        'store_id' => $this->store->id,
+        'app_name' => 'Announcement App',
+        'package_id' => 'com.affanhub.announcementapp',
+        'version_code' => 1,
+        'version_name' => '1.0.0',
+        'status' => 'ready',
+        'apk_download_url' => 'https://media.affanhub.com/apps/str_ann/app.apk',
+    ]);
+
+    config([
+        'services.onesignal.app_id' => '340f8d56-0123-4030-8756-3c42c9282f1a',
+        'services.onesignal.rest_api_key' => 'test-rest-key',
+    ]);
+
+    Http::fake([
+        'https://onesignal.com/api/v1/notifications' => Http::response([
+            'id' => 'onesignal-announcement-notif-1',
+            'recipients' => 15,
+        ], 200),
+    ]);
+
+    Livewire\Livewire::test(ListStoreAnnouncements::class)
+        ->set('activeTab', 'push')
+        ->set('pushTitle', 'Flash Sale on Airtime!')
+        ->set('pushMessage', 'Get 5% instant cashback now.')
+        ->set('destinationPreset', 'airtime')
+        ->call('sendBroadcast')
+        ->assertHasNoErrors();
+
+    $notification = StorePushNotification::where('store_id', $this->store->id)->first();
+    expect($notification)->not->toBeNull()
+        ->and($notification->title)->toBe('Flash Sale on Airtime!')
+        ->and($notification->recipients_count)->toBe(15)
+        ->and($notification->status)->toBe('sent');
 });

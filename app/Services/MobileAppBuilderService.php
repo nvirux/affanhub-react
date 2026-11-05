@@ -27,7 +27,9 @@ class MobileAppBuilderService
     public function resolveStorefrontUrl(StoreMobileApp $mobileApp, ?string $storefrontUrl = null): string
     {
         if (! empty($storefrontUrl)) {
-            return $this->formatDashboardUrl($storefrontUrl);
+            $trimmed = rtrim($storefrontUrl, '/');
+
+            return str_ends_with($trimmed, '/dashboard') ? $trimmed : "{$trimmed}/dashboard";
         }
 
         $store = $mobileApp->store;
@@ -52,16 +54,6 @@ class MobileAppBuilderService
         }
 
         return rtrim($store->getStoreUrl(), '/').'/dashboard';
-    }
-
-    protected function formatDashboardUrl(string $url): string
-    {
-        $trimmed = rtrim($url, '/');
-        if (str_ends_with($trimmed, '/dashboard')) {
-            return $trimmed;
-        }
-
-        return "{$trimmed}/dashboard";
     }
 
     /**
@@ -301,8 +293,10 @@ class MobileAppBuilderService
         $apkFileName = "{$cleanName}-v{$mobileApp->version_name}.apk";
         $aabFileName = "{$cleanName}-v{$mobileApp->version_name}.aab";
 
-        $apkRelativePath = "apps/{$mobileApp->store_id}/{$apkFileName}";
-        $aabRelativePath = "apps/{$mobileApp->store_id}/{$aabFileName}";
+        $store = $mobileApp->store;
+        $storeIdentifier = $store?->public_id ?: (string) $mobileApp->store_id;
+        $apkRelativePath = "apps/{$storeIdentifier}/{$apkFileName}";
+        $aabRelativePath = "apps/{$storeIdentifier}/{$aabFileName}";
 
         $apkUrl = null;
         $aabUrl = null;
@@ -368,7 +362,7 @@ class MobileAppBuilderService
      * Normalize any uploaded image or existing store logo into a pristine 512x512 square PNG
      * with transparency support, avoiding any stretching or distortion.
      */
-    public function processAndStoreAppIcon(mixed $source, int $storeId): string
+    public function processAndStoreAppIcon(mixed $source, int|string $storeId): string
     {
         $rawBinary = null;
 
@@ -525,8 +519,18 @@ class MobileAppBuilderService
      */
     public function cleanupOldBuilds(StoreMobileApp $mobileApp, ?string $newUrl = null): void
     {
-        $dir = "apps/{$mobileApp->store_id}";
-        $iconDir = "store-app-icons/{$mobileApp->store_id}";
+        $store = $mobileApp->store;
+        $storeIdentifier = $store?->public_id ?: (string) $mobileApp->store_id;
+
+        $dirs = array_filter(array_unique([
+            "apps/{$storeIdentifier}",
+            "apps/{$mobileApp->store_id}",
+        ]));
+
+        $iconDirs = array_filter(array_unique([
+            "store-app-icons/{$storeIdentifier}",
+            "store-app-icons/{$mobileApp->store_id}",
+        ]));
 
         $disks = array_filter(array_unique([
             $this->getActiveStorageDisk(),
@@ -542,14 +546,18 @@ class MobileAppBuilderService
             }
 
             try {
-                // Delete app build directory
-                if (Storage::disk($disk)->exists($dir)) {
-                    Storage::disk($disk)->deleteDirectory($dir);
+                // Delete app build directories
+                foreach ($dirs as $dir) {
+                    if (Storage::disk($disk)->exists($dir)) {
+                        Storage::disk($disk)->deleteDirectory($dir);
+                    }
                 }
 
-                // Delete custom app icons folder
-                if (Storage::disk($disk)->exists($iconDir)) {
-                    Storage::disk($disk)->deleteDirectory($iconDir);
+                // Delete custom app icons folders
+                foreach ($iconDirs as $iconDir) {
+                    if (Storage::disk($disk)->exists($iconDir)) {
+                        Storage::disk($disk)->deleteDirectory($iconDir);
+                    }
                 }
             } catch (\Throwable $e) {
                 Log::warning("Could not cleanup builds on disk [{$disk}] for store #{$mobileApp->store_id}: {$e->getMessage()}");

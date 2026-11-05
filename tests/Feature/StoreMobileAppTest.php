@@ -112,8 +112,8 @@ test('mobile app manager page renders cleanly without blade errors and supports 
     Livewire\Livewire::test(MobileAppManager::class)
         ->assertSuccessful()
         ->assertSee('App Branding')
-        ->assertSee('Branded Android APK')
         ->assertSee('Generate Android App (Free)')
+        ->set('appName', 'Demo Storefront')
         ->call('generateFreeApp')
         ->assertHasNoErrors();
 
@@ -155,7 +155,6 @@ test('mobile app manager locks self-serve rebuild when app is published on play 
 
     Livewire\Livewire::test(MobileAppManager::class)
         ->assertSuccessful()
-        ->assertSee('App Push Notifications Hub')
         ->assertSee('Live on Google Play Store')
         ->assertSee('Contact Admin for Store Update');
 });

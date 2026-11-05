@@ -56,23 +56,25 @@ class StoreMobileApp extends Model
 
     public function getDownloadUrl(): string
     {
-        // 1. If we have a direct Cloudflare R2 / S3 / CDN URL, return it directly
-        if (! empty($this->apk_download_url) && ! str_contains($this->apk_download_url, 'api.github.com') && ! str_contains($this->apk_download_url, 'merchant.')) {
+        $store = $this->store;
+        $centralUrl = rtrim((string) config('app.url', 'https://affanhub.com'), '/');
+
+        // 1. Return storefront direct download URL only on verified custom domain in production
+        if ($store) {
+            $verifiedCustom = $store->domains()->get()->first(fn ($d) => $d->isCustom() && $d->isHealthy());
+            if ($verifiedCustom && ! app()->environment('local')) {
+                return "https://{$verifiedCustom->domain}/app/download";
+            }
+
+            return "{$centralUrl}/apps/download/{$store->public_id}";
+        }
+
+        // 2. Fallback to direct URL if store relation is not loaded
+        if (! empty($this->apk_download_url) && ! str_contains($this->apk_download_url, 'api.github.com')) {
             return $this->apk_download_url;
         }
 
-        // 2. Return storefront direct download URL on the store's domain
-        $store = $this->store;
-        if ($store) {
-            $storeUrl = rtrim($store->getStoreUrl(), '/');
-
-            return "{$storeUrl}/app/download";
-        }
-
-        // 3. Fallback to central platform domain (never merchant subdomain)
-        $centralUrl = rtrim((string) config('app.url', 'https://affanhub.com'), '/');
-
-        return "{$centralUrl}/apps/download/{$store?->public_id}";
+        return "{$centralUrl}/apps/download/{$this->store_id}";
     }
 
     public function isPlayStoreRequested(): bool
