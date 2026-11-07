@@ -6,6 +6,8 @@
 
 import { Head, Link } from '@inertiajs/react';
 import { useState, useEffect, useRef, FormEvent } from 'react';
+import '../../../css/tokens.css';
+import '../../../css/refract.css';
 
 interface FaqItem {
     id?: number;

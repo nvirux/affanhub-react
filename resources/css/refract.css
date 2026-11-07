@@ -3,7 +3,7 @@
  * imagery: product interface · refract: water/pool
  * axes: light/grotesk-sans/cool · posture: restrained · contrast: pass · fold: pass · v2.8.0 */
 
-:root {
+.refract-page {
   --nav-h: 64px;
 }
 
