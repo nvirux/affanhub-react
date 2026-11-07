@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import PinPad from '@/components/pin-pad';
 import { isBiometricSupported, hasBiometricFor, promptBiometricFor, clearBiometricFor } from '@/lib/biometrics';
-import { register } from '@/routes';
 import { request } from '@/routes/password';
 
 type Props = {
@@ -18,6 +17,23 @@ type Props = {
 };
 
 const STORAGE_KEY = 'affanhub_last_login';
+
+function formatMasked(val: string): string {
+    if (!val) return '';
+    if (val.includes('@')) {
+        const parts = val.split('@');
+        const name = parts[0];
+        const domain = parts.slice(1).join('@');
+        if (name.length > 2) {
+            return `${name[0]}******${name[name.length - 1]}@${domain}`;
+        }
+        return val;
+    }
+    if (val.length >= 6) {
+        return `${val.slice(0, 3)}****${val.slice(-3)}`;
+    }
+    return val;
+}
 
 function getXsrfToken(): string {
     if (typeof document === 'undefined') return '';
@@ -73,7 +89,7 @@ export default function Login({ status, canResetPassword }: Props) {
                 const parsed = JSON.parse(saved);
                 if (parsed && parsed.identifier) {
                     setIdentifier(parsed.identifier);
-                    setMaskedIdentifier(parsed.masked_identifier || parsed.identifier);
+                    setMaskedIdentifier(formatMasked(parsed.masked_identifier || parsed.identifier));
                     setUserName(parsed.name || '');
                     setUserPinEnabled(Boolean(parsed.login_pin_enabled));
                     setHasPassword(Boolean(parsed.has_password));
@@ -110,7 +126,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
                                 saveRememberedAccount({
                                     identifier: parsed.identifier,
-                                    masked_identifier: data.masked_identifier || parsed.identifier,
+                                    masked_identifier: formatMasked(data.masked_identifier || parsed.identifier),
                                     name: data.name || parsed.name || '',
                                     login_pin_enabled: isPin,
                                     has_password: hasPwd,
@@ -202,7 +218,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
             const isPin = Boolean(data.login_pin_enabled);
             const hasPwd = Boolean(data.has_password);
-            const masked = data.masked_identifier || cleanId;
+            const masked = formatMasked(data.masked_identifier || cleanId);
             const name = data.name || '';
 
             const email = data.email || '';
@@ -405,7 +421,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                         <div className="flex flex-col gap-1">
                                             <span>{identifierError}</span>
                                             <TextLink
-                                                href={`${register()}?identifier=${encodeURIComponent(identifier)}`}
+                                                href="/register"
                                                 className="text-xs font-semibold underline hover:text-destructive/80"
                                             >
                                                 Don't have an account? Sign up &rarr;
@@ -437,7 +453,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Don't have an account?{' '}
-                            <TextLink href={register()} tabIndex={3}>
+                            <TextLink href="/register" tabIndex={3}>
                                 Sign up
                             </TextLink>
                         </div>
@@ -450,13 +466,15 @@ export default function Login({ status, canResetPassword }: Props) {
                         {userName ? `Welcome back, ${userName}` : 'Welcome back'}
                     </h2>
 
-                    <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-0.5 mb-2">
-                        <span className="font-mono">{maskedIdentifier}</span>
+                    <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-muted-foreground mt-0.5 mb-2 max-w-full px-2 text-center">
+                        <span className="font-mono max-w-[200px] sm:max-w-[280px] truncate" title={maskedIdentifier}>
+                            {maskedIdentifier}
+                        </span>
                         <span>•</span>
                         <button
                             type="button"
                             onClick={handleSwitchAccount}
-                            className="text-primary font-medium hover:underline cursor-pointer"
+                            className="text-primary font-medium hover:underline cursor-pointer whitespace-nowrap"
                         >
                             Switch account
                         </button>

@@ -112,10 +112,12 @@ class TenantAuthController extends Controller
             $parts = explode('@', $rawIdentifier);
             $name = $parts[0];
             $domain = $parts[1] ?? '';
-            $maskedName = strlen($name) > 2 ? substr($name, 0, 1).str_repeat('*', strlen($name) - 2).substr($name, -1) : $name;
+            $maskedName = strlen($name) > 2
+                ? substr($name, 0, 1).'******'.substr($name, -1)
+                : (strlen($name) === 2 ? substr($name, 0, 1).'*' : $name);
             $masked = $maskedName.'@'.$domain;
         } elseif (strlen($rawIdentifier) >= 6) {
-            $masked = substr($rawIdentifier, 0, 3).str_repeat('*', max(1, strlen($rawIdentifier) - 6)).substr($rawIdentifier, -3);
+            $masked = substr($rawIdentifier, 0, 3).'****'.substr($rawIdentifier, -3);
         }
 
         return response()->json([

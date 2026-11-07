@@ -360,3 +360,24 @@ test('biometric login fails when user has no biometric token configured', functi
     $response->assertStatus(401);
     $this->assertGuest();
 });
+
+test('check-identifier returns compact masked email with fixed asterisks avoiding layout overflow', function () {
+    $user = User::create([
+        'name' => 'User With Very Long Email Address',
+        'email' => 'user_very_long_email_account_name@gmail.com',
+        'phone' => '08099881122',
+        'login_pin_hash' => '1234',
+        'login_pin_enabled' => true,
+        'store_id' => $this->store->id,
+    ]);
+
+    $response = $this->postJson('http://demo.localhost/login/check-identifier', [
+        'identifier' => 'user_very_long_email_account_name@gmail.com',
+    ]);
+
+    $response->assertOk();
+    $data = $response->json();
+
+    // Must be compact u******e@gmail.com and NOT 30+ asterisks
+    expect($data['masked_identifier'])->toBe('u******e@gmail.com');
+});
