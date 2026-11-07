@@ -2,7 +2,6 @@
 
 use App\Filament\Merchant\Pages\Auth\EditProfile;
 use App\Filament\Merchant\Pages\Auth\Register;
-use App\Filament\Merchant\Pages\OnboardingPlan;
 use App\Filament\Merchant\Pages\RegisterStore;
 use App\Models\Owner;
 use App\Models\Plan;
@@ -168,19 +167,14 @@ test('store registration rejects invalid or numeric subdomains and requires star
     'too short' => 'ab',
 ]);
 
-test('owner can view onboarding plan selection page and continue with starter plan', function () {
+test('store creation automatically activates starter plan and redirects straight to dashboard', function () {
     $owner = Owner::create([
-        'name' => 'Merchant Owner',
-        'email' => 'owner3@example.com',
+        'name' => 'Fast Onboarding Owner',
+        'email' => 'fast_onboarding@example.com',
         'password' => bcrypt('password'),
     ]);
 
-    $store = Store::create([
-        'name' => 'Test Store',
-        'owner_id' => $owner->id,
-    ]);
-
-    Plan::create([
+    $starterPlan = Plan::create([
         'name' => 'Starter',
         'slug' => 'starter',
         'description' => 'Starter plan',
@@ -190,47 +184,21 @@ test('owner can view onboarding plan selection page and continue with starter pl
         'is_active' => true,
     ]);
 
-    Plan::create([
-        'name' => 'Pro',
-        'slug' => 'pro',
-        'description' => 'Pro plan',
-        'price_monthly' => 5000.00,
-        'price_yearly' => 50000.00,
-        'trial_days' => 0,
-        'is_active' => true,
-    ]);
-
     Filament::setCurrentPanel(Filament::getPanel('merchant'));
     $this->actingAs($owner, 'owner');
-    Filament::setTenant($store);
 
-    Livewire::test(OnboardingPlan::class)
-        ->assertSuccessful()
-        ->assertSee('Starter')
-        ->assertSee('Pro')
-        ->call('continueStarter')
-        ->assertRedirect(route('filament.merchant.pages.dashboard', ['tenant' => $store->public_id]));
-});
+    Livewire::test(RegisterStore::class)
+        ->fillForm([
+            'name' => 'Direct Dashboard Store',
+            'subdomain' => 'directdash',
+        ])
+        ->call('register')
+        ->assertHasNoFormErrors();
 
-test('merchant can trigger enterprise inquiry via whatsapp', function () {
-    $owner = Owner::create([
-        'name' => 'Enterprise Buyer',
-        'email' => 'buyer@example.com',
-        'password' => bcrypt('password'),
-    ]);
-
-    $store = Store::create([
-        'name' => 'Apex Mega Hub',
-        'owner_id' => $owner->id,
-    ]);
-
-    Filament::setCurrentPanel(Filament::getPanel('merchant'));
-    $this->actingAs($owner, 'owner');
-    Filament::setTenant($store);
-
-    Livewire::test(OnboardingPlan::class)
-        ->call('contactEnterprise')
-        ->assertNotified();
+    $store = Store::where('name', 'Direct Dashboard Store')->first();
+    expect($store)->not->toBeNull();
+    expect($store->activeSubscription)->not->toBeNull();
+    expect($store->activeSubscription->plan_id)->toBe($starterPlan->id);
 });
 
 test('owner can create multiple stores up to their max_stores limit and each gets starter plan', function () {

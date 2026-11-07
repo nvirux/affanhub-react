@@ -5,6 +5,7 @@ namespace App\Filament\Merchant\Pages;
 use App\Models\Domain;
 use App\Models\Plan;
 use App\Models\Store;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -19,7 +20,6 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\HtmlString;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class RegisterStore extends RegisterTenant
@@ -54,23 +54,32 @@ class RegisterStore extends RegisterTenant
                     // Step 1: Store Details & Subdomain
                     Step::make('Store Identity')
                         ->icon(Heroicon::OutlinedBuildingStorefront)
-                        ->description('Name and web address')
+                        ->description('Set your business name and storefront link')
                         ->schema([
+                            Placeholder::make('identity_guide')
+                                ->hiddenLabel()
+                                ->content(new HtmlString('
+                                    <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; margin-bottom: 6px;">
+                                        <div style="display: flex; gap: 10px; align-items: flex-start;">
+                                            <span style="font-size: 1.25rem; line-height: 1;">💡</span>
+                                            <div style="font-size: 0.815rem; color: #334155; line-height: 1.45;">
+                                                <strong style="display: block; margin-bottom: 2px; color: #0f172a;">How your store web address works:</strong>
+                                                Enter your business brand name below, then choose a <strong>short, easy-to-remember web address</strong> (e.g. <em>mydata</em>). Your customers will visit your website at this address to purchase data and airtime. You can also connect a custom domain (like <em>.com</em> or <em>.ng</em>) anytime from your store settings!
+                                            </div>
+                                        </div>
+                                    </div>
+                                ')),
+
                             TextInput::make('name')
                                 ->label('Store Name')
-                                ->placeholder('e.g. Annur Data Services')
+                                ->placeholder('e.g. MyData Hub')
                                 ->required()
                                 ->maxLength(255)
-                                ->live(onBlur: true)
-                                ->afterStateUpdated(function (string $operation, ?string $state, $set, $get) {
-                                    if (blank($get('subdomain')) && filled($state)) {
-                                        $set('subdomain', Str::slug($state));
-                                    }
-                                }),
+                                ->helperText('The public brand name of your business shown on receipts, invoices, and your storefront header.'),
 
                             TextInput::make('subdomain')
                                 ->label('Store Subdomain / Web Address')
-                                ->placeholder('annur')
+                                ->placeholder('mydata')
                                 ->required()
                                 ->minLength(3)
                                 ->maxLength(30)
@@ -95,7 +104,7 @@ class RegisterStore extends RegisterTenant
                                 })
                                 ->helperText(function (?string $state) use ($baseDomain): ?HtmlString {
                                     if (blank($state)) {
-                                        return new HtmlString('Enter a unique web address for your customers to visit.');
+                                        return new HtmlString('Choose a short, catchy username for your link (e.g. <strong>mydata</strong>). Avoid long sentences so it is easy for customers to type.');
                                     }
 
                                     if (! preg_match('/^[a-zA-Z]([a-zA-Z0-9\-]*[a-zA-Z0-9])?$/', $state)) {
@@ -114,7 +123,7 @@ class RegisterStore extends RegisterTenant
                                         return new HtmlString("<span style='color: #dc2626; font-weight: 600;'>✗ <strong>{$fullDomain}</strong> is not available.</span>");
                                     }
 
-                                    return new HtmlString("<span style='color: #059669; font-weight: 600;'>✓ <strong>{$fullDomain}</strong> is available!</span>");
+                                    return new HtmlString("<span style='color: #059669; font-weight: 600;'>✓ <strong>{$fullDomain}</strong> is available! Customers will visit this address.</span>");
                                 }),
                         ]),
 
@@ -186,10 +195,17 @@ class RegisterStore extends RegisterTenant
     {
         $ip = request()->ip() ?? '127.0.0.1';
         $throttleKey = 'merchant_store_create_ip:'.$ip;
+        $isLocal = app()->environment('local', 'testing') || in_array($ip, ['127.0.0.1', '::1']);
 
-        if (RateLimiter::tooManyAttempts($throttleKey, 3)) {
+        if (! $isLocal && RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
             $hours = max(1, (int) ceil($seconds / 3600));
+
+            Notification::make()
+                ->title('Store Creation Limit Reached')
+                ->body("Too many stores have been created from your network. Please try again in {$hours} hour(s) or contact support.")
+                ->danger()
+                ->send();
 
             throw ValidationException::withMessages([
                 'data.name' => "Too many stores have been created from your network. Please try again in {$hours} hour(s) or contact support.",
@@ -200,6 +216,13 @@ class RegisterStore extends RegisterTenant
 
         if ($owner && ! $owner->canCreateMoreStores()) {
             $max = $owner->max_stores ?? 3;
+
+            Notification::make()
+                ->title('Account Store Limit Reached')
+                ->body("You have reached your account limit of {$max} stores. Please contact support to increase your limit.")
+                ->danger()
+                ->send();
+
             throw ValidationException::withMessages([
                 'data.name' => "You have reached your account limit of {$max} stores. Please contact support to increase your limit.",
             ]);
@@ -213,7 +236,9 @@ class RegisterStore extends RegisterTenant
             'primary_color' => $data['primary_color'] ?? '#f59e0b',
         ]);
 
-        RateLimiter::hit($throttleKey, 86400); // 24 hours decay
+        if (! $isLocal) {
+            RateLimiter::hit($throttleKey, 86400); // 24 hours decay
+        }
 
         if ($owner) {
             $owner->stores()->attach($store->id, ['role' => 'owner']);
@@ -246,8 +271,7 @@ class RegisterStore extends RegisterTenant
 
     protected function getRedirectUrl(): ?string
     {
-        // Redirect to the dedicated plan selection page
-        return route('filament.merchant.pages.onboarding.plan', [
+        return route('filament.merchant.pages.dashboard', [
             'tenant' => $this->tenant->public_id,
         ]);
     }

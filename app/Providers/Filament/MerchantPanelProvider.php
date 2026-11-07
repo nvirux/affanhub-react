@@ -38,7 +38,7 @@ class MerchantPanelProvider extends PanelProvider
             ->path('')
             ->login()
             ->passwordReset()
-            ->profile(EditProfile::class)
+            ->profile(EditProfile::class, isSimple: false)
             ->multiFactorAuthentication([
                 AppAuthentication::make()
                     ->brandName('AffanHub Merchant')
