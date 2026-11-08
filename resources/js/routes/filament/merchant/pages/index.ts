@@ -1,5 +1,4 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
-import onboarding from './onboarding'
 /**
 * @see \App\Filament\Merchant\Pages\Billing::__invoke
  * @see app/Filament/Merchant/Pages/Billing.php:7
@@ -1128,7 +1127,6 @@ dashboard: Object.assign(dashboard, dashboard),
 domains: Object.assign(domains, domains),
 helpFaq: Object.assign(helpFaq, helpFaq),
 mobileAppManager: Object.assign(mobileAppManager, mobileAppManager),
-onboarding: Object.assign(onboarding, onboarding),
 pushNotifications: Object.assign(pushNotifications, pushNotifications),
 referralProgram: Object.assign(referralProgram, referralProgram),
 activityLogs: Object.assign(activityLogs, activityLogs),

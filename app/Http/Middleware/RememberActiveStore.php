@@ -21,6 +21,22 @@ class RememberActiveStore
             $user->recordActiveStore($tenant->getKey());
         }
 
+        // If accessing a non-tenant-scoped route (like /profile) in standard layout mode,
+        // resolve and bind the active tenant so the topbar and navigation render without null tenant errors.
+        if (! $tenant && $user) {
+            $activeStore = null;
+
+            if (! empty($user->last_active_store_id)) {
+                $activeStore = $user->stores()->where('stores.id', $user->last_active_store_id)->first();
+            }
+
+            $activeStore ??= $user->stores()->first();
+
+            if ($activeStore) {
+                Filament::setTenant($activeStore);
+            }
+        }
+
         return $next($request);
     }
 }

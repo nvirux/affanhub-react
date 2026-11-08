@@ -3,12 +3,23 @@
 namespace App\Filament\Merchant\Pages\Auth;
 
 use Filament\Auth\Pages\EditProfile as BaseEditProfile;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
 
 class EditProfile extends BaseEditProfile
 {
+    public function getLayout(): string
+    {
+        if (Filament::getTenant() instanceof Model) {
+            return 'filament-panels::components.layout.index';
+        }
+
+        return 'filament-panels::components.layout.simple';
+    }
+
     protected function getEmailFormComponent(): Component
     {
         return TextInput::make('email')

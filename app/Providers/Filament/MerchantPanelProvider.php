@@ -119,6 +119,7 @@ class MerchantPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 EnsureMerchantHasPhone::class,
+                RememberActiveStore::class,
             ]);
     }
 }
