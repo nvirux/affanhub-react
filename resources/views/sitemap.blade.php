@@ -35,4 +35,23 @@
         <priority>0.8</priority>
     </url>
     @endforeach
+
+    {{-- Active Merchant Stores --}}
+    @if (! empty($stores))
+        @foreach ($stores as $store)
+            @php
+                $storeUrl = $store->getStoreUrl();
+            @endphp
+            @if ($storeUrl)
+            <url>
+                <loc>{{ $storeUrl }}</loc>
+                @if ($store->updated_at)
+                <lastmod>{{ $store->updated_at->toAtomString() }}</lastmod>
+                @endif
+                <changefreq>daily</changefreq>
+                <priority>0.8</priority>
+            </url>
+            @endif
+        @endforeach
+    @endif
 </urlset>

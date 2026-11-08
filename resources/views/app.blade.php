@@ -63,29 +63,56 @@
                 $metaUrl = url('/blog/' . ($post['slug'] ?? ''));
                 $metaType = 'article';
             } else {
-                $metaTitle = tenant() ? tenant('name') : config('app.name', 'AffanHub');
-                $metaDescription = tenant()
-                    ? (tenant('tagline') ?? 'Fast & Reliable Telecom Services')
-                    : 'All-in-one automated VTU & digital telecom reselling platform. Sell airtime, data, cable TV, and electricity with instant delivery.';
+                $storeName = tenant() ? (tenant('name') ?: 'Store') : config('app.name', 'AffanHub');
 
-                $metaImage = null;
-                if (tenant() && tenant('logo_path')) {
-                    $metaImage = \Illuminate\Support\Facades\Storage::url(tenant('logo_path'));
-                    if (!str_starts_with($metaImage, 'http')) {
-                        $metaImage = url($metaImage);
+                if (tenant()) {
+                    $subtitle = tenant('dashboard_subtitle') ?: tenant('tagline');
+                    $metaTitle = $storeName . ($subtitle ? ' — ' . $subtitle : ' — Cheap Data, Airtime & VTU in Nigeria');
+
+                    $storeDesc = tenant('description');
+                    $metaDescription = !empty($storeDesc)
+                        ? $storeDesc
+                        : 'Buy cheap MTN, Airtel, Glo & 9mobile data bundles, airtime top-ups, cable TV subscriptions, and electricity bills with instant delivery on ' . $storeName . '.';
+
+                    // Canonical URL: always points to the authoritative primary custom domain or primary store URL
+                    $storeBaseUrl = rtrim(tenant()->getStoreUrl(), '/');
+                    $path = request()->getPathInfo();
+                    $metaUrl = $storeBaseUrl . ($path === '/' ? '' : $path);
+                    if (empty($metaUrl)) {
+                        $metaUrl = $storeBaseUrl;
+                    }
+
+                    $metaImage = null;
+                    if (tenant('logo_path')) {
+                        $metaImage = \Illuminate\Support\Facades\Storage::url(tenant('logo_path'));
+                        if (!str_starts_with($metaImage, 'http')) {
+                            $metaImage = url($metaImage);
+                        }
+                    } else {
+                        $metaImage = url('/affan-icon.png');
                     }
                 } else {
+                    $metaTitle = config('app.name', 'AffanHub') . ' — Automated Telecom & VTU Reselling Platform';
+                    $metaDescription = 'All-in-one automated VTU & digital telecom reselling platform. Sell airtime, data, cable TV, and electricity with instant delivery.';
                     $metaImage = url('/affan-icon.png');
+                    $metaUrl = request()->url();
                 }
 
-                $metaUrl = request()->url();
                 $metaType = 'website';
             }
         @endphp
 
         {{-- Server-Rendered SEO & Social Meta Tags (Read immediately by WhatsApp, Facebook, Googlebot, Twitter) --}}
+        <meta name="robots" content="index, follow">
         <meta name="description" content="{{ $metaDescription }}">
         <link rel="canonical" href="{{ $metaUrl }}">
+
+        {{-- Google Search Console Verification Tag --}}
+        @if(tenant() && tenant('google_site_verification'))
+            <meta name="google-site-verification" content="{{ tenant('google_site_verification') }}">
+        @elseif(!tenant() && config('services.google.site_verification'))
+            <meta name="google-site-verification" content="{{ config('services.google.site_verification') }}">
+        @endif
 
         <!-- Open Graph / WhatsApp / Facebook -->
         <meta property="og:type" content="{{ $metaType }}">

@@ -89,6 +89,9 @@ class StoreSettings extends Page
 
     public ?string $whatsappChatMessage = '';
 
+    // Search Engine Optimization (Google Search Console)
+    public ?string $googleSiteVerification = '';
+
     // Resend Email Integration
     public ?string $resendApiKey = '';
 
@@ -120,6 +123,7 @@ class StoreSettings extends Page
         $this->whatsappChatEnabled = (bool) ($store->whatsapp_chat_enabled ?? false);
         $this->whatsappChatPhone = $store->whatsapp_chat_phone ?? '';
         $this->whatsappChatMessage = $store->whatsapp_chat_message ?? '';
+        $this->googleSiteVerification = $store->google_site_verification ?? '';
 
         $this->resendApiKey = $store->resend_api_key ?? '';
         $this->resendFromEmail = $store->resend_from_email ?? '';
@@ -234,6 +238,7 @@ class StoreSettings extends Page
             'logo' => 'nullable|file|mimes:jpeg,jpg,png,webp,svg|max:5120', // max 5MB
             'whatsappChatPhone' => 'nullable|string|max:30',
             'whatsappChatMessage' => 'nullable|string|max:200',
+            'googleSiteVerification' => 'nullable|string|max:255',
         ]);
 
         if (! ColorHelper::isValidHex($this->primaryColor)) {
@@ -291,6 +296,7 @@ class StoreSettings extends Page
             'whatsapp_chat_enabled' => (bool) ($store->whatsapp_chat_enabled ?? false),
             'whatsapp_chat_phone' => $store->whatsapp_chat_phone,
             'whatsapp_chat_message' => $store->whatsapp_chat_message,
+            'google_site_verification' => $store->google_site_verification,
             'resend_from_email' => $store->resend_from_email,
             'resend_from_name' => $store->resend_from_name,
         ];
@@ -342,6 +348,18 @@ class StoreSettings extends Page
         $store->whatsapp_chat_message = $this->whatsappChatMessage;
         $this->whatsappChatEnabled = $store->whatsapp_chat_enabled;
 
+        // Sanitize and save Google Site Verification code
+        $sanitizedVerification = $this->googleSiteVerification ? trim($this->googleSiteVerification) : null;
+        if ($sanitizedVerification) {
+            if (preg_match('/content=["\']([^"\']+)["\']/i', $sanitizedVerification, $matches)) {
+                $sanitizedVerification = $matches[1];
+            } elseif (str_starts_with($sanitizedVerification, 'google-site-verification=')) {
+                $sanitizedVerification = substr($sanitizedVerification, strlen('google-site-verification='));
+            }
+        }
+        $store->google_site_verification = $sanitizedVerification;
+        $this->googleSiteVerification = $sanitizedVerification;
+
         // Resend email settings
         $store->resend_api_key = $this->resendApiKey ?: null;
         $store->resend_from_email = $this->resendFromEmail ?: null;
@@ -366,6 +384,7 @@ class StoreSettings extends Page
             'whatsapp_chat_enabled' => (bool) ($store->whatsapp_chat_enabled ?? false),
             'whatsapp_chat_phone' => $store->whatsapp_chat_phone,
             'whatsapp_chat_message' => $store->whatsapp_chat_message,
+            'google_site_verification' => $store->google_site_verification,
             'tawk_chat_enabled' => (bool) ($store->tawk_chat_enabled ?? false),
             'tawk_property_id' => $store->tawk_property_id,
             'tawk_widget_id' => $store->tawk_widget_id,

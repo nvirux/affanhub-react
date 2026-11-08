@@ -10,8 +10,12 @@ use App\Http\Controllers\Merchant\CloudflareDomainConnectController;
 use App\Http\Controllers\Merchant\StaffInvitationController;
 use App\Http\Controllers\MobileAppDownloadController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Middleware\CheckTenantAccess;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Pipeline;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 
 // Canonical 301 Redirect from www to main domain
 $appHost = parse_url(config('app.url'), PHP_URL_HOST);
@@ -66,6 +70,28 @@ Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // XML Sitemap for Search Engines
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+// Robots.txt for Search Engines
+Route::get('/robots.txt', function (Request $request) {
+    $host = $request->getHost();
+    if (in_array($host, config('tenancy.central_domains', []))) {
+        return response("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /merchant\nDisallow: /api\nDisallow: /billing/callback/\nDisallow: /impersonate/\n\nSitemap: ".url('/sitemap.xml')."\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+    }
+
+    return app(Pipeline::class)
+        ->send($request)
+        ->through([
+            InitializeTenancyByDomain::class,
+            CheckTenantAccess::class,
+        ])
+        ->then(function () {
+            $store = tenant();
+            $sitemapUrl = $store ? rtrim($store->getStoreUrl(), '/').'/sitemap.xml' : url('/sitemap.xml');
+            $content = "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /merchant\nDisallow: /api\nDisallow: /dashboard\nDisallow: /user/\n\nSitemap: {$sitemapUrl}\n";
+
+            return response($content, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+        });
+})->name('robots');
 
 // Central Domain Policy Routes (Parameterized domain avoids duplicate route names during route:cache)
 $centralDomains = config('tenancy.central_domains', []);

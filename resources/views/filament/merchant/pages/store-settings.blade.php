@@ -360,6 +360,52 @@
                             <span style="font-size: 0.75rem; color: #9ca3af;">Displayed as a tagline below the greeting on your customers' mobile dashboard (max 40 characters).</span>
                             @error('dashboardSubtitle') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
                         </div>
+
+                        {{-- Search Engine Optimization & Google Search Console --}}
+                        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
+                            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="font-size: 1.125rem;">🔍</span>
+                                        <label style="font-size: 0.9375rem; font-weight: 800; color: #0f172a; margin: 0;">Google Search Console & SEO</label>
+                                    </div>
+                                    <p style="font-size: 0.8125rem; color: #64748b; margin-top: 0.25rem; margin-bottom: 0;">
+                                        Verify store ownership on Google to appear in Google Search and track your search performance.
+                                    </p>
+                                </div>
+                                <a 
+                                    href="https://search.google.com/search-console" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    style="display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; font-weight: 700; color: #2563eb; background: #ffffff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.5rem 0.875rem; text-decoration: none; transition: all 0.15s ease;"
+                                >
+                                    Open Google Search Console ↗
+                                </a>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+                                <label style="font-size: 0.875rem; font-weight: 700; color: #374151;">Google Site Verification Code / Tag</label>
+                                <input 
+                                    type="text" 
+                                    wire:model="googleSiteVerification" 
+                                    placeholder="e.g. google-site-verification=abc123xyz or paste entire <meta> tag" 
+                                    class="settings-input"
+                                />
+                                <span style="font-size: 0.75rem; color: #64748b;">
+                                    Paste your verification code from Google Search Console (HTML tag method). We will automatically extract the code and embed the meta verification tag into your website's header.
+                                </span>
+                                @error('googleSiteVerification') <span style="font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.875rem; font-size: 0.75rem; color: #475569; line-height: 1.5;">
+                                <strong style="color: #0f172a; display: block; margin-bottom: 0.375rem;">💡 How to verify your website on Google in 3 steps:</strong>
+                                <ol style="margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                                    <li>Go to <strong>Google Search Console</strong> and select <strong>URL prefix</strong> with your store address (e.g. <code>{{ $displayDomain ? 'https://' . $displayDomain : 'https://yourdomain.com' }}</code>).</li>
+                                    <li>Choose the <strong>HTML tag</strong> verification method and copy the meta code.</li>
+                                    <li>Paste it in the box above, click <strong>Save Settings</strong> below, then click <strong>Verify</strong> in Google Search Console!</li>
+                                </ol>
+                            </div>
+                        </div>
                     </div>
                 </div>
             @endif

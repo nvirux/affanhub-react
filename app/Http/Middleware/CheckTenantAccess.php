@@ -2,13 +2,13 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Domain;
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class CheckTenantAccess
 {
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next): mixed
     {
         $tenant = tenant();
 
@@ -31,8 +31,28 @@ class CheckTenantAccess
             $currentHost = $request->getHost();
             $baseDomain = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
 
-            // Check if host is not a subdomain of the base domain
+            // Auto-redirect www. to non-www for custom domains
+            if (str_starts_with($currentHost, 'www.') && ! in_array($currentHost, config('tenancy.central_domains', []))) {
+                $nonWwwHost = substr($currentHost, 4);
+                if ($tenant->domains()->where('domain', $nonWwwHost)->exists()) {
+                    $scheme = ($request->isSecure() || ! app()->environment('local', 'testing')) ? 'https' : 'http';
+                    $port = $request->getPort();
+                    $portSuffix = ($port && ! in_array((int) $port, [80, 443]) && ! str_contains($nonWwwHost, ':')) ? ":{$port}" : '';
+
+                    return redirect()->away("{$scheme}://{$nonWwwHost}{$portSuffix}".$request->getRequestUri(), 301);
+                }
+            }
+
+            // Check if host is a platform subdomain
             $isSubdomain = str_ends_with($currentHost, '.'.$baseDomain) || $currentHost === $baseDomain;
+            if (! $isSubdomain) {
+                foreach (Domain::platformDomainPatterns() as $pattern) {
+                    if (str_ends_with($currentHost, '.'.$pattern)) {
+                        $isSubdomain = true;
+                        break;
+                    }
+                }
+            }
 
             if (! $isSubdomain) {
                 // Check if this custom domain is an active verified domain registered to this store
@@ -48,6 +68,29 @@ class CheckTenantAccess
                     $targetUrl = rtrim($tenant->getStoreUrl(), '/').$request->getRequestUri();
 
                     return redirect($targetUrl);
+                }
+            } else {
+                // 3. Automated Subdomain -> Custom Domain 301 SEO Redirect:
+                // When a merchant activates a healthy primary custom domain (e.g. adeoladata.com),
+                // permanently 301-redirect visitors hitting their platform subdomain (adeola.affanhub.com)
+                // so search engines transfer 100% of backlinks, indexing, and SEO authority to the custom domain.
+                if ($request->isMethodSafe()) {
+                    $primaryDomain = $tenant->getPrimaryDomain();
+
+                    if ($primaryDomain && $primaryDomain !== $currentHost) {
+                        $customDomain = $tenant->domains()
+                            ->where('domain', $primaryDomain)
+                            ->first();
+
+                        if ($customDomain && $customDomain->isCustom() && $customDomain->isHealthy()) {
+                            $scheme = ($request->isSecure() || ! app()->environment('local', 'testing')) ? 'https' : 'http';
+                            $port = $request->getPort();
+                            $portSuffix = ($port && ! in_array((int) $port, [80, 443]) && ! str_contains($primaryDomain, ':')) ? ":{$port}" : '';
+                            $targetUrl = "{$scheme}://{$primaryDomain}{$portSuffix}".$request->getRequestUri();
+
+                            return redirect()->away($targetUrl, 301);
+                        }
+                    }
                 }
             }
         }

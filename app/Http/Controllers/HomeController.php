@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\CheckTenantAccess;
 use App\Models\Domain;
 use App\Models\Faq;
 use App\Models\Plan;
@@ -44,7 +45,10 @@ class HomeController extends Controller
 
         return app(Pipeline::class)
             ->send($request)
-            ->through([InitializeTenancyByDomain::class])
+            ->through([
+                InitializeTenancyByDomain::class,
+                CheckTenantAccess::class,
+            ])
             ->then(fn () => app(StorefrontController::class)->index($request));
     }
 }
