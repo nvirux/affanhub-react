@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\Store;
 use App\Notifications\Channels\TenantMailChannel;
 use App\Services\Mail\TenantMailService;
+use Filament\Facades\Filament;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -92,9 +93,18 @@ class TenantResetPasswordNotification extends ResetPassword
 
     protected function resetUrl($notifiable)
     {
+        $store = $this->getStore($notifiable);
+        $email = $notifiable->getEmailForPasswordReset();
+
+        if ($store) {
+            $storeUrl = rtrim($store->getStoreUrl(), '/');
+
+            return "{$storeUrl}/reset-password/{$this->token}?email=".urlencode($email);
+        }
+
         return route('password.reset', [
             'token' => $this->token,
-            'email' => $notifiable->getEmailForPasswordReset(),
+            'email' => $email,
         ]);
     }
 
@@ -110,6 +120,10 @@ class TenantResetPasswordNotification extends ResetPassword
 
         if (function_exists('tenant') && tenant() instanceof Store) {
             return tenant();
+        }
+
+        if (class_exists(Filament::class) && Filament::getTenant() instanceof Store) {
+            return Filament::getTenant();
         }
 
         return null;

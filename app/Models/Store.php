@@ -214,18 +214,36 @@ class Store extends BaseTenant implements TenantWithDatabase
         $verifiedPrimary = $this->domains()
             ->where('is_primary', true)
             ->get()
-            ->first(fn ($d) => ! $d->isCustom() || $d->isHealthy());
+            ->first(fn ($d) => $d->isCustom() && $d->isHealthy());
 
         if ($verifiedPrimary) {
             return $verifiedPrimary->domain;
         }
 
-        // 2. Fallback to any healthy domain or tenant subdomain
-        $anyHealthy = $this->domains()
+        // 2. Fallback to any healthy custom domain
+        $anyHealthyCustom = $this->domains()
             ->get()
-            ->first(fn ($d) => ! $d->isCustom() || $d->isHealthy());
+            ->first(fn ($d) => $d->isCustom() && $d->isHealthy());
 
-        return $anyHealthy?->domain;
+        if ($anyHealthyCustom) {
+            return $anyHealthyCustom->domain;
+        }
+
+        // 3. Fallback to primary platform subdomain or any subdomain
+        $primarySubdomain = $this->domains()
+            ->where('is_primary', true)
+            ->get()
+            ->first(fn ($d) => ! $d->isCustom());
+
+        if ($primarySubdomain) {
+            return $primarySubdomain->domain;
+        }
+
+        $anySubdomain = $this->domains()
+            ->get()
+            ->first(fn ($d) => ! $d->isCustom());
+
+        return $anySubdomain?->domain;
     }
 
     public function getStoreUrl(): string
@@ -237,13 +255,22 @@ class Store extends BaseTenant implements TenantWithDatabase
             $domain = $this->public_id.'.'.$baseDomain;
         }
 
-        $isCustom = ! str_contains($domain, 'localhost') && ! str_contains($domain, 'affanhub.com');
+        $isCustom = true;
+        foreach (Domain::platformDomainPatterns() as $pattern) {
+            if (str_ends_with($domain, '.'.$pattern) || $domain === $pattern) {
+                $isCustom = false;
+                break;
+            }
+        }
+
         $port = request()->getPort();
         if (! $isCustom && $port && ! in_array((int) $port, [80, 443]) && ! str_contains($domain, ':')) {
             $domain .= ":{$port}";
         }
 
-        $scheme = request()->getScheme() ?: (app()->environment('local') ? 'http' : 'https');
+        $scheme = app()->environment('local', 'testing')
+            ? (request()->getScheme() ?: 'http')
+            : 'https';
 
         return "{$scheme}://{$domain}";
     }

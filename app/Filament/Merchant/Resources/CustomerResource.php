@@ -524,11 +524,18 @@ class CustomerResource extends Resource
 
                             if ($actionType === 'send_password_reset') {
                                 try {
+                                    if ($store) {
+                                        $record->setRelation('store', $store);
+                                    }
+
                                     $token = Password::broker()->createToken($record);
                                     $record->sendPasswordResetNotification($token);
 
+                                    $storeUrl = $store ? rtrim($store->getStoreUrl(), '/') : '';
+
                                     Notification::make()
                                         ->title("Password reset email sent to {$record->email}")
+                                        ->body($storeUrl ? "The customer will reset their password directly on your storefront ({$storeUrl})." : null)
                                         ->success()
                                         ->send();
                                 } catch (\Throwable $e) {

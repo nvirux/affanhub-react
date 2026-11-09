@@ -6,7 +6,9 @@ use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
 use App\Models\User;
 use App\Rules\NotDisposableEmail;
+use App\Services\Notification\MerchantNotificationService;
 use App\Services\ReferralService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -102,6 +104,12 @@ class CreateNewUser implements CreatesNewUsers
         $refCode = $input['ref'] ?? $input['referral_code'] ?? request('ref') ?? request('referral_code');
         if (! empty($refCode)) {
             app(ReferralService::class)->recordRegistration($user, (string) $refCode);
+        }
+
+        try {
+            app(MerchantNotificationService::class)->notifyNewCustomer($user);
+        } catch (\Throwable $e) {
+            Log::warning('Merchant new customer notification error: '.$e->getMessage());
         }
 
         return $user;

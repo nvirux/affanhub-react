@@ -5,6 +5,7 @@ namespace App\Filament\Merchant\Pages;
 use App\Models\ActivityLog;
 use App\Models\SettlementAccount;
 use App\Models\Withdrawal;
+use App\Services\Notification\AdminNotificationService;
 use App\Services\Payment\PayMintService;
 use App\Services\WalletService;
 use BackedEnum;
@@ -262,7 +263,7 @@ class StoreWallet extends Page
             );
 
             // 2. Create Withdrawal Record
-            Withdrawal::create([
+            $withdrawal = Withdrawal::create([
                 'store_id' => $store->id,
                 'amount' => $amount,
                 'fee' => $fee,
@@ -273,6 +274,8 @@ class StoreWallet extends Page
                 'status' => 'pending',
                 'reference' => $reference,
             ]);
+
+            app(AdminNotificationService::class)->notifyWithdrawalRequested($withdrawal);
 
             // 3. Log Activity
             ActivityLog::create([
@@ -351,7 +354,7 @@ class StoreWallet extends Page
             return;
         }
 
-        SettlementAccount::updateOrCreate(
+        $settlement = SettlementAccount::updateOrCreate(
             ['store_id' => $store->id],
             [
                 'bank_name' => $this->settlementBankName,
@@ -361,6 +364,8 @@ class StoreWallet extends Page
                 'is_active' => true,
             ]
         );
+
+        app(AdminNotificationService::class)->notifySettlementAccountSubmitted($settlement);
 
         ActivityLog::create([
             'tenant_id' => $store->id,

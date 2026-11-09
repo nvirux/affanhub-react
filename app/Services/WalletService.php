@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
+use App\Services\Notification\MerchantNotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -53,6 +54,13 @@ class WalletService
                 app(ReferralService::class)->checkAndReward($wallet->holder, 'deposit', $amount);
             } catch (\Throwable $e) {
                 Log::warning('Referral deposit check error: '.$e->getMessage());
+            }
+
+            try {
+                app(MerchantNotificationService::class)
+                    ->notifyCustomerWalletFunded($wallet->holder, $amount, $tx->reference, $description);
+            } catch (\Throwable $e) {
+                Log::warning('Merchant wallet funded notification error: '.$e->getMessage());
             }
         }
 

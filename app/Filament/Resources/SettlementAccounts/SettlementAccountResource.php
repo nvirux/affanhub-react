@@ -7,7 +7,9 @@ use App\Models\ActivityLog;
 use App\Models\SettlementAccount;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
@@ -15,6 +17,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
@@ -104,6 +107,53 @@ class SettlementAccountResource extends Resource
                     ]),
             ])
             ->recordActions([
+                ViewAction::make()
+                    ->label('View Bank Info')
+                    ->form([
+                        TextInput::make('store.name')
+                            ->label('Store Name')
+                            ->disabled(),
+                        TextInput::make('store.owner.name')
+                            ->label('Merchant / Owner')
+                            ->disabled(),
+                        TextInput::make('store.owner.email')
+                            ->label('Merchant Email')
+                            ->disabled(),
+                        TextInput::make('store.owner.phone')
+                            ->label('Merchant Phone')
+                            ->placeholder('No phone provided')
+                            ->disabled(),
+                        TextInput::make('bank_name')
+                            ->label('Bank Name')
+                            ->disabled(),
+                        TextInput::make('account_number')
+                            ->label('NUBAN Account Number')
+                            ->disabled(),
+                        TextInput::make('account_name')
+                            ->label('Account Holder Name')
+                            ->disabled(),
+                        TextInput::make('status')
+                            ->label('Approval Status')
+                            ->formatStateUsing(fn ($state) => match ($state) {
+                                'approved' => 'Approved (Active for Payouts)',
+                                'rejected' => 'Rejected',
+                                default => 'Pending Super Admin Verification',
+                            })
+                            ->disabled(),
+                        TextInput::make('created_at')
+                            ->label('Submitted At')
+                            ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('M d, Y - h:i A') : '-')
+                            ->disabled(),
+                        TextInput::make('updated_at')
+                            ->label('Last Updated')
+                            ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('M d, Y - h:i A') : '-')
+                            ->disabled(),
+                        Textarea::make('admin_notes')
+                            ->label('Admin Rejection Notes / Comments')
+                            ->placeholder('No notes')
+                            ->columnSpanFull()
+                            ->disabled(),
+                    ]),
                 Action::make('approve_account')
                     ->label('Approve Bank Details')
                     ->icon('heroicon-o-check-circle')

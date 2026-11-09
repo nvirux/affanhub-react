@@ -5,6 +5,7 @@ namespace App\Services\Domain;
 use App\Models\Domain;
 use App\Models\Store;
 use App\Services\Cloudflare\CloudflareSaaSService;
+use App\Services\Notification\MerchantNotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -250,6 +251,14 @@ class CustomDomainOnboardingService
             $domain->update($updates);
             $domain->update(['is_routing_enabled' => true]);
         });
+
+        if ($domain->store) {
+            try {
+                app(MerchantNotificationService::class)->notifyDomainVerified($domain->store, $domain);
+            } catch (\Throwable $e) {
+                Log::warning('Merchant domain verified notification error: '.$e->getMessage());
+            }
+        }
     }
 
     public function checkConnection(Domain $domain): void

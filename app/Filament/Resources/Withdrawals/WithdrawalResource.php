@@ -8,13 +8,16 @@ use App\Models\Withdrawal;
 use App\Services\WalletService;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
@@ -50,8 +53,14 @@ class WithdrawalResource extends Resource
             ->columns([
                 TextColumn::make('created_at')
                     ->label('Requested At')
-                    ->dateTime()
+                    ->dateTime('M j, Y h:i A')
                     ->sortable(),
+                TextColumn::make('reference')
+                    ->label('Ref Code')
+                    ->searchable()
+                    ->copyable()
+                    ->badge()
+                    ->color('gray'),
                 TextColumn::make('store.name')
                     ->label('Store')
                     ->badge()
@@ -62,9 +71,21 @@ class WithdrawalResource extends Resource
                     ->label('Merchant')
                     ->searchable(),
                 TextColumn::make('amount')
-                    ->label('Amount (₦)')
+                    ->label('Gross (₦)')
                     ->money('NGN')
                     ->sortable()
+                    ->weight('medium'),
+                TextColumn::make('fee')
+                    ->label('Fee (₦)')
+                    ->money('NGN')
+                    ->color('warning')
+                    ->sortable(),
+                TextColumn::make('net_amount')
+                    ->label('Net Payable (₦)')
+                    ->money('NGN')
+                    ->sortable()
+                    ->badge()
+                    ->color('success')
                     ->weight('bold'),
                 TextColumn::make('bank_name')
                     ->label('Bank Name')
@@ -95,6 +116,64 @@ class WithdrawalResource extends Resource
                     ]),
             ])
             ->recordActions([
+                ViewAction::make()
+                    ->label('View Details')
+                    ->form([
+                        TextInput::make('reference')
+                            ->label('Payout Reference')
+                            ->disabled(),
+                        TextInput::make('status')
+                            ->label('Status')
+                            ->formatStateUsing(fn ($state) => strtoupper((string) $state))
+                            ->disabled(),
+                        TextInput::make('store.name')
+                            ->label('Store Name')
+                            ->disabled(),
+                        TextInput::make('store.owner.name')
+                            ->label('Merchant / Owner')
+                            ->disabled(),
+                        TextInput::make('store.owner.email')
+                            ->label('Merchant Email')
+                            ->disabled(),
+                        TextInput::make('store.owner.phone')
+                            ->label('Merchant Phone')
+                            ->placeholder('No phone provided')
+                            ->disabled(),
+                        TextInput::make('amount')
+                            ->label('Gross Requested Amount (₦)')
+                            ->formatStateUsing(fn ($state) => '₦'.number_format((float) $state, 2))
+                            ->disabled(),
+                        TextInput::make('fee')
+                            ->label('Payout Processing Fee (₦)')
+                            ->formatStateUsing(fn ($state) => '₦'.number_format((float) $state, 2))
+                            ->disabled(),
+                        TextInput::make('net_amount')
+                            ->label('Net Amount to Transfer (₦)')
+                            ->formatStateUsing(fn ($state, Withdrawal $record) => '₦'.number_format((float) ($state ?? max(0, (float) $record->amount - (float) ($record->fee ?? 0))), 2))
+                            ->disabled(),
+                        TextInput::make('bank_name')
+                            ->label('Beneficiary Bank')
+                            ->disabled(),
+                        TextInput::make('account_number')
+                            ->label('Beneficiary Account Number')
+                            ->disabled(),
+                        TextInput::make('account_name')
+                            ->label('Beneficiary Account Name')
+                            ->disabled(),
+                        TextInput::make('created_at')
+                            ->label('Requested At')
+                            ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('M d, Y - h:i A') : '-')
+                            ->disabled(),
+                        TextInput::make('updated_at')
+                            ->label('Last Updated')
+                            ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('M d, Y - h:i A') : '-')
+                            ->disabled(),
+                        Textarea::make('admin_notes')
+                            ->label('Admin Notes / Rejection Reason')
+                            ->placeholder('No notes')
+                            ->columnSpanFull()
+                            ->disabled(),
+                    ]),
                 Action::make('approve_payout')
                     ->label('Approve & Mark Paid')
                     ->icon('heroicon-o-check-circle')

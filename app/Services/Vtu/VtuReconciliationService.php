@@ -4,6 +4,7 @@ namespace App\Services\Vtu;
 
 use App\Models\Transaction;
 use App\Models\WalletTransaction;
+use App\Services\Notification\MerchantNotificationService;
 use App\Services\WalletService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -237,6 +238,14 @@ class VtuReconciliationService
                 'status' => 'failed',
                 'api_response' => $existingApiResponse,
             ]);
+
+            if ($transaction->store) {
+                try {
+                    app(MerchantNotificationService::class)->notifyTransactionFailed($transaction->store, $transaction, $reason);
+                } catch (\Throwable $e) {
+                    Log::warning('Merchant failed transaction notification error: '.$e->getMessage());
+                }
+            }
 
             return [
                 'success' => true,

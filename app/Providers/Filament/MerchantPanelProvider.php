@@ -56,6 +56,8 @@ class MerchantPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->discoverResources(in: app_path('Filament/Merchant/Resources'), for: 'App\Filament\Merchant\Resources')
             ->discoverPages(in: app_path('Filament/Merchant/Pages'), for: 'App\Filament\Merchant\Pages')
             ->navigationGroups([
