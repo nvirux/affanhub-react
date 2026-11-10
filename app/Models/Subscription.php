@@ -18,6 +18,11 @@ class Subscription extends Model
         'starts_at',
         'ends_at',
         'trial_ends_at',
+        'grace_ends_at',
+        'reminder_3days_sent_at',
+        'reminder_1day_sent_at',
+        'grace_notified_at',
+        'downgraded_at',
     ];
 
     protected $casts = [
@@ -25,6 +30,11 @@ class Subscription extends Model
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
         'trial_ends_at' => 'datetime',
+        'grace_ends_at' => 'datetime',
+        'reminder_3days_sent_at' => 'datetime',
+        'reminder_1day_sent_at' => 'datetime',
+        'grace_notified_at' => 'datetime',
+        'downgraded_at' => 'datetime',
     ];
 
     public function store(): BelongsTo
@@ -38,7 +48,7 @@ class Subscription extends Model
     }
 
     /**
-     * Check if the subscription is currently active or in valid trial mode.
+     * Check if the subscription is currently active, trialing, or in valid grace period.
      */
     public function isActive(): bool
     {
@@ -46,10 +56,66 @@ class Subscription extends Model
             return false;
         }
 
+        if ($this->status === 'past_due') {
+            return $this->grace_ends_at ? $this->grace_ends_at->isFuture() : false;
+        }
+
         if ($this->status === 'trialing') {
             return $this->trial_ends_at && $this->trial_ends_at->isFuture();
         }
 
         return $this->ends_at ? $this->ends_at->isFuture() : true;
+    }
+
+    /**
+     * Check if this is a free default plan (e.g. Starter).
+     */
+    public function isFree(): bool
+    {
+        return (float) $this->price <= 0 || ($this->plan && $this->plan->slug === 'starter');
+    }
+
+    /**
+     * Check if the subscription is currently within its 3-day grace period.
+     */
+    public function isInGracePeriod(): bool
+    {
+        return $this->status === 'past_due' && $this->grace_ends_at && $this->grace_ends_at->isFuture();
+    }
+
+    /**
+     * Check if the subscription will expire within the given number of days.
+     */
+    public function isExpiringSoon(int $days = 3): bool
+    {
+        if ($this->isFree() || $this->status !== 'active' || ! $this->ends_at || ! $this->ends_at->isFuture()) {
+            return false;
+        }
+
+        return $this->ends_at->diffInDays(now()) <= $days;
+    }
+
+    /**
+     * Remaining days until subscription ends.
+     */
+    public function daysUntilExpiration(): int
+    {
+        if (! $this->ends_at || ! $this->ends_at->isFuture()) {
+            return 0;
+        }
+
+        return (int) ceil(now()->diffInSeconds($this->ends_at) / 86400);
+    }
+
+    /**
+     * Remaining days in grace period.
+     */
+    public function daysUntilGraceEnd(): int
+    {
+        if (! $this->grace_ends_at || ! $this->grace_ends_at->isFuture()) {
+            return 0;
+        }
+
+        return (int) ceil(now()->diffInSeconds($this->grace_ends_at) / 86400);
     }
 }

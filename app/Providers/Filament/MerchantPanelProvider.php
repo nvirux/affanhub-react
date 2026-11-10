@@ -79,12 +79,20 @@ class MerchantPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->renderHook(
-                PanelsRenderHook::USER_MENU_BEFORE,
+                PanelsRenderHook::BODY_START,
                 fn () => view('filament.merchant.components.impersonation-banner')
             )
             ->renderHook(
+                PanelsRenderHook::BODY_START,
+                fn () => view('filament.merchant.components.two-factor-banner')
+            )
+            ->renderHook(
+                PanelsRenderHook::PAGE_START,
+                fn () => view('filament.merchant.components.subscription-banner')
+            )
+            ->renderHook(
                 PanelsRenderHook::USER_MENU_BEFORE,
-                fn () => view('filament.merchant.components.header-store-switcher')
+                fn () => view('filament.merchant.components.header-support-menu')
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
@@ -97,10 +105,6 @@ class MerchantPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn () => view('filament.merchant.components.meta-pixel')
-            )
-            ->renderHook(
-                PanelsRenderHook::BODY_END,
-                fn () => view('filament.merchant.components.chatwoot-chat')
             )
             ->discoverWidgets(in: app_path('Filament/Merchant/Widgets'), for: 'App\Filament\Merchant\Widgets')
             ->widgets([

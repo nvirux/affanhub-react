@@ -40,6 +40,11 @@ class Owner extends Authenticatable implements FilamentUser, HasAppAuthenticatio
         'password' => 'hashed',
     ];
 
+    public function hasAppAuthentication(): bool
+    {
+        return filled($this->getAppAuthenticationSecret());
+    }
+
     protected static function booted(): void
     {
         static::creating(function (Owner $owner) {

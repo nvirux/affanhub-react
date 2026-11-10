@@ -24,7 +24,8 @@ trait HasEntitlements
         return $this->hasOne(Subscription::class, 'store_id')
             ->where(function ($query) {
                 $query->where('status', 'active')
-                    ->orWhere('status', 'trialing');
+                    ->orWhere('status', 'trialing')
+                    ->orWhere('status', 'past_due');
             })
             ->latestOfMany();
     }
