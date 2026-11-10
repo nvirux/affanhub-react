@@ -196,7 +196,17 @@ test('subscription warning banner renders when subscription is expiring soon or 
     $this->actingAs($this->owner, 'owner');
     Filament::setTenant($this->store);
 
-    // 1. Expiring soon banner
+    // 0. Far from expiration (52 days) - should NOT show
+    $subscription->update(['ends_at' => now()->addDays(52)]);
+    $this->store->refresh();
+    $this->store->unsetRelation('activeSubscription');
+    $htmlFar = view('filament.merchant.components.subscription-banner')->render();
+    expect($htmlFar)->toBeEmpty();
+
+    // 1. Expiring soon banner (2 days) - SHOULD show
+    $subscription->update(['ends_at' => now()->addDays(2)]);
+    $this->store->refresh();
+    $this->store->unsetRelation('activeSubscription');
     $html = view('filament.merchant.components.subscription-banner')->render();
     expect($html)
         ->toContain('Pro Plan Expires in')

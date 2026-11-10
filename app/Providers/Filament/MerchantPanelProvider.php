@@ -84,11 +84,11 @@ class MerchantPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::BODY_START,
-                fn () => view('filament.merchant.components.two-factor-banner')
+                fn () => view('filament.merchant.components.subscription-banner')
             )
             ->renderHook(
-                PanelsRenderHook::PAGE_START,
-                fn () => view('filament.merchant.components.subscription-banner')
+                PanelsRenderHook::BODY_START,
+                fn () => view('filament.merchant.components.two-factor-banner')
             )
             ->renderHook(
                 PanelsRenderHook::USER_MENU_BEFORE,

@@ -45,7 +45,7 @@
             {{-- 2. WhatsApp Community Group --}}
             <x-filament::dropdown.list.item
                 tag="a"
-                href="https://chat.whatsapp.com/L12iIqD89F82T04aD02yXN"
+                href="https://chat.whatsapp.com/BRaczSTbj3fG5CmG3qttf1"
                 target="_blank"
                 rel="noopener noreferrer"
                 icon="heroicon-o-user-group"

@@ -1,8 +1,11 @@
 @php
     $user = auth()->guard('owner')->user() ?? filament()->auth()->user() ?? auth()->user();
+    $tenant = filament()->getTenant();
+    $activeSub = $tenant?->subscription;
+    $hasUrgentSubAlert = $activeSub && ($activeSub->isInGracePeriod() || $activeSub->isExpiringSoon(3));
 @endphp
 
-@if(! session()->has('impersonated_by_admin') && $user && method_exists($user, 'hasAppAuthentication') && ! $user->hasAppAuthentication())
+@if(! session()->has('impersonated_by_admin') && ! $hasUrgentSubAlert && $user && method_exists($user, 'hasAppAuthentication') && ! $user->hasAppAuthentication())
     @php
         $tenant = filament()->getTenant();
         $profileUrl = $tenant ? route('filament.merchant.auth.profile', ['tenant' => $tenant->public_id]) : (filament()->hasProfile() ? filament()->getProfileUrl() : '#');

@@ -3,15 +3,17 @@
         $tenant = \Filament\Facades\Filament::getTenant();
         $activeSub = $tenant?->activeSubscription;
         $currentPlan = $activeSub ? $activeSub->plan : \App\Models\Plan::where('slug', 'starter')->first();
-        // Custom Plan Order: Pro first, then Enterprise, then Starter
-        $plans = \App\Models\Plan::all()->sortBy(function($plan) {
-            return match($plan->slug) {
-                'pro' => 1,
-                'enterprise' => 2,
-                'starter' => 3,
-                default => 4
-            };
-        });
+        // Upgradeable plans: Pro first, then Enterprise (Starter is free default tier shown in Current Plan header above)
+        $plans = \App\Models\Plan::where('slug', '!=', 'starter')
+            ->where('is_active', true)
+            ->get()
+            ->sortBy(function($plan) {
+                return match($plan->slug) {
+                    'pro' => 1,
+                    'enterprise' => 2,
+                    default => 3
+                };
+            });
     @endphp
 
     <div style="font-family: inherit; display: flex; flex-direction: column; gap: 2rem;">
@@ -183,8 +185,12 @@
                 @endphp
                 <div style="background-color: white; border: 1px solid {{ $isCurrent ? '#f59e0b' : 'rgba(0, 0, 0, 0.08)' }}; border-radius: 16px; padding: 2rem; box-shadow: {{ $isCurrent ? '0 10px 25px -5px rgba(245, 158, 11, 0.15)' : '0 4px 12px rgba(0, 0, 0, 0.03)' }}; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: all 0.3s;">
                     @if($isCurrent)
-                        <span style="position: absolute; top: -12px; right: 24px; background-color: #f59e0b; color: white; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">
+                        <span style="position: absolute; top: -12px; right: 24px; background-color: #10b981; color: white; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">
                             Active Plan
+                        </span>
+                    @elseif($plan->slug === 'pro')
+                        <span style="position: absolute; top: -12px; right: 24px; background-color: #f59e0b; color: white; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">
+                            Most Popular
                         </span>
                     @endif
 

@@ -36,7 +36,7 @@ test('header support menu component renders all support channels correctly', fun
         ->toContain('https://wa.me/2347011507950')
         ->toContain('07011507950')
         ->toContain('WhatsApp Community Group')
-        ->toContain('https://chat.whatsapp.com/L12iIqD89F82T04aD02yXN')
+        ->toContain('https://chat.whatsapp.com/BRaczSTbj3fG5CmG3qttf1')
         ->toContain('Help & FAQs')
         ->toContain('help-faq')
         ->toContain('Guides & Tutorials')

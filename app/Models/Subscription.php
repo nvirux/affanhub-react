@@ -92,7 +92,9 @@ class Subscription extends Model
             return false;
         }
 
-        return $this->ends_at->diffInDays(now()) <= $days;
+        $remainingDays = $this->daysUntilExpiration();
+
+        return $remainingDays > 0 && $remainingDays <= $days;
     }
 
     /**

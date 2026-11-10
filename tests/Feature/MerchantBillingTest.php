@@ -246,3 +246,32 @@ test('enterprise or non-self-serve plan cannot be self-activated or subscribed d
 
     expect($this->store->subscriptions()->where('plan_id', $enterprisePlan->id)->where('status', 'active')->count())->toBe(0);
 });
+
+test('starter plan is excluded from the upgradeable plans grid', function () {
+    Plan::create([
+        'name' => 'Starter',
+        'slug' => 'starter',
+        'description' => 'Basic features to launch your store.',
+        'price_monthly' => 0.00,
+        'price_yearly' => 0.00,
+        'trial_days' => 0,
+        'is_self_serve' => true,
+        'is_active' => true,
+    ]);
+
+    Plan::create([
+        'name' => 'Pro',
+        'slug' => 'pro',
+        'description' => 'Advanced features to scale your brand.',
+        'price_monthly' => 5000.00,
+        'price_yearly' => 50000.00,
+        'trial_days' => 0,
+        'is_self_serve' => true,
+        'is_active' => true,
+    ]);
+
+    Livewire::test(Billing::class)
+        ->assertSee('Upgrade to Pro')
+        ->assertDontSee('Upgrade to Starter')
+        ->assertDontSee('Basic features to launch your store.');
+});
