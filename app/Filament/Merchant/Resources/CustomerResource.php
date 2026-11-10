@@ -13,7 +13,6 @@ use App\Services\WalletService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
@@ -31,6 +30,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -109,7 +109,8 @@ class CustomerResource extends Resource
                         ->revealable()
                         ->maxLength(11),
                 ])
-                ->columns(2),
+                ->columns(2)
+                ->visible(false),
 
             Section::make('Security & Access')
                 ->description('Manage credentials and login state')
@@ -332,6 +333,8 @@ class CustomerResource extends Resource
                         ->label('Send Direct Email')
                         ->icon('heroicon-o-envelope')
                         ->color('info')
+                        ->disabled()
+                        ->tooltip('Direct email outreach is temporarily disabled.')
                         ->modalHeading(fn (User $record): string => "Email {$record->name}")
                         ->modalSubmitActionLabel('Send Email Now')
                         ->form([
@@ -609,8 +612,6 @@ class CustomerResource extends Resource
                                     ->send();
                             }
                         }),
-
-                    DeleteAction::make(),
                 ])
                     ->label('More Actions')
                     ->icon('heroicon-m-ellipsis-vertical')
@@ -635,5 +636,15 @@ class CustomerResource extends Resource
             'create' => CreateCustomer::route('/create'),
             'edit' => EditCustomer::route('/{record}/edit'),
         ];
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return false;
     }
 }

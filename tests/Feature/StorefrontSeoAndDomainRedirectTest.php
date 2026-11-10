@@ -140,3 +140,29 @@ test('merchant can save google search console verification tag in store settings
     $this->store->refresh();
     expect($this->store->google_site_verification)->toBe('google-verified-token-999');
 });
+
+test('visiting /admin on storefront redirects to merchant panel on both subdomains and custom domains', function () {
+    // 1. Subdomain
+    $this->get('http://adeola.localhost/admin')
+        ->assertRedirect(route('filament.merchant.tenant'));
+
+    $this->get('http://adeola.localhost/admin/login')
+        ->assertRedirect(route('filament.merchant.tenant'));
+
+    // 2. Custom Domain
+    Domain::create([
+        'tenant_id' => $this->store->id,
+        'domain' => 'mycustomstore.com',
+        'is_primary' => true,
+        'is_verified' => true,
+        'is_routing_enabled' => true,
+        'status' => 'verified',
+        'verification_status' => Domain::VERIFY_ACTIVE,
+    ]);
+
+    $this->get('http://mycustomstore.com/admin')
+        ->assertRedirect(route('filament.merchant.tenant'));
+
+    $this->get('http://mycustomstore.com/admin/login')
+        ->assertRedirect(route('filament.merchant.tenant'));
+});

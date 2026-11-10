@@ -49,26 +49,27 @@ beforeEach(function () {
 test('onboarding checklist widget renders on merchant dashboard', function () {
     Livewire::test(OnboardingChecklistWidget::class)
         ->assertSuccessful()
-        ->assertSee('Get Your Store Ready for Business')
-        ->assertSee('Create your digital storefront')
+        ->assertSee('Get Your Website Ready for Business')
         ->assertSee('Set your selling prices & profit margins')
-        ->assertSee('Fund your vending wallet');
+        ->assertSee('Personalize your website & WhatsApp support')
+        ->assertSee('Add your bank settlement account')
+        ->assertSee('Join our Merchant WhatsApp Community')
+        ->assertSee('Get your first customer');
 });
 
 test('onboarding checklist computes step completion dynamically', function () {
     $widget = Livewire::test(OnboardingChecklistWidget::class);
     $data = $widget->instance()->getStepsData();
 
-    // Initial state: Step 1 is done, others pending
-    expect($data['completedCount'])->toBeGreaterThanOrEqual(1);
-    expect($data['progress'])->toBeGreaterThan(0);
+    // Initial state: 5 steps
+    expect($data['totalCount'])->toBe(5);
 
-    // Now fund the store wallet
-    $this->store->mainWallet()->update(['balance' => 15000.00]);
+    // Now customize store branding
+    $this->store->update(['whatsapp_chat_phone' => '07011507950']);
 
     $updatedData = $widget->instance()->getStepsData();
-    $walletStep = collect($updatedData['steps'])->firstWhere('id', 'fund_wallet');
-    expect($walletStep['completed'])->toBeTrue();
+    $brandingStep = collect($updatedData['steps'])->firstWhere('id', 'customize_branding');
+    expect($brandingStep['completed'])->toBeTrue();
 });
 
 test('merchant can dismiss the onboarding checklist', function () {
@@ -84,6 +85,18 @@ test('merchant can dismiss the onboarding checklist', function () {
 
     // canView should now return false
     expect(OnboardingChecklistWidget::canView())->toBeFalse();
+});
+
+test('merchant can mark community joined and step completes', function () {
+    $widget = Livewire::test(OnboardingChecklistWidget::class)
+        ->call('markCommunityJoined');
+
+    $this->store->refresh();
+    expect($this->store->joined_whatsapp_community)->toBeTrue();
+
+    $data = $widget->instance()->getStepsData();
+    $communityStep = collect($data['steps'])->firstWhere('id', 'join_community');
+    expect($communityStep['completed'])->toBeTrue();
 });
 
 test('merchant can copy storefront link and receives notification', function () {

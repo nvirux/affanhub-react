@@ -11,4 +11,9 @@ class WhatsAppChannelWidget extends Widget
     protected string $view = 'filament.merchant.widgets.whatsapp-channel';
 
     protected int|string|array $columnSpan = 'full';
+
+    public static function canView(): bool
+    {
+        return false;
+    }
 }

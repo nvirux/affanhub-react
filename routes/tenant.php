@@ -116,6 +116,11 @@ Route::middleware([
     Route::get('/app/download', [MobileAppDownloadController::class, 'downloadStorefront'])
         ->name('store.mobile-app.download');
 
+    // Merchant Admin Redirect (e.g. store.affanhub.com/admin -> merchant.affanhub.com)
+    Route::get('/admin/{any?}', function () {
+        return redirect()->away(route('filament.merchant.tenant'));
+    })->where('any', '.*')->name('store.admin');
+
     // Customer Settings
     require __DIR__.'/settings.php';
 });

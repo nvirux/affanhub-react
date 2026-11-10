@@ -1,14 +1,14 @@
 <?php
 
+use App\Filament\Merchant\Resources\CustomerResource;
+use App\Filament\Merchant\Resources\CustomerResource\Pages\EditCustomer;
 use App\Filament\Merchant\Resources\CustomerResource\Pages\ListCustomers;
-use App\Mail\CustomerDirectMessageMail;
 use App\Models\Owner;
 use App\Models\Store;
 use App\Models\User;
 use App\Models\VirtualAccount;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Mail;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
@@ -151,9 +151,7 @@ test('merchant can ban and reactivate customer', function () {
     expect($user->fresh()->isActive())->toBeTrue();
 });
 
-test('merchant can send direct email to customer', function () {
-    Mail::fake();
-
+test('direct email action is disabled for merchants', function () {
     $user = User::create([
         'name' => 'Email Customer',
         'email' => 'customer@example.com',
@@ -164,13 +162,40 @@ test('merchant can send direct email to customer', function () {
     ]);
 
     Livewire::test(ListCustomers::class)
-        ->callTableAction('send_email', $user, [
-            'subject' => 'Weekend Promotion',
-            'body' => 'Enjoy 10% bonus data this weekend on our store!',
-        ])
-        ->assertHasNoTableActionErrors();
+        ->assertTableActionDisabled('send_email', $user);
+});
 
-    Mail::assertSent(CustomerDirectMessageMail::class, function ($mail) use ($user) {
-        return $mail->hasTo($user->email) && $mail->customSubject === 'Weekend Promotion';
-    });
+test('customer deletion is completely disabled to protect financial audit trails and wallets', function () {
+    $user = User::create([
+        'name' => 'Protected Customer',
+        'email' => 'protected@example.com',
+        'phone' => '08012345678',
+        'password' => bcrypt('password'),
+        'store_id' => $this->store->id,
+        'is_active' => true,
+    ]);
+
+    expect(CustomerResource::canDelete($user))->toBeFalse()
+        ->and(CustomerResource::canDeleteAny())->toBeFalse();
+
+    Livewire::test(ListCustomers::class)
+        ->assertTableActionDoesNotExist('delete');
+});
+
+test('kyc and regulatory identification fields are hidden in customer edit and view', function () {
+    $user = User::create([
+        'name' => 'KYC Customer',
+        'email' => 'kyc@example.com',
+        'phone' => '08088889999',
+        'bvn' => '12345678901',
+        'nin' => '98765432109',
+        'password' => bcrypt('password'),
+        'store_id' => $this->store->id,
+        'is_active' => true,
+    ]);
+
+    Livewire::test(EditCustomer::class, ['record' => $user->getRouteKey()])
+        ->assertFormFieldDoesNotExist('bvn')
+        ->assertFormFieldDoesNotExist('nin')
+        ->assertActionDoesNotExist('delete');
 });
