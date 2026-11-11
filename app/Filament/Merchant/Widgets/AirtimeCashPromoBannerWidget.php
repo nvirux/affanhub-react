@@ -14,17 +14,18 @@ class AirtimeCashPromoBannerWidget extends Widget
 
     public static function canView(): bool
     {
-        $store = Filament::getTenant();
-        $service = Service::where('key', 'airtime_cash')->first();
+        return false;
+        // $store = Filament::getTenant();
+        // $service = Service::where('key', 'airtime_cash')->first();
 
-        if (! $service || ! $store) {
-            return false;
-        }
+        // if (! $service || ! $store) {
+        //     return false;
+        // }
 
-        $isInPromo = $service->isInPromo();
-        $isTrial = $service->trial_days && $store->created_at && $store->created_at->addDays($service->trial_days)->isFuture();
+        // $isInPromo = $service->isInPromo();
+        // $isTrial = $service->trial_days && $store->created_at && $store->created_at->addDays($service->trial_days)->isFuture();
 
-        return $isInPromo || $isTrial;
+        // return $isInPromo || $isTrial;
     }
 
     public function getBannerData(): ?array
