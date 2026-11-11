@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class StoreModificationService extends Model
 {
@@ -32,6 +34,43 @@ class StoreModificationService extends Model
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (StoreModificationService $service) {
+            if (empty($service->store_id) && class_exists(Filament::class) && Filament::getTenant()) {
+                $service->store_id = Filament::getTenant()->id;
+            }
+
+            if (empty($service->slug) && filled($service->name)) {
+                $baseSlug = Str::slug($service->name, '_');
+                if (empty($baseSlug)) {
+                    $baseSlug = 'custom_service';
+                }
+
+                $prefix = '';
+                if ($service->service_id) {
+                    $serviceKey = $service->service?->key ?? Service::where('id', $service->service_id)->value('key');
+                    if ($serviceKey === 'nin_modification' && ! str_starts_with($baseSlug, 'nin_')) {
+                        $prefix = 'nin_';
+                    } elseif ($serviceKey === 'bvn_modification' && ! str_starts_with($baseSlug, 'bvn_')) {
+                        $prefix = 'bvn_';
+                    }
+                }
+
+                $slugCandidate = $prefix.$baseSlug;
+                $slug = $slugCandidate;
+                $counter = 1;
+
+                while (static::where('store_id', $service->store_id)->where('slug', $slug)->exists()) {
+                    $slug = $slugCandidate.'_'.$counter;
+                    $counter++;
+                }
+
+                $service->slug = $slug;
+            }
+        });
+    }
 
     public function store(): BelongsTo
     {

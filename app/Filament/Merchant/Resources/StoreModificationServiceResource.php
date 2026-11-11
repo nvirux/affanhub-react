@@ -45,6 +45,8 @@ class StoreModificationServiceResource extends Resource
 
     protected static ?string $tenantRelationshipName = 'modificationServices';
 
+    protected static ?string $tenantOwnershipRelationshipName = 'store';
+
     protected static ?int $navigationSort = 5;
 
     public static function getNavigationBadge(): ?string

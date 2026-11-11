@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices;
 use App\Models\ModificationRequest;
 use App\Models\Owner;
 use App\Models\Service;
@@ -7,10 +8,12 @@ use App\Models\Store;
 use App\Models\StoreModificationService;
 use App\Models\User;
 use App\Services\WalletService;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
@@ -244,4 +247,63 @@ test('modification upload rejects disguised HTML file and saves valid documents 
 
     // Must be rejected because mime is text/html
     $response->assertStatus(422);
+});
+
+test('store modification service automatically generates unique slug from name if slug is not provided', function () {
+    $ninService = Service::where('key', 'nin_modification')->first();
+
+    $created = StoreModificationService::create([
+        'store_id' => $this->store->id,
+        'service_id' => $ninService->id,
+        'name' => 'Change of State and LGA',
+        'price' => 5000,
+        'processing_time' => '24 - 48 Hours',
+        'is_active' => true,
+    ]);
+
+    expect($created->slug)->toBe('nin_change_of_state_and_lga');
+
+    // Duplicate name should generate unique counter
+    $duplicate = StoreModificationService::create([
+        'store_id' => $this->store->id,
+        'service_id' => $ninService->id,
+        'name' => 'Change of State and LGA',
+        'price' => 5000,
+        'processing_time' => '24 - 48 Hours',
+        'is_active' => true,
+    ]);
+
+    expect($duplicate->slug)->toBe('nin_change_of_state_and_lga_1');
+});
+
+test('merchant can create custom modification service without providing slug in filament', function () {
+    Filament::setCurrentPanel(Filament::getPanel('merchant'));
+    $this->actingAs($this->owner, 'owner');
+    Filament::setTenant($this->store);
+
+    $ninService = Service::where('key', 'nin_modification')->first();
+
+    Livewire::test(ListStoreModificationServices::class)
+        ->callAction('create', [
+            'service_id' => $ninService->id,
+            'name' => 'Custom Name Correction',
+            'price' => 2500,
+            'processing_time' => '24 - 48 Hours',
+            'is_active' => true,
+            'fields' => [
+                ['label' => 'New Name', 'type' => 'text', 'is_required' => true],
+            ],
+            'required_documents' => [
+                ['name' => 'Court Affidavit', 'is_required' => true],
+            ],
+        ])
+        ->assertHasNoActionErrors();
+
+    $service = StoreModificationService::where('store_id', $this->store->id)
+        ->where('name', 'Custom Name Correction')
+        ->first();
+
+    expect($service)->not->toBeNull()
+        ->and($service->slug)->toBe('nin_custom_name_correction')
+        ->and((float) $service->price)->toBe(2500.00);
 });
