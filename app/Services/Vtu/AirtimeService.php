@@ -302,16 +302,16 @@ class AirtimeService
         }
 
         // 8. Auto-Refund on API Delivery Failure
-        $errorMessage = $apiResult['message'] ?? 'Provider airtime delivery failed.';
-        Log::warning("VTULab Delivery Failed for {$txReference}: {$errorMessage}. Initiating Auto-Refund...");
+        $rawErrorMessage = $apiResult['message'] ?? 'Provider airtime delivery failed.';
+        Log::warning("VTULab Delivery Failed for {$txReference}: {$rawErrorMessage}. Initiating Auto-Refund...");
 
         try {
             // Refund Customer Wallet
             $this->walletService->refund(
                 $customerWallet,
                 $customerRetailPrice,
-                "Auto-Refund: Airtime recharge failed ({$errorMessage})",
-                ['failed_reference' => $txReference, 'reason' => $errorMessage],
+                'Auto-Refund: Airtime recharge could not be completed',
+                ['failed_reference' => $txReference, 'reason' => $rawErrorMessage],
                 'REF_'.$txReference
             );
 

@@ -236,16 +236,16 @@ class DataService
         }
 
         // 6. Handle Delivery Failure (Instant Auto-Refund Engine)
-        $errorMessage = $apiResult['message'] ?? 'Provider data delivery failed.';
-        Log::warning("VTULab Delivery Failed for {$txReference}: {$errorMessage}. Initiating Auto-Refund...");
+        $rawErrorMessage = $apiResult['message'] ?? 'Provider data delivery failed.';
+        Log::warning("VTULab Delivery Failed for {$txReference}: {$rawErrorMessage}. Initiating Auto-Refund...");
 
         try {
             // Auto-Refund Customer Wallet
             $this->walletService->refund(
                 $customerWallet,
                 $customerRetailPrice,
-                "Auto-Refund: Data purchase failed ({$errorMessage})",
-                ['failed_reference' => $txReference, 'reason' => $errorMessage],
+                'Auto-Refund: Data purchase could not be completed',
+                ['failed_reference' => $txReference, 'reason' => $rawErrorMessage],
                 'REF_'.$txReference
             );
 
@@ -283,7 +283,7 @@ class DataService
             return [
                 'success' => false,
                 'status' => 'failed',
-                'message' => "Data delivery failed: {$errorMessage}. Your wallet has been automatically refunded.",
+                'message' => 'Data delivery could not be completed at this time. Your wallet has been automatically refunded.',
                 'reference' => $txReference,
                 'refunded' => true,
             ];

@@ -83,7 +83,7 @@ class VtuLabService
                 'pending' => false,
                 'status' => 'failed',
                 'code' => $apiCode,
-                'message' => $resData['message'] ?? ($resData['errors'][0] ?? 'VTULab data purchase failed.'),
+                'message' => static::sanitizeErrorMessage($resData['message'] ?? ($resData['errors'][0] ?? null), 'Data purchase could not be completed at this time.'),
                 'reference' => $reference,
                 'raw' => $resData,
             ];
@@ -118,7 +118,7 @@ class VtuLabService
                 'success' => false,
                 'pending' => false,
                 'status' => 'failed',
-                'message' => 'Connection timeout or gateway error: '.$e->getMessage(),
+                'message' => 'Unable to connect to network provider. Please try again shortly.',
                 'reference' => $reference,
                 'raw' => [],
             ];
@@ -205,7 +205,7 @@ class VtuLabService
                 'pending' => false,
                 'status' => 'failed',
                 'code' => $apiCode,
-                'message' => $resData['message'] ?? ($resData['errors'][0] ?? 'VTULab airtime purchase failed.'),
+                'message' => static::sanitizeErrorMessage($resData['message'] ?? ($resData['errors'][0] ?? null), 'Airtime recharge could not be completed at this time.'),
                 'reference' => $reference,
                 'raw' => $resData,
             ];
@@ -240,7 +240,7 @@ class VtuLabService
                 'success' => false,
                 'pending' => false,
                 'status' => 'failed',
-                'message' => 'Connection timeout or gateway error: '.$e->getMessage(),
+                'message' => 'Unable to connect to network provider. Please try again shortly.',
                 'reference' => $reference,
                 'raw' => [],
             ];
@@ -374,5 +374,31 @@ class VtuLabService
                 'data' => [],
             ];
         }
+    }
+
+    /**
+     * Sanitize provider error messages so technical/credential details are never leaked to customers.
+     */
+    public static function sanitizeErrorMessage(?string $message, string $defaultMessage = 'Service is temporarily unavailable. Please try again shortly.'): string
+    {
+        if (empty($message)) {
+            return $defaultMessage;
+        }
+
+        $lower = strtolower($message);
+        $sensitiveKeywords = [
+            'credential', 'api key', 'gateway', 'unauthorized', 'forbidden',
+            'curl', 'bearer', 'database', 'sql', 'exception', 'server error',
+            'token', 'upstream', 'endpoint', 'balance', 'wallet', 'connection',
+            'timeout', 'host', 'http', '500', '401', '403', '404', 'vtulab',
+        ];
+
+        foreach ($sensitiveKeywords as $keyword) {
+            if (str_contains($lower, $keyword)) {
+                return $defaultMessage;
+            }
+        }
+
+        return $message;
     }
 }

@@ -123,7 +123,7 @@ class IdCoreService
             }
 
             $errorData = $response->json() ?? [];
-            $message = $errorData['message'] ?? 'Unable to retrieve verification slip from IDCore.';
+            $message = static::sanitizeErrorMessage($errorData['message'] ?? 'Unable to retrieve verification slip.');
 
             return [
                 'success' => false,
@@ -138,7 +138,7 @@ class IdCoreService
 
             return [
                 'success' => false,
-                'message' => 'Connection to IDCore slip service timed out.',
+                'message' => 'Unable to retrieve verification slip at this time. Please try again shortly.',
                 'status_code' => 500,
             ];
         }
@@ -166,7 +166,7 @@ class IdCoreService
 
             return [
                 'success' => false,
-                'message' => $response->json('message') ?? 'Verification not found.',
+                'message' => static::sanitizeErrorMessage($response->json('message') ?? 'Verification not found.'),
                 'status_code' => $response->status(),
             ];
         } catch (Throwable $e) {
@@ -177,7 +177,7 @@ class IdCoreService
 
             return [
                 'success' => false,
-                'message' => 'Failed to reach IDCore service.',
+                'message' => 'Unable to query verification service at this time. Please try again shortly.',
                 'status_code' => 500,
             ];
         }
@@ -231,14 +231,16 @@ class IdCoreService
                 ];
             }
 
-            // Extract human-friendly error message
-            $errorMessage = $resData['message'] ?? 'Identity verification lookup failed with the upstream provider.';
+            // Extract sanitized human-friendly error message
+            $rawError = $resData['message'] ?? 'Identity verification service is currently unavailable.';
             if (isset($resData['errors']) && is_array($resData['errors'])) {
                 $flattened = collect($resData['errors'])->flatten()->first();
                 if ($flattened) {
-                    $errorMessage = $flattened;
+                    $rawError = $flattened;
                 }
             }
+
+            $errorMessage = static::sanitizeErrorMessage($rawError);
 
             return [
                 'success' => false,
@@ -254,10 +256,36 @@ class IdCoreService
 
             return [
                 'success' => false,
-                'message' => 'Unable to connect to the identity verification provider. Please try again shortly.',
+                'message' => 'Unable to connect to the identity verification service. Please try again shortly.',
                 'status_code' => 500,
             ];
         }
+    }
+
+    /**
+     * Sanitize provider error messages so technical/credential details are never leaked to customers.
+     */
+    public static function sanitizeErrorMessage(?string $message): string
+    {
+        if (empty($message)) {
+            return 'Identity verification is currently unavailable. Please try again shortly.';
+        }
+
+        $lower = strtolower($message);
+        $sensitiveKeywords = [
+            'credential', 'api key', 'gateway', 'unauthorized', 'forbidden',
+            'curl', 'bearer', 'database', 'sql', 'exception', 'server error',
+            'token', 'upstream', 'endpoint', 'balance', 'wallet', 'connection',
+            'timeout', 'host', 'http', '500', '401', '403', '404', 'idcore',
+        ];
+
+        foreach ($sensitiveKeywords as $keyword) {
+            if (str_contains($lower, $keyword)) {
+                return 'Identity verification service is currently unavailable. Please try again shortly or contact support.';
+            }
+        }
+
+        return $message;
     }
 
     /**

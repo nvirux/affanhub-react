@@ -269,15 +269,20 @@ class BvnVerificationController extends Controller
         );
 
         if (! $idcoreResult['success']) {
-            $failReason = $idcoreResult['message'] ?? 'BVN lookup failed.';
+            $rawFailReason = $idcoreResult['message'] ?? 'BVN lookup failed.';
+            Log::warning("BVN Verification Failed for reference {$reference}: {$rawFailReason}", [
+                'user_id' => $user->id,
+                'search_value' => $validated['search_value'],
+                'raw_error' => $idcoreResult['raw'] ?? [],
+            ]);
 
-            // Instant Auto-Refund Engine
+            // Instant Auto-Refund Engine (clean statement description without leaking provider internals)
             try {
                 $walletService->refund(
                     $mainWallet,
                     $retailPrice,
-                    "Auto-Refund: BVN lookup failed ({$failReason})",
-                    ['failed_reference' => $reference, 'reason' => $failReason],
+                    'Auto-Refund: BVN verification could not be completed',
+                    ['failed_reference' => $reference, 'reason' => $rawFailReason],
                     'REF_'.$reference
                 );
 
@@ -286,7 +291,7 @@ class BvnVerificationController extends Controller
                         $storeMainWallet,
                         $merchantCost,
                         'wholesale_refund',
-                        'Auto-Refund Store Wholesale: BVN lookup failed',
+                        'Auto-Refund Store Wholesale: BVN verification failed',
                         ['failed_reference' => $reference],
                         'WS_REF_'.$reference
                     );
@@ -295,9 +300,14 @@ class BvnVerificationController extends Controller
                 Log::error("Failed to auto-refund for {$reference}: ".$refundErr->getMessage());
             }
 
+            $customerMessage = IdCoreService::sanitizeErrorMessage($rawFailReason);
+            if (empty($customerMessage) || str_contains(strtolower($customerMessage), 'unavailable')) {
+                $customerMessage = 'Unable to verify BVN at this time. Please check your details and try again shortly, or contact support. Your wallet has not been charged.';
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => $idcoreResult['message'] ?? 'BVN lookup failed. Your wallet was not charged.',
+                'message' => $customerMessage,
             ], 422);
         }
 

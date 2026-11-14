@@ -270,15 +270,20 @@ class NinVerificationController extends Controller
         );
 
         if (! $idcoreResult['success']) {
-            $failReason = $idcoreResult['message'] ?? 'Identity lookup failed.';
+            $rawFailReason = $idcoreResult['message'] ?? 'Identity lookup failed.';
+            Log::warning("NIN Verification Failed for reference {$reference}: {$rawFailReason}", [
+                'user_id' => $user->id,
+                'search_value' => $validated['search_value'],
+                'raw_error' => $idcoreResult['raw'] ?? [],
+            ]);
 
-            // Instant Auto-Refund Engine
+            // Instant Auto-Refund Engine (clean statement description without leaking provider internals)
             try {
                 $walletService->refund(
                     $mainWallet,
                     $retailPrice,
-                    "Auto-Refund: NIN lookup failed ({$failReason})",
-                    ['failed_reference' => $reference, 'reason' => $failReason],
+                    'Auto-Refund: NIN verification could not be completed',
+                    ['failed_reference' => $reference, 'reason' => $rawFailReason],
                     'REF_'.$reference
                 );
 
@@ -287,7 +292,7 @@ class NinVerificationController extends Controller
                         $storeMainWallet,
                         $merchantCost,
                         'wholesale_refund',
-                        'Auto-Refund Store Wholesale: NIN lookup failed',
+                        'Auto-Refund Store Wholesale: NIN verification failed',
                         ['failed_reference' => $reference],
                         'WS_REF_'.$reference
                     );
@@ -296,9 +301,14 @@ class NinVerificationController extends Controller
                 Log::error("Failed to auto-refund for {$reference}: ".$refundErr->getMessage());
             }
 
+            $customerMessage = IdCoreService::sanitizeErrorMessage($rawFailReason);
+            if (empty($customerMessage) || str_contains(strtolower($customerMessage), 'unavailable')) {
+                $customerMessage = 'Unable to verify NIN at this time. Please check your details and try again shortly, or contact support. Your wallet has not been charged.';
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => $idcoreResult['message'] ?? 'Identity lookup failed. Your wallet was not charged.',
+                'message' => $customerMessage,
             ], 422);
         }
 
