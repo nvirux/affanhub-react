@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Middleware\CheckTenantAccess;
 use App\Models\Post;
-use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Pipeline;
@@ -90,16 +89,9 @@ class SitemapController extends Controller
             ->orderByDesc('published_at')
             ->get(['slug', 'updated_at', 'published_at']);
 
-        // Fetch active merchant stores to help search engines discover them
-        $stores = Store::where('status', 'active')
-            ->latest('updated_at')
-            ->take(500)
-            ->get();
-
         $content = view('sitemap', [
             'baseUrl' => $baseUrl,
             'posts' => $posts,
-            'stores' => $stores,
         ])->render();
 
         return response($content, 200, [

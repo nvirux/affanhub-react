@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ModificationController::ninIndex
  * @see app/Http/Controllers/ModificationController.php:26
@@ -42,41 +42,6 @@ ninIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\ModificationController::ninIndex
- * @see app/Http/Controllers/ModificationController.php:26
- * @route '/identity/nin-modification'
- */
-    const ninIndexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: ninIndex.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\ModificationController::ninIndex
- * @see app/Http/Controllers/ModificationController.php:26
- * @route '/identity/nin-modification'
- */
-        ninIndexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ninIndex.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\ModificationController::ninIndex
- * @see app/Http/Controllers/ModificationController.php:26
- * @route '/identity/nin-modification'
- */
-        ninIndexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ninIndex.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    ninIndex.form = ninIndexForm
 /**
 * @see \App\Http\Controllers\ModificationController::bvnIndex
  * @see app/Http/Controllers/ModificationController.php:34
@@ -120,41 +85,6 @@ bvnIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\ModificationController::bvnIndex
- * @see app/Http/Controllers/ModificationController.php:34
- * @route '/identity/bvn-modification'
- */
-    const bvnIndexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: bvnIndex.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\ModificationController::bvnIndex
- * @see app/Http/Controllers/ModificationController.php:34
- * @route '/identity/bvn-modification'
- */
-        bvnIndexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bvnIndex.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\ModificationController::bvnIndex
- * @see app/Http/Controllers/ModificationController.php:34
- * @route '/identity/bvn-modification'
- */
-        bvnIndexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bvnIndex.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    bvnIndex.form = bvnIndexForm
 /**
 * @see \App\Http\Controllers\ModificationController::index
  * @see app/Http/Controllers/ModificationController.php:42
@@ -198,41 +128,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\ModificationController::index
- * @see app/Http/Controllers/ModificationController.php:42
- * @route '/identity/modification'
- */
-    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\ModificationController::index
- * @see app/Http/Controllers/ModificationController.php:42
- * @route '/identity/modification'
- */
-        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\ModificationController::index
- * @see app/Http/Controllers/ModificationController.php:42
- * @route '/identity/modification'
- */
-        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
 /**
 * @see \App\Http\Controllers\ModificationController::store
  * @see app/Http/Controllers/ModificationController.php:152
@@ -267,27 +162,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     method: 'post',
 })
 
-    /**
-* @see \App\Http\Controllers\ModificationController::store
- * @see app/Http/Controllers/ModificationController.php:152
- * @route '/identity/modification'
- */
-    const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: store.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\ModificationController::store
- * @see app/Http/Controllers/ModificationController.php:152
- * @route '/identity/modification'
- */
-        storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: store.url(options),
-            method: 'post',
-        })
-    
-    store.form = storeForm
 /**
 * @see \App\Http\Controllers\ModificationController::downloadResult
  * @see app/Http/Controllers/ModificationController.php:380
@@ -349,42 +223,6 @@ downloadResult.head = (args: { reference: string | number } | [reference: string
     url: downloadResult.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Http\Controllers\ModificationController::downloadResult
- * @see app/Http/Controllers/ModificationController.php:380
- * @route '/identity/modification/{reference}/download'
- */
-    const downloadResultForm = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: downloadResult.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\ModificationController::downloadResult
- * @see app/Http/Controllers/ModificationController.php:380
- * @route '/identity/modification/{reference}/download'
- */
-        downloadResultForm.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: downloadResult.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\ModificationController::downloadResult
- * @see app/Http/Controllers/ModificationController.php:380
- * @route '/identity/modification/{reference}/download'
- */
-        downloadResultForm.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: downloadResult.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    downloadResult.form = downloadResultForm
 const ModificationController = { ninIndex, bvnIndex, index, store, downloadResult }
 
 export default ModificationController

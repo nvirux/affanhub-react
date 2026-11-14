@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\ModificationRequestResource\Pages\ListModificationRequests::__invoke
  * @see app/Filament/Merchant/Resources/ModificationRequestResource/Pages/ListModificationRequests.php:7
@@ -65,40 +65,4 @@ ListModificationRequests.head = (args: { tenant: string | number | { public_id: 
     url: ListModificationRequests.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Resources\ModificationRequestResource\Pages\ListModificationRequests::__invoke
- * @see app/Filament/Merchant/Resources/ModificationRequestResource/Pages/ListModificationRequests.php:7
- * @route '//merchant.localhost/{tenant}/modification-requests'
- */
-    const ListModificationRequestsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: ListModificationRequests.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Resources\ModificationRequestResource\Pages\ListModificationRequests::__invoke
- * @see app/Filament/Merchant/Resources/ModificationRequestResource/Pages/ListModificationRequests.php:7
- * @route '//merchant.localhost/{tenant}/modification-requests'
- */
-        ListModificationRequestsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ListModificationRequests.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Resources\ModificationRequestResource\Pages\ListModificationRequests::__invoke
- * @see app/Filament/Merchant/Resources/ModificationRequestResource/Pages/ListModificationRequests.php:7
- * @route '//merchant.localhost/{tenant}/modification-requests'
- */
-        ListModificationRequestsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ListModificationRequests.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    ListModificationRequests.form = ListModificationRequestsForm
 export default ListModificationRequests

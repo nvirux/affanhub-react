@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Pages\ReferralProgram::__invoke
  * @see app/Filament/Merchant/Pages/ReferralProgram.php:7
@@ -65,40 +65,4 @@ ReferralProgram.head = (args: { tenant: string | number | { public_id: string | 
     url: ReferralProgram.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Pages\ReferralProgram::__invoke
- * @see app/Filament/Merchant/Pages/ReferralProgram.php:7
- * @route '//merchant.localhost/{tenant}/referral-program'
- */
-    const ReferralProgramForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: ReferralProgram.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Pages\ReferralProgram::__invoke
- * @see app/Filament/Merchant/Pages/ReferralProgram.php:7
- * @route '//merchant.localhost/{tenant}/referral-program'
- */
-        ReferralProgramForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ReferralProgram.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Pages\ReferralProgram::__invoke
- * @see app/Filament/Merchant/Pages/ReferralProgram.php:7
- * @route '//merchant.localhost/{tenant}/referral-program'
- */
-        ReferralProgramForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ReferralProgram.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    ReferralProgram.form = ReferralProgramForm
 export default ReferralProgram

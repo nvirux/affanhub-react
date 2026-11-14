@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \Filament\Auth\Pages\EditProfile::__invoke
  * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
@@ -41,40 +41,4 @@ EditProfile.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: EditProfile.url(options),
     method: 'head',
 })
-
-    /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
- * @route '//admin.localhost/profile'
- */
-    const EditProfileForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: EditProfile.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
- * @route '//admin.localhost/profile'
- */
-        EditProfileForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EditProfile.url(options),
-            method: 'get',
-        })
-            /**
-* @see \Filament\Auth\Pages\EditProfile::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/EditProfile.php:7
- * @route '//admin.localhost/profile'
- */
-        EditProfileForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EditProfile.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    EditProfile.form = EditProfileForm
 export default EditProfile

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\ActivityLogs\Pages\ListActivityLogs::__invoke
  * @see app/Filament/Resources/ActivityLogs/Pages/ListActivityLogs.php:7
@@ -41,42 +41,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Resources\ActivityLogs\Pages\ListActivityLogs::__invoke
- * @see app/Filament/Resources/ActivityLogs/Pages/ListActivityLogs.php:7
- * @route '//admin.localhost/activity-logs'
- */
-    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\ActivityLogs\Pages\ListActivityLogs::__invoke
- * @see app/Filament/Resources/ActivityLogs/Pages/ListActivityLogs.php:7
- * @route '//admin.localhost/activity-logs'
- */
-        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\ActivityLogs\Pages\ListActivityLogs::__invoke
- * @see app/Filament/Resources/ActivityLogs/Pages/ListActivityLogs.php:7
- * @route '//admin.localhost/activity-logs'
- */
-        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
 const activityLogs = {
     index: Object.assign(index, index),
 }

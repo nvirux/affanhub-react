@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../wayfinder'
 /**
 * @see \Filament\Auth\Pages\PasswordReset\RequestPasswordReset::__invoke
  * @see vendor/filament/filament/src/Auth/Pages/PasswordReset/RequestPasswordReset.php:7
@@ -41,40 +41,4 @@ RequestPasswordReset.head = (options?: RouteQueryOptions): RouteDefinition<'head
     url: RequestPasswordReset.url(options),
     method: 'head',
 })
-
-    /**
-* @see \Filament\Auth\Pages\PasswordReset\RequestPasswordReset::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/PasswordReset/RequestPasswordReset.php:7
- * @route '//merchant.localhost/password-reset/request'
- */
-    const RequestPasswordResetForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: RequestPasswordReset.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \Filament\Auth\Pages\PasswordReset\RequestPasswordReset::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/PasswordReset/RequestPasswordReset.php:7
- * @route '//merchant.localhost/password-reset/request'
- */
-        RequestPasswordResetForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RequestPasswordReset.url(options),
-            method: 'get',
-        })
-            /**
-* @see \Filament\Auth\Pages\PasswordReset\RequestPasswordReset::__invoke
- * @see vendor/filament/filament/src/Auth/Pages/PasswordReset/RequestPasswordReset.php:7
- * @route '//merchant.localhost/password-reset/request'
- */
-        RequestPasswordResetForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: RequestPasswordReset.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    RequestPasswordReset.form = RequestPasswordResetForm
 export default RequestPasswordReset

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\BvnVerificationController::index
  * @see app/Http/Controllers/BvnVerificationController.php:24
@@ -42,41 +42,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\BvnVerificationController::index
- * @see app/Http/Controllers/BvnVerificationController.php:24
- * @route '/identity/bvn'
- */
-    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\BvnVerificationController::index
- * @see app/Http/Controllers/BvnVerificationController.php:24
- * @route '/identity/bvn'
- */
-        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\BvnVerificationController::index
- * @see app/Http/Controllers/BvnVerificationController.php:24
- * @route '/identity/bvn'
- */
-        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
 /**
 * @see \App\Http\Controllers\BvnVerificationController::verify
  * @see app/Http/Controllers/BvnVerificationController.php:119
@@ -110,28 +75,6 @@ verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: verify.url(options),
     method: 'post',
 })
-
-    /**
-* @see \App\Http\Controllers\BvnVerificationController::verify
- * @see app/Http/Controllers/BvnVerificationController.php:119
- * @route '/identity/bvn/verify'
- */
-    const verifyForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: verify.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\BvnVerificationController::verify
- * @see app/Http/Controllers/BvnVerificationController.php:119
- * @route '/identity/bvn/verify'
- */
-        verifyForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: verify.url(options),
-            method: 'post',
-        })
-    
-    verify.form = verifyForm
 const BvnVerificationController = { index, verify }
 
 export default BvnVerificationController

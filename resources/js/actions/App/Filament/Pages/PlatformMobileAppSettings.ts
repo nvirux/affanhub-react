@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Filament\Pages\PlatformMobileAppSettings::__invoke
  * @see app/Filament/Pages/PlatformMobileAppSettings.php:7
@@ -41,40 +41,4 @@ PlatformMobileAppSettings.head = (options?: RouteQueryOptions): RouteDefinition<
     url: PlatformMobileAppSettings.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Pages\PlatformMobileAppSettings::__invoke
- * @see app/Filament/Pages/PlatformMobileAppSettings.php:7
- * @route '//admin.localhost/platform-mobile-app-settings'
- */
-    const PlatformMobileAppSettingsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: PlatformMobileAppSettings.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Pages\PlatformMobileAppSettings::__invoke
- * @see app/Filament/Pages/PlatformMobileAppSettings.php:7
- * @route '//admin.localhost/platform-mobile-app-settings'
- */
-        PlatformMobileAppSettingsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: PlatformMobileAppSettings.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Pages\PlatformMobileAppSettings::__invoke
- * @see app/Filament/Pages/PlatformMobileAppSettings.php:7
- * @route '//admin.localhost/platform-mobile-app-settings'
- */
-        PlatformMobileAppSettingsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: PlatformMobileAppSettings.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    PlatformMobileAppSettings.form = PlatformMobileAppSettingsForm
 export default PlatformMobileAppSettings

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/ListStoreModificationServices.php:7
@@ -66,41 +66,6 @@ index.head = (args: { tenant: string | number | { public_id: string | number } }
     method: 'head',
 })
 
-    /**
-* @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices::__invoke
- * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/ListStoreModificationServices.php:7
- * @route '//merchant.localhost/{tenant}/modification-services'
- */
-    const indexForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices::__invoke
- * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/ListStoreModificationServices.php:7
- * @route '//merchant.localhost/{tenant}/modification-services'
- */
-        indexForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\ListStoreModificationServices::__invoke
- * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/ListStoreModificationServices.php:7
- * @route '//merchant.localhost/{tenant}/modification-services'
- */
-        indexForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
 /**
 * @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\EditStoreModificationService::__invoke
  * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/EditStoreModificationService.php:7
@@ -162,42 +127,6 @@ edit.head = (args: { tenant: string | number | { public_id: string | number }, r
     url: edit.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\EditStoreModificationService::__invoke
- * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/EditStoreModificationService.php:7
- * @route '//merchant.localhost/{tenant}/modification-services/{record}/edit'
- */
-    const editForm = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: edit.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\EditStoreModificationService::__invoke
- * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/EditStoreModificationService.php:7
- * @route '//merchant.localhost/{tenant}/modification-services/{record}/edit'
- */
-        editForm.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: edit.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Resources\StoreModificationServiceResource\Pages\EditStoreModificationService::__invoke
- * @see app/Filament/Merchant/Resources/StoreModificationServiceResource/Pages/EditStoreModificationService.php:7
- * @route '//merchant.localhost/{tenant}/modification-services/{record}/edit'
- */
-        editForm.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: edit.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    edit.form = editForm
 const modificationServices = {
     index: Object.assign(index, index),
 edit: Object.assign(edit, edit),

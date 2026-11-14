@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
  * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
@@ -41,40 +41,4 @@ EmailVerificationPrompt.head = (options?: RouteQueryOptions): RouteDefinition<'h
     url: EmailVerificationPrompt.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
- * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
- * @route '//merchant.localhost/email-verification/prompt'
- */
-    const EmailVerificationPromptForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: EmailVerificationPrompt.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
- * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
- * @route '//merchant.localhost/email-verification/prompt'
- */
-        EmailVerificationPromptForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EmailVerificationPrompt.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Merchant\Pages\Auth\EmailVerificationPrompt::__invoke
- * @see app/Filament/Merchant/Pages/Auth/EmailVerificationPrompt.php:7
- * @route '//merchant.localhost/email-verification/prompt'
- */
-        EmailVerificationPromptForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EmailVerificationPrompt.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    EmailVerificationPrompt.form = EmailVerificationPromptForm
 export default EmailVerificationPrompt

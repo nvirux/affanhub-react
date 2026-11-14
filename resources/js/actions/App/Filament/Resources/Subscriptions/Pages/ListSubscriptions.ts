@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Subscriptions\Pages\ListSubscriptions::__invoke
  * @see app/Filament/Resources/Subscriptions/Pages/ListSubscriptions.php:7
@@ -41,40 +41,4 @@ ListSubscriptions.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
     url: ListSubscriptions.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Resources\Subscriptions\Pages\ListSubscriptions::__invoke
- * @see app/Filament/Resources/Subscriptions/Pages/ListSubscriptions.php:7
- * @route '//admin.localhost/subscriptions'
- */
-    const ListSubscriptionsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: ListSubscriptions.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Resources\Subscriptions\Pages\ListSubscriptions::__invoke
- * @see app/Filament/Resources/Subscriptions/Pages/ListSubscriptions.php:7
- * @route '//admin.localhost/subscriptions'
- */
-        ListSubscriptionsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ListSubscriptions.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Resources\Subscriptions\Pages\ListSubscriptions::__invoke
- * @see app/Filament/Resources/Subscriptions/Pages/ListSubscriptions.php:7
- * @route '//admin.localhost/subscriptions'
- */
-        ListSubscriptionsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ListSubscriptions.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    ListSubscriptions.form = ListSubscriptionsForm
 export default ListSubscriptions

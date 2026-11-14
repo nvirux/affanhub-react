@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ModificationController::store
  * @see app/Http/Controllers/ModificationController.php:152
@@ -33,27 +33,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     method: 'post',
 })
 
-    /**
-* @see \App\Http\Controllers\ModificationController::store
- * @see app/Http/Controllers/ModificationController.php:152
- * @route '/identity/modification'
- */
-    const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: store.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\ModificationController::store
- * @see app/Http/Controllers/ModificationController.php:152
- * @route '/identity/modification'
- */
-        storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: store.url(options),
-            method: 'post',
-        })
-    
-    store.form = storeForm
 /**
 * @see \App\Http\Controllers\ModificationController::download
  * @see app/Http/Controllers/ModificationController.php:380
@@ -115,42 +94,6 @@ download.head = (args: { reference: string | number } | [reference: string | num
     url: download.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Http\Controllers\ModificationController::download
- * @see app/Http/Controllers/ModificationController.php:380
- * @route '/identity/modification/{reference}/download'
- */
-    const downloadForm = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: download.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\ModificationController::download
- * @see app/Http/Controllers/ModificationController.php:380
- * @route '/identity/modification/{reference}/download'
- */
-        downloadForm.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: download.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\ModificationController::download
- * @see app/Http/Controllers/ModificationController.php:380
- * @route '/identity/modification/{reference}/download'
- */
-        downloadForm.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: download.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    download.form = downloadForm
 const modification = {
     store: Object.assign(store, store),
 download: Object.assign(download, download),

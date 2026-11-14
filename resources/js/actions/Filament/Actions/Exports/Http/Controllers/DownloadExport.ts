@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \Filament\Actions\Exports\Http\Controllers\DownloadExport::__invoke
  * @see vendor/filament/actions/src/Exports/Http/Controllers/DownloadExport.php:15
@@ -65,40 +65,4 @@ DownloadExport.head = (args: { export: string | number | { id: string | number }
     url: DownloadExport.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \Filament\Actions\Exports\Http\Controllers\DownloadExport::__invoke
- * @see vendor/filament/actions/src/Exports/Http/Controllers/DownloadExport.php:15
- * @route '/filament/exports/{export}/download'
- */
-    const DownloadExportForm = (args: { export: string | number | { id: string | number } } | [exportParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: DownloadExport.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \Filament\Actions\Exports\Http\Controllers\DownloadExport::__invoke
- * @see vendor/filament/actions/src/Exports/Http/Controllers/DownloadExport.php:15
- * @route '/filament/exports/{export}/download'
- */
-        DownloadExportForm.get = (args: { export: string | number | { id: string | number } } | [exportParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: DownloadExport.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \Filament\Actions\Exports\Http\Controllers\DownloadExport::__invoke
- * @see vendor/filament/actions/src/Exports/Http/Controllers/DownloadExport.php:15
- * @route '/filament/exports/{export}/download'
- */
-        DownloadExportForm.head = (args: { export: string | number | { id: string | number } } | [exportParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: DownloadExport.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    DownloadExport.form = DownloadExportForm
 export default DownloadExport

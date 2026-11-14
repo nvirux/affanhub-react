@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults, validateParameters } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults, validateParameters } from './../../wayfinder'
 import mobileApp from './mobile-app'
 /**
  * @see routes/tenant.php:120
@@ -61,39 +61,6 @@ admin.head = (args?: { any?: string | number } | [any: string | number ] | strin
     url: admin.url(args, options),
     method: 'head',
 })
-
-    /**
- * @see routes/tenant.php:120
- * @route '/admin/{any?}'
- */
-    const adminForm = (args?: { any?: string | number } | [any: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: admin.url(args, options),
-        method: 'get',
-    })
-
-            /**
- * @see routes/tenant.php:120
- * @route '/admin/{any?}'
- */
-        adminForm.get = (args?: { any?: string | number } | [any: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: admin.url(args, options),
-            method: 'get',
-        })
-            /**
- * @see routes/tenant.php:120
- * @route '/admin/{any?}'
- */
-        adminForm.head = (args?: { any?: string | number } | [any: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: admin.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    admin.form = adminForm
 const store = {
     mobileApp: Object.assign(mobileApp, mobileApp),
 admin: Object.assign(admin, admin),

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../wayfinder'
 import ninBd9d09 from './nin'
 import bvnC51c8d from './bvn'
 import modification88c75b from './modification'
@@ -46,41 +46,6 @@ nin.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:24
- * @route '/identity/nin'
- */
-    const ninForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: nin.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:24
- * @route '/identity/nin'
- */
-        ninForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: nin.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\NinVerificationController::nin
- * @see app/Http/Controllers/NinVerificationController.php:24
- * @route '/identity/nin'
- */
-        ninForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: nin.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    nin.form = ninForm
 /**
 * @see \App\Http\Controllers\BvnVerificationController::bvn
  * @see app/Http/Controllers/BvnVerificationController.php:24
@@ -124,41 +89,6 @@ bvn.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:24
- * @route '/identity/bvn'
- */
-    const bvnForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: bvn.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:24
- * @route '/identity/bvn'
- */
-        bvnForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bvn.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\BvnVerificationController::bvn
- * @see app/Http/Controllers/BvnVerificationController.php:24
- * @route '/identity/bvn'
- */
-        bvnForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bvn.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    bvn.form = bvnForm
 /**
 * @see \App\Http\Controllers\ModificationController::ninModification
  * @see app/Http/Controllers/ModificationController.php:26
@@ -202,41 +132,6 @@ ninModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\ModificationController::ninModification
- * @see app/Http/Controllers/ModificationController.php:26
- * @route '/identity/nin-modification'
- */
-    const ninModificationForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: ninModification.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\ModificationController::ninModification
- * @see app/Http/Controllers/ModificationController.php:26
- * @route '/identity/nin-modification'
- */
-        ninModificationForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ninModification.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\ModificationController::ninModification
- * @see app/Http/Controllers/ModificationController.php:26
- * @route '/identity/nin-modification'
- */
-        ninModificationForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ninModification.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    ninModification.form = ninModificationForm
 /**
 * @see \App\Http\Controllers\ModificationController::bvnModification
  * @see app/Http/Controllers/ModificationController.php:34
@@ -280,41 +175,6 @@ bvnModification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\ModificationController::bvnModification
- * @see app/Http/Controllers/ModificationController.php:34
- * @route '/identity/bvn-modification'
- */
-    const bvnModificationForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: bvnModification.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\ModificationController::bvnModification
- * @see app/Http/Controllers/ModificationController.php:34
- * @route '/identity/bvn-modification'
- */
-        bvnModificationForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bvnModification.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\ModificationController::bvnModification
- * @see app/Http/Controllers/ModificationController.php:34
- * @route '/identity/bvn-modification'
- */
-        bvnModificationForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bvnModification.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    bvnModification.form = bvnModificationForm
 /**
 * @see \App\Http\Controllers\ModificationController::modification
  * @see app/Http/Controllers/ModificationController.php:42
@@ -357,42 +217,6 @@ modification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: modification.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Http\Controllers\ModificationController::modification
- * @see app/Http/Controllers/ModificationController.php:42
- * @route '/identity/modification'
- */
-    const modificationForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: modification.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\ModificationController::modification
- * @see app/Http/Controllers/ModificationController.php:42
- * @route '/identity/modification'
- */
-        modificationForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: modification.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\ModificationController::modification
- * @see app/Http/Controllers/ModificationController.php:42
- * @route '/identity/modification'
- */
-        modificationForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: modification.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    modification.form = modificationForm
 const identity = {
     nin: Object.assign(nin, ninBd9d09),
 bvn: Object.assign(bvn, bvnC51c8d),

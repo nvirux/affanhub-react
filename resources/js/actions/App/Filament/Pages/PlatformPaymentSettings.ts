@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
  * @see app/Filament/Pages/PlatformPaymentSettings.php:7
@@ -41,40 +41,4 @@ PlatformPaymentSettings.head = (options?: RouteQueryOptions): RouteDefinition<'h
     url: PlatformPaymentSettings.url(options),
     method: 'head',
 })
-
-    /**
-* @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
- * @see app/Filament/Pages/PlatformPaymentSettings.php:7
- * @route '//admin.localhost/platform-payment-settings'
- */
-    const PlatformPaymentSettingsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: PlatformPaymentSettings.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
- * @see app/Filament/Pages/PlatformPaymentSettings.php:7
- * @route '//admin.localhost/platform-payment-settings'
- */
-        PlatformPaymentSettingsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: PlatformPaymentSettings.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Filament\Pages\PlatformPaymentSettings::__invoke
- * @see app/Filament/Pages/PlatformPaymentSettings.php:7
- * @route '//admin.localhost/platform-payment-settings'
- */
-        PlatformPaymentSettingsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: PlatformPaymentSettings.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    PlatformPaymentSettings.form = PlatformPaymentSettingsForm
 export default PlatformPaymentSettings

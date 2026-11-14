@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../wayfinder'
 /**
 * @see \Livewire\Mechanisms\HandleRequests\HandleRequests::update
  * @see vendor/livewire/livewire/src/Mechanisms/HandleRequests/HandleRequests.php:138
@@ -32,28 +32,6 @@ update.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: update.url(options),
     method: 'post',
 })
-
-    /**
-* @see \Livewire\Mechanisms\HandleRequests\HandleRequests::update
- * @see vendor/livewire/livewire/src/Mechanisms/HandleRequests/HandleRequests.php:138
- * @route '/livewire-e961291b/update'
- */
-    const updateForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: update.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \Livewire\Mechanisms\HandleRequests\HandleRequests::update
- * @see vendor/livewire/livewire/src/Mechanisms/HandleRequests/HandleRequests.php:138
- * @route '/livewire-e961291b/update'
- */
-        updateForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: update.url(options),
-            method: 'post',
-        })
-    
-    update.form = updateForm
 const defaultLivewire = {
     update: Object.assign(update, update),
 }

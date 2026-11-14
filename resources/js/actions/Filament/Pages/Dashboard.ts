@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
 /**
 * @see \Filament\Pages\Dashboard::__invoke
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
@@ -41,40 +41,4 @@ Dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: Dashboard.url(options),
     method: 'head',
 })
-
-    /**
-* @see \Filament\Pages\Dashboard::__invoke
- * @see vendor/filament/filament/src/Pages/Dashboard.php:7
- * @route '//admin.localhost'
- */
-    const DashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: Dashboard.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \Filament\Pages\Dashboard::__invoke
- * @see vendor/filament/filament/src/Pages/Dashboard.php:7
- * @route '//admin.localhost'
- */
-        DashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: Dashboard.url(options),
-            method: 'get',
-        })
-            /**
-* @see \Filament\Pages\Dashboard::__invoke
- * @see vendor/filament/filament/src/Pages/Dashboard.php:7
- * @route '//admin.localhost'
- */
-        DashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: Dashboard.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    Dashboard.form = DashboardForm
 export default Dashboard
