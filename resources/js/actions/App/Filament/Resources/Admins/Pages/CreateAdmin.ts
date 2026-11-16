@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Admins\Pages\CreateAdmin::__invoke
  * @see app/Filament/Resources/Admins/Pages/CreateAdmin.php:7
@@ -41,4 +41,40 @@ CreateAdmin.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: CreateAdmin.url(options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\Admins\Pages\CreateAdmin::__invoke
+ * @see app/Filament/Resources/Admins/Pages/CreateAdmin.php:7
+ * @route '//admin.localhost/admins/create'
+ */
+    const CreateAdminForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: CreateAdmin.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\Admins\Pages\CreateAdmin::__invoke
+ * @see app/Filament/Resources/Admins/Pages/CreateAdmin.php:7
+ * @route '//admin.localhost/admins/create'
+ */
+        CreateAdminForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: CreateAdmin.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\Admins\Pages\CreateAdmin::__invoke
+ * @see app/Filament/Resources/Admins/Pages/CreateAdmin.php:7
+ * @route '//admin.localhost/admins/create'
+ */
+        CreateAdminForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: CreateAdmin.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    CreateAdmin.form = CreateAdminForm
 export default CreateAdmin

@@ -280,9 +280,13 @@ class Store extends BaseTenant implements TenantWithDatabase
      */
     public function calculateCustomerDepositFee(float $amount): float
     {
-        $feeType = $this->customer_funding_fee_type ?? 'free';
-        $feeAmount = (float) ($this->customer_funding_fee_amount ?? 0);
-        $maxCap = (float) ($this->customer_funding_fee_cap ?? 100);
+        $feeType = $this->customer_funding_fee_type ?? 'percentage';
+        $feeAmount = isset($this->customer_funding_fee_amount) ? (float) $this->customer_funding_fee_amount : 1.0;
+        $maxCap = isset($this->customer_funding_fee_cap) ? (float) $this->customer_funding_fee_cap : 1000.0;
+
+        if ($feeType === 'free') {
+            return 0.0;
+        }
 
         if ($feeType === 'flat') {
             return min($amount, $feeAmount);
@@ -291,7 +295,11 @@ class Store extends BaseTenant implements TenantWithDatabase
         if ($feeType === 'percentage') {
             $percentFee = ($amount * $feeAmount) / 100;
 
-            return min($amount, min($percentFee, $maxCap));
+            if ($maxCap > 0) {
+                return min($amount, min($percentFee, $maxCap));
+            }
+
+            return min($amount, $percentFee);
         }
 
         return 0.0;
@@ -302,10 +310,11 @@ class Store extends BaseTenant implements TenantWithDatabase
      */
     public function getCustomerDepositFeeText(): string
     {
-        $feeType = $this->customer_funding_fee_type ?? 'free';
-        $feeAmount = (float) ($this->customer_funding_fee_amount ?? 0);
+        $feeType = $this->customer_funding_fee_type ?? 'percentage';
+        $feeAmount = isset($this->customer_funding_fee_amount) ? (float) $this->customer_funding_fee_amount : 1.0;
+        $maxCap = isset($this->customer_funding_fee_cap) ? (float) $this->customer_funding_fee_cap : 1000.0;
 
-        if ($feeType === 'free' || $feeAmount <= 0) {
+        if ($feeType === 'free' || ($feeType === 'flat' && $feeAmount <= 0) || ($feeType === 'percentage' && $feeAmount <= 0)) {
             return '0% Fee (Free Funding)';
         }
 
@@ -314,7 +323,9 @@ class Store extends BaseTenant implements TenantWithDatabase
         }
 
         if ($feeType === 'percentage') {
-            return "{$feeAmount}% transfer fee applies";
+            $capText = $maxCap > 0 ? ' (Max ₦'.number_format($maxCap, 0).')' : '';
+
+            return "{$feeAmount}% transfer fee applies{$capText}";
         }
 
         return '0% Fee';

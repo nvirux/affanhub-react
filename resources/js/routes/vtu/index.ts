@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import airtimeCd3da4 from './airtime'
 import dataC044be from './data'
 import airtimeToCash77cdf2 from './airtime-to-cash'
@@ -45,6 +45,41 @@ airtime.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
+    /**
+* @see \App\Http\Controllers\AirtimeController::airtime
+ * @see app/Http/Controllers/AirtimeController.php:23
+ * @route '/vtu/airtime'
+ */
+    const airtimeForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: airtime.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\AirtimeController::airtime
+ * @see app/Http/Controllers/AirtimeController.php:23
+ * @route '/vtu/airtime'
+ */
+        airtimeForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: airtime.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\AirtimeController::airtime
+ * @see app/Http/Controllers/AirtimeController.php:23
+ * @route '/vtu/airtime'
+ */
+        airtimeForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: airtime.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    airtime.form = airtimeForm
 /**
 * @see \App\Http\Controllers\DataController::data
  * @see app/Http/Controllers/DataController.php:22
@@ -88,6 +123,41 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
+    /**
+* @see \App\Http\Controllers\DataController::data
+ * @see app/Http/Controllers/DataController.php:22
+ * @route '/vtu/data'
+ */
+    const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: data.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\DataController::data
+ * @see app/Http/Controllers/DataController.php:22
+ * @route '/vtu/data'
+ */
+        dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: data.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\DataController::data
+ * @see app/Http/Controllers/DataController.php:22
+ * @route '/vtu/data'
+ */
+        dataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: data.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    data.form = dataForm
 /**
 * @see \App\Http\Controllers\AirtimeCashController::airtimeToCash
  * @see app/Http/Controllers/AirtimeCashController.php:20
@@ -130,6 +200,42 @@ airtimeToCash.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     url: airtimeToCash.url(options),
     method: 'head',
 })
+
+    /**
+* @see \App\Http\Controllers\AirtimeCashController::airtimeToCash
+ * @see app/Http/Controllers/AirtimeCashController.php:20
+ * @route '/vtu/airtime-to-cash'
+ */
+    const airtimeToCashForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: airtimeToCash.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\AirtimeCashController::airtimeToCash
+ * @see app/Http/Controllers/AirtimeCashController.php:20
+ * @route '/vtu/airtime-to-cash'
+ */
+        airtimeToCashForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: airtimeToCash.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\AirtimeCashController::airtimeToCash
+ * @see app/Http/Controllers/AirtimeCashController.php:20
+ * @route '/vtu/airtime-to-cash'
+ */
+        airtimeToCashForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: airtimeToCash.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    airtimeToCash.form = airtimeToCashForm
 const vtu = {
     airtime: Object.assign(airtime, airtimeCd3da4),
 data: Object.assign(data, dataC044be),

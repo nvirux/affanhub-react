@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\StaffResource\Pages\ListStaff::__invoke
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/ListStaff.php:7
@@ -66,6 +66,41 @@ index.head = (args: { tenant: string | number | { public_id: string | number } }
     method: 'head',
 })
 
+    /**
+* @see \App\Filament\Merchant\Resources\StaffResource\Pages\ListStaff::__invoke
+ * @see app/Filament/Merchant/Resources/StaffResource/Pages/ListStaff.php:7
+ * @route '//merchant.localhost/{tenant}/staff'
+ */
+    const indexForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: index.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Resources\StaffResource\Pages\ListStaff::__invoke
+ * @see app/Filament/Merchant/Resources/StaffResource/Pages/ListStaff.php:7
+ * @route '//merchant.localhost/{tenant}/staff'
+ */
+        indexForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Resources\StaffResource\Pages\ListStaff::__invoke
+ * @see app/Filament/Merchant/Resources/StaffResource/Pages/ListStaff.php:7
+ * @route '//merchant.localhost/{tenant}/staff'
+ */
+        indexForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    index.form = indexForm
 /**
 * @see \App\Filament\Merchant\Resources\StaffResource\Pages\EditStaff::__invoke
  * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
@@ -127,6 +162,42 @@ edit.head = (args: { tenant: string | number | { public_id: string | number }, r
     url: edit.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Merchant\Resources\StaffResource\Pages\EditStaff::__invoke
+ * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
+ * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
+ */
+    const editForm = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: edit.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Resources\StaffResource\Pages\EditStaff::__invoke
+ * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
+ * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
+ */
+        editForm.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Resources\StaffResource\Pages\EditStaff::__invoke
+ * @see app/Filament/Merchant/Resources/StaffResource/Pages/EditStaff.php:7
+ * @route '//merchant.localhost/{tenant}/staff/{record}/edit'
+ */
+        editForm.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    edit.form = editForm
 const staff = {
     index: Object.assign(index, index),
 edit: Object.assign(edit, edit),

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\AirtimeDiscounts\Pages\ListAirtimeDiscounts::__invoke
  * @see app/Filament/Resources/AirtimeDiscounts/Pages/ListAirtimeDiscounts.php:7
@@ -41,4 +41,40 @@ ListAirtimeDiscounts.head = (options?: RouteQueryOptions): RouteDefinition<'head
     url: ListAirtimeDiscounts.url(options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\AirtimeDiscounts\Pages\ListAirtimeDiscounts::__invoke
+ * @see app/Filament/Resources/AirtimeDiscounts/Pages/ListAirtimeDiscounts.php:7
+ * @route '//admin.localhost/airtime-discounts'
+ */
+    const ListAirtimeDiscountsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ListAirtimeDiscounts.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\AirtimeDiscounts\Pages\ListAirtimeDiscounts::__invoke
+ * @see app/Filament/Resources/AirtimeDiscounts/Pages/ListAirtimeDiscounts.php:7
+ * @route '//admin.localhost/airtime-discounts'
+ */
+        ListAirtimeDiscountsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListAirtimeDiscounts.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\AirtimeDiscounts\Pages\ListAirtimeDiscounts::__invoke
+ * @see app/Filament/Resources/AirtimeDiscounts/Pages/ListAirtimeDiscounts.php:7
+ * @route '//admin.localhost/airtime-discounts'
+ */
+        ListAirtimeDiscountsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ListAirtimeDiscounts.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ListAirtimeDiscounts.form = ListAirtimeDiscountsForm
 export default ListAirtimeDiscounts

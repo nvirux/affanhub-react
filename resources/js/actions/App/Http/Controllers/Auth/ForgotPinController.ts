@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\ForgotPinController::create
  * @see app/Http/Controllers/Auth/ForgotPinController.php:19
@@ -42,6 +42,41 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
+    /**
+* @see \App\Http\Controllers\Auth\ForgotPinController::create
+ * @see app/Http/Controllers/Auth/ForgotPinController.php:19
+ * @route '/forgot-pin'
+ */
+    const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: create.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Auth\ForgotPinController::create
+ * @see app/Http/Controllers/Auth/ForgotPinController.php:19
+ * @route '/forgot-pin'
+ */
+        createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: create.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\Auth\ForgotPinController::create
+ * @see app/Http/Controllers/Auth/ForgotPinController.php:19
+ * @route '/forgot-pin'
+ */
+        createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: create.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    create.form = createForm
 /**
 * @see \App\Http\Controllers\Auth\ForgotPinController::store
  * @see app/Http/Controllers/Auth/ForgotPinController.php:31
@@ -76,6 +111,27 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     method: 'post',
 })
 
+    /**
+* @see \App\Http\Controllers\Auth\ForgotPinController::store
+ * @see app/Http/Controllers/Auth/ForgotPinController.php:31
+ * @route '/forgot-pin'
+ */
+    const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: store.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Auth\ForgotPinController::store
+ * @see app/Http/Controllers/Auth/ForgotPinController.php:31
+ * @route '/forgot-pin'
+ */
+        storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: store.url(options),
+            method: 'post',
+        })
+    
+    store.form = storeForm
 /**
 * @see \App\Http\Controllers\Auth\ForgotPinController::edit
  * @see app/Http/Controllers/Auth/ForgotPinController.php:76
@@ -138,6 +194,41 @@ edit.head = (args: { token: string | number } | [token: string | number ] | stri
     method: 'head',
 })
 
+    /**
+* @see \App\Http\Controllers\Auth\ForgotPinController::edit
+ * @see app/Http/Controllers/Auth/ForgotPinController.php:76
+ * @route '/reset-pin/{token}'
+ */
+    const editForm = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: edit.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Auth\ForgotPinController::edit
+ * @see app/Http/Controllers/Auth/ForgotPinController.php:76
+ * @route '/reset-pin/{token}'
+ */
+        editForm.get = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\Auth\ForgotPinController::edit
+ * @see app/Http/Controllers/Auth/ForgotPinController.php:76
+ * @route '/reset-pin/{token}'
+ */
+        editForm.head = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    edit.form = editForm
 /**
 * @see \App\Http\Controllers\Auth\ForgotPinController::update
  * @see app/Http/Controllers/Auth/ForgotPinController.php:93
@@ -171,6 +262,28 @@ update.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: update.url(options),
     method: 'post',
 })
+
+    /**
+* @see \App\Http\Controllers\Auth\ForgotPinController::update
+ * @see app/Http/Controllers/Auth/ForgotPinController.php:93
+ * @route '/reset-pin'
+ */
+    const updateForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: update.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Auth\ForgotPinController::update
+ * @see app/Http/Controllers/Auth/ForgotPinController.php:93
+ * @route '/reset-pin'
+ */
+        updateForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: update.url(options),
+            method: 'post',
+        })
+    
+    update.form = updateForm
 const ForgotPinController = { create, store, edit, update }
 
 export default ForgotPinController

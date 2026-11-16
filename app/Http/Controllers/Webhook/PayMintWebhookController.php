@@ -125,9 +125,11 @@ class PayMintWebhookController extends Controller
                 $senderName = $data['sender']['name'] ?? 'Bank Transfer';
                 $senderBank = $data['sender']['bank_name'] ?? 'Bank';
 
-                // 1. Calculate Base Platform Gateway Fee (Set by Super Admin)
+                // 1. Calculate Base Platform Gateway Fee (Set by Super Admin, e.g. 1% capped at ₦1,000)
                 $adminFeePercent = (float) PlatformSetting::get('paymint_fee_percent', 1.0);
-                $adminFee = round(($amount * $adminFeePercent) / 100, 2);
+                $maxFeeCap = (float) PlatformSetting::get('paymint_max_fee_cap', 1000.0);
+                $calculatedFee = round(($amount * $adminFeePercent) / 100, 2);
+                $adminFee = $maxFeeCap > 0 ? min($calculatedFee, $maxFeeCap) : $calculatedFee;
                 $storeNetAmount = max(0, round($amount - $adminFee, 2));
 
                 if ($holder instanceof User) {

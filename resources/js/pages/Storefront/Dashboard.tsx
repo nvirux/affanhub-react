@@ -901,7 +901,7 @@ export default function Dashboard() {
                                         {store?.customer_funding_fee_type === 'flat' && Number(store?.customer_funding_fee_amount) > 0
                                             ? `Instant • ₦${Number(store.customer_funding_fee_amount).toLocaleString()} Fee`
                                             : store?.customer_funding_fee_type === 'percentage' && Number(store?.customer_funding_fee_amount) > 0
-                                            ? `Instant • ${store.customer_funding_fee_amount}% Fee`
+                                            ? `Instant • ${store.customer_funding_fee_amount}% Fee${Number(store?.customer_funding_fee_cap) > 0 ? ` (Max ₦${Number(store.customer_funding_fee_cap).toLocaleString()})` : ''}`
                                             : 'Instant • 0% Fee'}
                                     </span>
                                 </div>
@@ -966,7 +966,7 @@ export default function Dashboard() {
                                             {store?.customer_funding_fee_type === 'flat' && Number(store?.customer_funding_fee_amount) > 0
                                                 ? `₦${Number(store.customer_funding_fee_amount).toLocaleString()} Transfer Fee`
                                                 : store?.customer_funding_fee_type === 'percentage' && Number(store?.customer_funding_fee_amount) > 0
-                                                ? `${store.customer_funding_fee_amount}% Transfer Fee`
+                                                ? `${store.customer_funding_fee_amount}% Transfer Fee${Number(store?.customer_funding_fee_cap) > 0 ? ` (Max ₦${Number(store.customer_funding_fee_cap).toLocaleString()})` : ''}`
                                                 : '0% Transfer Fee (Free)'}
                                         </span>
                                     </div>

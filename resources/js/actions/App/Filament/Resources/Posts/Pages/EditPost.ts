@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Posts\Pages\EditPost::__invoke
  * @see app/Filament/Resources/Posts/Pages/EditPost.php:7
@@ -60,4 +60,40 @@ EditPost.head = (args: { record: string | number } | [record: string | number ] 
     url: EditPost.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\Posts\Pages\EditPost::__invoke
+ * @see app/Filament/Resources/Posts/Pages/EditPost.php:7
+ * @route '//admin.localhost/posts/{record}/edit'
+ */
+    const EditPostForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: EditPost.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\Posts\Pages\EditPost::__invoke
+ * @see app/Filament/Resources/Posts/Pages/EditPost.php:7
+ * @route '//admin.localhost/posts/{record}/edit'
+ */
+        EditPostForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditPost.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\Posts\Pages\EditPost::__invoke
+ * @see app/Filament/Resources/Posts/Pages/EditPost.php:7
+ * @route '//admin.localhost/posts/{record}/edit'
+ */
+        EditPostForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: EditPost.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    EditPost.form = EditPostForm
 export default EditPost

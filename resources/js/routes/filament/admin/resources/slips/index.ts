@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Resources\Slips\Pages\ListSlips::__invoke
  * @see app/Filament/Resources/Slips/Pages/ListSlips.php:7
@@ -42,6 +42,41 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
+    /**
+* @see \App\Filament\Resources\Slips\Pages\ListSlips::__invoke
+ * @see app/Filament/Resources/Slips/Pages/ListSlips.php:7
+ * @route '//admin.localhost/slips'
+ */
+    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: index.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\Slips\Pages\ListSlips::__invoke
+ * @see app/Filament/Resources/Slips/Pages/ListSlips.php:7
+ * @route '//admin.localhost/slips'
+ */
+        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\Slips\Pages\ListSlips::__invoke
+ * @see app/Filament/Resources/Slips/Pages/ListSlips.php:7
+ * @route '//admin.localhost/slips'
+ */
+        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    index.form = indexForm
 /**
 * @see \App\Filament\Resources\Slips\Pages\CreateSlip::__invoke
  * @see app/Filament/Resources/Slips/Pages/CreateSlip.php:7
@@ -85,6 +120,41 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
+    /**
+* @see \App\Filament\Resources\Slips\Pages\CreateSlip::__invoke
+ * @see app/Filament/Resources/Slips/Pages/CreateSlip.php:7
+ * @route '//admin.localhost/slips/create'
+ */
+    const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: create.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\Slips\Pages\CreateSlip::__invoke
+ * @see app/Filament/Resources/Slips/Pages/CreateSlip.php:7
+ * @route '//admin.localhost/slips/create'
+ */
+        createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: create.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\Slips\Pages\CreateSlip::__invoke
+ * @see app/Filament/Resources/Slips/Pages/CreateSlip.php:7
+ * @route '//admin.localhost/slips/create'
+ */
+        createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: create.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    create.form = createForm
 /**
 * @see \App\Filament\Resources\Slips\Pages\EditSlip::__invoke
  * @see app/Filament/Resources/Slips/Pages/EditSlip.php:7
@@ -146,6 +216,42 @@ edit.head = (args: { record: string | number } | [record: string | number ] | st
     url: edit.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Resources\Slips\Pages\EditSlip::__invoke
+ * @see app/Filament/Resources/Slips/Pages/EditSlip.php:7
+ * @route '//admin.localhost/slips/{record}/edit'
+ */
+    const editForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: edit.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Resources\Slips\Pages\EditSlip::__invoke
+ * @see app/Filament/Resources/Slips/Pages/EditSlip.php:7
+ * @route '//admin.localhost/slips/{record}/edit'
+ */
+        editForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Resources\Slips\Pages\EditSlip::__invoke
+ * @see app/Filament/Resources/Slips/Pages/EditSlip.php:7
+ * @route '//admin.localhost/slips/{record}/edit'
+ */
+        editForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    edit.form = editForm
 const slips = {
     index: Object.assign(index, index),
 create: Object.assign(create, create),

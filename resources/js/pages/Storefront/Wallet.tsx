@@ -306,7 +306,7 @@ export default function WalletPage({
                                 {store?.customer_funding_fee_type === 'flat' && Number(store?.customer_funding_fee_amount) > 0
                                     ? `₦${Number(store.customer_funding_fee_amount).toLocaleString()} Fee`
                                     : store?.customer_funding_fee_type === 'percentage' && Number(store?.customer_funding_fee_amount) > 0
-                                    ? `${store.customer_funding_fee_amount}% Fee`
+                                    ? `${store.customer_funding_fee_amount}% Fee${Number(store?.customer_funding_fee_cap) > 0 ? ` (Max ₦${Number(store.customer_funding_fee_cap).toLocaleString()})` : ''}`
                                     : '0% Fee (Free)'}
                             </span>
                         </span>

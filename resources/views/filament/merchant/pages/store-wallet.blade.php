@@ -362,13 +362,62 @@
         }
     </style>
 
-    <div class="wallet-page-wrap">
+    <div 
+        class="wallet-page-wrap"
+        x-data="{
+            activeTab: @entangle('activeTab').live,
+            init() {
+                const getTabFromHash = () => {
+                    const raw = (window.location.hash || '').replace('#', '').trim().toLowerCase();
+                    if (!raw) return null;
+                    const map = {
+                        'overview': 'overview',
+                        'wallets': 'overview',
+                        'funding': 'overview',
+                        'payouts': 'payouts',
+                        'withdrawals': 'payouts',
+                        'settlement': 'payouts',
+                        'policy': 'policy',
+                        'fee': 'policy',
+                        'fees': 'policy',
+                        'funding-fee': 'policy'
+                    };
+                    return map[raw] || null;
+                };
+
+                const initial = getTabFromHash();
+                if (initial) {
+                    this.activeTab = initial;
+                } else if (this.activeTab) {
+                    window.history.replaceState(null, '', '#' + this.activeTab);
+                }
+
+                window.addEventListener('hashchange', () => {
+                    const next = getTabFromHash();
+                    if (next && next !== this.activeTab) {
+                        this.activeTab = next;
+                    }
+                });
+
+                this.$watch('activeTab', (value) => {
+                    if (value && window.location.hash.replace('#', '') !== value) {
+                        window.history.replaceState(null, '', '#' + value);
+                    }
+                });
+            },
+            selectTab(tab) {
+                this.activeTab = tab;
+                window.history.pushState(null, '', '#' + tab);
+            }
+        }"
+    >
         
         {{-- TOP NAVIGATION TABS --}}
         <div class="wallet-nav-tabs">
             <button 
                 type="button" 
-                wire:click="setTab('overview')"
+                @click="selectTab('overview')"
+                :class="activeTab === 'overview' ? 'active' : ''"
                 class="wallet-tab-btn {{ $activeTab === 'overview' ? 'active' : '' }}"
             >
                 <svg style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -379,7 +428,8 @@
 
             <button 
                 type="button" 
-                wire:click="setTab('payouts')"
+                @click="selectTab('payouts')"
+                :class="activeTab === 'payouts' ? 'active' : ''"
                 class="wallet-tab-btn {{ $activeTab === 'payouts' ? 'active' : '' }}"
             >
                 <svg style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -390,7 +440,8 @@
 
             <button 
                 type="button" 
-                wire:click="setTab('policy')"
+                @click="selectTab('policy')"
+                :class="activeTab === 'policy' ? 'active' : ''"
                 class="wallet-tab-btn {{ $activeTab === 'policy' ? 'active' : '' }}"
             >
                 <svg style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -450,7 +501,7 @@
                         </div>
                         <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f3f4f6; padding-top: 0.75rem; margin-top: 0.25rem;" class="dark:border-gray-800">
                             <span style="font-size: 0.75rem; color: #6b7280;">Payout Fee: ₦100.00 • Min: ₦1,000.00</span>
-                            <button type="button" wire:click="setTab('payouts')" style="background: none; border: none; padding: 0; color: #2563eb; font-size: 0.75rem; font-weight: 600; cursor: pointer;">
+                            <button type="button" @click="selectTab('payouts')" style="background: none; border: none; padding: 0; color: #2563eb; font-size: 0.75rem; font-weight: 600; cursor: pointer;">
                                 View Payouts →
                             </button>
                         </div>
@@ -723,58 +774,309 @@
 
         {{-- TAB 3: CUSTOMER FUNDING FEE POLICY --}}
         @if($activeTab === 'policy')
-            <div class="wallet-card">
-                <div>
-                    <h4 style="font-size: 0.9375rem; font-weight: 700; color: #111827; margin: 0;" class="dark:text-white">
-                        Customer Funding Fee Settings
-                    </h4>
-                    <p style="font-size: 0.8125rem; color: #6b7280; margin: 0.25rem 0 0 0;">
-                        Configure whether to absorb or pass through bank gateway processing charges when your retail customers fund their accounts.
-                    </p>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 560px; margin-top: 0.5rem;">
-                    <div>
-                        <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 0.375rem;" class="dark:text-gray-300">
-                            Fee Policy
-                        </label>
-                        <select wire:model.live="customerFeeType" class="wallet-input">
-                            <option value="free">Free (Store absorbs all gateway charges)</option>
-                            <option value="flat">Flat Fee per Funding Deposit</option>
-                            <option value="percentage">Percentage Fee with Maximum Cap</option>
-                        </select>
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                
+                {{-- OVERVIEW & PLATFORM FEE TRANSPARENCY CARDS --}}
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                    
+                    {{-- Platform Gateway Cost Card --}}
+                    <div class="wallet-card">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <span class="wallet-badge">Platform Base Gateway Fee</span>
+                            <span class="wallet-badge wallet-badge-warning">Cost to Store</span>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0.25rem 0;" class="dark:text-white">
+                                {{ $this->getPlatformFeePercent() }}% <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">(Max ₦{{ number_format($this->getPlatformFeeCap(), 2) }})</span>
+                            </h3>
+                            <p style="font-size: 0.75rem; color: #6b7280; margin: 0;">
+                                The standard processing fee charged by our banking infrastructure provider on incoming customer virtual account deposits.
+                            </p>
+                        </div>
+                        <div style="border-top: 1px solid #f3f4f6; padding-top: 0.5rem; font-size: 0.75rem; color: #6b7280;" class="dark:border-gray-800">
+                            Capped at ₦{{ number_format($this->getPlatformFeeCap(), 0) }} for high-volume deposits.
+                        </div>
                     </div>
 
-                    @if($customerFeeType === 'flat')
+                    {{-- Current Store Policy Card --}}
+                    <div class="wallet-card">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <span class="wallet-badge">Your Active Customer Policy</span>
+                            @if($customerFeeType === 'free')
+                                <span class="wallet-badge wallet-badge-danger">Store Pays Fee</span>
+                            @elseif($customerFeeType === 'percentage' && $customerFeeAmount == $this->getPlatformFeePercent() && $customerFeeCap == $this->getPlatformFeeCap())
+                                <span class="wallet-badge wallet-badge-success">Standard Protected</span>
+                            @elseif($customerFeeType === 'percentage' && $customerFeeAmount > $this->getPlatformFeePercent())
+                                <span class="wallet-badge wallet-badge-success">Profitable Markup</span>
+                            @else
+                                <span class="wallet-badge">Custom Config</span>
+                            @endif
+                        </div>
+                        <div>
+                            <h3 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0.25rem 0;" class="dark:text-white">
+                                @if($customerFeeType === 'free')
+                                    0% (Free Funding)
+                                @elseif($customerFeeType === 'flat')
+                                    ₦{{ number_format($customerFeeAmount, 2) }} Flat Fee
+                                @else
+                                    {{ $customerFeeAmount }}% <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">(Max ₦{{ number_format($customerFeeCap, 2) }})</span>
+                                @endif
+                            </h3>
+                            <p style="font-size: 0.75rem; color: #6b7280; margin: 0;">
+                                @if($customerFeeType === 'free')
+                                    Your store absorbs all gateway fees from your Operating Balance. Customers receive 100% of their deposit.
+                                @elseif($customerFeeType === 'flat')
+                                    Customers pay a fixed ₦{{ number_format($customerFeeAmount, 2) }} charge per bank transfer regardless of the amount.
+                                @else
+                                    Customers pay a {{ $customerFeeAmount }}% transfer fee (maximum ₦{{ number_format($customerFeeCap, 2) }}).
+                                @endif
+                            </p>
+                        </div>
+                        <div style="border-top: 1px solid #f3f4f6; padding-top: 0.5rem; font-size: 0.75rem; color: #6b7280;" class="dark:border-gray-800">
+                            Visible to your customers on their storefront funding screen.
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- INFO ALERT --}}
+                <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 1rem 1.25rem; display: flex; align-items: flex-start; gap: 0.75rem;" class="dark:bg-blue-950/40 dark:border-blue-900">
+                    <svg style="width: 20px; height: 20px; color: #2563eb; flex-shrink: 0; margin-top: 2px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div style="font-size: 0.8125rem; color: #1e40af; line-height: 1.5;" class="dark:text-blue-300">
+                        <strong style="font-weight: 700;">Platform Default (1% capped at ₦1,000):</strong>
+                        We automatically configure your customer funding fee to match the platform's base gateway cost (1% capped at ₦1,000). This guarantees that your business never loses money when retail customers deposit funds into their wallets.
+                    </div>
+                </div>
+
+                {{-- SETTINGS FORM CARD --}}
+                <div class="wallet-card">
+                    <div>
+                        <h4 style="font-size: 0.9375rem; font-weight: 700; color: #111827; margin: 0;" class="dark:text-white">
+                            Configure Customer Funding Fee Policy
+                        </h4>
+                        <p style="font-size: 0.8125rem; color: #6b7280; margin: 0.25rem 0 0 0;">
+                            Choose how gateway processing charges are handled on your store.
+                        </p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 1.125rem; max-width: 580px; margin-top: 0.5rem;">
                         <div>
                             <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 0.375rem;" class="dark:text-gray-300">
-                                Flat Fee Amount (₦)
+                                Fee Policy Type
                             </label>
-                            <input type="number" step="0.01" wire:model="customerFeeAmount" class="wallet-input" placeholder="e.g. 50" />
+                            <select wire:model.live="customerFeeType" class="wallet-input">
+                                <option value="percentage">Percentage Fee with Maximum Cap (Recommended - Platform Standard)</option>
+                                <option value="flat">Flat Fee per Funding Deposit (Fixed ₦ Amount)</option>
+                                <option value="free">Free (Store absorbs all gateway charges)</option>
+                            </select>
+                            @error('customerFeeType')
+                                <span style="display: block; font-size: 0.75rem; color: #ef4444; margin-top: 0.25rem;">{{ $message }}</span>
+                            @enderror
                         </div>
-                    @elseif($customerFeeType === 'percentage')
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                            <div>
-                                <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 0.375rem;" class="dark:text-gray-300">
-                                    Fee Percentage (%)
-                                </label>
-                                <input type="number" step="0.01" wire:model="customerFeeAmount" class="wallet-input" placeholder="e.g. 1.5" />
-                            </div>
-                            <div>
-                                <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 0.375rem;" class="dark:text-gray-300">
-                                    Maximum Cap (₦)
-                                </label>
-                                <input type="number" step="0.01" wire:model="customerFeeCap" class="wallet-input" placeholder="e.g. 100" />
-                            </div>
-                        </div>
-                    @endif
 
-                    <div style="padding-top: 0.5rem;">
-                        <button type="button" wire:click="saveFundingFeeSettings" class="wallet-btn-primary">
-                            Save Policy Changes
-                        </button>
+                        @if($customerFeeType === 'flat')
+                            <div>
+                                <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 0.375rem;" class="dark:text-gray-300">
+                                    Flat Fee Amount (₦)
+                                </label>
+                                <input type="number" step="0.01" min="0" wire:model="customerFeeAmount" class="wallet-input" placeholder="e.g. 50" />
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 0.5rem;">
+                                    <button type="button" wire:click="$set('customerFeeAmount', 50.0)" class="wallet-chip-btn">₦50.00</button>
+                                    <button type="button" wire:click="$set('customerFeeAmount', 100.0)" class="wallet-chip-btn">₦100.00</button>
+                                    <button type="button" wire:click="$set('customerFeeAmount', 150.0)" class="wallet-chip-btn">₦150.00</button>
+                                    <button type="button" wire:click="$set('customerFeeAmount', 200.0)" class="wallet-chip-btn">₦200.00</button>
+                                </div>
+                                @error('customerFeeAmount')
+                                    <span style="display: block; font-size: 0.75rem; color: #ef4444; margin-top: 0.25rem;">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        @elseif($customerFeeType === 'percentage')
+                            <div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <div>
+                                        <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 0.375rem;" class="dark:text-gray-300">
+                                            Fee Percentage (%)
+                                        </label>
+                                        <input type="number" step="0.01" min="0" max="100" wire:model="customerFeeAmount" class="wallet-input" placeholder="e.g. 1.0" />
+                                        @error('customerFeeAmount')
+                                            <span style="display: block; font-size: 0.75rem; color: #ef4444; margin-top: 0.25rem;">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 0.375rem;" class="dark:text-gray-300">
+                                            Maximum Cap (₦)
+                                        </label>
+                                        <input type="number" step="0.01" min="0" wire:model="customerFeeCap" class="wallet-input" placeholder="e.g. 1000" />
+                                        @error('customerFeeCap')
+                                            <span style="display: block; font-size: 0.75rem; color: #ef4444; margin-top: 0.25rem;">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 0.5rem;">
+                                    <button type="button" wire:click="$set('customerFeeAmount', 1.0); $set('customerFeeCap', 1000.0);" class="wallet-chip-btn">
+                                        1.0% (Cap ₦1,000) • Platform Standard
+                                    </button>
+                                    <button type="button" wire:click="$set('customerFeeAmount', 1.5); $set('customerFeeCap', 1500.0);" class="wallet-chip-btn">
+                                        1.5% (Cap ₦1,500) • +0.5% Store Profit
+                                    </button>
+                                    <button type="button" wire:click="$set('customerFeeAmount', 2.0); $set('customerFeeCap', 2000.0);" class="wallet-chip-btn">
+                                        2.0% (Cap ₦2,000) • +1.0% Store Profit
+                                    </button>
+                                </div>
+                            </div>
+                        @else
+                            <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 0.875rem 1rem; color: #991b1b; font-size: 0.8125rem;" class="dark:bg-red-950/40 dark:border-red-900 dark:text-red-300">
+                                <strong>Caution:</strong> When set to Free, your customers are credited 100% of their deposit, and your store absorbs the 1% platform fee (capped at ₦1,000) from your Operating Balance on every deposit.
+                            </div>
+                        @endif
+
+                        <div style="display: flex; align-items: center; gap: 0.75rem; padding-top: 0.5rem; flex-wrap: wrap;">
+                            <button 
+                                type="button" 
+                                wire:click="saveFundingFeeSettings" 
+                                wire:loading.attr="disabled"
+                                class="wallet-btn-primary"
+                            >
+                                <span wire:loading.remove wire:target="saveFundingFeeSettings">Save Policy Changes</span>
+                                <span wire:loading wire:target="saveFundingFeeSettings">Saving...</span>
+                            </button>
+
+                            <button 
+                                type="button" 
+                                wire:click="resetToPlatformDefault" 
+                                class="wallet-btn-secondary"
+                            >
+                                Reset to Platform Default (1% Cap ₦1,000)
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                {{-- FREQUENTLY ASKED QUESTIONS (FAQ) --}}
+                <div class="wallet-card">
+                    <div>
+                        <h4 style="font-size: 0.9375rem; font-weight: 700; color: #111827; margin: 0;" class="dark:text-white">
+                            Frequently Asked Questions (FAQ)
+                        </h4>
+                        <p style="font-size: 0.8125rem; color: #6b7280; margin: 0.25rem 0 0 0;">
+                            Everything you need to know about customer wallet deposits and funding fees.
+                        </p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;" x-data="{ openFaq: null }">
+                        
+                        {{-- FAQ 1 --}}
+                        <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.875rem 1rem; background-color: #f9fafb;" class="dark:border-gray-800 dark:bg-gray-800/50">
+                            <button 
+                                type="button" 
+                                @click="openFaq = openFaq === 1 ? null : 1" 
+                                style="width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 0; text-align: left; cursor: pointer;"
+                            >
+                                <span style="font-size: 0.875rem; font-weight: 600; color: #111827;" class="dark:text-white">
+                                    What is the Customer Funding Fee?
+                                </span>
+                                <span style="font-size: 1.125rem; line-height: 1; color: #6b7280;" x-text="openFaq === 1 ? '−' : '+'"></span>
+                            </button>
+                            <div x-show="openFaq === 1" x-collapse style="margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.5; color: #4b5563;" class="dark:text-gray-300">
+                                When your end-customers fund their virtual wallets via bank transfer, the banking gateway provider charges a transaction processing fee. This setting allows you to choose whether your store absorbs this fee from your operating balance or passes it through to the customer during deposit.
+                            </div>
+                        </div>
+
+                        {{-- FAQ 2 --}}
+                        <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.875rem 1rem; background-color: #f9fafb;" class="dark:border-gray-800 dark:bg-gray-800/50">
+                            <button 
+                                type="button" 
+                                @click="openFaq = openFaq === 2 ? null : 2" 
+                                style="width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 0; text-align: left; cursor: pointer;"
+                            >
+                                <span style="font-size: 0.875rem; font-weight: 600; color: #111827;" class="dark:text-white">
+                                    What fee does AffanHub charge my store?
+                                </span>
+                                <span style="font-size: 1.125rem; line-height: 1; color: #6b7280;" x-text="openFaq === 2 ? '−' : '+'"></span>
+                            </button>
+                            <div x-show="openFaq === 2" x-collapse style="margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.5; color: #4b5563;" class="dark:text-gray-300">
+                                AffanHub's payment gateway charges exactly <strong>1% per deposit, capped at ₦1,000.00</strong>.
+                                <ul style="margin: 0.5rem 0 0 1.25rem; padding: 0; list-style-type: disc;">
+                                    <li>On a <strong>₦2,000</strong> deposit: the fee is <strong>₦20.00</strong>.</li>
+                                    <li>On a <strong>₦10,000</strong> deposit: the fee is <strong>₦100.00</strong>.</li>
+                                    <li>On a <strong>₦200,000</strong> deposit: 1% would be ₦2,000, but because of the cap, the fee is only <strong>₦1,000.00</strong>.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {{-- FAQ 3 --}}
+                        <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.875rem 1rem; background-color: #f9fafb;" class="dark:border-gray-800 dark:bg-gray-800/50">
+                            <button 
+                                type="button" 
+                                @click="openFaq = openFaq === 3 ? null : 3" 
+                                style="width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 0; text-align: left; cursor: pointer;"
+                            >
+                                <span style="font-size: 0.875rem; font-weight: 600; color: #111827;" class="dark:text-white">
+                                    Why was my store automatically set to 1% capped at ₦1,000?
+                                </span>
+                                <span style="font-size: 1.125rem; line-height: 1; color: #6b7280;" x-text="openFaq === 3 ? '−' : '+'"></span>
+                            </button>
+                            <div x-show="openFaq === 3" x-collapse style="margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.5; color: #4b5563;" class="dark:text-gray-300">
+                                Previously, store deposit policy defaulted to "Free", which meant merchants were unknowingly absorbing all gateway processing fees whenever their customers funded their accounts. To protect your business finances and eliminate negative balances, the system now automatically aligns your deposit policy with the platform's standard 1% fee (capped at ₦1,000).
+                            </div>
+                        </div>
+
+                        {{-- FAQ 4 --}}
+                        <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.875rem 1rem; background-color: #f9fafb;" class="dark:border-gray-800 dark:bg-gray-800/50">
+                            <button 
+                                type="button" 
+                                @click="openFaq = openFaq === 4 ? null : 4" 
+                                style="width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 0; text-align: left; cursor: pointer;"
+                            >
+                                <span style="font-size: 0.875rem; font-weight: 600; color: #111827;" class="dark:text-white">
+                                    Can I change my policy back to Free or Flat Fee?
+                                </span>
+                                <span style="font-size: 1.125rem; line-height: 1; color: #6b7280;" x-text="openFaq === 4 ? '−' : '+'"></span>
+                            </button>
+                            <div x-show="openFaq === 4" x-collapse style="margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.5; color: #4b5563;" class="dark:text-gray-300">
+                                Yes, you have full control over your storefront pricing. If you choose <strong>Free</strong>, your customers will not be charged anything, but your store's Operating Balance will pay the 1% platform fee. If you choose <strong>Flat Fee</strong>, a fixed amount (e.g. ₦50 or ₦100) will be deducted on every deposit regardless of size.
+                            </div>
+                        </div>
+
+                        {{-- FAQ 5 --}}
+                        <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.875rem 1rem; background-color: #f9fafb;" class="dark:border-gray-800 dark:bg-gray-800/50">
+                            <button 
+                                type="button" 
+                                @click="openFaq = openFaq === 5 ? null : 5" 
+                                style="width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 0; text-align: left; cursor: pointer;"
+                            >
+                                <span style="font-size: 0.875rem; font-weight: 600; color: #111827;" class="dark:text-white">
+                                    Can I earn extra profit from customer deposits?
+                                </span>
+                                <span style="font-size: 1.125rem; line-height: 1; color: #6b7280;" x-text="openFaq === 5 ? '−' : '+'"></span>
+                            </button>
+                            <div x-show="openFaq === 5" x-collapse style="margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.5; color: #4b5563;" class="dark:text-gray-300">
+                                Yes! If you set your customer fee higher than the 1% platform fee (for example, 1.5% with a ₦1,500 cap), the 1.0% platform fee covers the bank gateway, and the remaining <strong>0.5% surplus is automatically credited straight to your Store Profit Wallet</strong> as pure profit.
+                            </div>
+                        </div>
+
+                        {{-- FAQ 6 --}}
+                        <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.875rem 1rem; background-color: #f9fafb;" class="dark:border-gray-800 dark:bg-gray-800/50">
+                            <button 
+                                type="button" 
+                                @click="openFaq = openFaq === 6 ? null : 6" 
+                                style="width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 0; text-align: left; cursor: pointer;"
+                            >
+                                <span style="font-size: 0.875rem; font-weight: 600; color: #111827;" class="dark:text-white">
+                                    What does the Maximum Fee Cap do?
+                                </span>
+                                <span style="font-size: 1.125rem; line-height: 1; color: #6b7280;" x-text="openFaq === 6 ? '−' : '+'"></span>
+                            </button>
+                            <div x-show="openFaq === 6" x-collapse style="margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.5; color: #4b5563;" class="dark:text-gray-300">
+                                The fee cap protects high-value depositors from excessive fees. For example, without a cap, a customer funding ₦500,000 would be charged ₦5,000. With the ₦1,000 cap, the fee stops at ₦1,000, encouraging your big customers and agents to fund larger amounts without hesitation.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         @endif
 

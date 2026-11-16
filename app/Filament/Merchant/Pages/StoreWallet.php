@@ -3,6 +3,7 @@
 namespace App\Filament\Merchant\Pages;
 
 use App\Models\ActivityLog;
+use App\Models\PlatformSetting;
 use App\Models\SettlementAccount;
 use App\Models\Withdrawal;
 use App\Services\Notification\AdminNotificationService;
@@ -56,11 +57,11 @@ class StoreWallet extends Page
     public string $phone = '';
 
     // Customer Funding Fee State
-    public string $customerFeeType = 'free'; // 'free', 'flat', 'percentage'
+    public string $customerFeeType = 'percentage'; // 'free', 'flat', 'percentage'
 
-    public float $customerFeeAmount = 0.0;
+    public float $customerFeeAmount = 1.0;
 
-    public float $customerFeeCap = 100.0;
+    public float $customerFeeCap = 1000.0;
 
     // Profit Withdrawal State
     public ?float $withdrawalAmount = null;
@@ -116,11 +117,24 @@ class StoreWallet extends Page
 
     public function mount(): void
     {
+        $tabParam = request()->query('tab');
+        if ($tabParam && in_array(strtolower($tabParam), ['overview', 'payouts', 'policy'])) {
+            $this->activeTab = strtolower($tabParam);
+        }
+
         $store = Filament::getTenant();
         if ($store) {
-            $this->customerFeeType = $store->customer_funding_fee_type ?? 'free';
-            $this->customerFeeAmount = (float) ($store->customer_funding_fee_amount ?? 0.0);
-            $this->customerFeeCap = (float) ($store->customer_funding_fee_cap ?? 100.0);
+            $platformFeeType = PlatformSetting::get('paymint_fee_type', 'percentage');
+            $platformFeePercent = (float) PlatformSetting::get('paymint_fee_percent', 1.0);
+            $platformFeeCap = (float) PlatformSetting::get('paymint_max_fee_cap', 1000.0);
+
+            $this->customerFeeType = $store->customer_funding_fee_type ?? $platformFeeType;
+            $this->customerFeeAmount = isset($store->customer_funding_fee_amount)
+                ? (float) $store->customer_funding_fee_amount
+                : $platformFeePercent;
+            $this->customerFeeCap = isset($store->customer_funding_fee_cap)
+                ? (float) $store->customer_funding_fee_cap
+                : $platformFeeCap;
 
             if ($store->owner) {
                 $this->phone = $store->owner->phone ?? '';
@@ -140,9 +154,34 @@ class StoreWallet extends Page
         }
     }
 
+    public function getPlatformFeePercent(): float
+    {
+        return (float) PlatformSetting::get('paymint_fee_percent', 1.0);
+    }
+
+    public function getPlatformFeeCap(): float
+    {
+        return (float) PlatformSetting::get('paymint_max_fee_cap', 1000.0);
+    }
+
+    public function resetToPlatformDefault(): void
+    {
+        $this->customerFeeType = 'percentage';
+        $this->customerFeeAmount = $this->getPlatformFeePercent();
+        $this->customerFeeCap = $this->getPlatformFeeCap();
+
+        Notification::make()
+            ->title('Reset to Platform Default')
+            ->body('Pre-filled with 1% and ₦1,000 cap. Click "Save Policy Changes" to apply.')
+            ->info()
+            ->send();
+    }
+
     public function setTab(string $tab): void
     {
-        $this->activeTab = $tab;
+        if (in_array($tab, ['overview', 'payouts', 'policy'])) {
+            $this->activeTab = $tab;
+        }
     }
 
     public function setWithdrawalAmount(float $amount): void
@@ -392,10 +431,26 @@ class StoreWallet extends Page
 
     public function saveFundingFeeSettings(): void
     {
-        $this->validate([
+        $rules = [
             'customerFeeType' => 'required|in:free,flat,percentage',
-            'customerFeeAmount' => 'required|numeric|min:0|max:100',
-            'customerFeeCap' => 'required|numeric|min:0|max:200',
+        ];
+
+        if ($this->customerFeeType === 'percentage') {
+            $rules['customerFeeAmount'] = 'required|numeric|min:0|max:100';
+            $rules['customerFeeCap'] = 'required|numeric|min:0|max:100000';
+        } elseif ($this->customerFeeType === 'flat') {
+            $rules['customerFeeAmount'] = 'required|numeric|min:0|max:50000';
+        }
+
+        $this->validate($rules, [
+            'customerFeeAmount.required' => $this->customerFeeType === 'flat' ? 'Please enter a flat fee amount in Naira.' : 'Please enter the fee percentage.',
+            'customerFeeAmount.numeric' => 'The fee amount must be a valid number.',
+            'customerFeeAmount.min' => 'Fee amount cannot be negative.',
+            'customerFeeAmount.max' => $this->customerFeeType === 'percentage' ? 'Fee percentage cannot exceed 100%.' : 'Fee amount is too high.',
+            'customerFeeCap.required' => 'Please enter the maximum fee cap in Naira.',
+            'customerFeeCap.numeric' => 'The fee cap must be a valid number.',
+            'customerFeeCap.min' => 'Fee cap cannot be negative.',
+            'customerFeeCap.max' => 'Fee cap cannot exceed ₦100,000.',
         ]);
 
         $store = Filament::getTenant();
@@ -407,13 +462,21 @@ class StoreWallet extends Page
         }
 
         $store->customer_funding_fee_type = $this->customerFeeType;
-        $store->customer_funding_fee_amount = $this->customerFeeType === 'free' ? 0.0 : $this->customerFeeAmount;
-        $store->customer_funding_fee_cap = $this->customerFeeCap;
+        if ($this->customerFeeType === 'free') {
+            $store->customer_funding_fee_amount = 0.0;
+            $store->customer_funding_fee_cap = 0.0;
+        } elseif ($this->customerFeeType === 'flat') {
+            $store->customer_funding_fee_amount = (float) $this->customerFeeAmount;
+            $store->customer_funding_fee_cap = null;
+        } else {
+            $store->customer_funding_fee_amount = (float) $this->customerFeeAmount;
+            $store->customer_funding_fee_cap = (float) $this->customerFeeCap;
+        }
         $store->save();
 
         Notification::make()
             ->title('Customer Funding Fee Saved!')
-            ->body('Your retail deposit policy has been updated.')
+            ->body('Your retail deposit policy has been updated successfully.')
             ->success()
             ->send();
     }

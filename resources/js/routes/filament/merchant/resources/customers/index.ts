@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Resources\CustomerResource\Pages\ListCustomers::__invoke
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/ListCustomers.php:7
@@ -66,6 +66,41 @@ index.head = (args: { tenant: string | number | { public_id: string | number } }
     method: 'head',
 })
 
+    /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\ListCustomers::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/ListCustomers.php:7
+ * @route '//merchant.localhost/{tenant}/customers'
+ */
+    const indexForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: index.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\ListCustomers::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/ListCustomers.php:7
+ * @route '//merchant.localhost/{tenant}/customers'
+ */
+        indexForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\ListCustomers::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/ListCustomers.php:7
+ * @route '//merchant.localhost/{tenant}/customers'
+ */
+        indexForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    index.form = indexForm
 /**
 * @see \App\Filament\Merchant\Resources\CustomerResource\Pages\CreateCustomer::__invoke
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/CreateCustomer.php:7
@@ -133,6 +168,41 @@ create.head = (args: { tenant: string | number | { public_id: string | number } 
     method: 'head',
 })
 
+    /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\CreateCustomer::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/CreateCustomer.php:7
+ * @route '//merchant.localhost/{tenant}/customers/create'
+ */
+    const createForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: create.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\CreateCustomer::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/CreateCustomer.php:7
+ * @route '//merchant.localhost/{tenant}/customers/create'
+ */
+        createForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: create.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\CreateCustomer::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/CreateCustomer.php:7
+ * @route '//merchant.localhost/{tenant}/customers/create'
+ */
+        createForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: create.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    create.form = createForm
 /**
 * @see \App\Filament\Merchant\Resources\CustomerResource\Pages\EditCustomer::__invoke
  * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
@@ -194,6 +264,42 @@ edit.head = (args: { tenant: string | number | { public_id: string | number }, r
     url: edit.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\EditCustomer::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
+ * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
+ */
+    const editForm = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: edit.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\EditCustomer::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
+ * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
+ */
+        editForm.get = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Resources\CustomerResource\Pages\EditCustomer::__invoke
+ * @see app/Filament/Merchant/Resources/CustomerResource/Pages/EditCustomer.php:7
+ * @route '//merchant.localhost/{tenant}/customers/{record}/edit'
+ */
+        editForm.head = (args: { tenant: string | number | { public_id: string | number }, record: string | number } | [tenant: string | number | { public_id: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    edit.form = editForm
 const customers = {
     index: Object.assign(index, index),
 create: Object.assign(create, create),

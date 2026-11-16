@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Filament\Merchant\Pages\PushNotifications::__invoke
  * @see app/Filament/Merchant/Pages/PushNotifications.php:7
@@ -65,4 +65,40 @@ PushNotifications.head = (args: { tenant: string | number | { public_id: string 
     url: PushNotifications.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \App\Filament\Merchant\Pages\PushNotifications::__invoke
+ * @see app/Filament/Merchant/Pages/PushNotifications.php:7
+ * @route '//merchant.localhost/{tenant}/push-notifications'
+ */
+    const PushNotificationsForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: PushNotifications.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Pages\PushNotifications::__invoke
+ * @see app/Filament/Merchant/Pages/PushNotifications.php:7
+ * @route '//merchant.localhost/{tenant}/push-notifications'
+ */
+        PushNotificationsForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: PushNotifications.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Pages\PushNotifications::__invoke
+ * @see app/Filament/Merchant/Pages/PushNotifications.php:7
+ * @route '//merchant.localhost/{tenant}/push-notifications'
+ */
+        PushNotificationsForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: PushNotifications.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    PushNotifications.form = PushNotificationsForm
 export default PushNotifications

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \Filament\Actions\Imports\Http\Controllers\DownloadImportFailureCsv::__invoke
  * @see vendor/filament/actions/src/Imports/Http/Controllers/DownloadImportFailureCsv.php:17
@@ -65,4 +65,40 @@ DownloadImportFailureCsv.head = (args: { import: string | number | { id: string 
     url: DownloadImportFailureCsv.url(args, options),
     method: 'head',
 })
+
+    /**
+* @see \Filament\Actions\Imports\Http\Controllers\DownloadImportFailureCsv::__invoke
+ * @see vendor/filament/actions/src/Imports/Http/Controllers/DownloadImportFailureCsv.php:17
+ * @route '/filament/imports/{import}/failed-rows/download'
+ */
+    const DownloadImportFailureCsvForm = (args: { import: string | number | { id: string | number } } | [importParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: DownloadImportFailureCsv.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \Filament\Actions\Imports\Http\Controllers\DownloadImportFailureCsv::__invoke
+ * @see vendor/filament/actions/src/Imports/Http/Controllers/DownloadImportFailureCsv.php:17
+ * @route '/filament/imports/{import}/failed-rows/download'
+ */
+        DownloadImportFailureCsvForm.get = (args: { import: string | number | { id: string | number } } | [importParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: DownloadImportFailureCsv.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \Filament\Actions\Imports\Http\Controllers\DownloadImportFailureCsv::__invoke
+ * @see vendor/filament/actions/src/Imports/Http/Controllers/DownloadImportFailureCsv.php:17
+ * @route '/filament/imports/{import}/failed-rows/download'
+ */
+        DownloadImportFailureCsvForm.head = (args: { import: string | number | { id: string | number } } | [importParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: DownloadImportFailureCsv.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    DownloadImportFailureCsv.form = DownloadImportFailureCsvForm
 export default DownloadImportFailureCsv
