@@ -89,7 +89,8 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
             case 'bvn_verification': return 'BVN Verify';
             case 'nin_modification': return 'NIN Mod';
             case 'bvn_modification': return 'BVN Mod';
-            case 'cac_registration': return 'CAC Reg';
+            case 'cac_registration':
+            case 'cac_services': return 'CAC Services';
             default: return svc.name;
         }
     };
@@ -111,7 +112,7 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
         { id: 9, key: 'bvn_verification', name: 'BVN Verify', icon: 'UserCheck', category: 'identity', sort_order: 9, is_available: true },
         { id: 10, key: 'nin_modification', name: 'NIN Mod', icon: 'Edit3', category: 'identity', sort_order: 10, is_available: true },
         { id: 11, key: 'bvn_modification', name: 'BVN Mod', icon: 'UserCheck', category: 'identity', sort_order: 11, is_available: true },
-        { id: 12, key: 'cac_registration', name: 'CAC Reg', icon: 'Briefcase', category: 'identity', sort_order: 12, is_available: true },
+        { id: 12, key: 'cac_services', name: 'CAC Services', icon: 'Briefcase', category: 'identity', sort_order: 12, is_available: true },
     ];
 
     const allVtu = services.filter((s) => s.category === 'vtu');

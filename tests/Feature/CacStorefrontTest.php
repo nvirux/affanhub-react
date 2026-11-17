@@ -47,8 +47,8 @@ beforeEach(function () {
 
     // Ensure central CAC service exists
     Service::firstOrCreate(
-        ['key' => 'cac_registration'],
-        ['name' => 'CAC Registration', 'category' => 'identity']
+        ['key' => 'cac_services'],
+        ['name' => 'CAC Services', 'category' => 'identity']
     );
 
     Storage::fake('public');

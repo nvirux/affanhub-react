@@ -3,6 +3,8 @@ import ninBd9d09 from './nin'
 import bvnC51c8d from './bvn'
 import modification88c75b from './modification'
 import verifications from './verifications'
+import cac from './cac'
+import cacServices from './cac-services'
 /**
 * @see \App\Http\Controllers\NinVerificationController::nin
  * @see app/Http/Controllers/NinVerificationController.php:24
@@ -400,6 +402,8 @@ ninModification: Object.assign(ninModification, ninModification),
 bvnModification: Object.assign(bvnModification, bvnModification),
 modification: Object.assign(modification, modification88c75b),
 verifications: Object.assign(verifications, verifications),
+cac: Object.assign(cac, cac),
+cacServices: Object.assign(cacServices, cacServices),
 }
 
 export default identity

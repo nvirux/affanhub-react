@@ -63,6 +63,7 @@ class MerchantPanelProvider extends PanelProvider
             ->navigationGroups([
                 'VTU Services',
                 'Identity Services',
+                'CAC Services',
                 'Finance & Wallet',
                 'Customers & Growth',
                 'Settings',

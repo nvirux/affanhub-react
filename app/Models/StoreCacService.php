@@ -135,7 +135,7 @@ class StoreCacService extends Model
      */
     public static function seedDefaultsForStore(Store $store): void
     {
-        $cacService = Service::where('key', 'cac_registration')->first();
+        $cacService = Service::whereIn('key', ['cac_services', 'cac_registration'])->first();
 
         $presets = [
             [
