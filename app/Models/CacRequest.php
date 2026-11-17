@@ -106,33 +106,21 @@ class CacRequest extends Model
 
         DB::transaction(function () use ($resultFilePath, $notes) {
             $store = $this->store;
-            $storeMainWallet = $store?->mainWallet();
             $profitWallet = $store?->profitWallet();
             $amount = (float) $this->amount_paid;
 
-            // Settle merchant profit: Move from Store Main Wallet to Profit Wallet
-            if ($this->settlement_type === 'online_profit_credit' && $storeMainWallet && $profitWallet && $amount > 0) {
+            // Settle merchant profit: Credit Profit Wallet directly from escrowed customer payment
+            if ($this->settlement_type === 'online_profit_credit' && $profitWallet && $amount > 0) {
                 $walletService = app(WalletService::class);
 
-                if ((float) $storeMainWallet->balance >= $amount) {
-                    $walletService->debit(
-                        $storeMainWallet,
-                        $amount,
-                        'cac_settlement_out',
-                        "Settlement transfer to profit for CAC order #{$this->reference}",
-                        ['order_reference' => $this->reference, 'service' => $this->service_name],
-                        'SETTLE_'.$this->reference
-                    );
-
-                    $walletService->credit(
-                        $profitWallet,
-                        $amount,
-                        'cac_profit',
-                        "Profit from {$this->service_name} order #{$this->reference}",
-                        ['order_reference' => $this->reference, 'customer_id' => $this->user_id],
-                        'PRF_'.$this->reference
-                    );
-                }
+                $walletService->credit(
+                    $profitWallet,
+                    $amount,
+                    'cac_profit',
+                    "Profit from {$this->service_name} order #{$this->reference}",
+                    ['order_reference' => $this->reference, 'customer_id' => $this->user_id],
+                    'PRF_'.$this->reference
+                );
             }
 
             $this->update([

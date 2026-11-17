@@ -99,6 +99,8 @@ class TransactionController extends Controller
                 'id' => $transaction->id,
                 'reference' => $transaction->reference,
                 'service_type' => $transaction->service_type,
+                'package_title' => $transaction->api_response['package_title'] ?? null,
+                'business_name' => $transaction->api_response['business_name'] ?? null,
                 'recipient' => $transaction->recipient,
                 'amount' => (float) $transaction->amount,
                 'discount' => (float) ($transaction->discount ?? 0.00),

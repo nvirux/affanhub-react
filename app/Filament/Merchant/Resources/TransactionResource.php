@@ -77,6 +77,7 @@ class TransactionResource extends Resource
                         'data' => 'info',
                         'cable' => 'warning',
                         'electricity' => 'danger',
+                        'cac_services', 'cac_registration' => 'info',
                         default => 'primary',
                     })
                     ->icon(fn (string $state): string => match (strtolower($state)) {
@@ -84,9 +85,16 @@ class TransactionResource extends Resource
                         'data' => 'heroicon-m-wifi',
                         'cable' => 'heroicon-m-tv',
                         'electricity' => 'heroicon-m-bolt',
+                        'cac_services', 'cac_registration' => 'heroicon-m-briefcase',
                         default => 'heroicon-m-shopping-bag',
                     })
-                    ->formatStateUsing(fn ($state) => strtoupper($state)),
+                    ->formatStateUsing(function ($state, Transaction $record) {
+                        if (in_array(strtolower($state), ['cac_services', 'cac_registration'])) {
+                            return $record->api_response['package_title'] ?? 'CAC Services';
+                        }
+
+                        return strtoupper(str_replace('_', ' ', $state));
+                    }),
 
                 TextColumn::make('recipient')
                     ->label('Beneficiary')

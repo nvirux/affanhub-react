@@ -227,11 +227,18 @@ test('merchant can complete cac order and attach certificate', function () {
     $order->refresh();
     expect($order->isProcessing())->toBeTrue();
 
+    // Store main wallet is 0.00
+    expect((float) ($this->store->mainWallet()?->balance ?? 0))->toBe(0.00);
+
     $cacService->complete($order, 'cac/certificates/cert_123.pdf', 'Registration approved');
 
     $order->refresh();
     expect($order->isCompleted())->toBeTrue();
     expect($order->result_file_path)->toBe('cac/certificates/cert_123.pdf');
+
+    // Merchant profit wallet should now have 25,000.00 credited
+    $profitWallet = $this->store->profitWallet();
+    expect((float) $profitWallet->balance)->toBe(25000.00);
 });
 
 test('merchant can reject cac order and funds are refunded to customer wallet', function () {

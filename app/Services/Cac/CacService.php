@@ -168,21 +168,8 @@ class CacService
                 'DEB_'.$reference
             );
 
-            // Settle online store main wallet credit
-            $storeMainWallet = $store->mainWallet();
-            if ($storeMainWallet) {
-                $this->walletService->credit(
-                    $storeMainWallet,
-                    $amount,
-                    'customer_cac_payment',
-                    "Customer payment received for {$service->name} (#{$reference})",
-                    [
-                        'order_reference' => $reference,
-                        'customer_id' => $user->id,
-                    ],
-                    'ORD_'.$reference
-                );
-            }
+            // Escrow: customer funds are held in platform escrow until merchant fulfills or rejects the application.
+            // This prevents premature merchant spending and ensures merchant approvals work even if merchant main wallet is 0.
 
             // Create CacRequest record
             return CacRequest::create([

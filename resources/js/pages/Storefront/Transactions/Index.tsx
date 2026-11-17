@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import {
     Search, Filter, ChevronLeft, ArrowRight, CheckCircle2,
     Clock, AlertCircle, Smartphone, Wifi, Receipt, RefreshCw,
-    ShieldCheck, Zap, Tv, ChevronDown
+    ShieldCheck, Zap, Tv, ChevronDown, Briefcase
 } from 'lucide-react';
 
 interface TransactionItem {
@@ -107,6 +107,13 @@ export default function TransactionsIndex({
                     label: 'Electricity',
                     icon: Zap,
                     colorClass: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
+                };
+            case 'cac_services':
+            case 'cac_registration':
+                return {
+                    label: 'CAC Service',
+                    icon: Briefcase,
+                    colorClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
                 };
             default:
                 return {

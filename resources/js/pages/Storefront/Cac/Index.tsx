@@ -787,30 +787,36 @@ export default function CacIndexPage({
             {/* Confirm Payment Sheet */}
             <ConfirmPaymentSheet
                 isOpen={isConfirmOpen}
-                onClose={() => setIsConfirmOpen(false)}
+                onOpenChange={setIsConfirmOpen}
                 onConfirm={handleConfirmSuccess}
-                title="Authorize CAC Registration"
-                subtitle="Review your application particulars and filing fee"
-                totalAmount={selectedPackage?.price || 0}
+                title={`Confirm ${selectedPackage?.name || 'Payment'}`}
+                amount={selectedPackage?.price || 0}
                 details={paymentDetails}
                 walletBalance={walletBalance}
+                isSubmitting={isSubmitting}
+                confirmButtonText="Confirm & Authorize"
+                fundWalletUrl="/wallet"
             />
 
             {/* Transaction PIN Sheet */}
-            <TransactionPinSheet
-                isOpen={isPinSheetOpen}
-                onClose={() => {
-                    if (!isSubmitting) {
-                        setIsPinSheetOpen(false);
-                        setPinError(null);
+            {selectedPackage && (
+                <TransactionPinSheet
+                    isOpen={isPinSheetOpen}
+                    onOpenChange={setIsPinSheetOpen}
+                    title="Authorize CAC Registration Payment"
+                    description={`Enter your 4-digit PIN to pay ₦${Number(selectedPackage.price).toLocaleString()} for ${selectedPackage.name}.`}
+                    summary={
+                        <div className="flex items-center justify-between text-xs">
+                            <span className="text-muted-foreground">{selectedPackage.name}</span>
+                            <span className="font-bold text-foreground">₦{Number(selectedPackage.price).toLocaleString()}</span>
+                        </div>
                     }
-                }}
-                onComplete={handlePinComplete}
-                title="Confirm with Transaction PIN"
-                description={`Enter your 4-digit PIN to pay ₦${(selectedPackage?.price || 0).toLocaleString()} for ${selectedPackage?.name || 'CAC Registration'}.`}
-                isLoading={isSubmitting}
-                error={pinError}
-            />
+                    isSubmitting={isSubmitting}
+                    error={pinError}
+                    onClearError={() => setPinError(null)}
+                    onSubmitPin={handlePinComplete}
+                />
+            )}
         </div>
     );
 }

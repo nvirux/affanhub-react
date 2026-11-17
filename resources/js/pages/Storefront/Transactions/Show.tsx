@@ -12,6 +12,8 @@ interface TransactionShowProps {
         id: number;
         reference: string;
         service_type: string;
+        package_title?: string | null;
+        business_name?: string | null;
         recipient: string;
         amount: number;
         discount?: number;
@@ -54,14 +56,16 @@ export default function TransactionShow({
           )}`
         : '/contact';
 
-    const isIdentityService = ['nin_verification', 'bvn_verification', 'nin', 'bvn'].includes(transaction.service_type);
+    const isIdentityService = ['nin_verification', 'bvn_verification', 'nin', 'bvn', 'cac_services', 'cac_registration'].includes(transaction.service_type);
     const serviceRoute = transaction.service_type === 'data'
         ? '/vtu/data'
         : (transaction.service_type === 'bvn_verification' || transaction.service_type === 'bvn')
             ? '/identity/bvn'
             : (transaction.service_type === 'nin_verification' || transaction.service_type === 'nin')
                 ? '/identity/nin'
-                : '/vtu/airtime';
+                : (transaction.service_type === 'cac_services' || transaction.service_type === 'cac_registration')
+                    ? '/cac'
+                    : '/vtu/airtime';
 
     return (
         <>
@@ -200,7 +204,7 @@ export default function TransactionShow({
                         <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800">
                             <span className="text-slate-400 dark:text-slate-500 font-medium">Service</span>
                             <span className="font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
-                                {transaction.service_type}
+                                {transaction.package_title || (['cac_services', 'cac_registration'].includes(transaction.service_type) ? 'CAC Service' : transaction.service_type.replace(/_/g, ' '))}
                             </span>
                         </div>
 
