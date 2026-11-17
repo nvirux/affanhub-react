@@ -227,8 +227,9 @@ test('merchant can complete cac order and attach certificate', function () {
     $order->refresh();
     expect($order->isProcessing())->toBeTrue();
 
-    // Store main wallet is 0.00
-    expect((float) ($this->store->mainWallet()?->balance ?? 0))->toBe(0.00);
+    // Store main wallet has customer funds from initial bank deposit
+    $storeMainWallet = $this->store->mainWallet();
+    $this->walletService->credit($storeMainWallet, 30000.00, 'deposit', 'Store float', [], 'DEP_CAC_FLOAT');
 
     $cacService->complete($order, 'cac/certificates/cert_123.pdf', 'Registration approved');
 
@@ -236,9 +237,52 @@ test('merchant can complete cac order and attach certificate', function () {
     expect($order->isCompleted())->toBeTrue();
     expect($order->result_file_path)->toBe('cac/certificates/cert_123.pdf');
 
-    // Merchant profit wallet should now have 25,000.00 credited
+    // Merchant main wallet debited 25,000 (30,000 - 25,000 = 5,000)
+    $storeMainWallet->refresh();
+    expect((float) $storeMainWallet->balance)->toBe(5000.00);
+
+    // Merchant profit wallet credited 25,000
     $profitWallet = $this->store->profitWallet();
     expect((float) $profitWallet->balance)->toBe(25000.00);
+});
+
+test('merchant gets no profit credit if store main wallet is 0 when completing order', function () {
+    $package = StoreCacService::create([
+        'store_id' => $this->store->id,
+        'name' => 'Business Name Reg',
+        'slug' => 'cac_bn_zero_main_test',
+        'price' => 25000.00,
+        'processing_time' => '3 - 5 Days',
+        'fields' => [],
+        'required_documents' => [],
+        'is_active' => true,
+    ]);
+
+    $order = CacRequest::create([
+        'reference' => CacRequest::generateReference(),
+        'store_id' => $this->store->id,
+        'user_id' => $this->user->id,
+        'store_cac_service_id' => $package->id,
+        'service_name' => 'Business Name Reg',
+        'business_name' => 'Zero Balance Ltd',
+        'amount_paid' => 25000.00,
+        'status' => 'pending',
+        'settlement_type' => 'online_profit_credit',
+    ]);
+
+    // Store main wallet balance is 0.00
+    $storeMainWallet = $this->store->mainWallet();
+    expect((float) ($storeMainWallet?->balance ?? 0))->toBe(0.00);
+
+    $cacService = app(CacService::class);
+    $cacService->complete($order, 'cac/certificates/cert_zero.pdf', 'Registration approved');
+
+    $order->refresh();
+    expect($order->isCompleted())->toBeTrue();
+
+    // Merchant profit wallet remains 0.00 because main wallet had insufficient funds
+    $profitWallet = $this->store->profitWallet();
+    expect((float) $profitWallet->balance)->toBe(0.00);
 });
 
 test('merchant can reject cac order and funds are refunded to customer wallet', function () {
