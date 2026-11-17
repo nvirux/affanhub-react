@@ -107,6 +107,8 @@ export default function Dashboard() {
             router.get('/identity/nin-modification');
         } else if (key === 'bvn_modification' || key === 'bvn-modification') {
             router.get('/identity/bvn-modification');
+        } else if (key === 'cac_registration' || key === 'cac' || key === 'cac_services') {
+            router.get('/cac');
         }
     };
 

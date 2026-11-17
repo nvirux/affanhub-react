@@ -193,6 +193,16 @@ class Store extends BaseTenant implements TenantWithDatabase
         return $this->hasMany(ModificationRequest::class);
     }
 
+    public function cacServices(): HasMany
+    {
+        return $this->hasMany(StoreCacService::class);
+    }
+
+    public function cacRequests(): HasMany
+    {
+        return $this->hasMany(CacRequest::class);
+    }
+
     public function settlementAccount(): HasOne
     {
         return $this->hasOne(SettlementAccount::class, 'store_id')->where('is_active', true);

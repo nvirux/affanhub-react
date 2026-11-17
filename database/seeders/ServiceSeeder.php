@@ -67,6 +67,12 @@ class ServiceSeeder extends Seeder
                 'default_value' => 'false',
                 'description' => 'Access to IPE clearance certificates',
             ]),
+            'id_cac_registration' => Feature::firstOrCreate(['slug' => 'id_cac_registration'], [
+                'name' => 'CAC Registration Access',
+                'type' => 'boolean',
+                'default_value' => 'true',
+                'description' => 'Access to CAC business & company registration',
+            ]),
         ];
 
         // Delete old key exam_pins if exists
@@ -193,6 +199,15 @@ class ServiceSeeder extends Seeder
                 'description' => 'Process IPE clearance certificates',
                 'feature_id' => $features['id_ipe_clearance']->id,
                 'sort_order' => 13,
+            ],
+            [
+                'name' => 'CAC Registration',
+                'key' => 'cac_registration',
+                'category' => 'identity',
+                'icon' => 'Briefcase',
+                'description' => 'Register business names, companies, & get status reports',
+                'feature_id' => $features['id_cac_registration']->id,
+                'sort_order' => 14,
             ],
         ];
 

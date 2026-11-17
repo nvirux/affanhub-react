@@ -1,10 +1,12 @@
 import airtimeCashRequests from './airtime-cash-requests'
+import cacRequests from './cac-requests'
 import customers from './customers'
 import modificationRequests from './modification-requests'
 import staff from './staff'
 import airtimeCashSettings from './airtime-cash-settings'
 import airtimeDiscounts from './airtime-discounts'
 import announcements from './announcements'
+import cacServices from './cac-services'
 import dataPlans from './data-plans'
 import modificationServices from './modification-services'
 import manageServices from './manage-services'
@@ -13,12 +15,14 @@ import transactions from './transactions'
 import walletTransactions from './wallet-transactions'
 const resources = {
     airtimeCashRequests: Object.assign(airtimeCashRequests, airtimeCashRequests),
+cacRequests: Object.assign(cacRequests, cacRequests),
 customers: Object.assign(customers, customers),
 modificationRequests: Object.assign(modificationRequests, modificationRequests),
 staff: Object.assign(staff, staff),
 airtimeCashSettings: Object.assign(airtimeCashSettings, airtimeCashSettings),
 airtimeDiscounts: Object.assign(airtimeDiscounts, airtimeDiscounts),
 announcements: Object.assign(announcements, announcements),
+cacServices: Object.assign(cacServices, cacServices),
 dataPlans: Object.assign(dataPlans, dataPlans),
 modificationServices: Object.assign(modificationServices, modificationServices),
 manageServices: Object.assign(manageServices, manageServices),

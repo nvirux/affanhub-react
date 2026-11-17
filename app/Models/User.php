@@ -147,6 +147,11 @@ class User extends Authenticatable
         return $this->hasMany(ModificationRequest::class);
     }
 
+    public function cacRequests(): HasMany
+    {
+        return $this->hasMany(CacRequest::class);
+    }
+
     public function referrer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'referred_by');

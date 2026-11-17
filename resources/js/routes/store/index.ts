@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults, validateParameters } from './../../wayfinder'
 import mobileApp from './mobile-app'
 /**
- * @see routes/tenant.php:120
+ * @see routes/tenant.php:121
  * @route '/admin/{any?}'
  */
 export const admin = (args?: { any?: string | number } | [any: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -15,7 +15,7 @@ admin.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/tenant.php:120
+ * @see routes/tenant.php:121
  * @route '/admin/{any?}'
  */
 admin.url = (args?: { any?: string | number } | [any: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -46,7 +46,7 @@ admin.url = (args?: { any?: string | number } | [any: string | number ] | string
 }
 
 /**
- * @see routes/tenant.php:120
+ * @see routes/tenant.php:121
  * @route '/admin/{any?}'
  */
 admin.get = (args?: { any?: string | number } | [any: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -54,7 +54,7 @@ admin.get = (args?: { any?: string | number } | [any: string | number ] | string
     method: 'get',
 })
 /**
- * @see routes/tenant.php:120
+ * @see routes/tenant.php:121
  * @route '/admin/{any?}'
  */
 admin.head = (args?: { any?: string | number } | [any: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -63,7 +63,7 @@ admin.head = (args?: { any?: string | number } | [any: string | number ] | strin
 })
 
     /**
- * @see routes/tenant.php:120
+ * @see routes/tenant.php:121
  * @route '/admin/{any?}'
  */
     const adminForm = (args?: { any?: string | number } | [any: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -72,7 +72,7 @@ admin.head = (args?: { any?: string | number } | [any: string | number ] | strin
     })
 
             /**
- * @see routes/tenant.php:120
+ * @see routes/tenant.php:121
  * @route '/admin/{any?}'
  */
         adminForm.get = (args?: { any?: string | number } | [any: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -80,7 +80,7 @@ admin.head = (args?: { any?: string | number } | [any: string | number ] | strin
             method: 'get',
         })
             /**
- * @see routes/tenant.php:120
+ * @see routes/tenant.php:121
  * @route '/admin/{any?}'
  */
         adminForm.head = (args?: { any?: string | number } | [any: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

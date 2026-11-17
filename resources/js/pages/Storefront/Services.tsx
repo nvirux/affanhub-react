@@ -4,7 +4,7 @@ import { dashboard } from '@/routes';
 import {
     ChevronLeft, Search, Headphones, Smartphone, Wifi, Tv, Zap,
     GraduationCap, RefreshCw, MessageSquare, IdCard, UserCheck,
-    Edit3, FileCheck, ShieldCheck
+    Edit3, FileCheck, ShieldCheck, Briefcase
 } from 'lucide-react';
 
 export interface ServiceItemData {
@@ -40,6 +40,7 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
             case 'Edit3': return <Edit3 className={cls} />;
             case 'FileCheck': return <FileCheck className={cls} />;
             case 'ShieldCheck': return <ShieldCheck className={cls} />;
+            case 'Briefcase': return <Briefcase className={cls} />;
             default: return category === 'identity' ? <IdCard className={cls} /> : <Smartphone className={cls} />;
         }
     };
@@ -67,6 +68,8 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
             router.get('/identity/nin-modification');
         } else if (key === 'bvn_modification' || key === 'bvn-modification') {
             router.get('/identity/bvn-modification');
+        } else if (key === 'cac_registration' || key === 'cac' || key === 'cac_services') {
+            router.get('/cac');
         } else {
             router.get(`/identity/${key.replace('_verification', '')}`);
         }
@@ -86,6 +89,7 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
             case 'bvn_verification': return 'BVN Verify';
             case 'nin_modification': return 'NIN Mod';
             case 'bvn_modification': return 'BVN Mod';
+            case 'cac_registration': return 'CAC Reg';
             default: return svc.name;
         }
     };
@@ -107,6 +111,7 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
         { id: 9, key: 'bvn_verification', name: 'BVN Verify', icon: 'UserCheck', category: 'identity', sort_order: 9, is_available: true },
         { id: 10, key: 'nin_modification', name: 'NIN Mod', icon: 'Edit3', category: 'identity', sort_order: 10, is_available: true },
         { id: 11, key: 'bvn_modification', name: 'BVN Mod', icon: 'UserCheck', category: 'identity', sort_order: 11, is_available: true },
+        { id: 12, key: 'cac_registration', name: 'CAC Reg', icon: 'Briefcase', category: 'identity', sort_order: 12, is_available: true },
     ];
 
     const allVtu = services.filter((s) => s.category === 'vtu');
