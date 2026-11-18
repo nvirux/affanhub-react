@@ -166,35 +166,17 @@ class DataService
             // If status is 'pending', the profit remains safely in Store Main Wallet until delivery is confirmed.
             if ($status === 'successful' && $profitMargin > 0) {
                 try {
-                    // 1. Debit profit sweep from Store Main Wallet
-                    $this->walletService->debit(
-                        $storeMainWallet,
-                        $profitMargin,
-                        'profit_sweep',
-                        "Profit Allocation: {$dataPlan->name} ({$phone})",
-                        [
-                            'customer_id' => $customer->id,
+                    $this->walletService->sweepWholesaleProfit(
+                        storeMainWallet: $storeMainWallet,
+                        storeProfitWallet: $store->profitWallet(),
+                        profitMargin: $profitMargin,
+                        reference: $txReference,
+                        serviceName: "{$dataPlan->name} ({$phone})",
+                        customerId: $customer->id,
+                        meta: [
                             'retail_price' => $customerRetailPrice,
                             'wholesale_cost' => $resellerWholesaleCost,
-                            'profit_margin' => $profitMargin,
-                        ],
-                        'SWP_'.$txReference
-                    );
-
-                    // 2. Credit Store Profit Wallet (Withdrawable)
-                    $storeProfitWallet = $store->profitWallet();
-                    $this->walletService->credit(
-                        $storeProfitWallet,
-                        $profitMargin,
-                        'earned_profit',
-                        "Earned Profit: {$dataPlan->name} ({$phone})",
-                        [
-                            'customer_id' => $customer->id,
-                            'retail_price' => $customerRetailPrice,
-                            'wholesale_cost' => $resellerWholesaleCost,
-                            'profit_margin' => $profitMargin,
-                        ],
-                        'PRF_'.$txReference
+                        ]
                     );
                 } catch (\Throwable $profitErr) {
                     Log::error("Failed to sweep profit for {$txReference}: ".$profitErr->getMessage());
@@ -240,23 +222,14 @@ class DataService
         Log::warning("VTULab Delivery Failed for {$txReference}: {$rawErrorMessage}. Initiating Auto-Refund...");
 
         try {
-            // Auto-Refund Customer Wallet
-            $this->walletService->refund(
-                $customerWallet,
-                $customerRetailPrice,
-                'Auto-Refund: Data purchase could not be completed',
-                ['failed_reference' => $txReference, 'reason' => $rawErrorMessage],
-                'REF_'.$txReference
-            );
-
-            // Auto-Refund Store Main Wallet (Wholesale Cost)
-            $this->walletService->credit(
-                $storeMainWallet,
-                $resellerWholesaleCost,
-                'wholesale_refund',
-                'Auto-Refund Store Wholesale: Data purchase failed',
-                ['failed_reference' => $txReference],
-                'REF_WS_'.$txReference
+            $this->walletService->reverseInstantService(
+                customerWallet: $customerWallet,
+                storeMainWallet: $storeMainWallet,
+                retailAmount: $customerRetailPrice,
+                wholesaleAmount: $resellerWholesaleCost,
+                reference: $txReference,
+                serviceDescription: 'Data purchase',
+                failureReason: $rawErrorMessage
             );
 
             $dataServiceId = Service::where('key', 'data')->value('id');

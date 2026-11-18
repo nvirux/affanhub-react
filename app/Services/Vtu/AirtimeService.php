@@ -231,37 +231,18 @@ class AirtimeService
             // If status is 'pending', the profit remains safely in Store Main Wallet until delivery is confirmed.
             if ($status === 'successful' && $profitMargin > 0) {
                 try {
-                    // 1. Debit profit sweep from Store Main Wallet
-                    $this->walletService->debit(
-                        $storeMainWallet,
-                        $profitMargin,
-                        'profit_sweep',
-                        'Profit Allocation: ₦'.number_format($faceAmount)." {$network->name}",
-                        [
-                            'customer_id' => $customer->id,
+                    $this->walletService->sweepWholesaleProfit(
+                        storeMainWallet: $storeMainWallet,
+                        storeProfitWallet: $store->profitWallet(),
+                        profitMargin: $profitMargin,
+                        reference: $txReference,
+                        serviceName: '₦'.number_format($faceAmount)." {$network->name}",
+                        customerId: $customer->id,
+                        meta: [
                             'face_amount' => $faceAmount,
                             'retail_price' => $customerRetailPrice,
                             'wholesale_cost' => $storeWholesaleCost,
-                            'profit_margin' => $profitMargin,
-                        ],
-                        'SWP_'.$txReference
-                    );
-
-                    // 2. Credit Store Profit Wallet (Withdrawable)
-                    $storeProfitWallet = $store->profitWallet();
-                    $this->walletService->credit(
-                        $storeProfitWallet,
-                        $profitMargin,
-                        'earned_profit',
-                        'Earned Profit from Airtime Sale: ₦'.number_format($faceAmount)." {$network->name}",
-                        [
-                            'customer_id' => $customer->id,
-                            'face_amount' => $faceAmount,
-                            'retail_price' => $customerRetailPrice,
-                            'wholesale_cost' => $storeWholesaleCost,
-                            'profit_margin' => $profitMargin,
-                        ],
-                        'PRF_'.$txReference
+                        ]
                     );
                 } catch (\Throwable $profitErr) {
                     Log::error("Failed to sweep profit for airtime {$txReference}: ".$profitErr->getMessage());
@@ -306,23 +287,14 @@ class AirtimeService
         Log::warning("VTULab Delivery Failed for {$txReference}: {$rawErrorMessage}. Initiating Auto-Refund...");
 
         try {
-            // Refund Customer Wallet
-            $this->walletService->refund(
-                $customerWallet,
-                $customerRetailPrice,
-                'Auto-Refund: Airtime recharge could not be completed',
-                ['failed_reference' => $txReference, 'reason' => $rawErrorMessage],
-                'REF_'.$txReference
-            );
-
-            // Refund Store Main Wallet (Wholesale Cost)
-            $this->walletService->credit(
-                $storeMainWallet,
-                $storeWholesaleCost,
-                'wholesale_refund',
-                'Auto-Refund Store Wholesale: Airtime recharge failed',
-                ['failed_reference' => $txReference],
-                'REF_WS_'.$txReference
+            $this->walletService->reverseInstantService(
+                customerWallet: $customerWallet,
+                storeMainWallet: $storeMainWallet,
+                retailAmount: $customerRetailPrice,
+                wholesaleAmount: $storeWholesaleCost,
+                reference: $txReference,
+                serviceDescription: 'Airtime recharge',
+                failureReason: $rawErrorMessage
             );
         } catch (\Throwable $refundError) {
             Log::critical("Auto-Refund Critical Failure for Airtime Reference {$txReference}: ".$refundError->getMessage());

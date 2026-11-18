@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\WalletService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
@@ -100,19 +101,24 @@ class AirtimeCashRequest extends Model
 
         DB::transaction(function () use ($notes) {
             if ($this->payout_method === 'wallet') {
-                $description = 'Airtime to Cash: ₦'.number_format((float) $this->airtime_amount, 2)." ({$this->network?->name})";
-                $this->user->wallet('main')->deposit(
-                    amount: (float) $this->cash_amount,
-                    description: $description,
-                    reference: $this->reference,
-                    meta: [
-                        'type' => 'airtime_to_cash',
-                        'network' => $this->network?->name,
-                        'airtime_amount' => (float) $this->airtime_amount,
-                        'rate' => (float) $this->exchange_rate,
-                        'sender_phone' => $this->sender_phone,
-                    ]
-                );
+                $customerWallet = $this->user->wallet('main');
+                if ($customerWallet) {
+                    $description = 'Airtime to Cash: ₦'.number_format((float) $this->airtime_amount, 2)." ({$this->network?->name})";
+                    app(WalletService::class)->credit(
+                        wallet: $customerWallet,
+                        amount: (float) $this->cash_amount,
+                        category: 'airtime_to_cash',
+                        description: $description,
+                        meta: [
+                            'type' => 'airtime_to_cash',
+                            'network' => $this->network?->name,
+                            'airtime_amount' => (float) $this->airtime_amount,
+                            'rate' => (float) $this->exchange_rate,
+                            'sender_phone' => $this->sender_phone,
+                        ],
+                        reference: $this->reference
+                    );
+                }
             }
 
             // Record storefront transaction history for customer receipt and merchant profit tracking

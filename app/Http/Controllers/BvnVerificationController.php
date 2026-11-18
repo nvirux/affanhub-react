@@ -278,24 +278,15 @@ class BvnVerificationController extends Controller
 
             // Instant Auto-Refund Engine (clean statement description without leaking provider internals)
             try {
-                $walletService->refund(
-                    $mainWallet,
-                    $retailPrice,
-                    'Auto-Refund: BVN verification could not be completed',
-                    ['failed_reference' => $reference, 'reason' => $rawFailReason],
-                    'REF_'.$reference
+                $walletService->reverseInstantService(
+                    customerWallet: $mainWallet,
+                    storeMainWallet: $storeMainWallet,
+                    retailAmount: $retailPrice,
+                    wholesaleAmount: $merchantCost,
+                    reference: $reference,
+                    serviceDescription: "BVN Verification ({$slipName})",
+                    failureReason: $rawFailReason
                 );
-
-                if ($storeMainWallet) {
-                    $walletService->credit(
-                        $storeMainWallet,
-                        $merchantCost,
-                        'wholesale_refund',
-                        'Auto-Refund Store Wholesale: BVN verification failed',
-                        ['failed_reference' => $reference],
-                        'WS_REF_'.$reference
-                    );
-                }
             } catch (\Throwable $refundErr) {
                 Log::error("Failed to auto-refund for {$reference}: ".$refundErr->getMessage());
             }
@@ -314,35 +305,17 @@ class BvnVerificationController extends Controller
         // Profit Allocation: Sweep & credit profit to Store Profit Wallet
         if ($store && $storeMainWallet && $profit > 0) {
             try {
-                // 1. Debit profit sweep from Store Main Wallet
-                $walletService->debit(
-                    $storeMainWallet,
-                    $profit,
-                    'profit_sweep',
-                    "Profit Allocation: BVN Verification ({$slipName})",
-                    [
-                        'customer_id' => $user->id,
+                $walletService->sweepWholesaleProfit(
+                    storeMainWallet: $storeMainWallet,
+                    storeProfitWallet: $store->profitWallet(),
+                    profitMargin: $profit,
+                    reference: $reference,
+                    serviceName: "BVN Verification ({$slipName})",
+                    customerId: $user->id,
+                    meta: [
                         'retail_price' => $retailPrice,
                         'wholesale_cost' => $merchantCost,
-                        'profit_margin' => $profit,
-                    ],
-                    'SWP_'.$reference
-                );
-
-                // 2. Credit Store Profit Wallet (Withdrawable)
-                $storeProfitWallet = $store->profitWallet();
-                $walletService->credit(
-                    $storeProfitWallet,
-                    $profit,
-                    'earned_profit',
-                    "Earned Profit: BVN Verification ({$slipName}) for customer #{$user->id}",
-                    [
-                        'customer_id' => $user->id,
-                        'retail_price' => $retailPrice,
-                        'wholesale_cost' => $merchantCost,
-                        'profit_margin' => $profit,
-                    ],
-                    'PRF_'.$reference
+                    ]
                 );
             } catch (\Throwable $profitErr) {
                 Log::error("Failed to sweep profit for {$reference}: ".$profitErr->getMessage());

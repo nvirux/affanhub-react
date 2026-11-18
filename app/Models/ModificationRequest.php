@@ -116,34 +116,19 @@ class ModificationRequest extends Model
 
         DB::transaction(function () use ($resultFilePath, $notes) {
             $store = $this->store;
-            $storeMainWallet = $store?->mainWallet();
-            $profitWallet = $store?->profitWallet();
             $amount = (float) $this->amount_paid;
 
             // Settle merchant profit: Move from Store Main Wallet to Profit Wallet
-            if ($this->settlement_type === 'online_profit_credit' && $storeMainWallet && $profitWallet && $amount > 0) {
-                $walletService = app(WalletService::class);
-
-                // If store main wallet has sufficient funds, debit main and credit profit wallet
-                if ((float) $storeMainWallet->balance >= $amount) {
-                    $walletService->debit(
-                        $storeMainWallet,
-                        $amount,
-                        'modification_settlement_out',
-                        "Settlement transfer to profit for order #{$this->reference}",
-                        ['order_reference' => $this->reference, 'service' => $this->service_name],
-                        'SETTLE_'.$this->reference
-                    );
-
-                    $walletService->credit(
-                        $profitWallet,
-                        $amount,
-                        'modification_profit',
-                        "Profit from {$this->service_name} order #{$this->reference}",
-                        ['order_reference' => $this->reference, 'customer_id' => $this->user_id],
-                        'PRF_'.$this->reference
-                    );
-                }
+            if ($this->settlement_type === 'online_profit_credit' && $store && $amount > 0) {
+                app(WalletService::class)->settleManualServiceProfit(
+                    store: $store,
+                    amount: $amount,
+                    reference: $this->reference,
+                    serviceName: $this->service_name,
+                    serviceCategoryKey: 'modification',
+                    customerId: $this->user_id,
+                    meta: ['service' => $this->service_name]
+                );
             }
 
             $this->update([
