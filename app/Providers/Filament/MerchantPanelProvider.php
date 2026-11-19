@@ -61,6 +61,7 @@ class MerchantPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Merchant/Resources'), for: 'App\Filament\Merchant\Resources')
             ->discoverPages(in: app_path('Filament/Merchant/Pages'), for: 'App\Filament\Merchant\Pages')
             ->navigationGroups([
+                'Services & Layout',
                 'VTU Services',
                 'Identity Services',
                 'CAC Services',

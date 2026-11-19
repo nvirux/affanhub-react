@@ -8,10 +8,14 @@ import {
     Eye, EyeOff, Plus, BarChart3, CheckCircle, Wallet, Gift,
     ChevronDown, Bell, LogOut, Settings, Menu, FileText, Sun, Moon, Monitor, Headphones,
     X, Copy, Check, Building2, ShieldCheck, AlertCircle, CreditCard, Sparkles,
-    UserCheck, Fingerprint, Search, Edit3, FileCheck, IdCard, Briefcase
+    UserCheck, Fingerprint, Search, Edit3, FileCheck, IdCard, Briefcase, ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import palmpayIcon from '@/assets/icons/palmpay.png';
+import cacIcon from '@/assets/icons/cac.png';
+import nimcIcon from '@/assets/icons/nimc.png';
+import nibssIcon from '@/assets/icons/nibss.png';
+import verificationIcon from '@/assets/icons/verification.png';
 import { NETWORK_ICONS } from '@/components/phone-network-card';
 import {
     Sheet,
@@ -30,7 +34,17 @@ export default function Dashboard() {
 
     const getIconComponent = (iconName: string, category: string) => {
         const cls = "w-6 h-6 md:w-7 md:h-7 stroke-[1.8]";
+        const imgCls = "w-9 h-9 sm:w-11 sm:h-11 md:w-10 md:h-10 object-contain select-none transition-transform group-hover:scale-105";
+
         switch (iconName) {
+            case 'cac':
+                return <img src={cacIcon} alt="CAC" className={imgCls} />;
+            case 'nimc':
+                return <img src={nimcIcon} alt="NIMC" className={imgCls} />;
+            case 'nibss':
+                return <img src={nibssIcon} alt="NIBSS" className={imgCls} />;
+            case 'verification':
+                return <img src={verificationIcon} alt="Verification" className={imgCls} />;
             case 'Smartphone': return <Smartphone className={cls} />;
             case 'Wifi': return <Wifi className={cls} />;
             case 'Tv': return <Tv className={cls} />;
@@ -47,8 +61,8 @@ export default function Dashboard() {
             case 'Briefcase': return <Briefcase className={cls} />;
             case 'Building2': return <Building2 className={cls} />;
             default:
-                if (category === 'identity') return <ShieldCheck className={cls} />;
-                if (category === 'cac') return <Briefcase className={cls} />;
+                if (category === 'identity') return <img src={nimcIcon} alt="Identity" className={imgCls} />;
+                if (category === 'cac') return <img src={cacIcon} alt="CAC" className={imgCls} />;
                 return <Smartphone className={cls} />;
         }
     };
@@ -207,16 +221,17 @@ export default function Dashboard() {
 
         if (meta.type === 'cac') {
             return (
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                    <Briefcase className="w-5 h-5 stroke-[2]" />
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-emerald-500/30 shadow-xs bg-emerald-50 dark:bg-emerald-950/40">
+                    <img src={cacIcon} alt="CAC" className="w-full h-full object-cover scale-125 select-none" />
                 </div>
             );
         }
 
         if (meta.type === 'identity_mod' || meta.type === 'identity_verify') {
+            const isBvn = meta.title.toLowerCase().includes('bvn');
             return (
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
-                    <ShieldCheck className="w-5 h-5 stroke-[2]" />
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-blue-500/30 shadow-xs bg-blue-50 dark:bg-blue-950/40">
+                    <img src={isBvn ? nibssIcon : nimcIcon} alt={isBvn ? "BVN" : "NIN"} className="w-full h-full object-cover scale-130 select-none" />
                 </div>
             );
         }
@@ -509,7 +524,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Main Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
                     {/* Left Column: Services & API Banner */}
                     <div className="lg:col-span-7 flex flex-col gap-6">
@@ -525,7 +540,7 @@ export default function Dashboard() {
                                 </Link>
                             </div>
 
-                            <div className="grid grid-cols-4 gap-2 md:gap-4">
+                            <div className={cn("grid gap-2 md:gap-4", store?.service_layout === 'cards_2' ? "grid-cols-2" : "grid-cols-4")}>
                                 {(() => {
                                     const defaultServices = [
                                         { key: 'airtime', name: 'Airtime', description: 'Top up airtime', icon: 'Smartphone', category: 'vtu' },
@@ -538,35 +553,82 @@ export default function Dashboard() {
                                         { key: 'bulk_sms', name: 'Bulk SMS', description: 'Send messages', icon: 'MessageSquare', category: 'vtu' },
                                     ];
 
+                                    const isTwoCol = store?.service_layout === 'cards_2';
                                     const serviceList = (store_services && store_services.length > 0) ? store_services : defaultServices;
                                     const visibleServices = serviceList.slice(0, 7);
 
                                     return (
                                         <>
                                             {visibleServices.map((svc: any) => (
-                                                <ServiceItem
-                                                    key={svc.key || svc.id}
-                                                    icon={getIconComponent(svc.icon, svc.category)}
-                                                    title={svc.name}
-                                                    subtitle={svc.description || 'Quick service'}
-                                                    color={getColorClass(svc.key, svc.category)}
-                                                    onClick={() => handleServiceClick(svc.key)}
-                                                />
+                                                isTwoCol ? (
+                                                    <button
+                                                        key={svc.key || svc.id}
+                                                        onClick={() => handleServiceClick(svc.key)}
+                                                        className="group flex items-center gap-3.5 p-3.5 rounded-2xl bg-white dark:bg-[#252538] hover:bg-primary/[0.04] dark:hover:bg-primary/[0.08] border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all duration-300 text-left w-full cursor-pointer shadow-2xs"
+                                                    >
+                                                        <div className="w-12 h-12 rounded-xl bg-primary/5 dark:bg-primary/10 border border-primary/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs p-1">
+                                                            {getIconComponent(svc.icon, svc.category)}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <span className="text-[13px] sm:text-[14px] font-bold text-gray-900 dark:text-gray-100 leading-tight block truncate group-hover:text-primary transition-colors">
+                                                                {svc.name}
+                                                            </span>
+                                                            {store?.show_service_descriptions !== false && (
+                                                                <span className="text-[11px] text-gray-400 dark:text-gray-400 mt-0.5 line-clamp-1 block">
+                                                                    {svc.description || 'Fast automated processing'}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                                                    </button>
+                                                ) : (
+                                                    <ServiceItem
+                                                        key={svc.key || svc.id}
+                                                        icon={getIconComponent(svc.icon, svc.category)}
+                                                        title={svc.name}
+                                                        subtitle={svc.description || 'Quick service'}
+                                                        color={getColorClass(svc.key, svc.category)}
+                                                        onClick={() => handleServiceClick(svc.key)}
+                                                    />
+                                                )
                                             ))}
 
-                                            <Link
-                                                href="/services"
-                                                className="group flex flex-col items-center p-2 md:p-4 rounded-[1rem] md:rounded-2xl bg-primary/5 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 transition-all duration-300 w-full text-center cursor-pointer"
-                                            >
-                                                <div className="w-10 h-10 md:w-12 md:h-12 mb-2 md:mb-3 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                    <div className="grid grid-cols-2 gap-1 w-5 h-5 md:w-6 md:h-6 text-primary group-hover:text-gray-600 transition-colors">
-                                                        <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
-                                                        <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                            {isTwoCol ? (
+                                                <Link
+                                                    href="/services"
+                                                    className="group flex items-center gap-3.5 p-3.5 rounded-2xl bg-primary/5 dark:bg-gray-800/40 hover:bg-primary/10 border border-dashed border-primary/30 hover:border-primary/50 transition-all duration-300 w-full cursor-pointer"
+                                                >
+                                                    <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-900 border border-primary/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+                                                        <div className="grid grid-cols-2 gap-1 w-5 h-5 text-primary">
+                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <span className="text-[9px] md:text-[13px] font-bold text-gray-900 dark:text-gray-100 text-center leading-tight">More</span>
-                                                <span className="text-[8px] md:text-[10px] text-gray-400 mt-0.5 md:mt-1 text-center font-medium hidden sm:block">View all</span>
-                                            </Link>
+                                                    <div className="flex-1 min-w-0">
+                                                        <span className="text-[13px] sm:text-[14px] font-bold text-gray-900 dark:text-gray-100 leading-tight block">
+                                                            More Services
+                                                        </span>
+                                                        <span className="text-[11px] text-gray-400 mt-0.5 block">
+                                                            View all available services
+                                                        </span>
+                                                    </div>
+                                                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                                                </Link>
+                                            ) : (
+                                                <Link
+                                                    href="/services"
+                                                    className="group flex flex-col items-center p-2 md:p-4 rounded-[1rem] md:rounded-2xl bg-primary/5 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 transition-all duration-300 w-full text-center cursor-pointer"
+                                                >
+                                                    <div className="w-10 h-10 md:w-12 md:h-12 mb-2 md:mb-3 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                                                        <div className="grid grid-cols-2 gap-1 w-5 h-5 md:w-6 md:h-6 text-primary group-hover:text-gray-600 transition-colors">
+                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                        </div>
+                                                    </div>
+                                                    <span className="text-[9px] md:text-[13px] font-bold text-gray-900 dark:text-gray-100 text-center leading-tight">More</span>
+                                                    <span className="text-[8px] md:text-[10px] text-gray-400 mt-0.5 md:mt-1 text-center font-medium hidden sm:block">View all</span>
+                                                </Link>
+                                            )}
                                         </>
                                     );
                                 })()}
@@ -682,13 +744,13 @@ export default function Dashboard() {
                     </div>
 
                     {/* Right Column: Real Recent Transactions */}
-                    <div className="lg:col-span-5 bg-white dark:bg-[#1e1e2d] rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6 flex flex-col h-full">
+                    <div className="lg:col-span-5 bg-white dark:bg-[#1e1e2d] rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6 flex flex-col h-fit self-start">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-[16px] font-bold text-gray-900 dark:text-white">Recent Transactions</h2>
                             <Link href="/transactions" className="text-[13px] font-bold text-primary hover:opacity-85">View all</Link>
                         </div>
 
-                        <div className="flex flex-col gap-2 flex-1">
+                        <div className="flex flex-col gap-2">
                             {transactions.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-10 text-gray-400">
                                     <FileText className="w-10 h-10 mb-2 opacity-40" />
@@ -913,8 +975,9 @@ export default function Dashboard() {
                             <Link href="/services" className="text-[12px] sm:text-[13px] font-bold text-primary hover:underline">See all</Link>
                         </div>
 
-                        <div className="grid grid-cols-4 gap-y-6 gap-x-2 sm:gap-x-3 text-center">
-                            {((store_services && store_services.length > 0) ? store_services.slice(0, 7) : [
+                        {(() => {
+                            const isTwoCol = store?.service_layout === 'cards_2';
+                            const serviceList = (store_services && store_services.length > 0) ? store_services.slice(0, 7) : [
                                 { key: 'airtime', name: 'Airtime', icon: 'Smartphone', category: 'vtu' },
                                 { key: 'data', name: 'Data', icon: 'Wifi', category: 'vtu' },
                                 { key: 'cable', name: 'Cable TV', icon: 'Tv', category: 'vtu' },
@@ -922,47 +985,96 @@ export default function Dashboard() {
                                 { key: 'education', name: 'Education', icon: 'GraduationCap', category: 'vtu' },
                                 { key: 'airtime_cash', name: 'Airtime to Cash', icon: 'RefreshCw', category: 'vtu' },
                                 { key: 'bulk_sms', name: 'Bulk SMS', icon: 'MessageSquare', category: 'vtu' },
-                            ]).map((svc: any) => {
-                                const displayName = svc.key === 'airtime' ? 'Airtime Topup'
-                                    : svc.key === 'data' ? 'Data Bundles'
-                                        : svc.key === 'electricity' ? 'Electricity'
-                                            : svc.key === 'cable' ? 'Cable TV'
-                                                : (svc.key === 'education' || svc.key === 'exam_pins') ? 'Education'
-                                                    : (svc.key === 'airtime_cash' || svc.key === 'airtime-to-cash' || svc.key === 'airtime_to_cash') ? 'Airtime to Cash'
-                                                        : svc.key === 'bulk_sms' ? 'Bulk SMS'
-                                                            : (svc.key === 'cac_registration' || svc.key === 'cac' || svc.key === 'cac_services') ? 'CAC Services'
-                                                                : svc.key === 'nin_verification' ? 'NIN Verify'
-                                                                    : svc.key === 'bvn_verification' ? 'BVN Verify'
-                                                                        : svc.key === 'nin_modification' ? 'NIN Mod'
-                                                                            : svc.key === 'bvn_modification' ? 'BVN Mod'
-                                                                                : svc.name;
-                                return (
-                                    <button
-                                        key={svc.key || svc.id}
-                                        onClick={() => handleServiceClick(svc.key)}
-                                        className="flex flex-col items-center group w-full cursor-pointer focus:outline-none"
-                                    >
-                                        <div className="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl flex items-center justify-center mb-2 group-active:scale-95 group-hover:scale-105 transition-all shadow-xs bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20 text-primary">
-                                            {getIconComponent(svc.icon, svc.category)}
-                                        </div>
-                                        <span className="text-[11.5px] sm:text-[12px] font-bold text-gray-800 dark:text-gray-200 leading-tight px-0.5 tracking-tight line-clamp-2">
-                                            {displayName}
-                                        </span>
-                                    </button>
-                                );
-                            })}
+                            ];
 
-                            {/* More Services Link (8th Slot) */}
-                            <Link href="/services" className="flex flex-col items-center group w-full cursor-pointer focus:outline-none">
-                                <div className="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20 text-primary flex items-center justify-center mb-2 group-active:scale-95 group-hover:scale-105 transition-all shadow-xs">
-                                    <div className="grid grid-cols-2 gap-1 w-5 h-5 text-primary">
-                                        <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
-                                        <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
-                                    </div>
+                            return (
+                                <div className={cn(
+                                    "grid",
+                                    isTwoCol ? "grid-cols-2 gap-2.5" : "grid-cols-4 gap-y-6 gap-x-2 sm:gap-x-3 text-center"
+                                )}>
+                                    {serviceList.map((svc: any) => {
+                                        const displayName = svc.key === 'airtime' ? 'Airtime Topup'
+                                            : svc.key === 'data' ? 'Data Bundles'
+                                                : svc.key === 'electricity' ? 'Electricity'
+                                                    : svc.key === 'cable' ? 'Cable TV'
+                                                        : (svc.key === 'education' || svc.key === 'exam_pins') ? 'Education'
+                                                            : (svc.key === 'airtime_cash' || svc.key === 'airtime-to-cash' || svc.key === 'airtime_to_cash') ? 'Airtime to Cash'
+                                                                : svc.key === 'bulk_sms' ? 'Bulk SMS'
+                                                                    : (svc.key === 'cac_registration' || svc.key === 'cac' || svc.key === 'cac_services') ? 'CAC Services'
+                                                                        : svc.key === 'nin_verification' ? 'NIN Verify'
+                                                                            : svc.key === 'bvn_verification' ? 'BVN Verify'
+                                                                                : svc.key === 'nin_modification' ? 'NIN Mod'
+                                                                                    : svc.key === 'bvn_modification' ? 'BVN Mod'
+                                                                                        : svc.name;
+
+                                        return isTwoCol ? (
+                                            <button
+                                                key={svc.key || svc.id}
+                                                onClick={() => handleServiceClick(svc.key)}
+                                                className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-white dark:bg-zinc-800/80 hover:bg-primary/[0.04] border border-gray-100 dark:border-zinc-800 active:scale-98 transition-all w-full cursor-pointer text-left shadow-2xs"
+                                            >
+                                                <div className="w-11 h-11 rounded-xl bg-primary/5 dark:bg-primary/10 flex items-center justify-center shrink-0 shadow-xs border border-primary/10 p-1">
+                                                    {getIconComponent(svc.icon, svc.category)}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <span className="text-[12px] font-bold text-gray-900 dark:text-gray-100 leading-tight line-clamp-1 block">
+                                                        {displayName}
+                                                    </span>
+                                                    {store?.show_service_descriptions !== false && (
+                                                        <span className="text-[10px] text-gray-400 mt-0.5 line-clamp-1 block">
+                                                            {svc.description || 'Instant service'}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </button>
+                                        ) : (
+                                            <button
+                                                key={svc.key || svc.id}
+                                                onClick={() => handleServiceClick(svc.key)}
+                                                className="flex flex-col items-center group w-full cursor-pointer focus:outline-none"
+                                            >
+                                                <div className="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl flex items-center justify-center mb-2 group-active:scale-95 group-hover:scale-105 transition-all shadow-xs bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20 text-primary">
+                                                    {getIconComponent(svc.icon, svc.category)}
+                                                </div>
+                                                <span className="text-[11.5px] sm:text-[12px] font-bold text-gray-800 dark:text-gray-200 leading-tight px-0.5 tracking-tight line-clamp-2">
+                                                    {displayName}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+
+                                    {/* More Services Link (8th Slot) */}
+                                    {isTwoCol ? (
+                                        <Link href="/services" className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-primary/5 dark:bg-zinc-800/40 border border-dashed border-primary/30 active:scale-98 transition-all w-full cursor-pointer text-left">
+                                            <div className="w-11 h-11 rounded-xl bg-white dark:bg-zinc-900 flex items-center justify-center shrink-0 shadow-xs border border-primary/20 text-primary">
+                                                <div className="grid grid-cols-2 gap-1 w-4 h-4 text-primary">
+                                                    <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                    <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-[12px] font-bold text-gray-900 dark:text-gray-100 leading-tight block">
+                                                    More
+                                                </span>
+                                                <span className="text-[10px] text-gray-400 mt-0.5 block">
+                                                    View all
+                                                </span>
+                                            </div>
+                                        </Link>
+                                    ) : (
+                                        <Link href="/services" className="flex flex-col items-center group w-full cursor-pointer focus:outline-none">
+                                            <div className="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20 text-primary flex items-center justify-center mb-2 group-active:scale-95 group-hover:scale-105 transition-all shadow-xs">
+                                                <div className="grid grid-cols-2 gap-1 w-5 h-5 text-primary">
+                                                    <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                    <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                </div>
+                                            </div>
+                                            <span className="text-[11.5px] sm:text-[12px] font-bold text-gray-800 dark:text-gray-200 leading-tight tracking-tight">More</span>
+                                        </Link>
+                                    )}
                                 </div>
-                                <span className="text-[11.5px] sm:text-[12px] font-bold text-gray-800 dark:text-gray-200 leading-tight tracking-tight">More</span>
-                            </Link>
-                        </div>
+                            );
+                        })()}
                     </div>
                 </div>
 

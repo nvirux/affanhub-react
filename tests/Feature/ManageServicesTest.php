@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Merchant\Pages\StoreLayoutSettings;
 use App\Filament\Merchant\Resources\StoreServiceResource\Pages\ListStoreServices;
 use App\Models\Feature;
 use App\Models\Owner;
@@ -64,7 +65,7 @@ test('store services resource auto-populates store_services records for tenant',
     Livewire::test(ListStoreServices::class)
         ->assertSuccessful();
 
-    expect(StoreService::where('store_id', $this->store->id)->count())->toBe(1);
+    expect(StoreService::where('store_id', $this->store->id)->count())->toBe(Service::where('is_active', true)->count());
 });
 
 test('manage services resolves upgrade requirements for locked features without SQL cast errors', function () {
@@ -102,4 +103,75 @@ test('manage services resolves upgrade requirements for locked features without 
         ->assertSuccessful()
         ->assertSee('Airtime to Cash')
         ->assertSee('Pro Plan');
+});
+
+test('store service resolves correct default icons including in prod', function () {
+    $cac = Service::firstOrCreate(
+        ['key' => 'cac_services'],
+        ['name' => 'CAC Registration', 'category' => 'cac', 'is_active' => true, 'sort_order' => 10]
+    );
+
+    $nin = Service::firstOrCreate(
+        ['key' => 'nin_verification'],
+        ['name' => 'NIN Verification', 'category' => 'identity', 'is_active' => true, 'sort_order' => 11]
+    );
+
+    $bvn = Service::firstOrCreate(
+        ['key' => 'bvn_verification'],
+        ['name' => 'BVN Verification', 'category' => 'identity', 'is_active' => true, 'sort_order' => 12]
+    );
+
+    $storeCac = StoreService::create([
+        'store_id' => $this->store->id,
+        'service_id' => $cac->id,
+        'icon' => null, // Prod default / null
+    ]);
+
+    $storeNin = StoreService::create([
+        'store_id' => $this->store->id,
+        'service_id' => $nin->id,
+        'icon' => null, // Prod default / null
+    ]);
+
+    $storeBvn = StoreService::create([
+        'store_id' => $this->store->id,
+        'service_id' => $bvn->id,
+        'icon' => null, // Prod default / null
+    ]);
+
+    expect($storeCac->getResolvedIcon())->toBe('cac');
+    expect($storeNin->getResolvedIcon())->toBe('nimc');
+    expect($storeBvn->getResolvedIcon())->toBe('nibss');
+});
+
+test('merchant can choose allowed icons for bvn and nin verification', function () {
+    $bvn = Service::firstOrCreate(
+        ['key' => 'bvn_verification'],
+        ['name' => 'BVN Verification', 'category' => 'identity', 'is_active' => true, 'sort_order' => 12]
+    );
+
+    $storeBvn = StoreService::create([
+        'store_id' => $this->store->id,
+        'service_id' => $bvn->id,
+        'is_enabled' => true,
+        'icon' => null,
+    ]);
+
+    expect($storeBvn->getAvailableIconOptions())->toHaveKeys(['nibss', 'verification', 'default']);
+    expect($storeBvn->getAvailableIconOptions())->not->toHaveKey('nimc'); // Cannot choose NIMC for BVN
+
+    $storeBvn->update(['icon' => 'verification']);
+    expect($storeBvn->fresh()->getResolvedIcon())->toBe('verification');
+});
+
+test('merchant can access and save layout settings', function () {
+    Livewire::test(StoreLayoutSettings::class)
+        ->assertSuccessful()
+        ->assertSee('Storefront Service Layout')
+        ->assertSee('4 Cards Per Row')
+        ->assertSee('2 Cards Per Row')
+        ->set('serviceLayout', 'cards_2')
+        ->call('save');
+
+    expect($this->store->fresh()->service_layout)->toBe('cards_2');
 });

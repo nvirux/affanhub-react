@@ -5,8 +5,40 @@ import { cn } from '@/lib/utils';
 import {
     Search, Filter, ChevronLeft, ArrowRight, CheckCircle2,
     Clock, AlertCircle, Smartphone, Wifi, Receipt, RefreshCw,
-    ShieldCheck, Zap, Tv, ChevronDown, Briefcase
+    ShieldCheck, Zap, Tv, ChevronDown, Briefcase, GraduationCap
 } from 'lucide-react';
+import cacIcon from '@/assets/icons/cac.png';
+import nimcIcon from '@/assets/icons/nimc.png';
+import nibssIcon from '@/assets/icons/nibss.png';
+import verificationIcon from '@/assets/icons/verification.png';
+import mtnIcon from '@/assets/icons/mtn.png';
+import airtelIcon from '@/assets/icons/airtel.png';
+import gloIcon from '@/assets/icons/glo.png';
+import nineMobileIcon from '@/assets/icons/9mobile.png';
+
+const NETWORK_ICONS: Record<string, string> = {
+    mtn: mtnIcon,
+    airtel: airtelIcon,
+    glo: gloIcon,
+    '9mobile': nineMobileIcon,
+};
+
+const detectNetworkFromPhone = (phone?: string): 'mtn' | 'airtel' | 'glo' | '9mobile' | null => {
+    if (!phone) return null;
+    const digits = phone.replace(/\D/g, '');
+    const normalized = digits.startsWith('234') && digits.length >= 13 ? '0' + digits.slice(3) : digits;
+
+    const mtnPrefixes = ['0803', '0806', '0703', '0706', '0813', '0816', '0810', '0814', '0903', '0906', '0913', '0916', '0704', '07025', '07026'];
+    const airtelPrefixes = ['0802', '0808', '0812', '0701', '0708', '0902', '0907', '0901', '0912', '0904'];
+    const gloPrefixes = ['0805', '0807', '0705', '0815', '0811', '0905', '0915'];
+    const nineMobilePrefixes = ['0809', '0817', '0818', '0909', '0908'];
+
+    if (mtnPrefixes.some(p => normalized.startsWith(p))) return 'mtn';
+    if (airtelPrefixes.some(p => normalized.startsWith(p))) return 'airtel';
+    if (gloPrefixes.some(p => normalized.startsWith(p))) return 'glo';
+    if (nineMobilePrefixes.some(p => normalized.startsWith(p))) return '9mobile';
+    return null;
+};
 
 interface TransactionItem {
     id: number;
@@ -19,6 +51,7 @@ interface TransactionItem {
     status: 'successful' | 'pending' | 'failed';
     created_at: string;
     date: string;
+    api_response?: any;
 }
 
 interface TransactionsIndexProps {
@@ -70,58 +103,193 @@ export default function TransactionsIndex({
         );
     };
 
-    const getServiceMeta = (serviceType: string) => {
-        switch (serviceType) {
-            case 'nin_verification':
-                return {
-                    label: 'NIN Slip',
-                    icon: ShieldCheck,
-                    colorClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-                };
-            case 'bvn_verification':
-                return {
-                    label: 'BVN Slip',
-                    icon: ShieldCheck,
-                    colorClass: 'bg-teal-500/10 text-teal-600 dark:text-teal-400',
-                };
-            case 'airtime':
-                return {
-                    label: 'Airtime',
-                    icon: Smartphone,
-                    colorClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
-                };
-            case 'data':
-                return {
-                    label: 'Data Plan',
-                    icon: Wifi,
-                    colorClass: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
-                };
-            case 'cable':
-                return {
-                    label: 'Cable TV',
-                    icon: Tv,
-                    colorClass: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
-                };
-            case 'electricity':
-                return {
-                    label: 'Electricity',
-                    icon: Zap,
-                    colorClass: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
-                };
-            case 'cac_services':
-            case 'cac_registration':
-                return {
-                    label: 'CAC Service',
-                    icon: Briefcase,
-                    colorClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-                };
-            default:
-                return {
-                    label: (serviceType || 'Transaction').replace(/_/g, ' '),
-                    icon: Receipt,
-                    colorClass: 'bg-slate-500/10 text-slate-600 dark:text-slate-400',
-                };
+    const getTransactionMeta = (tx: any) => {
+        const rawServiceType = (tx.service_type || '').toLowerCase();
+        const api = tx.api_response || {};
+
+        let network: 'mtn' | 'airtel' | 'glo' | '9mobile' | null = null;
+        const netRaw = (api.network || '').toString().toLowerCase();
+        if (netRaw.includes('mtn')) network = 'mtn';
+        else if (netRaw.includes('airtel')) network = 'airtel';
+        else if (netRaw.includes('glo')) network = 'glo';
+        else if (netRaw.includes('9mobile') || netRaw.includes('etisalat')) network = '9mobile';
+        else {
+            network = detectNetworkFromPhone(tx.recipient || api.phone || api.sender_phone);
         }
+
+        if (rawServiceType === 'airtime') {
+            const netLabel = network ? network.toUpperCase() : 'Airtime';
+            return {
+                type: 'telco' as const,
+                network,
+                title: network ? `${netLabel} Airtime` : 'Airtime Topup',
+                subtitle: `${tx.recipient || tx.reference} • ${tx.created_at}`,
+            };
+        }
+
+        if (rawServiceType === 'data') {
+            const netLabel = network ? network.toUpperCase() : 'Data';
+            const planName = api.plan_name || api.data_plan || api.size || api.plan || '';
+            const titlePlan = planName ? `${netLabel} ${planName}` : `${netLabel} Data`;
+            return {
+                type: 'telco' as const,
+                network,
+                title: titlePlan,
+                subtitle: `${tx.recipient || tx.reference} • ${tx.created_at}`,
+            };
+        }
+
+        if (rawServiceType.includes('cac')) {
+            const packageTitle = api.package_title || 'CAC Registration';
+            const businessName = api.business_name || tx.recipient;
+            return {
+                type: 'cac' as const,
+                network: null,
+                title: packageTitle,
+                subtitle: businessName ? `${businessName} • ${tx.created_at}` : tx.created_at,
+            };
+        }
+
+        if (rawServiceType.includes('modification')) {
+            const isBvn = rawServiceType.includes('bvn');
+            const serviceTitle = api.service_title ? `${isBvn ? 'BVN' : 'NIN'} Mod (${api.service_title})` : `${isBvn ? 'BVN' : 'NIN'} Modification`;
+            const idNum = api.identifier || tx.recipient;
+            return {
+                type: 'identity_mod' as const,
+                network: null,
+                title: serviceTitle,
+                subtitle: idNum ? `${idNum} • ${tx.created_at}` : tx.created_at,
+            };
+        }
+
+        if (rawServiceType.includes('verification')) {
+            const isBvn = rawServiceType.includes('bvn');
+            const slipName = api.slip_name ? `${isBvn ? 'BVN' : 'NIN'} (${api.slip_name})` : `${isBvn ? 'BVN' : 'NIN'} Verification`;
+            return {
+                type: 'identity_verify' as const,
+                network: null,
+                title: slipName,
+                subtitle: `${tx.recipient || tx.reference} • ${tx.created_at}`,
+            };
+        }
+
+        if (rawServiceType.includes('airtime_to_cash') || rawServiceType.includes('airtime_cash')) {
+            const netLabel = (api.network || network || 'Airtime').toString().toUpperCase();
+            return {
+                type: 'airtime_cash' as const,
+                network,
+                title: `Airtime to Cash - ${netLabel}`,
+                subtitle: `${tx.recipient || tx.reference} • ${tx.created_at}`,
+            };
+        }
+
+        if (rawServiceType.includes('electricity') || rawServiceType.includes('power')) {
+            const disco = api.disco || api.provider || 'Electricity';
+            return {
+                type: 'electricity' as const,
+                network: null,
+                title: disco,
+                subtitle: `${tx.recipient || tx.reference} • ${tx.created_at}`,
+            };
+        }
+
+        if (rawServiceType.includes('cable') || rawServiceType.includes('tv')) {
+            const provider = api.provider || api.cable_name || 'Cable TV';
+            return {
+                type: 'cable' as const,
+                network: null,
+                title: provider,
+                subtitle: `${tx.recipient || tx.reference} • ${tx.created_at}`,
+            };
+        }
+
+        if (rawServiceType.includes('education') || rawServiceType.includes('exam')) {
+            const exam = api.exam_type || api.service || 'Exam PIN';
+            return {
+                type: 'education' as const,
+                network: null,
+                title: exam,
+                subtitle: `${tx.recipient || tx.reference} • ${tx.created_at}`,
+            };
+        }
+
+        return {
+            type: 'default' as const,
+            network: null,
+            title: (tx.service_type || 'Transaction').replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
+            subtitle: `${tx.recipient || tx.reference} • ${tx.created_at}`,
+        };
+    };
+
+    const renderTxIcon = (meta: ReturnType<typeof getTransactionMeta>) => {
+        if (meta.type === 'telco' && meta.network && NETWORK_ICONS[meta.network]) {
+            const bgMap: Record<string, string> = {
+                mtn: 'bg-[#FFCC00]',
+                airtel: 'bg-[#E60000]',
+                glo: 'bg-[#00843D]',
+                '9mobile': 'bg-[#00573D]',
+            };
+            return (
+                <div className={cn("w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center p-2 shrink-0 shadow-xs", bgMap[meta.network] || 'bg-slate-100')}>
+                    <img src={NETWORK_ICONS[meta.network]} alt={meta.network} className="w-full h-full object-contain" />
+                </div>
+            );
+        }
+
+        if (meta.type === 'cac') {
+            return (
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-emerald-500/30 shadow-xs bg-emerald-50 dark:bg-emerald-950/40">
+                    <img src={cacIcon} alt="CAC" className="w-full h-full object-cover scale-125 select-none" />
+                </div>
+            );
+        }
+
+        if (meta.type === 'identity_mod' || meta.type === 'identity_verify') {
+            const isBvn = meta.title.toLowerCase().includes('bvn');
+            return (
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-blue-500/30 shadow-xs bg-blue-50 dark:bg-blue-950/40">
+                    <img src={isBvn ? nibssIcon : nimcIcon} alt={isBvn ? "BVN" : "NIN"} className="w-full h-full object-cover scale-130 select-none" />
+                </div>
+            );
+        }
+
+        if (meta.type === 'airtime_cash') {
+            return (
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+                    <RefreshCw className="w-5 h-5 stroke-[2]" />
+                </div>
+            );
+        }
+
+        if (meta.type === 'electricity') {
+            return (
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 border border-amber-500/20">
+                    <Zap className="w-5 h-5 stroke-[2]" />
+                </div>
+            );
+        }
+
+        if (meta.type === 'cable') {
+            return (
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/20">
+                    <Tv className="w-5 h-5 stroke-[2]" />
+                </div>
+            );
+        }
+
+        if (meta.type === 'education') {
+            return (
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
+                    <GraduationCap className="w-5 h-5 stroke-[2]" />
+                </div>
+            );
+        }
+
+        return (
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-slate-500/10 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 border border-slate-500/20">
+                <Receipt className="w-5 h-5 stroke-[2]" />
+            </div>
+        );
     };
 
     return (
@@ -191,8 +359,7 @@ export default function TransactionsIndex({
                     {transactions.data.length > 0 ? (
                         <div className="divide-y divide-slate-100 dark:divide-slate-800/80 w-full min-w-0">
                             {transactions.data.map((tx) => {
-                                const meta = getServiceMeta(tx.service_type);
-                                const Icon = meta.icon;
+                                const meta = getTransactionMeta(tx);
                                 return (
                                     <Link
                                         key={tx.id}
@@ -201,19 +368,12 @@ export default function TransactionsIndex({
                                     >
                                         {/* Left Side: Service Icon & Info */}
                                         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-                                            <div
-                                                className={cn(
-                                                    'w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0',
-                                                    meta.colorClass
-                                                )}
-                                            >
-                                                <Icon className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
-                                            </div>
+                                            {renderTxIcon(meta)}
 
                                             <div className="min-w-0 flex-1">
                                                 <div className="flex items-center gap-1.5 min-w-0">
-                                                    <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm truncate">
-                                                        {meta.label}
+                                                    <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm truncate group-hover:text-primary transition-colors">
+                                                        {meta.title}
                                                     </span>
                                                     {tx.recipient && (
                                                         <span className="font-mono text-slate-500 dark:text-slate-400 text-[11px] sm:text-xs font-normal truncate max-w-[90px] sm:max-w-none shrink-0">

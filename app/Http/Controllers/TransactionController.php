@@ -59,6 +59,7 @@ class TransactionController extends Controller
                 'status' => in_array($tx->status, ['success', 'successful', 'completed'], true) ? 'successful' : ($tx->status === 'pending' ? 'pending' : 'failed'),
                 'created_at' => $tx->created_at?->diffForHumans() ?? 'Just now',
                 'date' => $tx->created_at?->format('M d, Y h:i A') ?? '',
+                'api_response' => $tx->api_response ?? [],
             ]);
 
         return Inertia::render('Storefront/Transactions/Index', [
