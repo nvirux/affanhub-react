@@ -66,6 +66,7 @@ class DashboardController extends Controller
                 'status' => in_array($tx->status, ['success', 'successful', 'completed'], true) ? 'successful' : ($tx->status === 'pending' ? 'pending' : 'failed'),
                 'created_at' => $tx->created_at?->diffForHumans() ?? 'Just now',
                 'date' => $tx->created_at?->format('M d, Y') ?? '',
+                'api_response' => $tx->api_response ?? [],
             ]);
 
         return Inertia::render('Storefront/Dashboard', [
