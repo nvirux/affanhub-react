@@ -97,6 +97,7 @@ Route::middleware([
 
         require __DIR__.'/vtu.php';
         require __DIR__.'/identity.php';
+        require __DIR__.'/cac.php';
     });
 
     // Legacy Auth URL Redirects (for mobile apps pointing to /auth/login

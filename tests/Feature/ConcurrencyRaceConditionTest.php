@@ -126,16 +126,42 @@ test('PayMint webhook handles duplicate or concurrent payloads gracefully with s
         ],
     ];
 
+    $secret = 'test-paymint-secret-key';
+    config(['paymint.secret_key' => $secret]);
+
+    $rawContent = json_encode($payload);
+    $validSignature = hash_hmac('sha512', $rawContent, $secret);
+
     // First webhook delivery
-    $response1 = $this->withHeaders(['X-Test-Bypass-Signature' => 'true'])
-        ->postJson('/webhooks/paymint', $payload);
+    $response1 = $this->call(
+        'POST',
+        '/webhooks/paymint',
+        [],
+        [],
+        [],
+        [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_X-PAYMINT-SIGNATURE' => $validSignature,
+        ],
+        $rawContent
+    );
 
     $response1->assertStatus(200);
     expect($response1->json('status'))->toBe('success');
 
     // Second webhook delivery with same reference
-    $response2 = $this->withHeaders(['X-Test-Bypass-Signature' => 'true'])
-        ->postJson('/webhooks/paymint', $payload);
+    $response2 = $this->call(
+        'POST',
+        '/webhooks/paymint',
+        [],
+        [],
+        [],
+        [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_X-PAYMINT-SIGNATURE' => $validSignature,
+        ],
+        $rawContent
+    );
 
     $response2->assertStatus(200);
     expect($response2->json('status'))->toBe('duplicate');

@@ -58,6 +58,8 @@ export default function DefaultTheme() {
     const whatsappGroup = store?.social_whatsapp || null;
     const currentYear = new Date().getFullYear();
     const isLoggedIn = !!auth?.user;
+    const hasApp = Boolean(store?.has_mobile_app && store?.app_download_url);
+    const downloadHref = hasApp ? store.app_download_url : '/dashboard';
 
     return (
         <div className="theme-yushpay min-h-screen bg-white text-slate-600 font-sans antialiased selection:bg-primary selection:text-white">
@@ -104,9 +106,8 @@ export default function DefaultTheme() {
                                 Contact
                             </a>
                             <a
-                                href="#"
-                                onClick={(e) => e.preventDefault()}
-                                className="text-primary font-bold hover:text-primary-600 transition flex items-center gap-1 cursor-default"
+                                href={downloadHref}
+                                className="text-primary font-bold hover:text-primary-600 transition flex items-center gap-1 cursor-pointer"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
@@ -203,12 +204,9 @@ export default function DefaultTheme() {
                                 Contact
                             </a>
                             <a
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setMobileMenuOpen(false);
-                                }}
-                                className="px-2 py-2 text-primary font-bold flex items-center gap-2 cursor-default"
+                                href={downloadHref}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="px-2 py-2 text-primary font-bold flex items-center gap-2 cursor-pointer"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
@@ -283,9 +281,8 @@ export default function DefaultTheme() {
                                     </svg>
                                 </Link>
                                 <a
-                                    href="#"
-                                    onClick={(e) => e.preventDefault()}
-                                    className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-medium text-lg transition flex items-center justify-center shadow-sm hover:shadow-md gap-2 cursor-default"
+                                    href={downloadHref}
+                                    className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-medium text-lg transition flex items-center justify-center shadow-sm hover:shadow-md gap-2 cursor-pointer"
                                 >
                                     <svg
                                         className="w-5 h-5 text-primary"

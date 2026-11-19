@@ -8,10 +8,15 @@ import {
     Eye, EyeOff, Plus, BarChart3, CheckCircle, Wallet, Gift,
     ChevronDown, Bell, LogOut, Settings, Menu, FileText, Sun, Moon, Monitor, Headphones,
     X, Copy, Check, Building2, ShieldCheck, AlertCircle, CreditCard, Sparkles,
-    UserCheck, Fingerprint, Search, Edit3, FileCheck, IdCard
+    UserCheck, Fingerprint, Search, Edit3, FileCheck, IdCard, Briefcase, ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import palmpayIcon from '@/assets/icons/palmpay.png';
+import cacIcon from '@/assets/icons/cac.png';
+import nimcIcon from '@/assets/icons/nimc.png';
+import nibssIcon from '@/assets/icons/nibss.png';
+import verificationIcon from '@/assets/icons/verification.png';
+import { NETWORK_ICONS } from '@/components/phone-network-card';
 import {
     Sheet,
     SheetContent,
@@ -28,8 +33,18 @@ export default function Dashboard() {
     const [themeMenuOpen, setThemeMenuOpen] = useState(false);
 
     const getIconComponent = (iconName: string, category: string) => {
-        const cls = "w-5 h-5 md:w-7 md:h-7 stroke-[1.75]";
+        const cls = "w-6 h-6 md:w-7 md:h-7 stroke-[1.8]";
+        const imgCls = "w-9 h-9 sm:w-11 sm:h-11 md:w-10 md:h-10 object-contain select-none transition-transform group-hover:scale-105";
+
         switch (iconName) {
+            case 'cac':
+                return <img src={cacIcon} alt="CAC" className={imgCls} />;
+            case 'nimc':
+                return <img src={nimcIcon} alt="NIMC" className={imgCls} />;
+            case 'nibss':
+                return <img src={nibssIcon} alt="NIBSS" className={imgCls} />;
+            case 'verification':
+                return <img src={verificationIcon} alt="Verification" className={imgCls} />;
             case 'Smartphone': return <Smartphone className={cls} />;
             case 'Wifi': return <Wifi className={cls} />;
             case 'Tv': return <Tv className={cls} />;
@@ -43,12 +58,213 @@ export default function Dashboard() {
             case 'Edit3': return <Edit3 className={cls} />;
             case 'FileCheck': return <FileCheck className={cls} />;
             case 'ShieldCheck': return <ShieldCheck className={cls} />;
-            default: return category === 'identity' ? <IdCard className={cls} /> : <Smartphone className={cls} />;
+            case 'Briefcase': return <Briefcase className={cls} />;
+            case 'Building2': return <Building2 className={cls} />;
+            default:
+                if (category === 'identity') return <img src={nimcIcon} alt="Identity" className={imgCls} />;
+                if (category === 'cac') return <img src={cacIcon} alt="CAC" className={imgCls} />;
+                return <Smartphone className={cls} />;
         }
     };
 
     const getColorClass = (key: string, category: string) => {
         return 'text-primary bg-primary/5 border-gray-100 dark:border-gray-700';
+    };
+
+    // Helper: Detect telco network from phone prefix
+    const detectNetworkFromPhone = (phone?: string): 'mtn' | 'airtel' | 'glo' | '9mobile' | null => {
+        if (!phone) return null;
+        const digits = phone.replace(/\D/g, '');
+        const normalized = digits.startsWith('234') && digits.length >= 13 ? '0' + digits.slice(3) : digits;
+
+        const mtnPrefixes = ['0803', '0806', '0703', '0706', '0813', '0816', '0810', '0814', '0903', '0906', '0913', '0916', '0704', '07025', '07026'];
+        const airtelPrefixes = ['0802', '0808', '0812', '0701', '0708', '0902', '0907', '0901', '0912', '0904'];
+        const gloPrefixes = ['0805', '0807', '0705', '0815', '0811', '0905', '0915'];
+        const nineMobilePrefixes = ['0809', '0817', '0818', '0909', '0908'];
+
+        if (mtnPrefixes.some(p => normalized.startsWith(p))) return 'mtn';
+        if (airtelPrefixes.some(p => normalized.startsWith(p))) return 'airtel';
+        if (gloPrefixes.some(p => normalized.startsWith(p))) return 'glo';
+        if (nineMobilePrefixes.some(p => normalized.startsWith(p))) return '9mobile';
+        return null;
+    };
+
+    // Helper: Extract real service title & metadata for recent transactions
+    const getTransactionMeta = (tx: any) => {
+        const rawServiceType = (tx.service_type || '').toLowerCase();
+        const api = tx.api_response || {};
+
+        let network: 'mtn' | 'airtel' | 'glo' | '9mobile' | null = null;
+        const netRaw = (api.network || '').toString().toLowerCase();
+        if (netRaw.includes('mtn')) network = 'mtn';
+        else if (netRaw.includes('airtel')) network = 'airtel';
+        else if (netRaw.includes('glo')) network = 'glo';
+        else if (netRaw.includes('9mobile') || netRaw.includes('etisalat')) network = '9mobile';
+        else {
+            network = detectNetworkFromPhone(tx.recipient || api.phone || api.sender_phone);
+        }
+
+        if (rawServiceType === 'airtime') {
+            const netLabel = network ? network.toUpperCase() : 'Airtime';
+            return {
+                type: 'telco' as const,
+                network,
+                title: network ? `${netLabel} Airtime (${tx.recipient})` : `Airtime Topup (${tx.recipient})`,
+                subtitle: tx.created_at,
+            };
+        }
+
+        if (rawServiceType === 'data') {
+            const netLabel = network ? network.toUpperCase() : 'Data';
+            const planName = api.plan_name || api.data_plan || api.size || api.plan || '';
+            const titlePlan = planName ? `${netLabel} ${planName}` : `${netLabel} Data`;
+            return {
+                type: 'telco' as const,
+                network,
+                title: `${titlePlan} (${tx.recipient})`,
+                subtitle: tx.created_at,
+            };
+        }
+
+        if (rawServiceType.includes('cac')) {
+            const packageTitle = api.package_title || 'CAC Registration';
+            const businessName = api.business_name || tx.recipient;
+            return {
+                type: 'cac' as const,
+                network: null,
+                title: packageTitle,
+                subtitle: businessName ? `${businessName} • ${tx.created_at}` : tx.created_at,
+            };
+        }
+
+        if (rawServiceType.includes('modification')) {
+            const isBvn = rawServiceType.includes('bvn');
+            const serviceTitle = api.service_title ? `${isBvn ? 'BVN' : 'NIN'} Mod (${api.service_title})` : `${isBvn ? 'BVN' : 'NIN'} Modification`;
+            const idNum = api.identifier || tx.recipient;
+            return {
+                type: 'identity_mod' as const,
+                network: null,
+                title: serviceTitle,
+                subtitle: idNum ? `${idNum} • ${tx.created_at}` : tx.created_at,
+            };
+        }
+
+        if (rawServiceType.includes('verification')) {
+            const isBvn = rawServiceType.includes('bvn');
+            const slipName = api.slip_name ? `${isBvn ? 'BVN' : 'NIN'} (${api.slip_name})` : `${isBvn ? 'BVN' : 'NIN'} Verification`;
+            return {
+                type: 'identity_verify' as const,
+                network: null,
+                title: slipName,
+                subtitle: `${tx.recipient} • ${tx.created_at}`,
+            };
+        }
+
+        if (rawServiceType.includes('airtime_to_cash') || rawServiceType.includes('airtime_cash')) {
+            const netLabel = (api.network || network || 'Airtime').toString().toUpperCase();
+            return {
+                type: 'airtime_cash' as const,
+                network,
+                title: `Airtime to Cash - ${netLabel}`,
+                subtitle: `${tx.recipient} • ${tx.created_at}`,
+            };
+        }
+
+        if (rawServiceType.includes('electricity') || rawServiceType.includes('power')) {
+            const disco = api.disco || api.provider || 'Electricity';
+            return {
+                type: 'electricity' as const,
+                network: null,
+                title: `${disco} (${tx.recipient})`,
+                subtitle: `${tx.recipient} • ${tx.created_at}`,
+            };
+        }
+
+        if (rawServiceType.includes('cable') || rawServiceType.includes('tv')) {
+            const provider = api.provider || api.cable_name || 'Cable TV';
+            return {
+                type: 'cable' as const,
+                network: null,
+                title: `${provider} (${tx.recipient})`,
+                subtitle: `${tx.recipient} • ${tx.created_at}`,
+            };
+        }
+
+        const formattedName = rawServiceType
+            .split('_')
+            .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' ');
+
+        return {
+            type: 'default' as const,
+            network: null,
+            title: formattedName || 'Transaction',
+            subtitle: `${tx.recipient || tx.reference} • ${tx.created_at}`,
+        };
+    };
+
+    // Helper: Render dedicated brand or service logo
+    const renderTxIcon = (meta: ReturnType<typeof getTransactionMeta>) => {
+        if (meta.type === 'telco' && meta.network && NETWORK_ICONS[meta.network]) {
+            const bgMap: Record<string, string> = {
+                mtn: 'bg-[#FFCC00]',
+                airtel: 'bg-[#E60000]',
+                glo: 'bg-[#00843D]',
+                '9mobile': 'bg-[#00573D]',
+            };
+            return (
+                <div className={cn("w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center p-2 shrink-0 shadow-xs", bgMap[meta.network] || 'bg-slate-100')}>
+                    <img src={NETWORK_ICONS[meta.network]} alt={meta.network} className="w-full h-full object-contain" />
+                </div>
+            );
+        }
+
+        if (meta.type === 'cac') {
+            return (
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-emerald-500/30 shadow-xs bg-emerald-50 dark:bg-emerald-950/40">
+                    <img src={cacIcon} alt="CAC" className="w-full h-full object-cover scale-125 select-none" />
+                </div>
+            );
+        }
+
+        if (meta.type === 'identity_mod' || meta.type === 'identity_verify') {
+            const isBvn = meta.title.toLowerCase().includes('bvn');
+            return (
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-blue-500/30 shadow-xs bg-blue-50 dark:bg-blue-950/40">
+                    <img src={isBvn ? nibssIcon : nimcIcon} alt={isBvn ? "BVN" : "NIN"} className="w-full h-full object-cover scale-130 select-none" />
+                </div>
+            );
+        }
+
+        if (meta.type === 'airtime_cash') {
+            return (
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+                    <RefreshCw className="w-5 h-5 stroke-[2]" />
+                </div>
+            );
+        }
+
+        if (meta.type === 'electricity') {
+            return (
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 border border-amber-500/20">
+                    <Zap className="w-5 h-5 stroke-[2]" />
+                </div>
+            );
+        }
+
+        if (meta.type === 'cable') {
+            return (
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/20">
+                    <Tv className="w-5 h-5 stroke-[2]" />
+                </div>
+            );
+        }
+
+        return (
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
+                <Wallet className="w-5 h-5 stroke-[2]" />
+            </div>
+        );
     };
 
     // Fund Wallet Modal States
@@ -107,6 +323,10 @@ export default function Dashboard() {
             router.get('/identity/nin-modification');
         } else if (key === 'bvn_modification' || key === 'bvn-modification') {
             router.get('/identity/bvn-modification');
+        } else if (key === 'cac_registration' || key === 'cac' || key === 'cac_services') {
+            router.get('/cac');
+        } else {
+            router.get('/services');
         }
     };
 
@@ -304,7 +524,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Main Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
                     {/* Left Column: Services & API Banner */}
                     <div className="lg:col-span-7 flex flex-col gap-6">
@@ -320,7 +540,7 @@ export default function Dashboard() {
                                 </Link>
                             </div>
 
-                            <div className="grid grid-cols-4 gap-2 md:gap-4">
+                            <div className={cn("grid gap-2 md:gap-4", store?.service_layout === 'cards_2' ? "grid-cols-2" : "grid-cols-4")}>
                                 {(() => {
                                     const defaultServices = [
                                         { key: 'airtime', name: 'Airtime', description: 'Top up airtime', icon: 'Smartphone', category: 'vtu' },
@@ -333,35 +553,82 @@ export default function Dashboard() {
                                         { key: 'bulk_sms', name: 'Bulk SMS', description: 'Send messages', icon: 'MessageSquare', category: 'vtu' },
                                     ];
 
+                                    const isTwoCol = store?.service_layout === 'cards_2';
                                     const serviceList = (store_services && store_services.length > 0) ? store_services : defaultServices;
                                     const visibleServices = serviceList.slice(0, 7);
 
                                     return (
                                         <>
                                             {visibleServices.map((svc: any) => (
-                                                <ServiceItem
-                                                    key={svc.key || svc.id}
-                                                    icon={getIconComponent(svc.icon, svc.category)}
-                                                    title={svc.name}
-                                                    subtitle={svc.description || 'Quick service'}
-                                                    color={getColorClass(svc.key, svc.category)}
-                                                    onClick={() => handleServiceClick(svc.key)}
-                                                />
+                                                isTwoCol ? (
+                                                    <button
+                                                        key={svc.key || svc.id}
+                                                        onClick={() => handleServiceClick(svc.key)}
+                                                        className="group flex items-center gap-3.5 p-3.5 rounded-2xl bg-white dark:bg-[#252538] hover:bg-primary/[0.04] dark:hover:bg-primary/[0.08] border border-gray-100 dark:border-gray-800 hover:border-primary/30 transition-all duration-300 text-left w-full cursor-pointer shadow-2xs"
+                                                    >
+                                                        <div className="w-12 h-12 rounded-xl bg-primary/5 dark:bg-primary/10 border border-primary/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs p-1">
+                                                            {getIconComponent(svc.icon, svc.category)}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <span className="text-[13px] sm:text-[14px] font-bold text-gray-900 dark:text-gray-100 leading-tight block truncate group-hover:text-primary transition-colors">
+                                                                {svc.name}
+                                                            </span>
+                                                            {store?.show_service_descriptions !== false && (
+                                                                <span className="text-[11px] text-gray-400 dark:text-gray-400 mt-0.5 line-clamp-1 block">
+                                                                    {svc.description || 'Fast automated processing'}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                                                    </button>
+                                                ) : (
+                                                    <ServiceItem
+                                                        key={svc.key || svc.id}
+                                                        icon={getIconComponent(svc.icon, svc.category)}
+                                                        title={svc.name}
+                                                        subtitle={svc.description || 'Quick service'}
+                                                        color={getColorClass(svc.key, svc.category)}
+                                                        onClick={() => handleServiceClick(svc.key)}
+                                                    />
+                                                )
                                             ))}
 
-                                            <Link
-                                                href="/services"
-                                                className="group flex flex-col items-center p-2 md:p-4 rounded-[1rem] md:rounded-2xl bg-primary/5 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 transition-all duration-300 w-full text-center cursor-pointer"
-                                            >
-                                                <div className="w-10 h-10 md:w-12 md:h-12 mb-2 md:mb-3 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                    <div className="grid grid-cols-2 gap-1 w-5 h-5 md:w-6 md:h-6 text-primary group-hover:text-gray-600 transition-colors">
-                                                        <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
-                                                        <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                            {isTwoCol ? (
+                                                <Link
+                                                    href="/services"
+                                                    className="group flex items-center gap-3.5 p-3.5 rounded-2xl bg-primary/5 dark:bg-gray-800/40 hover:bg-primary/10 border border-dashed border-primary/30 hover:border-primary/50 transition-all duration-300 w-full cursor-pointer"
+                                                >
+                                                    <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-900 border border-primary/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+                                                        <div className="grid grid-cols-2 gap-1 w-5 h-5 text-primary">
+                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <span className="text-[9px] md:text-[13px] font-bold text-gray-900 dark:text-gray-100 text-center leading-tight">More</span>
-                                                <span className="text-[8px] md:text-[10px] text-gray-400 mt-0.5 md:mt-1 text-center font-medium hidden sm:block">View all</span>
-                                            </Link>
+                                                    <div className="flex-1 min-w-0">
+                                                        <span className="text-[13px] sm:text-[14px] font-bold text-gray-900 dark:text-gray-100 leading-tight block">
+                                                            More Services
+                                                        </span>
+                                                        <span className="text-[11px] text-gray-400 mt-0.5 block">
+                                                            View all available services
+                                                        </span>
+                                                    </div>
+                                                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                                                </Link>
+                                            ) : (
+                                                <Link
+                                                    href="/services"
+                                                    className="group flex flex-col items-center p-2 md:p-4 rounded-[1rem] md:rounded-2xl bg-primary/5 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 transition-all duration-300 w-full text-center cursor-pointer"
+                                                >
+                                                    <div className="w-10 h-10 md:w-12 md:h-12 mb-2 md:mb-3 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                                                        <div className="grid grid-cols-2 gap-1 w-5 h-5 md:w-6 md:h-6 text-primary group-hover:text-gray-600 transition-colors">
+                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                            <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                        </div>
+                                                    </div>
+                                                    <span className="text-[9px] md:text-[13px] font-bold text-gray-900 dark:text-gray-100 text-center leading-tight">More</span>
+                                                    <span className="text-[8px] md:text-[10px] text-gray-400 mt-0.5 md:mt-1 text-center font-medium hidden sm:block">View all</span>
+                                                </Link>
+                                            )}
                                         </>
                                     );
                                 })()}
@@ -477,72 +744,59 @@ export default function Dashboard() {
                     </div>
 
                     {/* Right Column: Real Recent Transactions */}
-                    <div className="lg:col-span-5 bg-white dark:bg-[#1e1e2d] rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6 flex flex-col h-full">
+                    <div className="lg:col-span-5 bg-white dark:bg-[#1e1e2d] rounded-[1.25rem] border border-gray-100 dark:border-gray-800 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6 flex flex-col h-fit self-start">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-[16px] font-bold text-gray-900 dark:text-white">Recent Transactions</h2>
                             <Link href="/transactions" className="text-[13px] font-bold text-primary hover:opacity-85">View all</Link>
                         </div>
 
-                        <div className="flex flex-col gap-2 flex-1">
+                        <div className="flex flex-col gap-2">
                             {transactions.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-10 text-gray-400">
                                     <FileText className="w-10 h-10 mb-2 opacity-40" />
                                     <p className="text-xs font-semibold">No transactions found yet.</p>
                                 </div>
                             ) : (
-                                <div className="divide-y divide-slate-100 dark:divide-slate-800/80">
+                                <div className="divide-y divide-slate-100/70 dark:divide-slate-800/70">
                                     {transactions.map((tx: any) => {
                                         const isSuccess = tx.status === 'successful';
                                         const isPending = tx.status === 'pending';
-                                        const isAirtime = tx.service_type === 'airtime';
-                                        const isData = tx.service_type === 'data';
+                                        const meta = getTransactionMeta(tx);
 
                                         return (
                                             <Link
                                                 key={tx.id || tx.reference}
                                                 href={`/transactions/${tx.reference}`}
-                                                className="flex items-center justify-between py-2.5 px-2 -mx-2 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors group cursor-pointer"
+                                                className="flex items-center justify-between py-3.5 px-2 -mx-2 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors group cursor-pointer"
                                             >
-                                                <div className="flex items-center gap-3 min-w-0">
-                                                    <div
-                                                        className={cn(
-                                                            "w-8 h-8 rounded-xl flex items-center justify-center shrink-0",
-                                                            isAirtime
-                                                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                                                                : isData
-                                                                  ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                                                                  : "bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400"
-                                                        )}
-                                                    >
-                                                        {isAirtime ? (
-                                                            <Smartphone className="w-4 h-4" />
-                                                        ) : isData ? (
-                                                            <Wifi className="w-4 h-4" />
-                                                        ) : (
-                                                            <Wallet className="w-4 h-4" />
-                                                        )}
-                                                    </div>
+                                                <div className="flex items-center gap-3 min-w-0 pr-2">
+                                                    {renderTxIcon(meta)}
                                                     <div className="flex flex-col min-w-0">
-                                                        <span className="text-xs font-bold text-slate-800 dark:text-white capitalize truncate group-hover:text-primary transition-colors">
-                                                            {tx.service_type || 'Order'}
+                                                        <span className="text-xs sm:text-[13px] font-bold text-slate-800 dark:text-white truncate group-hover:text-primary transition-colors tracking-tight">
+                                                            {meta.title}
                                                         </span>
-                                                        <span className="text-[11px] text-slate-400 truncate">
-                                                            {tx.recipient || tx.reference} • {tx.created_at}
+                                                        <span className="text-[11px] text-slate-400 truncate mt-0.5">
+                                                            {meta.subtitle}
                                                         </span>
                                                     </div>
                                                 </div>
 
                                                 <div className="flex flex-col items-end shrink-0 pl-2">
-                                                    <span className="text-xs font-extrabold text-slate-900 dark:text-white font-mono">
+                                                    <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
                                                         ₦{Number(tx.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                                                     </span>
+                                                    {Number(tx.discount) > 0 && (
+                                                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold leading-tight mt-0.5">
+                                                            Save ₦{Number(tx.discount).toLocaleString('en-NG', { minimumFractionDigits: 0 })}
+                                                        </span>
+                                                    )}
                                                     <span
                                                         className={cn(
-                                                            "text-[10px] font-bold capitalize mt-0.5",
+                                                            "text-[10.5px] font-bold capitalize mt-0.5",
                                                             isSuccess
                                                                 ? "text-emerald-600 dark:text-emerald-400"
                                                                 : isPending
-                                                                  ? "text-amber-600 dark:text-amber-400"
+                                                                  ? "text-amber-500 dark:text-amber-400"
                                                                   : "text-rose-500 dark:text-rose-400"
                                                         )}
                                                     >
@@ -715,14 +969,15 @@ export default function Dashboard() {
 
                 {/* Quick Actions Section (Single Customizable Grid) */}
                 <div className="px-4 mb-6">
-                    <div className="bg-white dark:bg-[#1e1e2d] rounded-xl p-4 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-800">
+                    <div className="bg-white dark:bg-[#1e1e2d] rounded-2xl p-4 sm:p-5 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-800">
                         <div className="flex justify-between items-center mb-4 px-1">
-                            <h2 className="text-[15px] font-bold text-gray-900 dark:text-white">Quick Actions</h2>
-                            <Link href="/services" className="text-[12px] font-bold text-primary hover:underline">See all</Link>
+                            <h2 className="text-[15px] sm:text-[16px] font-bold text-gray-900 dark:text-white tracking-tight">Quick Actions</h2>
+                            <Link href="/services" className="text-[12px] sm:text-[13px] font-bold text-primary hover:underline">See all</Link>
                         </div>
 
-                        <div className="grid grid-cols-4 gap-y-5 gap-x-2 text-center">
-                            {((store_services && store_services.length > 0) ? store_services.slice(0, 7) : [
+                        {(() => {
+                            const isTwoCol = store?.service_layout === 'cards_2';
+                            const serviceList = (store_services && store_services.length > 0) ? store_services.slice(0, 7) : [
                                 { key: 'airtime', name: 'Airtime', icon: 'Smartphone', category: 'vtu' },
                                 { key: 'data', name: 'Data', icon: 'Wifi', category: 'vtu' },
                                 { key: 'cable', name: 'Cable TV', icon: 'Tv', category: 'vtu' },
@@ -730,46 +985,105 @@ export default function Dashboard() {
                                 { key: 'education', name: 'Education', icon: 'GraduationCap', category: 'vtu' },
                                 { key: 'airtime_cash', name: 'Airtime to Cash', icon: 'RefreshCw', category: 'vtu' },
                                 { key: 'bulk_sms', name: 'Bulk SMS', icon: 'MessageSquare', category: 'vtu' },
-                            ]).map((svc: any) => {
-                                const displayName = svc.key === 'airtime' ? 'Airtime'
-                                    : svc.key === 'data' ? 'Data'
-                                        : svc.key === 'electricity' ? 'Electricity'
-                                            : (svc.key === 'education' || svc.key === 'exam_pins') ? 'Education'
-                                                : svc.key === 'nin_verification' ? 'NIN Verify'
-                                                    : svc.key === 'bvn_verification' ? 'BVN Verify'
-                                                        : svc.key === 'nin_modification' ? 'NIN Mod'
-                                                            : svc.key === 'bvn_modification' ? 'BVN Mod'
-                                                                : svc.name;
-                                return (
-                                    <button key={svc.key || svc.id} onClick={() => handleServiceClick(svc.key)} className="flex flex-col items-center group w-full cursor-pointer">
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-1.5 group-active:scale-95 transition-transform ${getColorClass(svc.key, svc.category).split(' ')[0]} ${getColorClass(svc.key, svc.category).split(' ')[1]}`}>
-                                            {getIconComponent(svc.icon, svc.category)}
-                                        </div>
-                                        <span className="text-[11px] font-bold text-gray-800 dark:text-gray-200 leading-tight px-0.5">{displayName}</span>
-                                    </button>
-                                );
-                            })}
+                            ];
 
-                            {/* More Services Link (8th Slot) */}
-                            <Link href="/services" className="flex flex-col items-center group w-full cursor-pointer">
-                                <div className="w-12 h-12 rounded-2xl bg-primary/5 dark:bg-primary/10 text-primary flex items-center justify-center mb-1.5 group-active:scale-95 transition-transform">
-                                    <div className="grid grid-cols-2 gap-0.5 w-4 h-4 text-primary">
-                                        <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
-                                        <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
-                                    </div>
+                            return (
+                                <div className={cn(
+                                    "grid",
+                                    isTwoCol ? "grid-cols-2 gap-2.5" : "grid-cols-4 gap-y-6 gap-x-2 sm:gap-x-3 text-center"
+                                )}>
+                                    {serviceList.map((svc: any) => {
+                                        const displayName = svc.key === 'airtime' ? 'Airtime Topup'
+                                            : svc.key === 'data' ? 'Data Bundles'
+                                                : svc.key === 'electricity' ? 'Electricity'
+                                                    : svc.key === 'cable' ? 'Cable TV'
+                                                        : (svc.key === 'education' || svc.key === 'exam_pins') ? 'Education'
+                                                            : (svc.key === 'airtime_cash' || svc.key === 'airtime-to-cash' || svc.key === 'airtime_to_cash') ? 'Airtime to Cash'
+                                                                : svc.key === 'bulk_sms' ? 'Bulk SMS'
+                                                                    : (svc.key === 'cac_registration' || svc.key === 'cac' || svc.key === 'cac_services') ? 'CAC Services'
+                                                                        : svc.key === 'nin_verification' ? 'NIN Verify'
+                                                                            : svc.key === 'bvn_verification' ? 'BVN Verify'
+                                                                                : svc.key === 'nin_modification' ? 'NIN Mod'
+                                                                                    : svc.key === 'bvn_modification' ? 'BVN Mod'
+                                                                                        : svc.name;
+
+                                        return isTwoCol ? (
+                                            <button
+                                                key={svc.key || svc.id}
+                                                onClick={() => handleServiceClick(svc.key)}
+                                                className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-white dark:bg-zinc-800/80 hover:bg-primary/[0.04] border border-gray-100 dark:border-zinc-800 active:scale-98 transition-all w-full cursor-pointer text-left shadow-2xs"
+                                            >
+                                                <div className="w-11 h-11 rounded-xl bg-primary/5 dark:bg-primary/10 flex items-center justify-center shrink-0 shadow-xs border border-primary/10 p-1">
+                                                    {getIconComponent(svc.icon, svc.category)}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <span className="text-[12px] font-bold text-gray-900 dark:text-gray-100 leading-tight line-clamp-1 block">
+                                                        {displayName}
+                                                    </span>
+                                                    {store?.show_service_descriptions !== false && (
+                                                        <span className="text-[10px] text-gray-400 mt-0.5 line-clamp-1 block">
+                                                            {svc.description || 'Instant service'}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </button>
+                                        ) : (
+                                            <button
+                                                key={svc.key || svc.id}
+                                                onClick={() => handleServiceClick(svc.key)}
+                                                className="flex flex-col items-center group w-full cursor-pointer focus:outline-none"
+                                            >
+                                                <div className="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl flex items-center justify-center mb-2 group-active:scale-95 group-hover:scale-105 transition-all shadow-xs bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20 text-primary">
+                                                    {getIconComponent(svc.icon, svc.category)}
+                                                </div>
+                                                <span className="text-[11.5px] sm:text-[12px] font-bold text-gray-800 dark:text-gray-200 leading-tight px-0.5 tracking-tight line-clamp-2">
+                                                    {displayName}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+
+                                    {/* More Services Link (8th Slot) */}
+                                    {isTwoCol ? (
+                                        <Link href="/services" className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-primary/5 dark:bg-zinc-800/40 border border-dashed border-primary/30 active:scale-98 transition-all w-full cursor-pointer text-left">
+                                            <div className="w-11 h-11 rounded-xl bg-white dark:bg-zinc-900 flex items-center justify-center shrink-0 shadow-xs border border-primary/20 text-primary">
+                                                <div className="grid grid-cols-2 gap-1 w-4 h-4 text-primary">
+                                                    <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                    <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-[12px] font-bold text-gray-900 dark:text-gray-100 leading-tight block">
+                                                    More
+                                                </span>
+                                                <span className="text-[10px] text-gray-400 mt-0.5 block">
+                                                    View all
+                                                </span>
+                                            </div>
+                                        </Link>
+                                    ) : (
+                                        <Link href="/services" className="flex flex-col items-center group w-full cursor-pointer focus:outline-none">
+                                            <div className="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20 text-primary flex items-center justify-center mb-2 group-active:scale-95 group-hover:scale-105 transition-all shadow-xs">
+                                                <div className="grid grid-cols-2 gap-1 w-5 h-5 text-primary">
+                                                    <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                    <div className="bg-current rounded-full"></div><div className="bg-current rounded-full"></div>
+                                                </div>
+                                            </div>
+                                            <span className="text-[11.5px] sm:text-[12px] font-bold text-gray-800 dark:text-gray-200 leading-tight tracking-tight">More</span>
+                                        </Link>
+                                    )}
                                 </div>
-                                <span className="text-[11px] font-bold text-gray-800 dark:text-gray-200 leading-tight">More</span>
-                            </Link>
-                        </div>
+                            );
+                        })()}
                     </div>
                 </div>
 
                 {/* Real Recent Transactions Section (Mobile) */}
                 <div className="px-4 mb-8">
-                    <div className="bg-white dark:bg-[#1e1e2d] rounded-xl p-4 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-800">
+                    <div className="bg-white dark:bg-[#1e1e2d] rounded-2xl p-4 sm:p-5 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-800">
                         <div className="flex justify-between items-center mb-3 px-1">
-                            <h2 className="text-[15px] font-bold text-gray-900 dark:text-white">Recent Transactions</h2>
-                            <Link href="/transactions" className="text-[12px] font-bold text-primary hover:underline">See all</Link>
+                            <h2 className="text-[15px] sm:text-[16px] font-bold text-gray-900 dark:text-white tracking-tight">Recent Transactions</h2>
+                            <Link href="/transactions" className="text-[12px] sm:text-[13px] font-bold text-primary hover:underline">See all</Link>
                         </div>
 
                         <div className="flex flex-col gap-2">
@@ -779,64 +1093,46 @@ export default function Dashboard() {
                                     <p className="text-xs font-semibold">No transactions found yet.</p>
                                 </div>
                             ) : (
-                                <div className="divide-y divide-slate-100 dark:divide-slate-800/80">
+                                <div className="divide-y divide-slate-100/70 dark:divide-slate-800/70">
                                     {transactions.map((tx: any) => {
                                         const isSuccess = tx.status === 'successful';
                                         const isPending = tx.status === 'pending';
-                                        const isAirtime = tx.service_type === 'airtime';
-                                        const isData = tx.service_type === 'data';
+                                        const meta = getTransactionMeta(tx);
 
                                         return (
                                             <Link
                                                 key={tx.id || tx.reference}
                                                 href={`/transactions/${tx.reference}`}
-                                                className="flex items-center justify-between py-2.5 px-1 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors group cursor-pointer"
+                                                className="flex items-center justify-between py-3.5 px-1 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors group cursor-pointer"
                                             >
-                                                <div className="flex items-center gap-2.5 min-w-0">
-                                                    <div
-                                                        className={cn(
-                                                            "w-8 h-8 rounded-xl flex items-center justify-center shrink-0",
-                                                            isAirtime
-                                                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                                                                : isData
-                                                                  ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                                                                  : "bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400"
-                                                        )}
-                                                    >
-                                                        {isAirtime ? (
-                                                            <Smartphone className="w-4 h-4" />
-                                                        ) : isData ? (
-                                                            <Wifi className="w-4 h-4" />
-                                                        ) : (
-                                                            <Wallet className="w-4 h-4" />
-                                                        )}
-                                                    </div>
+                                                <div className="flex items-center gap-3 min-w-0 pr-2">
+                                                    {renderTxIcon(meta)}
                                                     <div className="flex flex-col min-w-0">
-                                                        <span className="text-xs font-bold text-slate-800 dark:text-white capitalize truncate group-hover:text-primary transition-colors">
-                                                            {tx.service_type || 'Order'}
+                                                        <span className="text-[13px] font-bold text-slate-900 dark:text-white truncate group-hover:text-primary transition-colors tracking-tight">
+                                                            {meta.title}
                                                         </span>
-                                                        <span className="text-[11px] text-slate-400 truncate">
-                                                            {tx.recipient || tx.reference} • {tx.created_at}
+                                                        <span className="text-[11px] text-slate-400 dark:text-slate-400 truncate mt-0.5">
+                                                            {meta.subtitle}
                                                         </span>
                                                     </div>
                                                 </div>
 
                                                 <div className="flex flex-col items-end shrink-0 pl-2">
-                                                    <span className="text-xs font-extrabold text-slate-900 dark:text-white font-mono">
+                                                    <span className="text-[13px] sm:text-sm font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
                                                         ₦{Number(tx.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                                                     </span>
                                                     {Number(tx.discount) > 0 && (
-                                                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold leading-tight">
-                                                            Saved ₦{Number(tx.discount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                                                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold leading-tight mt-0.5">
+                                                            Save ₦{Number(tx.discount).toLocaleString('en-NG', { minimumFractionDigits: 0 })}
                                                         </span>
                                                     )}
                                                     <span
                                                         className={cn(
-                                                            "text-[10px] font-bold capitalize mt-0.5",
+                                                            "text-[10.5px] font-bold capitalize mt-0.5",
                                                             isSuccess
                                                                 ? "text-emerald-600 dark:text-emerald-400"
                                                                 : isPending
-                                                                  ? "text-amber-600 dark:text-amber-400"
+                                                                  ? "text-amber-500 dark:text-amber-400"
                                                                   : "text-rose-500 dark:text-rose-400"
                                                         )}
                                                     >

@@ -35,13 +35,20 @@ class DashboardController extends Controller
 
             $isEnabled = $setting ? (bool) $setting->is_enabled : true;
             $sortOrder = $setting ? (int) $setting->sort_order : $service->sort_order;
+            $icon = $setting ? $setting->getResolvedIcon() : (
+                str_contains($service->key, 'cac') ? 'cac' : (
+                    str_contains($service->key, 'nin') ? 'nimc' : (
+                        str_contains($service->key, 'bvn') ? 'nibss' : ($service->icon ?? 'Smartphone')
+                    )
+                )
+            );
 
             $services[] = [
                 'id' => $service->id,
                 'name' => $service->name,
                 'key' => $service->key,
                 'category' => $service->category,
-                'icon' => $service->icon,
+                'icon' => $icon,
                 'description' => $service->description,
                 'sort_order' => $sortOrder,
                 'is_available' => ($hasAccess && $isEnabled),
@@ -66,6 +73,7 @@ class DashboardController extends Controller
                 'status' => in_array($tx->status, ['success', 'successful', 'completed'], true) ? 'successful' : ($tx->status === 'pending' ? 'pending' : 'failed'),
                 'created_at' => $tx->created_at?->diffForHumans() ?? 'Just now',
                 'date' => $tx->created_at?->format('M d, Y') ?? '',
+                'api_response' => $tx->api_response ?? [],
             ]);
 
         return Inertia::render('Storefront/Dashboard', [

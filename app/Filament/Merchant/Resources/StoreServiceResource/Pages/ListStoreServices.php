@@ -16,18 +16,30 @@ class ListStoreServices extends ListRecords
 {
     protected static string $resource = StoreServiceResource::class;
 
+    public function getSubheading(): ?string
+    {
+        return 'Turn services ON or OFF to control what appears on your customer storefront. Active services show as Quick Actions on your customer dashboard. Drag rows using the sort handle to prioritize them.';
+    }
+
+    public function choose_icon(?StoreService $record = null): void
+    {
+        if ($record && ! empty($record->getAvailableIconOptions()) && $record->hasAccess()) {
+            $this->mountTableAction('choose_icon', $record);
+        }
+    }
+
     protected function getHeaderActions(): array
     {
         return [
             Action::make('preview_storefront')
-                ->label('🌐 Preview Storefront')
+                ->label('Preview Storefront')
                 ->icon('heroicon-o-arrow-top-right-on-square')
                 ->color('gray')
                 ->url(fn () => Filament::getTenant()?->getStoreUrl() ?? '/')
                 ->openUrlInNewTab(),
 
             Action::make('enable_all_available')
-                ->label('⚡ Enable All Available')
+                ->label('Enable All Available')
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->requiresConfirmation()
@@ -145,12 +157,22 @@ class ListStoreServices extends ListRecords
 
             'identity' => Tab::make('Identity Services')
                 ->icon('heroicon-o-identification')
-                ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('service', fn ($q) => $q->where('category', 'identity')))
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('service', fn ($q) => $q->where('category', 'identity')->where('key', '!=', 'cac_services')))
                 ->badge(
                     StoreService::where('store_id', $storeId)
-                        ->whereHas('service', fn ($q) => $q->where('category', 'identity'))
+                        ->whereHas('service', fn ($q) => $q->where('category', 'identity')->where('key', '!=', 'cac_services'))
                         ->count()
                 ),
+
+            'cac' => Tab::make('CAC & Business')
+                ->icon('heroicon-o-briefcase')
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('service', fn ($q) => $q->where('key', 'cac_services')->orWhere('category', 'cac')))
+                ->badge(
+                    StoreService::where('store_id', $storeId)
+                        ->whereHas('service', fn ($q) => $q->where('key', 'cac_services')->orWhere('category', 'cac'))
+                        ->count()
+                )
+                ->badgeColor('success'),
         ];
     }
 }

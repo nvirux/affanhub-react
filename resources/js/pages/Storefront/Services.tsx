@@ -4,8 +4,12 @@ import { dashboard } from '@/routes';
 import {
     ChevronLeft, Search, Headphones, Smartphone, Wifi, Tv, Zap,
     GraduationCap, RefreshCw, MessageSquare, IdCard, UserCheck,
-    Edit3, FileCheck, ShieldCheck
+    Edit3, FileCheck, ShieldCheck, Briefcase
 } from 'lucide-react';
+import cacIcon from '@/assets/icons/cac.png';
+import nimcIcon from '@/assets/icons/nimc.png';
+import nibssIcon from '@/assets/icons/nibss.png';
+import verificationIcon from '@/assets/icons/verification.png';
 
 export interface ServiceItemData {
     id: number;
@@ -26,7 +30,8 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
     const [searchQuery, setSearchQuery] = useState('');
 
     const getIconComponent = (iconName: string, category: string) => {
-        const cls = "w-5 h-5 sm:w-6 sm:h-6 stroke-[1.8]";
+        const cls = "w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8]";
+
         switch (iconName) {
             case 'Smartphone': return <Smartphone className={cls} />;
             case 'Wifi': return <Wifi className={cls} />;
@@ -40,8 +45,58 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
             case 'Edit3': return <Edit3 className={cls} />;
             case 'FileCheck': return <FileCheck className={cls} />;
             case 'ShieldCheck': return <ShieldCheck className={cls} />;
-            default: return category === 'identity' ? <IdCard className={cls} /> : <Smartphone className={cls} />;
+            case 'Briefcase': return <Briefcase className={cls} />;
+            default:
+                return <Smartphone className={cls} />;
         }
+    };
+
+    const renderServiceBadge = (svc: ServiceItemData, category: string) => {
+        const iconName = svc.icon;
+        const key = svc.key || '';
+
+        // CAC Emblem - fill circle edge-to-edge
+        if (iconName === 'cac' || key.includes('cac')) {
+            return (
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden flex items-center justify-center mb-1.5 group-active:scale-95 group-hover:scale-105 transition-transform border border-emerald-500/30 shadow-xs bg-emerald-50 dark:bg-emerald-950/40 shrink-0">
+                    <img src={cacIcon} alt="CAC" className="w-full h-full object-cover scale-125 select-none" />
+                </div>
+            );
+        }
+
+        // BVN / NIBSS Emblem - fill circle edge-to-edge
+        if (iconName === 'nibss' || (category === 'identity' && key.includes('bvn'))) {
+            return (
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden flex items-center justify-center mb-1.5 group-active:scale-95 group-hover:scale-105 transition-transform border border-purple-500/30 shadow-xs bg-purple-50 dark:bg-purple-950/40 shrink-0">
+                    <img src={nibssIcon} alt="BVN" className="w-full h-full object-cover scale-130 select-none" />
+                </div>
+            );
+        }
+
+        // Verification Shield Emblem - fill circle edge-to-edge
+        if (iconName === 'verification') {
+            return (
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden flex items-center justify-center mb-1.5 group-active:scale-95 group-hover:scale-105 transition-transform border border-amber-500/30 shadow-xs bg-amber-50 dark:bg-amber-950/40 shrink-0">
+                    <img src={verificationIcon} alt="Verify" className="w-full h-full object-cover scale-120 select-none" />
+                </div>
+            );
+        }
+
+        // NIN / NIMC Emblem - fill circle edge-to-edge
+        if (iconName === 'nimc' || category === 'identity') {
+            return (
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden flex items-center justify-center mb-1.5 group-active:scale-95 group-hover:scale-105 transition-transform border border-blue-500/30 shadow-xs bg-blue-50 dark:bg-blue-950/40 shrink-0">
+                    <img src={nimcIcon} alt="NIN" className="w-full h-full object-cover scale-130 select-none" />
+                </div>
+            );
+        }
+
+        // VTU Services - prominent icon container
+        return (
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-1.5 group-active:scale-95 group-hover:scale-105 transition-transform text-primary bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20 shrink-0">
+                {getIconComponent(svc.icon, category)}
+            </div>
+        );
     };
 
     const handleServiceClick = (key: string) => {
@@ -67,6 +122,8 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
             router.get('/identity/nin-modification');
         } else if (key === 'bvn_modification' || key === 'bvn-modification') {
             router.get('/identity/bvn-modification');
+        } else if (key === 'cac_registration' || key === 'cac' || key === 'cac_services') {
+            router.get('/cac');
         } else {
             router.get(`/identity/${key.replace('_verification', '')}`);
         }
@@ -86,6 +143,8 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
             case 'bvn_verification': return 'BVN Verify';
             case 'nin_modification': return 'NIN Mod';
             case 'bvn_modification': return 'BVN Mod';
+            case 'cac_registration':
+            case 'cac_services': return 'CAC Services';
             default: return svc.name;
         }
     };
@@ -107,6 +166,7 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
         { id: 9, key: 'bvn_verification', name: 'BVN Verify', icon: 'UserCheck', category: 'identity', sort_order: 9, is_available: true },
         { id: 10, key: 'nin_modification', name: 'NIN Mod', icon: 'Edit3', category: 'identity', sort_order: 10, is_available: true },
         { id: 11, key: 'bvn_modification', name: 'BVN Mod', icon: 'UserCheck', category: 'identity', sort_order: 11, is_available: true },
+        { id: 12, key: 'cac_services', name: 'CAC Services', icon: 'Briefcase', category: 'identity', sort_order: 12, is_available: true },
     ];
 
     const allVtu = services.filter((s) => s.category === 'vtu');
@@ -205,9 +265,7 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
                                     onClick={() => handleServiceClick(svc.key)}
                                     className="flex flex-col items-center group w-full cursor-pointer"
                                 >
-                                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-1.5 group-active:scale-95 group-hover:scale-105 transition-transform text-primary bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20">
-                                        {getIconComponent(svc.icon, 'vtu')}
-                                    </div>
+                                    {renderServiceBadge(svc, 'vtu')}
                                     <span className="text-[11px] sm:text-[12px] font-bold text-gray-800 dark:text-gray-200 leading-tight px-0.5">
                                         {getDisplayName(svc)}
                                     </span>
@@ -235,9 +293,7 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
                                     onClick={() => handleServiceClick(svc.key)}
                                     className="flex flex-col items-center group w-full cursor-pointer"
                                 >
-                                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-1.5 group-active:scale-95 group-hover:scale-105 transition-transform text-primary bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20">
-                                        {getIconComponent(svc.icon, 'identity')}
-                                    </div>
+                                    {renderServiceBadge(svc, 'identity')}
                                     <span className="text-[11px] sm:text-[12px] font-bold text-gray-800 dark:text-gray-200 leading-tight px-0.5">
                                         {getDisplayName(svc)}
                                     </span>

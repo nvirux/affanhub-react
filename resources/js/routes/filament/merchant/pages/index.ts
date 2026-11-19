@@ -816,6 +816,108 @@ activityLogs.head = (args: { tenant: string | number | { public_id: string | num
     
     activityLogs.form = activityLogsForm
 /**
+* @see \App\Filament\Merchant\Pages\StoreLayoutSettings::__invoke
+ * @see app/Filament/Merchant/Pages/StoreLayoutSettings.php:7
+ * @route '//merchant.localhost/{tenant}/service-layout'
+ */
+export const serviceLayout = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: serviceLayout.url(args, options),
+    method: 'get',
+})
+
+serviceLayout.definition = {
+    methods: ["get","head"],
+    url: '//merchant.localhost/{tenant}/service-layout',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Filament\Merchant\Pages\StoreLayoutSettings::__invoke
+ * @see app/Filament/Merchant/Pages/StoreLayoutSettings.php:7
+ * @route '//merchant.localhost/{tenant}/service-layout'
+ */
+serviceLayout.url = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { tenant: args }
+    }
+
+            if (typeof args === 'object' && !Array.isArray(args) && 'public_id' in args) {
+            args = { tenant: args.public_id }
+        }
+    
+    if (Array.isArray(args)) {
+        args = {
+                    tenant: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        tenant: typeof args.tenant === 'object'
+                ? args.tenant.public_id
+                : args.tenant,
+                }
+
+    return serviceLayout.definition.url
+            .replace('{tenant}', parsedArgs.tenant.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Filament\Merchant\Pages\StoreLayoutSettings::__invoke
+ * @see app/Filament/Merchant/Pages/StoreLayoutSettings.php:7
+ * @route '//merchant.localhost/{tenant}/service-layout'
+ */
+serviceLayout.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: serviceLayout.url(args, options),
+    method: 'get',
+})
+/**
+* @see \App\Filament\Merchant\Pages\StoreLayoutSettings::__invoke
+ * @see app/Filament/Merchant/Pages/StoreLayoutSettings.php:7
+ * @route '//merchant.localhost/{tenant}/service-layout'
+ */
+serviceLayout.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: serviceLayout.url(args, options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Filament\Merchant\Pages\StoreLayoutSettings::__invoke
+ * @see app/Filament/Merchant/Pages/StoreLayoutSettings.php:7
+ * @route '//merchant.localhost/{tenant}/service-layout'
+ */
+    const serviceLayoutForm = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: serviceLayout.url(args, options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Merchant\Pages\StoreLayoutSettings::__invoke
+ * @see app/Filament/Merchant/Pages/StoreLayoutSettings.php:7
+ * @route '//merchant.localhost/{tenant}/service-layout'
+ */
+        serviceLayoutForm.get = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: serviceLayout.url(args, options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Merchant\Pages\StoreLayoutSettings::__invoke
+ * @see app/Filament/Merchant/Pages/StoreLayoutSettings.php:7
+ * @route '//merchant.localhost/{tenant}/service-layout'
+ */
+        serviceLayoutForm.head = (args: { tenant: string | number | { public_id: string | number } } | [tenant: string | number | { public_id: string | number } ] | string | number | { public_id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: serviceLayout.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    serviceLayout.form = serviceLayoutForm
+/**
 * @see \App\Filament\Merchant\Pages\StoreSettings::__invoke
  * @see app/Filament/Merchant/Pages/StoreSettings.php:7
  * @route '//merchant.localhost/{tenant}/settings'
@@ -1130,6 +1232,7 @@ mobileAppManager: Object.assign(mobileAppManager, mobileAppManager),
 pushNotifications: Object.assign(pushNotifications, pushNotifications),
 referralProgram: Object.assign(referralProgram, referralProgram),
 activityLogs: Object.assign(activityLogs, activityLogs),
+serviceLayout: Object.assign(serviceLayout, serviceLayout),
 settings: Object.assign(settings, settings),
 wallet: Object.assign(wallet, wallet),
 wholesaleRates: Object.assign(wholesaleRates, wholesaleRates),

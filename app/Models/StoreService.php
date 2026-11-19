@@ -69,7 +69,7 @@ class StoreService extends Model
 
         if ($this->service->isInPromo()) {
             return [
-                'label' => '🔥 Free Promo Active',
+                'label' => 'Free Promo Active',
                 'color' => 'warning',
                 'description' => 'Unlocked free until '.$this->service->promo_until->format('M d, Y'),
                 'is_locked' => false,
@@ -80,7 +80,7 @@ class StoreService extends Model
             $daysLeft = (int) now()->diffInDays($tenant->created_at->addDays($this->service->trial_days));
 
             return [
-                'label' => "⏱️ {$this->service->trial_days}d New Store Trial",
+                'label' => "{$this->service->trial_days}d New Store Trial",
                 'color' => 'info',
                 'description' => "Trial active ({$daysLeft} days left)",
                 'is_locked' => false,
@@ -99,10 +99,71 @@ class StoreService extends Model
         }
 
         return [
-            'label' => '🔒 Upgrade Required',
+            'label' => 'Upgrade Required',
             'color' => 'danger',
             'description' => $this->getRequiredPlan(),
             'is_locked' => true,
         ];
+    }
+
+    /**
+     * Resolve the active icon key for storefront display (custom or default).
+     */
+    public function getResolvedIcon(): string
+    {
+        if ($this->icon && $this->icon !== 'default') {
+            return $this->icon;
+        }
+
+        if ($this->icon === 'default') {
+            return $this->service?->icon ?? 'Smartphone';
+        }
+
+        $key = $this->service?->key ?? '';
+        if (str_contains($key, 'cac')) {
+            return 'cac';
+        }
+        if (str_contains($key, 'nin')) {
+            return 'nimc';
+        }
+        if (str_contains($key, 'bvn')) {
+            return 'nibss';
+        }
+
+        return $this->service?->icon ?? 'Smartphone';
+    }
+
+    /**
+     * Get strict permitted icon options for this service.
+     */
+    public function getAvailableIconOptions(): array
+    {
+        $key = $this->service?->key ?? '';
+
+        return match ($key) {
+            'bvn_verification' => [
+                'nibss' => 'NIBSS (Official NIBSS Logo)',
+                'verification' => 'Verification (Official Shield Badge)',
+                'default' => 'Default (System Vector Icon)',
+            ],
+            'nin_verification' => [
+                'nimc' => 'NIMC (Official NIMC Logo)',
+                'verification' => 'Verification (Official Shield Badge)',
+                'default' => 'Default (System Vector Icon)',
+            ],
+            'cac_services' => [
+                'cac' => 'CAC (Official CAC Logo)',
+                'default' => 'Default (System Vector Icon)',
+            ],
+            'nin_modification', 'nin_validation', 'ipe_clearance' => [
+                'nimc' => 'NIMC (Official NIMC Logo)',
+                'default' => 'Default (System Vector Icon)',
+            ],
+            'bvn_modification' => [
+                'nibss' => 'NIBSS (Official NIBSS Logo)',
+                'default' => 'Default (System Vector Icon)',
+            ],
+            default => [],
+        };
     }
 }

@@ -41,6 +41,9 @@ class StorefrontController extends Controller
 
         $template = $store?->landing_page_template ?? 'default';
 
+        $mobileApp = $store?->mobileApp;
+        $hasApp = (bool) ($mobileApp && $mobileApp->isReady());
+
         // Strictly whitelist only safe public visual branding fields
         $publicStore = [
             'name' => $store?->name ?? 'Store',
@@ -59,6 +62,8 @@ class StorefrontController extends Controller
             'social_instagram' => $store?->social_instagram ?? '',
             'social_facebook' => $store?->social_facebook ?? '',
             'landing_page_template' => $template,
+            'has_mobile_app' => $hasApp,
+            'app_download_url' => $hasApp ? '/app/download' : null,
         ];
 
         $component = match ($template) {

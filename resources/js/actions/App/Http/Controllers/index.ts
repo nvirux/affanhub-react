@@ -19,6 +19,7 @@ import AirtimeCashController from './AirtimeCashController'
 import NinVerificationController from './NinVerificationController'
 import BvnVerificationController from './BvnVerificationController'
 import ModificationController from './ModificationController'
+import CacController from './CacController'
 import Settings from './Settings'
 const Controllers = {
     HomeController: Object.assign(HomeController, HomeController),
@@ -42,6 +43,7 @@ AirtimeCashController: Object.assign(AirtimeCashController, AirtimeCashControlle
 NinVerificationController: Object.assign(NinVerificationController, NinVerificationController),
 BvnVerificationController: Object.assign(BvnVerificationController, BvnVerificationController),
 ModificationController: Object.assign(ModificationController, ModificationController),
+CacController: Object.assign(CacController, CacController),
 Settings: Object.assign(Settings, Settings),
 }
 

@@ -672,7 +672,7 @@ wallet.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     wallet.form = walletForm
 /**
- * @see routes/tenant.php:107
+ * @see routes/tenant.php:108
  * @route '/contact'
  */
 export const contact = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -686,7 +686,7 @@ contact.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/tenant.php:107
+ * @see routes/tenant.php:108
  * @route '/contact'
  */
 contact.url = (options?: RouteQueryOptions) => {
@@ -694,7 +694,7 @@ contact.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/tenant.php:107
+ * @see routes/tenant.php:108
  * @route '/contact'
  */
 contact.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -702,7 +702,7 @@ contact.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/tenant.php:107
+ * @see routes/tenant.php:108
  * @route '/contact'
  */
 contact.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -711,7 +711,7 @@ contact.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
- * @see routes/tenant.php:107
+ * @see routes/tenant.php:108
  * @route '/contact'
  */
     const contactForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -720,7 +720,7 @@ contact.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
- * @see routes/tenant.php:107
+ * @see routes/tenant.php:108
  * @route '/contact'
  */
         contactForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -728,7 +728,7 @@ contact.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
- * @see routes/tenant.php:107
+ * @see routes/tenant.php:108
  * @route '/contact'
  */
         contactForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -743,7 +743,7 @@ contact.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     contact.form = contactForm
 /**
- * @see routes/tenant.php:112
+ * @see routes/tenant.php:113
  * @route '/privacy-policy'
  */
 export const privacyPolicy = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -757,7 +757,7 @@ privacyPolicy.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/tenant.php:112
+ * @see routes/tenant.php:113
  * @route '/privacy-policy'
  */
 privacyPolicy.url = (options?: RouteQueryOptions) => {
@@ -765,7 +765,7 @@ privacyPolicy.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/tenant.php:112
+ * @see routes/tenant.php:113
  * @route '/privacy-policy'
  */
 privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -773,7 +773,7 @@ privacyPolicy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/tenant.php:112
+ * @see routes/tenant.php:113
  * @route '/privacy-policy'
  */
 privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -782,7 +782,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
 })
 
     /**
- * @see routes/tenant.php:112
+ * @see routes/tenant.php:113
  * @route '/privacy-policy'
  */
     const privacyPolicyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -791,7 +791,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     })
 
             /**
- * @see routes/tenant.php:112
+ * @see routes/tenant.php:113
  * @route '/privacy-policy'
  */
         privacyPolicyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -799,7 +799,7 @@ privacyPolicy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
             method: 'get',
         })
             /**
- * @see routes/tenant.php:112
+ * @see routes/tenant.php:113
  * @route '/privacy-policy'
  */
         privacyPolicyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

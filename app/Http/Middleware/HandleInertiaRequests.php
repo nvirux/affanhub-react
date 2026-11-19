@@ -95,6 +95,10 @@ class HandleInertiaRequests extends Middleware
                 'customer_funding_fee_cap' => tenant('customer_funding_fee_cap') !== null ? (float) tenant('customer_funding_fee_cap') : 1000.0,
                 'funding_fee_text' => tenant() instanceof Store ? tenant()->getCustomerDepositFeeText() : '1% transfer fee applies (Max ₦1,000)',
                 'privacy_policy' => tenant('privacy_policy'),
+                'service_layout' => tenant('service_layout') ?? 'compact_4',
+                'show_service_descriptions' => tenant('show_service_descriptions') !== null ? (bool) tenant('show_service_descriptions') : true,
+                'has_mobile_app' => (bool) (tenant() instanceof Store && tenant()->mobileApp?->isReady()),
+                'app_download_url' => (tenant() instanceof Store && tenant()->mobileApp?->isReady()) ? '/app/download' : null,
                 'announcement' => (function () {
                     $tenant = tenant();
                     if (! $tenant instanceof Store) {

@@ -8,6 +8,7 @@ import MobileAppManager from './MobileAppManager'
 import PushNotifications from './PushNotifications'
 import ReferralProgram from './ReferralProgram'
 import StoreActivityLogs from './StoreActivityLogs'
+import StoreLayoutSettings from './StoreLayoutSettings'
 import StoreSettings from './StoreSettings'
 import StoreWallet from './StoreWallet'
 import WholesaleRates from './WholesaleRates'
@@ -22,6 +23,7 @@ MobileAppManager: Object.assign(MobileAppManager, MobileAppManager),
 PushNotifications: Object.assign(PushNotifications, PushNotifications),
 ReferralProgram: Object.assign(ReferralProgram, ReferralProgram),
 StoreActivityLogs: Object.assign(StoreActivityLogs, StoreActivityLogs),
+StoreLayoutSettings: Object.assign(StoreLayoutSettings, StoreLayoutSettings),
 StoreSettings: Object.assign(StoreSettings, StoreSettings),
 StoreWallet: Object.assign(StoreWallet, StoreWallet),
 WholesaleRates: Object.assign(WholesaleRates, WholesaleRates),
