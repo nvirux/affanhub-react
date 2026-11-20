@@ -47,7 +47,13 @@ class Service extends Model
             return true;
         }
 
-        // 1. Promotional global free window
+        // 1. Explicit Store Service Override (highest priority)
+        $override = $store->serviceOverrides()->where('service_id', $this->id)->first();
+        if ($override !== null) {
+            return (bool) $override->is_allowed;
+        }
+
+        // 2. Promotional global free window
         if ($this->isInPromo()) {
             return true;
         }

@@ -4,12 +4,12 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
  * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
-export const ninIndex = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: ninIndex.url(options),
+const ninIndex667a8af2db60ad1d826284afcdbe0f0a = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ninIndex667a8af2db60ad1d826284afcdbe0f0a.url(options),
     method: 'get',
 })
 
-ninIndex.definition = {
+ninIndex667a8af2db60ad1d826284afcdbe0f0a.definition = {
     methods: ["get","head"],
     url: '/identity/nin-modification',
 } satisfies RouteDefinition<["get","head"]>
@@ -19,8 +19,8 @@ ninIndex.definition = {
  * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
-ninIndex.url = (options?: RouteQueryOptions) => {
-    return ninIndex.definition.url + queryParams(options)
+ninIndex667a8af2db60ad1d826284afcdbe0f0a.url = (options?: RouteQueryOptions) => {
+    return ninIndex667a8af2db60ad1d826284afcdbe0f0a.definition.url + queryParams(options)
 }
 
 /**
@@ -28,8 +28,8 @@ ninIndex.url = (options?: RouteQueryOptions) => {
  * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
-ninIndex.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: ninIndex.url(options),
+ninIndex667a8af2db60ad1d826284afcdbe0f0a.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ninIndex667a8af2db60ad1d826284afcdbe0f0a.url(options),
     method: 'get',
 })
 /**
@@ -37,8 +37,8 @@ ninIndex.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
  * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
-ninIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: ninIndex.url(options),
+ninIndex667a8af2db60ad1d826284afcdbe0f0a.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ninIndex667a8af2db60ad1d826284afcdbe0f0a.url(options),
     method: 'head',
 })
 
@@ -47,8 +47,8 @@ ninIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
  * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
-    const ninIndexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: ninIndex.url(options),
+    const ninIndex667a8af2db60ad1d826284afcdbe0f0aForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ninIndex667a8af2db60ad1d826284afcdbe0f0a.url(options),
         method: 'get',
     })
 
@@ -57,8 +57,8 @@ ninIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
  * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
-        ninIndexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ninIndex.url(options),
+        ninIndex667a8af2db60ad1d826284afcdbe0f0aForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ninIndex667a8af2db60ad1d826284afcdbe0f0a.url(options),
             method: 'get',
         })
             /**
@@ -66,8 +66,8 @@ ninIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
  * @see app/Http/Controllers/ModificationController.php:26
  * @route '/identity/nin-modification'
  */
-        ninIndexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: ninIndex.url({
+        ninIndex667a8af2db60ad1d826284afcdbe0f0aForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ninIndex667a8af2db60ad1d826284afcdbe0f0a.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -76,18 +76,107 @@ ninIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
     
-    ninIndex.form = ninIndexForm
+    ninIndex667a8af2db60ad1d826284afcdbe0f0a.form = ninIndex667a8af2db60ad1d826284afcdbe0f0aForm
+    /**
+* @see \App\Http\Controllers\ModificationController::ninIndex
+ * @see app/Http/Controllers/ModificationController.php:26
+ * @route '/identity/nin_modification'
+ */
+const ninIndexb8397a4f881f2f4343d745f01c1b2784 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ninIndexb8397a4f881f2f4343d745f01c1b2784.url(options),
+    method: 'get',
+})
+
+ninIndexb8397a4f881f2f4343d745f01c1b2784.definition = {
+    methods: ["get","head"],
+    url: '/identity/nin_modification',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ModificationController::ninIndex
+ * @see app/Http/Controllers/ModificationController.php:26
+ * @route '/identity/nin_modification'
+ */
+ninIndexb8397a4f881f2f4343d745f01c1b2784.url = (options?: RouteQueryOptions) => {
+    return ninIndexb8397a4f881f2f4343d745f01c1b2784.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ModificationController::ninIndex
+ * @see app/Http/Controllers/ModificationController.php:26
+ * @route '/identity/nin_modification'
+ */
+ninIndexb8397a4f881f2f4343d745f01c1b2784.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ninIndexb8397a4f881f2f4343d745f01c1b2784.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ModificationController::ninIndex
+ * @see app/Http/Controllers/ModificationController.php:26
+ * @route '/identity/nin_modification'
+ */
+ninIndexb8397a4f881f2f4343d745f01c1b2784.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ninIndexb8397a4f881f2f4343d745f01c1b2784.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ModificationController::ninIndex
+ * @see app/Http/Controllers/ModificationController.php:26
+ * @route '/identity/nin_modification'
+ */
+    const ninIndexb8397a4f881f2f4343d745f01c1b2784Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ninIndexb8397a4f881f2f4343d745f01c1b2784.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ModificationController::ninIndex
+ * @see app/Http/Controllers/ModificationController.php:26
+ * @route '/identity/nin_modification'
+ */
+        ninIndexb8397a4f881f2f4343d745f01c1b2784Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ninIndexb8397a4f881f2f4343d745f01c1b2784.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ModificationController::ninIndex
+ * @see app/Http/Controllers/ModificationController.php:26
+ * @route '/identity/nin_modification'
+ */
+        ninIndexb8397a4f881f2f4343d745f01c1b2784Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ninIndexb8397a4f881f2f4343d745f01c1b2784.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ninIndexb8397a4f881f2f4343d745f01c1b2784.form = ninIndexb8397a4f881f2f4343d745f01c1b2784Form
+
+/**
+* Multiple routes resolve to \App\Http\Controllers\ModificationController::ninIndex, so this export is a
+* dictionary keyed by URI rather than a callable. Call a specific route with `ninIndex['<uri>'](...)`,
+* or import the route by name from your generated `routes/` directory.
+*/
+export const ninIndex = {
+    '/identity/nin-modification': ninIndex667a8af2db60ad1d826284afcdbe0f0a,
+    '/identity/nin_modification': ninIndexb8397a4f881f2f4343d745f01c1b2784,
+}
+
 /**
 * @see \App\Http\Controllers\ModificationController::bvnIndex
  * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
-export const bvnIndex = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: bvnIndex.url(options),
+const bvnIndex3225bfe169070270e2f2c97d1528f6fb = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: bvnIndex3225bfe169070270e2f2c97d1528f6fb.url(options),
     method: 'get',
 })
 
-bvnIndex.definition = {
+bvnIndex3225bfe169070270e2f2c97d1528f6fb.definition = {
     methods: ["get","head"],
     url: '/identity/bvn-modification',
 } satisfies RouteDefinition<["get","head"]>
@@ -97,8 +186,8 @@ bvnIndex.definition = {
  * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
-bvnIndex.url = (options?: RouteQueryOptions) => {
-    return bvnIndex.definition.url + queryParams(options)
+bvnIndex3225bfe169070270e2f2c97d1528f6fb.url = (options?: RouteQueryOptions) => {
+    return bvnIndex3225bfe169070270e2f2c97d1528f6fb.definition.url + queryParams(options)
 }
 
 /**
@@ -106,8 +195,8 @@ bvnIndex.url = (options?: RouteQueryOptions) => {
  * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
-bvnIndex.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: bvnIndex.url(options),
+bvnIndex3225bfe169070270e2f2c97d1528f6fb.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: bvnIndex3225bfe169070270e2f2c97d1528f6fb.url(options),
     method: 'get',
 })
 /**
@@ -115,8 +204,8 @@ bvnIndex.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
  * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
-bvnIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: bvnIndex.url(options),
+bvnIndex3225bfe169070270e2f2c97d1528f6fb.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: bvnIndex3225bfe169070270e2f2c97d1528f6fb.url(options),
     method: 'head',
 })
 
@@ -125,8 +214,8 @@ bvnIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
  * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
-    const bvnIndexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: bvnIndex.url(options),
+    const bvnIndex3225bfe169070270e2f2c97d1528f6fbForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: bvnIndex3225bfe169070270e2f2c97d1528f6fb.url(options),
         method: 'get',
     })
 
@@ -135,8 +224,8 @@ bvnIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
  * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
-        bvnIndexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bvnIndex.url(options),
+        bvnIndex3225bfe169070270e2f2c97d1528f6fbForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: bvnIndex3225bfe169070270e2f2c97d1528f6fb.url(options),
             method: 'get',
         })
             /**
@@ -144,8 +233,8 @@ bvnIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
  * @see app/Http/Controllers/ModificationController.php:34
  * @route '/identity/bvn-modification'
  */
-        bvnIndexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bvnIndex.url({
+        bvnIndex3225bfe169070270e2f2c97d1528f6fbForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: bvnIndex3225bfe169070270e2f2c97d1528f6fb.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -154,7 +243,96 @@ bvnIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
     
-    bvnIndex.form = bvnIndexForm
+    bvnIndex3225bfe169070270e2f2c97d1528f6fb.form = bvnIndex3225bfe169070270e2f2c97d1528f6fbForm
+    /**
+* @see \App\Http\Controllers\ModificationController::bvnIndex
+ * @see app/Http/Controllers/ModificationController.php:34
+ * @route '/identity/bvn_modification'
+ */
+const bvnIndexf324de4f6317a1d923318a265bcb7b1b = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: bvnIndexf324de4f6317a1d923318a265bcb7b1b.url(options),
+    method: 'get',
+})
+
+bvnIndexf324de4f6317a1d923318a265bcb7b1b.definition = {
+    methods: ["get","head"],
+    url: '/identity/bvn_modification',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ModificationController::bvnIndex
+ * @see app/Http/Controllers/ModificationController.php:34
+ * @route '/identity/bvn_modification'
+ */
+bvnIndexf324de4f6317a1d923318a265bcb7b1b.url = (options?: RouteQueryOptions) => {
+    return bvnIndexf324de4f6317a1d923318a265bcb7b1b.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ModificationController::bvnIndex
+ * @see app/Http/Controllers/ModificationController.php:34
+ * @route '/identity/bvn_modification'
+ */
+bvnIndexf324de4f6317a1d923318a265bcb7b1b.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: bvnIndexf324de4f6317a1d923318a265bcb7b1b.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ModificationController::bvnIndex
+ * @see app/Http/Controllers/ModificationController.php:34
+ * @route '/identity/bvn_modification'
+ */
+bvnIndexf324de4f6317a1d923318a265bcb7b1b.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: bvnIndexf324de4f6317a1d923318a265bcb7b1b.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ModificationController::bvnIndex
+ * @see app/Http/Controllers/ModificationController.php:34
+ * @route '/identity/bvn_modification'
+ */
+    const bvnIndexf324de4f6317a1d923318a265bcb7b1bForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: bvnIndexf324de4f6317a1d923318a265bcb7b1b.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ModificationController::bvnIndex
+ * @see app/Http/Controllers/ModificationController.php:34
+ * @route '/identity/bvn_modification'
+ */
+        bvnIndexf324de4f6317a1d923318a265bcb7b1bForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: bvnIndexf324de4f6317a1d923318a265bcb7b1b.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ModificationController::bvnIndex
+ * @see app/Http/Controllers/ModificationController.php:34
+ * @route '/identity/bvn_modification'
+ */
+        bvnIndexf324de4f6317a1d923318a265bcb7b1bForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: bvnIndexf324de4f6317a1d923318a265bcb7b1b.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    bvnIndexf324de4f6317a1d923318a265bcb7b1b.form = bvnIndexf324de4f6317a1d923318a265bcb7b1bForm
+
+/**
+* Multiple routes resolve to \App\Http\Controllers\ModificationController::bvnIndex, so this export is a
+* dictionary keyed by URI rather than a callable. Call a specific route with `bvnIndex['<uri>'](...)`,
+* or import the route by name from your generated `routes/` directory.
+*/
+export const bvnIndex = {
+    '/identity/bvn-modification': bvnIndex3225bfe169070270e2f2c97d1528f6fb,
+    '/identity/bvn_modification': bvnIndexf324de4f6317a1d923318a265bcb7b1b,
+}
+
 /**
 * @see \App\Http\Controllers\ModificationController::index
  * @see app/Http/Controllers/ModificationController.php:42

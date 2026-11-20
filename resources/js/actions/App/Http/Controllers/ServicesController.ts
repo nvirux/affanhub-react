@@ -389,6 +389,84 @@ education29242d0896af91ff51106137d052e415.head = (options?: RouteQueryOptions): 
         })
     
     education29242d0896af91ff51106137d052e415.form = education29242d0896af91ff51106137d052e415Form
+    /**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam_pins'
+ */
+const education64c91afa394d03e84b7deccf0d93e4d2 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: education64c91afa394d03e84b7deccf0d93e4d2.url(options),
+    method: 'get',
+})
+
+education64c91afa394d03e84b7deccf0d93e4d2.definition = {
+    methods: ["get","head"],
+    url: '/vtu/exam_pins',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam_pins'
+ */
+education64c91afa394d03e84b7deccf0d93e4d2.url = (options?: RouteQueryOptions) => {
+    return education64c91afa394d03e84b7deccf0d93e4d2.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam_pins'
+ */
+education64c91afa394d03e84b7deccf0d93e4d2.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: education64c91afa394d03e84b7deccf0d93e4d2.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam_pins'
+ */
+education64c91afa394d03e84b7deccf0d93e4d2.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: education64c91afa394d03e84b7deccf0d93e4d2.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam_pins'
+ */
+    const education64c91afa394d03e84b7deccf0d93e4d2Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: education64c91afa394d03e84b7deccf0d93e4d2.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam_pins'
+ */
+        education64c91afa394d03e84b7deccf0d93e4d2Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: education64c91afa394d03e84b7deccf0d93e4d2.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam_pins'
+ */
+        education64c91afa394d03e84b7deccf0d93e4d2Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: education64c91afa394d03e84b7deccf0d93e4d2.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    education64c91afa394d03e84b7deccf0d93e4d2.form = education64c91afa394d03e84b7deccf0d93e4d2Form
 
 /**
 * Multiple routes resolve to \App\Http\Controllers\ServicesController::education, so this export is a
@@ -398,6 +476,7 @@ education29242d0896af91ff51106137d052e415.head = (options?: RouteQueryOptions): 
 export const education = {
     '/vtu/education': education65c3c307d1da24e74fbdfdcf602f61d6,
     '/vtu/exam-pins': education29242d0896af91ff51106137d052e415,
+    '/vtu/exam_pins': education64c91afa394d03e84b7deccf0d93e4d2,
 }
 
 /**
@@ -405,12 +484,12 @@ export const education = {
  * @see app/Http/Controllers/ServicesController.php:90
  * @route '/vtu/bulk-sms'
  */
-export const bulkSms = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: bulkSms.url(options),
+const bulkSms45cbe33695ee1a540ce1f15e14c7e8d4 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.url(options),
     method: 'get',
 })
 
-bulkSms.definition = {
+bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.definition = {
     methods: ["get","head"],
     url: '/vtu/bulk-sms',
 } satisfies RouteDefinition<["get","head"]>
@@ -420,8 +499,8 @@ bulkSms.definition = {
  * @see app/Http/Controllers/ServicesController.php:90
  * @route '/vtu/bulk-sms'
  */
-bulkSms.url = (options?: RouteQueryOptions) => {
-    return bulkSms.definition.url + queryParams(options)
+bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.url = (options?: RouteQueryOptions) => {
+    return bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.definition.url + queryParams(options)
 }
 
 /**
@@ -429,8 +508,8 @@ bulkSms.url = (options?: RouteQueryOptions) => {
  * @see app/Http/Controllers/ServicesController.php:90
  * @route '/vtu/bulk-sms'
  */
-bulkSms.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: bulkSms.url(options),
+bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.url(options),
     method: 'get',
 })
 /**
@@ -438,8 +517,8 @@ bulkSms.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
  * @see app/Http/Controllers/ServicesController.php:90
  * @route '/vtu/bulk-sms'
  */
-bulkSms.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: bulkSms.url(options),
+bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.url(options),
     method: 'head',
 })
 
@@ -448,8 +527,8 @@ bulkSms.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
  * @see app/Http/Controllers/ServicesController.php:90
  * @route '/vtu/bulk-sms'
  */
-    const bulkSmsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: bulkSms.url(options),
+    const bulkSms45cbe33695ee1a540ce1f15e14c7e8d4Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.url(options),
         method: 'get',
     })
 
@@ -458,8 +537,8 @@ bulkSms.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
  * @see app/Http/Controllers/ServicesController.php:90
  * @route '/vtu/bulk-sms'
  */
-        bulkSmsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bulkSms.url(options),
+        bulkSms45cbe33695ee1a540ce1f15e14c7e8d4Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.url(options),
             method: 'get',
         })
             /**
@@ -467,8 +546,8 @@ bulkSms.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
  * @see app/Http/Controllers/ServicesController.php:90
  * @route '/vtu/bulk-sms'
  */
-        bulkSmsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: bulkSms.url({
+        bulkSms45cbe33695ee1a540ce1f15e14c7e8d4Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -477,7 +556,96 @@ bulkSms.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
     
-    bulkSms.form = bulkSmsForm
+    bulkSms45cbe33695ee1a540ce1f15e14c7e8d4.form = bulkSms45cbe33695ee1a540ce1f15e14c7e8d4Form
+    /**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk_sms'
+ */
+const bulkSms3ddcec96774a8e8cfc17421312b45e64 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: bulkSms3ddcec96774a8e8cfc17421312b45e64.url(options),
+    method: 'get',
+})
+
+bulkSms3ddcec96774a8e8cfc17421312b45e64.definition = {
+    methods: ["get","head"],
+    url: '/vtu/bulk_sms',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk_sms'
+ */
+bulkSms3ddcec96774a8e8cfc17421312b45e64.url = (options?: RouteQueryOptions) => {
+    return bulkSms3ddcec96774a8e8cfc17421312b45e64.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk_sms'
+ */
+bulkSms3ddcec96774a8e8cfc17421312b45e64.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: bulkSms3ddcec96774a8e8cfc17421312b45e64.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk_sms'
+ */
+bulkSms3ddcec96774a8e8cfc17421312b45e64.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: bulkSms3ddcec96774a8e8cfc17421312b45e64.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk_sms'
+ */
+    const bulkSms3ddcec96774a8e8cfc17421312b45e64Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: bulkSms3ddcec96774a8e8cfc17421312b45e64.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk_sms'
+ */
+        bulkSms3ddcec96774a8e8cfc17421312b45e64Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: bulkSms3ddcec96774a8e8cfc17421312b45e64.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk_sms'
+ */
+        bulkSms3ddcec96774a8e8cfc17421312b45e64Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: bulkSms3ddcec96774a8e8cfc17421312b45e64.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    bulkSms3ddcec96774a8e8cfc17421312b45e64.form = bulkSms3ddcec96774a8e8cfc17421312b45e64Form
+
+/**
+* Multiple routes resolve to \App\Http\Controllers\ServicesController::bulkSms, so this export is a
+* dictionary keyed by URI rather than a callable. Call a specific route with `bulkSms['<uri>'](...)`,
+* or import the route by name from your generated `routes/` directory.
+*/
+export const bulkSms = {
+    '/vtu/bulk-sms': bulkSms45cbe33695ee1a540ce1f15e14c7e8d4,
+    '/vtu/bulk_sms': bulkSms3ddcec96774a8e8cfc17421312b45e64,
+}
+
 /**
 * @see \App\Http\Controllers\ServicesController::ninValidation
  * @see app/Http/Controllers/ServicesController.php:110
@@ -556,6 +724,84 @@ ninValidation6471f4c9a589f7799468a73c7dcf8f39.head = (options?: RouteQueryOption
         })
     
     ninValidation6471f4c9a589f7799468a73c7dcf8f39.form = ninValidation6471f4c9a589f7799468a73c7dcf8f39Form
+    /**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin_validation'
+ */
+const ninValidation5717fe426e85dcc53a25d60ad2f03c00 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ninValidation5717fe426e85dcc53a25d60ad2f03c00.url(options),
+    method: 'get',
+})
+
+ninValidation5717fe426e85dcc53a25d60ad2f03c00.definition = {
+    methods: ["get","head"],
+    url: '/identity/nin_validation',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin_validation'
+ */
+ninValidation5717fe426e85dcc53a25d60ad2f03c00.url = (options?: RouteQueryOptions) => {
+    return ninValidation5717fe426e85dcc53a25d60ad2f03c00.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin_validation'
+ */
+ninValidation5717fe426e85dcc53a25d60ad2f03c00.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ninValidation5717fe426e85dcc53a25d60ad2f03c00.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin_validation'
+ */
+ninValidation5717fe426e85dcc53a25d60ad2f03c00.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ninValidation5717fe426e85dcc53a25d60ad2f03c00.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin_validation'
+ */
+    const ninValidation5717fe426e85dcc53a25d60ad2f03c00Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ninValidation5717fe426e85dcc53a25d60ad2f03c00.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin_validation'
+ */
+        ninValidation5717fe426e85dcc53a25d60ad2f03c00Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ninValidation5717fe426e85dcc53a25d60ad2f03c00.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin_validation'
+ */
+        ninValidation5717fe426e85dcc53a25d60ad2f03c00Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ninValidation5717fe426e85dcc53a25d60ad2f03c00.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ninValidation5717fe426e85dcc53a25d60ad2f03c00.form = ninValidation5717fe426e85dcc53a25d60ad2f03c00Form
     /**
 * @see \App\Http\Controllers\ServicesController::ninValidation
  * @see app/Http/Controllers/ServicesController.php:110
@@ -642,6 +888,7 @@ ninValidationaab8fec0e466d1270769b4a954fb2550.head = (options?: RouteQueryOption
 */
 export const ninValidation = {
     '/identity/nin-validation': ninValidation6471f4c9a589f7799468a73c7dcf8f39,
+    '/identity/nin_validation': ninValidation5717fe426e85dcc53a25d60ad2f03c00,
     '/identity/validation': ninValidationaab8fec0e466d1270769b4a954fb2550,
 }
 
@@ -723,6 +970,84 @@ ipeClearance42308dc100cc82b5e5e20df55a595d6a.head = (options?: RouteQueryOptions
         })
     
     ipeClearance42308dc100cc82b5e5e20df55a595d6a.form = ipeClearance42308dc100cc82b5e5e20df55a595d6aForm
+    /**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe_clearance'
+ */
+const ipeClearanced5716d6f30695938d187cbf2b78f1c31 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ipeClearanced5716d6f30695938d187cbf2b78f1c31.url(options),
+    method: 'get',
+})
+
+ipeClearanced5716d6f30695938d187cbf2b78f1c31.definition = {
+    methods: ["get","head"],
+    url: '/identity/ipe_clearance',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe_clearance'
+ */
+ipeClearanced5716d6f30695938d187cbf2b78f1c31.url = (options?: RouteQueryOptions) => {
+    return ipeClearanced5716d6f30695938d187cbf2b78f1c31.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe_clearance'
+ */
+ipeClearanced5716d6f30695938d187cbf2b78f1c31.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ipeClearanced5716d6f30695938d187cbf2b78f1c31.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe_clearance'
+ */
+ipeClearanced5716d6f30695938d187cbf2b78f1c31.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ipeClearanced5716d6f30695938d187cbf2b78f1c31.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe_clearance'
+ */
+    const ipeClearanced5716d6f30695938d187cbf2b78f1c31Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ipeClearanced5716d6f30695938d187cbf2b78f1c31.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe_clearance'
+ */
+        ipeClearanced5716d6f30695938d187cbf2b78f1c31Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ipeClearanced5716d6f30695938d187cbf2b78f1c31.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe_clearance'
+ */
+        ipeClearanced5716d6f30695938d187cbf2b78f1c31Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ipeClearanced5716d6f30695938d187cbf2b78f1c31.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ipeClearanced5716d6f30695938d187cbf2b78f1c31.form = ipeClearanced5716d6f30695938d187cbf2b78f1c31Form
     /**
 * @see \App\Http\Controllers\ServicesController::ipeClearance
  * @see app/Http/Controllers/ServicesController.php:115
@@ -809,6 +1134,7 @@ ipeClearance7ad7049c3fb022d73c4bbef1292b3d32.head = (options?: RouteQueryOptions
 */
 export const ipeClearance = {
     '/identity/ipe-clearance': ipeClearance42308dc100cc82b5e5e20df55a595d6a,
+    '/identity/ipe_clearance': ipeClearanced5716d6f30695938d187cbf2b78f1c31,
     '/identity/ipe': ipeClearance7ad7049c3fb022d73c4bbef1292b3d32,
 }
 

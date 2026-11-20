@@ -44,11 +44,15 @@ class AirtimeCashRequestResource extends Resource
             return null;
         }
 
-        $pending = AirtimeCashRequest::where('store_id', $store->id)
-            ->where('status', 'pending')
-            ->count();
+        try {
+            $pending = AirtimeCashRequest::where('store_id', $store->id)
+                ->where('status', 'pending')
+                ->count();
 
-        return $pending > 0 ? (string) $pending : null;
+            return $pending > 0 ? (string) $pending : null;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     public static function getNavigationBadgeColor(): ?string

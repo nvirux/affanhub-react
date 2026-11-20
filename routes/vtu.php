@@ -27,5 +27,7 @@ Route::middleware(['auth', 'verified', 'transaction_pin'])->group(function () {
     Route::get('/vtu/electricity', [ServicesController::class, 'electricity'])->name('vtu.electricity');
     Route::get('/vtu/education', [ServicesController::class, 'education'])->name('vtu.education');
     Route::get('/vtu/exam-pins', [ServicesController::class, 'education'])->name('vtu.exam-pins');
+    Route::get('/vtu/exam_pins', [ServicesController::class, 'education']);
     Route::get('/vtu/bulk-sms', [ServicesController::class, 'bulkSms'])->name('vtu.bulk-sms');
+    Route::get('/vtu/bulk_sms', [ServicesController::class, 'bulkSms']);
 });

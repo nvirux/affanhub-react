@@ -17,7 +17,9 @@ Route::middleware(['auth', 'verified', 'transaction_pin'])->group(function () {
 
     // Identity Modifications (Separated NIN & BVN routes)
     Route::get('/identity/nin-modification', [ModificationController::class, 'ninIndex'])->name('identity.nin-modification');
+    Route::get('/identity/nin_modification', [ModificationController::class, 'ninIndex']);
     Route::get('/identity/bvn-modification', [ModificationController::class, 'bvnIndex'])->name('identity.bvn-modification');
+    Route::get('/identity/bvn_modification', [ModificationController::class, 'bvnIndex']);
     Route::get('/identity/modification', [ModificationController::class, 'index'])->name('identity.modification');
     Route::post('/identity/modification', [ModificationController::class, 'store'])->name('identity.modification.store');
     Route::get('/identity/modification/{reference}/download', [ModificationController::class, 'downloadResult'])->name('identity.modification.download');
@@ -30,7 +32,9 @@ Route::middleware(['auth', 'verified', 'transaction_pin'])->group(function () {
 
     // Validation & Clearance (Handled gracefully with ServiceUnavailable until fully integrated)
     Route::get('/identity/nin-validation', [ServicesController::class, 'ninValidation'])->name('identity.nin-validation');
+    Route::get('/identity/nin_validation', [ServicesController::class, 'ninValidation']);
     Route::get('/identity/validation', [ServicesController::class, 'ninValidation'])->name('identity.validation');
     Route::get('/identity/ipe-clearance', [ServicesController::class, 'ipeClearance'])->name('identity.ipe-clearance');
+    Route::get('/identity/ipe_clearance', [ServicesController::class, 'ipeClearance']);
     Route::get('/identity/ipe', [ServicesController::class, 'ipeClearance'])->name('identity.ipe');
 });

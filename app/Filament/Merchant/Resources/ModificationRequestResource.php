@@ -44,11 +44,15 @@ class ModificationRequestResource extends Resource
             return null;
         }
 
-        $pending = ModificationRequest::where('store_id', $store->id)
-            ->whereIn('status', ['pending', 'processing'])
-            ->count();
+        try {
+            $pending = ModificationRequest::where('store_id', $store->id)
+                ->whereIn('status', ['pending', 'processing'])
+                ->count();
 
-        return $pending > 0 ? (string) $pending : null;
+            return $pending > 0 ? (string) $pending : null;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     public static function getNavigationBadgeColor(): ?string

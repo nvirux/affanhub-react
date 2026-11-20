@@ -124,6 +124,10 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
             router.get('/identity/bvn-modification');
         } else if (key === 'cac_registration' || key === 'cac' || key === 'cac_services') {
             router.get('/cac');
+        } else if (key === 'nin_validation' || key === 'nin-validation' || key === 'validation') {
+            router.get('/identity/nin-validation');
+        } else if (key === 'ipe_clearance' || key === 'ipe-clearance' || key === 'ipe') {
+            router.get('/identity/ipe-clearance');
         } else {
             router.get(`/identity/${key.replace('_verification', '')}`);
         }
@@ -143,6 +147,8 @@ export default function ServicesPage({ services = [] }: ServicesPageProps) {
             case 'bvn_verification': return 'BVN Verify';
             case 'nin_modification': return 'NIN Mod';
             case 'bvn_modification': return 'BVN Mod';
+            case 'nin_validation': return 'NIN Validation';
+            case 'ipe_clearance': return 'IPE Clearance';
             case 'cac_registration':
             case 'cac_services': return 'CAC Services';
             default: return svc.name;

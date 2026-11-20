@@ -52,6 +52,7 @@ class StoreResource extends Resource
             RelationManagers\DomainsRelationManager::class,
             RelationManagers\SubscriptionsRelationManager::class,
             RelationManagers\FeatureOverridesRelationManager::class,
+            RelationManagers\ServiceOverridesRelationManager::class,
             RelationManagers\MembersRelationManager::class,
             RelationManagers\UsersRelationManager::class,
             RelationManagers\VirtualAccountsRelationManager::class,

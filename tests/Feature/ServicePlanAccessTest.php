@@ -7,6 +7,7 @@ use App\Models\PlanFeature;
 use App\Models\Service;
 use App\Models\Store;
 use App\Models\StoreService;
+use App\Models\StoreServiceOverride;
 use App\Models\Subscription;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -174,4 +175,78 @@ test('syncToAllStores creates store service entries across all stores', function
     expect($synced)->toBe(2);
 
     expect(StoreService::where('service_id', $service->id)->count())->toBe(2);
+});
+
+test('store service override grants access to a service locked out by plan', function () {
+    $starterPlan = Plan::create(['name' => 'Starter', 'slug' => 'starter', 'is_active' => true]);
+    $proPlan = Plan::create(['name' => 'Pro', 'slug' => 'pro', 'is_active' => true]);
+
+    $service = Service::create([
+        'name' => 'CAC Registration',
+        'key' => 'cac',
+        'category' => 'identity',
+        'is_active' => true,
+    ]);
+    // Entitle only Pro plan
+    $service->plans()->sync([$proPlan->id]);
+
+    $store = Store::create(['name' => 'Free Merchant', 'owner_id' => $this->owner->id, 'public_id' => 'free_str']);
+    Subscription::create([
+        'store_id' => $store->id,
+        'plan_id' => $starterPlan->id,
+        'status' => 'active',
+        'price' => 0.00,
+        'starts_at' => now(),
+    ]);
+
+    // Initial check: starter store is locked out
+    expect($service->isAccessibleByStore($store))->toBeFalse();
+
+    // SuperAdmin grants explicit override
+    StoreServiceOverride::create([
+        'store_id' => $store->id,
+        'service_id' => $service->id,
+        'is_allowed' => true,
+        'reason' => 'VIP Beta Tester',
+    ]);
+
+    // After override: store can access and StoreService is provisioned
+    expect($service->isAccessibleByStore($store))->toBeTrue()
+        ->and($store->isServiceAvailable('cac'))->toBeTrue();
+});
+
+test('store service override explicitly revokes access even if store plan permits it', function () {
+    $proPlan = Plan::create(['name' => 'Pro', 'slug' => 'pro', 'is_active' => true]);
+
+    $service = Service::create([
+        'name' => 'NIN Validation',
+        'key' => 'nin_validation',
+        'category' => 'identity',
+        'is_active' => true,
+    ]);
+    $service->plans()->sync([$proPlan->id]);
+
+    $store = Store::create(['name' => 'Pro Merchant', 'owner_id' => $this->owner->id, 'public_id' => 'pro_rev_str']);
+    Subscription::create([
+        'store_id' => $store->id,
+        'plan_id' => $proPlan->id,
+        'status' => 'active',
+        'price' => 5000.00,
+        'starts_at' => now(),
+    ]);
+
+    // Store initially has access
+    expect($service->isAccessibleByStore($store))->toBeTrue();
+
+    // SuperAdmin explicitly revokes access
+    StoreServiceOverride::create([
+        'store_id' => $store->id,
+        'service_id' => $service->id,
+        'is_allowed' => false,
+        'reason' => 'Under compliance review',
+    ]);
+
+    // Access is now revoked
+    expect($service->isAccessibleByStore($store))->toBeFalse()
+        ->and($store->isServiceAvailable('nin_validation'))->toBeFalse();
 });
