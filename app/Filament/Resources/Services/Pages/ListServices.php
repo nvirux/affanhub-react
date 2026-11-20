@@ -18,7 +18,7 @@ class ListServices extends ListRecords
     {
         return [
             Actions\Action::make('sync_all_services')
-                ->label('🔄 Sync All to Stores')
+                ->label('Sync All to Stores')
                 ->icon('heroicon-o-arrow-path-rounded-square')
                 ->color('gray')
                 ->requiresConfirmation()

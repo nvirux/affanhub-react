@@ -17,7 +17,8 @@ class FeaturesTable
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('bold'),
 
                 TextColumn::make('slug')
                     ->searchable()

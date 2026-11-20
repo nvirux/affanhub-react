@@ -161,7 +161,7 @@ class RegisterStore extends RegisterTenant
                 ])
                     ->submitAction(
                         $this->getRegisterFormAction()
-                            ->label('Create & Launch Store 🚀')
+                            ->label('Create & Launch Store')
                     ),
             ]);
     }

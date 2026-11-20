@@ -236,10 +236,405 @@ airtimeToCash.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
         })
     
     airtimeToCash.form = airtimeToCashForm
+/**
+* @see \App\Http\Controllers\ServicesController::cable
+ * @see app/Http/Controllers/ServicesController.php:95
+ * @route '/vtu/cable'
+ */
+export const cable = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: cable.url(options),
+    method: 'get',
+})
+
+cable.definition = {
+    methods: ["get","head"],
+    url: '/vtu/cable',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::cable
+ * @see app/Http/Controllers/ServicesController.php:95
+ * @route '/vtu/cable'
+ */
+cable.url = (options?: RouteQueryOptions) => {
+    return cable.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::cable
+ * @see app/Http/Controllers/ServicesController.php:95
+ * @route '/vtu/cable'
+ */
+cable.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: cable.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::cable
+ * @see app/Http/Controllers/ServicesController.php:95
+ * @route '/vtu/cable'
+ */
+cable.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: cable.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::cable
+ * @see app/Http/Controllers/ServicesController.php:95
+ * @route '/vtu/cable'
+ */
+    const cableForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: cable.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::cable
+ * @see app/Http/Controllers/ServicesController.php:95
+ * @route '/vtu/cable'
+ */
+        cableForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: cable.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::cable
+ * @see app/Http/Controllers/ServicesController.php:95
+ * @route '/vtu/cable'
+ */
+        cableForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: cable.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    cable.form = cableForm
+/**
+* @see \App\Http\Controllers\ServicesController::electricity
+ * @see app/Http/Controllers/ServicesController.php:100
+ * @route '/vtu/electricity'
+ */
+export const electricity = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: electricity.url(options),
+    method: 'get',
+})
+
+electricity.definition = {
+    methods: ["get","head"],
+    url: '/vtu/electricity',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::electricity
+ * @see app/Http/Controllers/ServicesController.php:100
+ * @route '/vtu/electricity'
+ */
+electricity.url = (options?: RouteQueryOptions) => {
+    return electricity.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::electricity
+ * @see app/Http/Controllers/ServicesController.php:100
+ * @route '/vtu/electricity'
+ */
+electricity.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: electricity.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::electricity
+ * @see app/Http/Controllers/ServicesController.php:100
+ * @route '/vtu/electricity'
+ */
+electricity.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: electricity.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::electricity
+ * @see app/Http/Controllers/ServicesController.php:100
+ * @route '/vtu/electricity'
+ */
+    const electricityForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: electricity.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::electricity
+ * @see app/Http/Controllers/ServicesController.php:100
+ * @route '/vtu/electricity'
+ */
+        electricityForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: electricity.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::electricity
+ * @see app/Http/Controllers/ServicesController.php:100
+ * @route '/vtu/electricity'
+ */
+        electricityForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: electricity.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    electricity.form = electricityForm
+/**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/education'
+ */
+export const education = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: education.url(options),
+    method: 'get',
+})
+
+education.definition = {
+    methods: ["get","head"],
+    url: '/vtu/education',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/education'
+ */
+education.url = (options?: RouteQueryOptions) => {
+    return education.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/education'
+ */
+education.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: education.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/education'
+ */
+education.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: education.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/education'
+ */
+    const educationForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: education.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/education'
+ */
+        educationForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: education.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::education
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/education'
+ */
+        educationForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: education.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    education.form = educationForm
+/**
+* @see \App\Http\Controllers\ServicesController::examPins
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam-pins'
+ */
+export const examPins = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: examPins.url(options),
+    method: 'get',
+})
+
+examPins.definition = {
+    methods: ["get","head"],
+    url: '/vtu/exam-pins',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::examPins
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam-pins'
+ */
+examPins.url = (options?: RouteQueryOptions) => {
+    return examPins.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::examPins
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam-pins'
+ */
+examPins.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: examPins.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::examPins
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam-pins'
+ */
+examPins.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: examPins.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::examPins
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam-pins'
+ */
+    const examPinsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: examPins.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::examPins
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam-pins'
+ */
+        examPinsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: examPins.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::examPins
+ * @see app/Http/Controllers/ServicesController.php:105
+ * @route '/vtu/exam-pins'
+ */
+        examPinsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: examPins.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    examPins.form = examPinsForm
+/**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk-sms'
+ */
+export const bulkSms = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: bulkSms.url(options),
+    method: 'get',
+})
+
+bulkSms.definition = {
+    methods: ["get","head"],
+    url: '/vtu/bulk-sms',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk-sms'
+ */
+bulkSms.url = (options?: RouteQueryOptions) => {
+    return bulkSms.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk-sms'
+ */
+bulkSms.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: bulkSms.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk-sms'
+ */
+bulkSms.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: bulkSms.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk-sms'
+ */
+    const bulkSmsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: bulkSms.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk-sms'
+ */
+        bulkSmsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: bulkSms.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::bulkSms
+ * @see app/Http/Controllers/ServicesController.php:90
+ * @route '/vtu/bulk-sms'
+ */
+        bulkSmsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: bulkSms.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    bulkSms.form = bulkSmsForm
 const vtu = {
     airtime: Object.assign(airtime, airtimeCd3da4),
 data: Object.assign(data, dataC044be),
 airtimeToCash: Object.assign(airtimeToCash, airtimeToCash77cdf2),
+cable: Object.assign(cable, cable),
+electricity: Object.assign(electricity, electricity),
+education: Object.assign(education, education),
+examPins: Object.assign(examPins, examPins),
+bulkSms: Object.assign(bulkSms, bulkSms),
 }
 
 export default vtu

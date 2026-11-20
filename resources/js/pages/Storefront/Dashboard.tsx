@@ -315,6 +315,14 @@ export default function Dashboard() {
             router.get('/vtu/airtime');
         } else if (key === 'airtime_cash' || key === 'airtime-to-cash' || key === 'airtime_to_cash') {
             router.get('/vtu/airtime-to-cash');
+        } else if (key === 'cable') {
+            router.get('/vtu/cable');
+        } else if (key === 'electricity') {
+            router.get('/vtu/electricity');
+        } else if (key === 'education' || key === 'exam_pins') {
+            router.get('/vtu/education');
+        } else if (key === 'bulk_sms') {
+            router.get('/vtu/bulk-sms');
         } else if (key === 'nin_verification' || key === 'nin') {
             router.get('/identity/nin');
         } else if (key === 'bvn_verification' || key === 'bvn') {
@@ -325,6 +333,10 @@ export default function Dashboard() {
             router.get('/identity/bvn-modification');
         } else if (key === 'cac_registration' || key === 'cac' || key === 'cac_services') {
             router.get('/cac');
+        } else if (key === 'nin_validation' || key === 'nin-validation' || key === 'validation') {
+            router.get('/identity/nin-validation');
+        } else if (key === 'ipe_clearance' || key === 'ipe-clearance' || key === 'ipe') {
+            router.get('/identity/ipe-clearance');
         } else {
             router.get('/services');
         }

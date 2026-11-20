@@ -33,7 +33,7 @@ class SlipResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedIdentification;
 
-    protected static UnitEnum|string|null $navigationGroup = '⚡ VTU & Services';
+    protected static UnitEnum|string|null $navigationGroup = 'VTU & Services';
 
     protected static ?string $navigationLabel = 'Identity Slips';
 

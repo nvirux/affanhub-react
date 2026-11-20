@@ -51,19 +51,19 @@ class MerchantOutreachService
 
         return [
             'welcome_launch' => [
-                'label' => '🚀 Welcome & Store Setup Walkthrough',
-                'message' => "Hello {$firstName}, welcome to AffanHub! 🚀 I'm reaching out from the merchant onboarding team. I noticed you signed up but haven't launched your store yet. Would you like a quick walkthrough to help you get started?",
+                'label' => 'Welcome & Store Setup Walkthrough',
+                'message' => "Hello {$firstName}, welcome to AffanHub! I'm reaching out from the merchant onboarding team. I noticed you signed up but haven't launched your store yet. Would you like a quick walkthrough to help you get started?",
             ],
             'unfunded_capital' => [
-                'label' => '💳 Wholesale Capital Funding Assistance',
+                'label' => 'Wholesale Capital Funding Assistance',
                 'message' => "Hello {$firstName}, your storefront ({$storeText}) is ready on AffanHub! Do you need any assistance funding your wholesale wallet so your customers can start purchasing data and airtime?",
             ],
             'domain_mobile_app' => [
-                'label' => '📱 Custom Domain & Android App Setup',
+                'label' => 'Custom Domain & Android App Setup',
                 'message' => "Hello {$firstName}, regarding {$storeText} on AffanHub: did you know you can connect your own custom domain and download a free branded Android APK for your store customers? Let us know if you'd like us to assist you!",
             ],
             'general_checkin' => [
-                'label' => '👋 General Check-in & Support',
+                'label' => 'General Check-in & Support',
                 'message' => "Hello {$firstName}, checking in from the AffanHub merchant success team! How is everything going with your account? Please let us know if you need any assistance or have questions.",
             ],
         ];
@@ -79,19 +79,19 @@ class MerchantOutreachService
 
         return [
             'kyc_verification' => [
-                'label' => '🪪 KYC / BVN / NIN Verification Reminder',
+                'label' => 'KYC / BVN / NIN Verification Reminder',
                 'message' => "Hello {$firstName}, this is customer support from {$storeText}. To unlock higher transaction limits and dedicated instant funding bank accounts, please take a moment to complete your BVN/NIN verification in your dashboard. Let us know if you need any assistance!",
             ],
             'low_balance_topup' => [
-                'label' => '💳 Wallet Top-up & Dedicated Bank Accounts',
+                'label' => 'Wallet Top-up & Dedicated Bank Accounts',
                 'message' => "Hello {$firstName}, from {$storeText}! You can easily fund your wallet anytime using your dedicated virtual bank accounts for instant credit. Let us know if you need help with any of your orders!",
             ],
             'support_checkin' => [
-                'label' => '👋 Customer Support Check-in',
+                'label' => 'Customer Support Check-in',
                 'message' => "Hello {$firstName}, checking in from {$storeText} customer support! Are you enjoying your experience or do you need assistance with data, airtime, or any other services? We are here to help!",
             ],
             'account_security' => [
-                'label' => '🔐 Account Security & PIN Guidance',
+                'label' => 'Account Security & PIN Guidance',
                 'message' => "Hello {$firstName}, from {$storeText}! For maximum security on your account, please remember to set a secure transaction PIN and enable 2FA in your settings. Please never share your PIN or OTP with anyone.",
             ],
         ];
@@ -107,15 +107,15 @@ class MerchantOutreachService
 
         return [
             'dns_instructions' => [
-                'label' => '🌐 DNS CNAME & TXT Configuration Guide',
+                'label' => 'DNS CNAME & TXT Configuration Guide',
                 'message' => "Hello {$firstName}, regarding {$domainName} for {$storeText} on AffanHub: please ensure you create a CNAME record pointing to 'cname.affanhub.com'. Once added, your custom domain will activate automatically!",
             ],
             'domain_approved' => [
-                'label' => '✅ Domain Approved & Routing Enabled',
+                'label' => 'Domain Approved & Routing Enabled',
                 'message' => "Hello {$firstName}, great news! Your custom domain ({$domainName}) has been approved and traffic routing is now fully active for {$storeText}. Your customers can now access your store directly at https://{$domainName}.",
             ],
             'dns_issue' => [
-                'label' => '⚠️ DNS Verification Issue Notice',
+                'label' => 'DNS Verification Issue Notice',
                 'message' => "Hello {$firstName}, we checked {$domainName} for {$storeText} and noticed the DNS records are not yet resolving properly. Please check your domain DNS settings or reply here so we can assist you!",
             ],
         ];

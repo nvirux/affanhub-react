@@ -16,7 +16,7 @@ class WalletTransactionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static string|\UnitEnum|null $navigationGroup = '📊 Finance & Platform';
+    protected static string|\UnitEnum|null $navigationGroup = 'Finance & Payouts';
 
     protected static ?int $navigationSort = 2;
 

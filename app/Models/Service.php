@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
@@ -16,6 +17,14 @@ class Service extends Model
         'promo_until' => 'datetime',
         'trial_days' => 'integer',
     ];
+
+    /**
+     * Get the plans that have direct access to this service.
+     */
+    public function plans(): BelongsToMany
+    {
+        return $this->belongsToMany(Plan::class, 'plan_service')->withTimestamps();
+    }
 
     /**
      * Check if this service is currently in a promotional free window.
@@ -34,16 +43,17 @@ class Service extends Model
             return false;
         }
 
-        // If no feature gating is required, everyone can access it
-        if (! $this->feature_id || ! $this->feature) {
-            return true;
-        }
-
         if (! $store) {
             return true;
         }
 
-        // 1. Promotional global free window
+        // 1. Explicit Store Service Override (highest priority)
+        $override = $store->serviceOverrides()->where('service_id', $this->id)->first();
+        if ($override !== null) {
+            return (bool) $override->is_allowed;
+        }
+
+        // 2. Promotional global free window
         if ($this->isInPromo()) {
             return true;
         }
@@ -53,19 +63,36 @@ class Service extends Model
             return true;
         }
 
-        // 3. Regular Plan Entitlement
-        try {
-            return (bool) $store->hasFeature($this->feature->slug);
-        } catch (\Throwable) {
+        // 3. Direct Plan-Service Entitlement
+        $allowedPlanIds = $this->getAllowedPlanIds();
+        if (empty($allowedPlanIds)) {
+            // If neither plans nor features are configured, allow access by default
+            return ! $this->feature_id;
+        }
+
+        $activeSub = $store->activeSubscription;
+        $currentPlan = ($activeSub && $activeSub->isActive())
+            ? $activeSub->plan
+            : Plan::where('slug', 'starter')->first();
+
+        if (! $currentPlan) {
             return false;
         }
+
+        return in_array((int) $currentPlan->id, array_map('intval', $allowedPlanIds), true);
     }
 
     /**
-     * Get IDs of plans that have access to this service's feature.
+     * Get IDs of plans that have access to this service.
      */
     public function getAllowedPlanIds(): array
     {
+        $directIds = $this->plans()->pluck('plans.id')->toArray();
+        if (! empty($directIds)) {
+            return $directIds;
+        }
+
+        // Fallback to feature_id for backward compatibility
         if (! $this->feature_id) {
             return Plan::pluck('id')->toArray();
         }
@@ -84,23 +111,19 @@ class Service extends Model
      */
     public function getAllowedPlansSummary(): string
     {
-        if (! $this->feature_id || ! $this->feature) {
-            return 'Free (All Plans)';
-        }
-
         $planIds = $this->getAllowedPlanIds();
         if (empty($planIds)) {
             return 'None / Locked';
         }
 
         $allPlansCount = Plan::count();
-        if (count($planIds) >= $allPlansCount) {
+        if ($allPlansCount > 0 && count($planIds) >= $allPlansCount) {
             return 'All Plans';
         }
 
         $planNames = Plan::whereIn('id', $planIds)->pluck('name')->toArray();
 
-        return implode(', ', $planNames);
+        return ! empty($planNames) ? implode(', ', $planNames) : 'None / Locked';
     }
 
     /**
@@ -137,24 +160,27 @@ class Service extends Model
     }
 
     /**
-     * Sync which plans have access to this service's feature.
+     * Sync which plans have access to this service.
      */
     public function syncPlansAccess(array $planIds): void
     {
-        $feature = $this->getOrCreateFeature();
+        $this->plans()->sync($planIds);
 
-        $allPlans = Plan::all();
-        foreach ($allPlans as $plan) {
-            $isAllowed = in_array((int) $plan->id, array_map('intval', $planIds), true);
-            PlanFeature::updateOrCreate(
-                [
-                    'plan_id' => $plan->id,
-                    'feature_id' => $feature->id,
-                ],
-                [
-                    'value' => $isAllowed ? 'true' : 'false',
-                ]
-            );
+        // Also sync to legacy feature if present for backward compatibility
+        if ($this->feature_id) {
+            $allPlans = Plan::all();
+            foreach ($allPlans as $plan) {
+                $isAllowed = in_array((int) $plan->id, array_map('intval', $planIds), true);
+                PlanFeature::updateOrCreate(
+                    [
+                        'plan_id' => $plan->id,
+                        'feature_id' => $this->feature_id,
+                    ],
+                    [
+                        'value' => $isAllowed ? 'true' : 'false',
+                    ]
+                );
+            }
         }
     }
 
@@ -192,17 +218,30 @@ class Service extends Model
      */
     public function getRequiredPlanForStore(?Store $store): string
     {
-        if (! $this->feature || ! $store) {
-            return 'Free / All Plans';
+        $allowedPlanIds = $this->getAllowedPlanIds();
+        if (empty($allowedPlanIds)) {
+            return 'Enterprise Plan or Contact Support';
         }
 
-        try {
-            return method_exists($store, 'getFeatureUpgradeRequirement')
-                ? $store->getFeatureUpgradeRequirement($this->feature->slug)
-                : 'Pro or Enterprise Plan';
-        } catch (\Throwable) {
-            return 'Pro or Enterprise Plan';
+        $allowedPlans = Plan::whereIn('id', $allowedPlanIds)->get()->keyBy('slug');
+        if ($allowedPlans->has('starter')) {
+            return 'Starter Plan';
         }
+
+        if ($allowedPlans->has('pro')) {
+            return 'Pro Plan';
+        }
+
+        if ($allowedPlans->has('enterprise')) {
+            return 'Enterprise Plan';
+        }
+
+        $first = $allowedPlans->first();
+        if ($first) {
+            return "{$first->name} Plan";
+        }
+
+        return 'Enterprise Plan or Contact Support';
     }
 
     /**

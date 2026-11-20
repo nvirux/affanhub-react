@@ -21,7 +21,7 @@ class StoreResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
-    protected static UnitEnum|string|null $navigationGroup = '🏬 Tenancy & Stores';
+    protected static UnitEnum|string|null $navigationGroup = 'Tenancy & Stores';
 
     protected static ?int $navigationSort = 1;
 
@@ -52,6 +52,7 @@ class StoreResource extends Resource
             RelationManagers\DomainsRelationManager::class,
             RelationManagers\SubscriptionsRelationManager::class,
             RelationManagers\FeatureOverridesRelationManager::class,
+            RelationManagers\ServiceOverridesRelationManager::class,
             RelationManagers\MembersRelationManager::class,
             RelationManagers\UsersRelationManager::class,
             RelationManagers\VirtualAccountsRelationManager::class,

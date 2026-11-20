@@ -53,6 +53,24 @@ class ModificationController extends Controller
     {
         $user = $request->user();
         $store = tenant();
+        $serviceKey = $category === 'bvn' ? 'bvn_modification' : 'nin_modification';
+        $serviceTitle = $category === 'bvn' ? 'BVN Data Modification' : 'NIN Data Modification';
+
+        if ($store && ! $store->isServiceAvailable($serviceKey)) {
+            return Inertia::render('Storefront/ServiceUnavailable', [
+                'serviceName' => $serviceTitle,
+                'serviceKey' => $serviceKey,
+                'category' => 'Identity',
+                'message' => "{$serviceTitle} services are currently not active. Please contact support for assistance.",
+                'store' => [
+                    'name' => $store->name,
+                    'contact_email' => $store->contact_email,
+                    'contact_phone' => $store->contact_phone,
+                    'whatsapp_chat_phone' => $store->whatsapp_chat_phone,
+                    'social_whatsapp' => $store->social_whatsapp,
+                ],
+            ]);
+        }
 
         $mainWallet = method_exists($user, 'wallet') ? $user->wallet('main') : null;
         $walletBalance = (float) ($mainWallet?->balance ?? 0.00);

@@ -21,7 +21,7 @@ class PlanResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
 
-    protected static UnitEnum|string|null $navigationGroup = '💳 Plans & Monetization';
+    protected static UnitEnum|string|null $navigationGroup = 'Plans & Monetization';
 
     protected static ?int $navigationSort = 1;
 

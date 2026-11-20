@@ -22,7 +22,7 @@ class TransactionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
 
-    protected static string|\UnitEnum|null $navigationGroup = '📊 Finance & Platform';
+    protected static string|\UnitEnum|null $navigationGroup = 'Finance & Payouts';
 
     protected static ?string $navigationLabel = 'Service Transactions';
 

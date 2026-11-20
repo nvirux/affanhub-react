@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\Models\Feature;
 use App\Models\PlanFeature;
 use App\Models\StoreFeatureOverride;
+use App\Models\StoreServiceOverride;
 use App\Models\Subscription;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -41,6 +42,11 @@ trait HasEntitlements
     public function featureOverrides(): HasMany
     {
         return $this->hasMany(StoreFeatureOverride::class, 'store_id');
+    }
+
+    public function serviceOverrides(): HasMany
+    {
+        return $this->hasMany(StoreServiceOverride::class, 'store_id');
     }
 
     /**

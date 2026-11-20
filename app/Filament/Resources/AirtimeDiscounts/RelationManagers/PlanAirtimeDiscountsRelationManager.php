@@ -92,7 +92,7 @@ class PlanAirtimeDiscountsRelationManager extends RelationManager
                 CreateAction::make()
                     ->label('Add Tier Discount'),
                 Action::make('populate_all_tiers')
-                    ->label('⚡ Auto-Populate All Tiers')
+                    ->label('Auto-Populate All Tiers')
                     ->icon('heroicon-o-bolt')
                     ->color('warning')
                     ->requiresConfirmation()

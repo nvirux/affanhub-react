@@ -45,11 +45,13 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->navigationGroups([
-                '🏬 Tenancy & Stores',
-                '👥 Customers & Accounts',
-                '⚡ VTU & Services',
-                '💳 Plans & Monetization',
-                '📊 Finance & Platform',
+                'Tenancy & Stores',
+                'VTU & Services',
+                'Plans & Monetization',
+                'Finance & Payouts',
+                'Store Customers',
+                'Platform & Settings',
+                'Content & Marketing',
             ])
             ->pages([
                 Dashboard::class,

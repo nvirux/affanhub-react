@@ -152,7 +152,7 @@ class OwnersTable
                         ->form(function (Owner $record) {
                             $templates = MerchantOutreachService::getTemplates($record->name, $record->ownedStores->first()?->name);
                             $options = collect($templates)->mapWithKeys(fn ($item, $key) => [$key => $item['label']])->toArray();
-                            $options['custom'] = '✏️ Custom Message';
+                            $options['custom'] = 'Custom Message';
 
                             return [
                                 TextInput::make('phone')

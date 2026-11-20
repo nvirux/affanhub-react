@@ -12,7 +12,7 @@ class PlatformPaymentSettings extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static string|\UnitEnum|null $navigationGroup = '📊 Finance & Platform';
+    protected static string|\UnitEnum|null $navigationGroup = 'Platform & Settings';
 
     protected string $view = 'filament.pages.platform-payment-settings';
 

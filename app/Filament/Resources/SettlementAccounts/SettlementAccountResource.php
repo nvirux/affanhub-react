@@ -27,7 +27,7 @@ class SettlementAccountResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingLibrary;
 
-    protected static UnitEnum|string|null $navigationGroup = '🏬 Tenancy & Stores';
+    protected static UnitEnum|string|null $navigationGroup = 'Finance & Payouts';
 
     protected static ?string $navigationLabel = 'Merchant Settlement Banks';
 
@@ -85,9 +85,9 @@ class SettlementAccountResource extends Resource
                         default => 'warning',
                     })
                     ->formatStateUsing(fn (string $state) => match ($state) {
-                        'approved' => '🟢 Approved',
-                        'rejected' => '🔴 Rejected',
-                        default => '🟡 Pending Approval',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                        default => 'Pending Approval',
                     })
                     ->sortable(),
                 IconColumn::make('is_active')

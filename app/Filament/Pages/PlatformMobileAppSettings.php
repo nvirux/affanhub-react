@@ -13,7 +13,7 @@ class PlatformMobileAppSettings extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDevicePhoneMobile;
 
-    protected static UnitEnum|string|null $navigationGroup = '🏬 Tenancy & Stores';
+    protected static UnitEnum|string|null $navigationGroup = 'Platform & Settings';
 
     protected string $view = 'filament.pages.platform-mobile-app-settings';
 

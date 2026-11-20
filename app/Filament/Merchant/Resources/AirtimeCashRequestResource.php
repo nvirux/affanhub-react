@@ -44,11 +44,15 @@ class AirtimeCashRequestResource extends Resource
             return null;
         }
 
-        $pending = AirtimeCashRequest::where('store_id', $store->id)
-            ->where('status', 'pending')
-            ->count();
+        try {
+            $pending = AirtimeCashRequest::where('store_id', $store->id)
+                ->where('status', 'pending')
+                ->count();
 
-        return $pending > 0 ? (string) $pending : null;
+            return $pending > 0 ? (string) $pending : null;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     public static function getNavigationBadgeColor(): ?string
@@ -176,7 +180,7 @@ class AirtimeCashRequestResource extends Resource
                     ->requiresConfirmation()
                     ->modalHeading(fn (AirtimeCashRequest $record) => "Approve Conversion ({$record->reference})")
                     ->modalDescription(function (AirtimeCashRequest $record) {
-                        $proofNote = $record->proof_image ? "\n\n📸 Transfer proof screenshot is attached to this request." : '';
+                        $proofNote = $record->proof_image ? "\n\nTransfer proof screenshot is attached to this request." : '';
                         if ($record->payout_method === 'wallet') {
                             return 'Verify that you received ₦'.number_format((float) $record->airtime_amount, 2)." airtime on your SIM ({$record->receiving_phone}) from customer SIM ({$record->sender_phone}).\n\nApproving will instantly credit ₦".number_format((float) $record->cash_amount, 2)." to {$record->user?->name}'s wallet.".$proofNote;
                         }

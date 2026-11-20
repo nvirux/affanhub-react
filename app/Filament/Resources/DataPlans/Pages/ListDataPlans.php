@@ -36,16 +36,16 @@ class ListDataPlans extends ListRecords
                     Select::make('scope')
                         ->label('Sync Scope')
                         ->options([
-                            'all' => '🔄 Sync All (Import new plans & update existing)',
-                            'new_only' => '✨ New Plans Only (Import new plans only; preserve existing prices)',
-                            'costs_only' => '💰 Provider Costs Only (Refresh wholesale costs without changing selling prices)',
+                            'all' => 'Sync All (Import new plans & update existing)',
+                            'new_only' => 'New Plans Only (Import new plans only; preserve existing prices)',
+                            'costs_only' => 'Provider Costs Only (Refresh wholesale costs without changing selling prices)',
                         ])
                         ->default('all')
                         ->required()
                         ->live(),
 
                     Toggle::make('apply_pricing')
-                        ->label('⚡ Apply Automated Profit Margins to Synced Plans')
+                        ->label('Apply Automated Profit Margins to Synced Plans')
                         ->helperText('Automatically calculate wholesale tier rates and customer retail prices from the provider cost.')
                         ->default(true)
                         ->live()

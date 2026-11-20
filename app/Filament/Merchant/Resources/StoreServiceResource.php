@@ -7,6 +7,7 @@ use App\Filament\Merchant\Resources\StoreServiceResource\Pages\ListStoreServices
 use App\Models\StoreService;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Radio;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -148,21 +149,28 @@ class StoreServiceResource extends Resource
                     ->badge()
                     ->state(function (StoreService $record): string {
                         if (! $record->hasAccess()) {
-                            return 'Locked';
+                            return 'Locked ('.$record->getRequiredPlan().')';
                         }
 
                         return $record->is_enabled ? 'Live on Store' : 'Hidden';
                     })
                     ->color(function (string $state): string {
+                        if (str_starts_with($state, 'Locked')) {
+                            return 'danger';
+                        }
+
                         return match ($state) {
                             'Live on Store' => 'success',
-                            'Locked' => 'danger',
                             default => 'gray',
                         };
                     })
                     ->description(function (StoreService $record): ?string {
                         if (! $record->hasAccess()) {
-                            return $record->getRequiredPlan();
+                            $req = $record->getRequiredPlan();
+
+                            return str_contains(strtolower($req), 'enterprise')
+                                ? 'Contact support to activate'
+                                : 'Upgrade plan to unlock';
                         }
 
                         return null;
@@ -177,6 +185,49 @@ class StoreServiceResource extends Resource
                     ]),
             ])
             ->recordActions([
+                Action::make('upgrade_service')
+                    ->label(function (StoreService $record): string {
+                        $req = $record->getRequiredPlan();
+
+                        return str_contains(strtolower($req), 'enterprise') ? 'Enterprise Plan' : "Unlock on {$req}";
+                    })
+                    ->icon('heroicon-o-lock-closed')
+                    ->color(function (StoreService $record): string {
+                        $req = $record->getRequiredPlan();
+
+                        return str_contains(strtolower($req), 'enterprise') ? 'purple' : 'warning';
+                    })
+                    ->button()
+                    ->visible(fn (StoreService $record) => ! $record->hasAccess())
+                    ->modalHeading(fn (StoreService $record) => ($record->service?->name ?? 'Service').' - Subscription Upgrade')
+                    ->modalDescription(function (StoreService $record): string {
+                        $req = $record->getRequiredPlan();
+                        $name = $record->service?->name ?? 'This service';
+                        if (str_contains(strtolower($req), 'enterprise')) {
+                            return "{$name} is reserved for Enterprise stores. High-volume and custom network integrations are available via dedicated enterprise onboarding. Please contact our support team to get this unlocked for your store.";
+                        }
+
+                        return "{$name} is not included in your current subscription tier. Upgrade your store subscription to {$req} to instantly unlock this service on your customer storefront.";
+                    })
+                    ->modalIcon('heroicon-o-sparkles')
+                    ->modalIconColor('warning')
+                    ->modalSubmitActionLabel(function (StoreService $record): string {
+                        $req = $record->getRequiredPlan();
+
+                        return str_contains(strtolower($req), 'enterprise') ? 'Contact Enterprise Support' : 'View Billing & Plans';
+                    })
+                    ->action(function (StoreService $record) {
+                        $req = $record->getRequiredPlan();
+                        if (str_contains(strtolower($req), 'enterprise')) {
+                            $tenant = Filament::getTenant();
+                            $storeName = $tenant?->name ?? 'My Store';
+                            $wa = 'https://wa.me/2348000000000?text='.urlencode("Hello, I would like to inquire about Enterprise access for store: {$storeName}");
+
+                            return redirect()->away($wa);
+                        }
+
+                        return redirect()->to(Billing::getUrl());
+                    }),
                 Action::make('configure_data')
                     ->label('Data Pricing')
                     ->icon('heroicon-o-signal')

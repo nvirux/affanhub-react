@@ -326,7 +326,7 @@ export const index = {
 
 /**
 * @see \App\Http\Controllers\CacController::store
- * @see app/Http/Controllers/CacController.php:88
+ * @see app/Http/Controllers/CacController.php:104
  * @route '/cac'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -341,7 +341,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\CacController::store
- * @see app/Http/Controllers/CacController.php:88
+ * @see app/Http/Controllers/CacController.php:104
  * @route '/cac'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -350,7 +350,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\CacController::store
- * @see app/Http/Controllers/CacController.php:88
+ * @see app/Http/Controllers/CacController.php:104
  * @route '/cac'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -360,7 +360,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\CacController::store
- * @see app/Http/Controllers/CacController.php:88
+ * @see app/Http/Controllers/CacController.php:104
  * @route '/cac'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -370,7 +370,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\CacController::store
- * @see app/Http/Controllers/CacController.php:88
+ * @see app/Http/Controllers/CacController.php:104
  * @route '/cac'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -381,7 +381,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\CacController::downloadCertificate
- * @see app/Http/Controllers/CacController.php:173
+ * @see app/Http/Controllers/CacController.php:189
  * @route '/cac/{reference}/download-certificate'
  */
 export const downloadCertificate = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -396,7 +396,7 @@ downloadCertificate.definition = {
 
 /**
 * @see \App\Http\Controllers\CacController::downloadCertificate
- * @see app/Http/Controllers/CacController.php:173
+ * @see app/Http/Controllers/CacController.php:189
  * @route '/cac/{reference}/download-certificate'
  */
 downloadCertificate.url = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -424,7 +424,7 @@ downloadCertificate.url = (args: { reference: string | number } | [reference: st
 
 /**
 * @see \App\Http\Controllers\CacController::downloadCertificate
- * @see app/Http/Controllers/CacController.php:173
+ * @see app/Http/Controllers/CacController.php:189
  * @route '/cac/{reference}/download-certificate'
  */
 downloadCertificate.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -433,7 +433,7 @@ downloadCertificate.get = (args: { reference: string | number } | [reference: st
 })
 /**
 * @see \App\Http\Controllers\CacController::downloadCertificate
- * @see app/Http/Controllers/CacController.php:173
+ * @see app/Http/Controllers/CacController.php:189
  * @route '/cac/{reference}/download-certificate'
  */
 downloadCertificate.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -443,7 +443,7 @@ downloadCertificate.head = (args: { reference: string | number } | [reference: s
 
     /**
 * @see \App\Http\Controllers\CacController::downloadCertificate
- * @see app/Http/Controllers/CacController.php:173
+ * @see app/Http/Controllers/CacController.php:189
  * @route '/cac/{reference}/download-certificate'
  */
     const downloadCertificateForm = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -453,7 +453,7 @@ downloadCertificate.head = (args: { reference: string | number } | [reference: s
 
             /**
 * @see \App\Http\Controllers\CacController::downloadCertificate
- * @see app/Http/Controllers/CacController.php:173
+ * @see app/Http/Controllers/CacController.php:189
  * @route '/cac/{reference}/download-certificate'
  */
         downloadCertificateForm.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -462,7 +462,7 @@ downloadCertificate.head = (args: { reference: string | number } | [reference: s
         })
             /**
 * @see \App\Http\Controllers\CacController::downloadCertificate
- * @see app/Http/Controllers/CacController.php:173
+ * @see app/Http/Controllers/CacController.php:189
  * @route '/cac/{reference}/download-certificate'
  */
         downloadCertificateForm.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

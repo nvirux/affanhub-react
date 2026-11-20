@@ -292,7 +292,7 @@ class CustomerResource extends Resource
                             $store = Filament::getTenant();
                             $templates = MerchantOutreachService::getCustomerTemplates($record->name, $store?->name);
                             $options = collect($templates)->mapWithKeys(fn ($item, $key) => [$key => $item['label']])->toArray();
-                            $options['custom'] = '✏️ Custom Message';
+                            $options['custom'] = 'Custom Message';
 
                             return [
                                 TextInput::make('phone')

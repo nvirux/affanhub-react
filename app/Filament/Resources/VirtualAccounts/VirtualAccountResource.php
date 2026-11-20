@@ -17,7 +17,7 @@ class VirtualAccountResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
 
-    protected static string|\UnitEnum|null $navigationGroup = '👥 Customers & Accounts';
+    protected static string|\UnitEnum|null $navigationGroup = 'Store Customers';
 
     protected static ?int $navigationSort = 2;
 

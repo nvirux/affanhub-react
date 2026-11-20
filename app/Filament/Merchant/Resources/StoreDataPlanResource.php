@@ -54,7 +54,7 @@ class StoreDataPlanResource extends Resource
                 ->label('Enable for Store Customers')
                 ->default(true),
             Toggle::make('is_best_offer')
-                ->label('HOT 🔥 Best Offer Badge on Storefront')
+                ->label('Best Offer Badge on Storefront')
                 ->default(false),
         ]);
     }
@@ -98,7 +98,7 @@ class StoreDataPlanResource extends Resource
                     ->color('success')
                     ->state(fn (StoreDataPlan $record) => '₦'.number_format((float) $record->selling_price - $record->getWholesaleCost(), 2)),
                 ToggleColumn::make('is_best_offer')
-                    ->label('HOT 🔥 Best Offer'),
+                    ->label('Best Offer'),
                 ToggleColumn::make('is_enabled')
                     ->label('Store Enabled'),
             ])
@@ -110,7 +110,7 @@ class StoreDataPlanResource extends Resource
                     ->label('Data Type')
                     ->relationship('dataPlan.dataType', 'name'),
                 TernaryFilter::make('is_best_offer')
-                    ->label('HOT 🔥 Best Offer'),
+                    ->label('Best Offer'),
                 TernaryFilter::make('is_enabled')
                     ->label('Store Enabled'),
             ])
@@ -120,7 +120,7 @@ class StoreDataPlanResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('bulk_set_profit')
-                        ->label('⚡ Set Profit on Selected')
+                        ->label('Set Profit on Selected')
                         ->icon('heroicon-o-currency-dollar')
                         ->color('success')
                         ->form([
@@ -230,7 +230,7 @@ class StoreDataPlanResource extends Resource
                         }),
 
                     BulkAction::make('mark_best_offer')
-                        ->label('Set as HOT 🔥 Best Offer')
+                        ->label('Set as Best Offer')
                         ->icon('heroicon-o-fire')
                         ->color('danger')
                         ->requiresConfirmation()

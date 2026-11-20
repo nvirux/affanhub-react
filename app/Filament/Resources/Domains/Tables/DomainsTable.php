@@ -313,7 +313,7 @@ class DomainsTable
                             $storeName = $record->store?->name ?? $record->tenant?->name;
                             $templates = MerchantOutreachService::getDomainTemplates($owner->name ?? 'Merchant', $record->domain, $storeName);
                             $options = collect($templates)->mapWithKeys(fn ($item, $key) => [$key => $item['label']])->toArray();
-                            $options['custom'] = '✏️ Custom Message';
+                            $options['custom'] = 'Custom Message';
 
                             return [
                                 TextInput::make('phone')

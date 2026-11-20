@@ -62,6 +62,13 @@ class PlanAndFeatureSeeder extends Seeder
                 'default_value' => 'false',
                 'description' => 'Allows connecting a custom Resend account to send emails from the store domain.',
             ],
+            [
+                'name' => 'Mobile App (APK Builder)',
+                'slug' => 'mobile_app',
+                'type' => 'boolean',
+                'default_value' => 'false',
+                'description' => 'Allows compiling custom branded Android APK applications for customers.',
+            ],
         ];
 
         $featureModels = [];

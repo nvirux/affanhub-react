@@ -179,7 +179,7 @@ class StoresTable
                         ->form(function (Store $record) {
                             $templates = MerchantOutreachService::getTemplates($record->owner?->name ?? 'Merchant', $record->name);
                             $options = collect($templates)->mapWithKeys(fn ($item, $key) => [$key => $item['label']])->toArray();
-                            $options['custom'] = '✏️ Custom Message';
+                            $options['custom'] = 'Custom Message';
 
                             return [
                                 TextInput::make('phone')

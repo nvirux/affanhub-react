@@ -21,7 +21,7 @@ class FaqResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedQuestionMarkCircle;
 
-    protected static UnitEnum|string|null $navigationGroup = '📝 Content & Marketing';
+    protected static UnitEnum|string|null $navigationGroup = 'Content & Marketing';
 
     protected static ?string $navigationLabel = 'FAQs';
 
