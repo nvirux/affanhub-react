@@ -59,7 +59,7 @@ class StoreAnnouncementResource extends Resource
                 ->label('Announcement Title / Headline')
                 ->required()
                 ->maxLength(120)
-                ->placeholder('e.g. ⚠️ MTN Network Delay or 🎉 Weekend Double Cashback!')
+                ->placeholder('e.g. MTN Network Delay or Weekend Double Cashback!')
                 ->columnSpanFull(),
 
             Textarea::make('message')
@@ -73,9 +73,9 @@ class StoreAnnouncementResource extends Resource
                 Select::make('display_style')
                     ->label('Display Format')
                     ->options([
-                        'modal' => '🪟 Popup Modal (Recommended - Clean dialog shown on visit)',
-                        'banner' => '📌 Slim Notification Pill (Ultra-compact, subtle one-line notice)',
-                        'ticker' => '⚡ Scrolling Ticker (Compact moving marquee text)',
+                        'modal' => 'Popup Modal (Recommended - Clean dialog shown on visit)',
+                        'banner' => 'Slim Notification Pill (Ultra-compact, subtle one-line notice)',
+                        'ticker' => 'Scrolling Ticker (Compact moving marquee text)',
                     ])
                     ->default('modal')
                     ->required(),
@@ -83,10 +83,10 @@ class StoreAnnouncementResource extends Resource
                 Select::make('type')
                     ->label('Notice Mood / Type')
                     ->options([
-                        'info' => 'ℹ️ Information (General Update)',
-                        'warning' => '⚠️ Warning (Network Slowdown / Delay)',
-                        'danger' => '🚨 Urgent (Downtime / Outage)',
-                        'promo' => '🎉 Promotion (Special Bonus / Deal)',
+                        'info' => 'Information (General Update)',
+                        'warning' => 'Warning (Network Slowdown / Delay)',
+                        'danger' => 'Urgent (Downtime / Outage)',
+                        'promo' => 'Promotion (Special Bonus / Deal)',
                     ])
                     ->default('info')
                     ->required(),
@@ -142,9 +142,9 @@ class StoreAnnouncementResource extends Resource
                     ->label('Format')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'modal' => '🪟 Popup Modal',
-                        'ticker' => '⚡ Scrolling Ticker',
-                        default => '📌 Top Banner',
+                        'modal' => 'Popup Modal',
+                        'ticker' => 'Scrolling Ticker',
+                        default => 'Top Banner',
                     })
                     ->color(fn (string $state): string => match ($state) {
                         'modal' => 'primary',
@@ -162,10 +162,10 @@ class StoreAnnouncementResource extends Resource
                         default => 'info',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'warning' => '⚠️ Warning',
-                        'danger' => '🚨 Urgent',
-                        'promo' => '🎉 Promo',
-                        default => 'ℹ️ Info',
+                        'warning' => 'Warning',
+                        'danger' => 'Urgent',
+                        'promo' => 'Promo',
+                        default => 'Info',
                     }),
 
                 ToggleColumn::make('is_active')

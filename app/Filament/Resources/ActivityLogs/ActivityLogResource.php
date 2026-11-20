@@ -21,7 +21,7 @@ class ActivityLogResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedListBullet;
 
-    protected static UnitEnum|string|null $navigationGroup = '📊 Finance & Platform';
+    protected static UnitEnum|string|null $navigationGroup = 'Platform & Settings';
 
     protected static ?int $navigationSort = 3;
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\BvnVerificationController;
 use App\Http\Controllers\ModificationController;
 use App\Http\Controllers\NinVerificationController;
+use App\Http\Controllers\ServicesController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'transaction_pin'])->group(function () {
@@ -26,4 +27,10 @@ Route::middleware(['auth', 'verified', 'transaction_pin'])->group(function () {
 
     // Download Verification Slip
     Route::get('/identity/verifications/{reference}/download-slip', [NinVerificationController::class, 'downloadSlip'])->name('identity.verifications.download-slip');
+
+    // Validation & Clearance (Handled gracefully with ServiceUnavailable until fully integrated)
+    Route::get('/identity/nin-validation', [ServicesController::class, 'ninValidation'])->name('identity.nin-validation');
+    Route::get('/identity/validation', [ServicesController::class, 'ninValidation'])->name('identity.validation');
+    Route::get('/identity/ipe-clearance', [ServicesController::class, 'ipeClearance'])->name('identity.ipe-clearance');
+    Route::get('/identity/ipe', [ServicesController::class, 'ipeClearance'])->name('identity.ipe');
 });

@@ -21,7 +21,7 @@ class PostResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
-    protected static UnitEnum|string|null $navigationGroup = '📝 Content & Marketing';
+    protected static UnitEnum|string|null $navigationGroup = 'Content & Marketing';
 
     protected static ?string $navigationLabel = 'Blog Posts';
 

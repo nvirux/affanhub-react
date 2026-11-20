@@ -38,17 +38,11 @@ class StoreService extends Model
     public function getRequiredPlan(): string
     {
         $tenant = $this->store ?? Filament::getTenant();
-        if (! $tenant || ! $this->service || ! $this->service->feature) {
+        if (! $this->service) {
             return 'Enterprise Plan or Contact Support';
         }
 
-        try {
-            return method_exists($tenant, 'getFeatureUpgradeRequirement')
-                ? $tenant->getFeatureUpgradeRequirement($this->service->feature->slug)
-                : 'Enterprise Plan';
-        } catch (\Throwable) {
-            return 'Enterprise Plan or Contact Support';
-        }
+        return $this->service->getRequiredPlanForStore($tenant);
     }
 
     /**

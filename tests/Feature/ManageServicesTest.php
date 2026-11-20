@@ -175,3 +175,26 @@ test('merchant can access and save layout settings', function () {
 
     expect($this->store->fresh()->service_layout)->toBe('cards_2');
 });
+
+test('service with direct plan_service relation respects plan access', function () {
+    $starter = Plan::create(['name' => 'Starter', 'slug' => 'starter', 'is_active' => true]);
+    $pro = Plan::create(['name' => 'Pro', 'slug' => 'pro', 'price_monthly' => 5000, 'is_active' => true]);
+
+    $service = Service::create([
+        'name' => 'Custom Pro Service',
+        'key' => 'custom_pro_service',
+        'category' => 'identity',
+        'is_active' => true,
+    ]);
+
+    // Attach only to Pro plan via direct plan_service relation
+    $service->plans()->attach($pro->id);
+
+    // Starter store should NOT have access
+    expect($service->isAccessibleByStore($this->store))->toBeFalse();
+    expect($service->getRequiredPlanForStore($this->store))->toBe('Pro Plan');
+
+    // Attach to Starter plan as well
+    $service->plans()->attach($starter->id);
+    expect($service->isAccessibleByStore($this->store))->toBeTrue();
+});

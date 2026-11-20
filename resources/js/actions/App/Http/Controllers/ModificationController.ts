@@ -235,7 +235,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\ModificationController::store
- * @see app/Http/Controllers/ModificationController.php:152
+ * @see app/Http/Controllers/ModificationController.php:170
  * @route '/identity/modification'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -250,7 +250,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\ModificationController::store
- * @see app/Http/Controllers/ModificationController.php:152
+ * @see app/Http/Controllers/ModificationController.php:170
  * @route '/identity/modification'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -259,7 +259,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ModificationController::store
- * @see app/Http/Controllers/ModificationController.php:152
+ * @see app/Http/Controllers/ModificationController.php:170
  * @route '/identity/modification'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -269,7 +269,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\ModificationController::store
- * @see app/Http/Controllers/ModificationController.php:152
+ * @see app/Http/Controllers/ModificationController.php:170
  * @route '/identity/modification'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -279,7 +279,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\ModificationController::store
- * @see app/Http/Controllers/ModificationController.php:152
+ * @see app/Http/Controllers/ModificationController.php:170
  * @route '/identity/modification'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -290,7 +290,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\ModificationController::downloadResult
- * @see app/Http/Controllers/ModificationController.php:380
+ * @see app/Http/Controllers/ModificationController.php:398
  * @route '/identity/modification/{reference}/download'
  */
 export const downloadResult = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -305,7 +305,7 @@ downloadResult.definition = {
 
 /**
 * @see \App\Http\Controllers\ModificationController::downloadResult
- * @see app/Http/Controllers/ModificationController.php:380
+ * @see app/Http/Controllers/ModificationController.php:398
  * @route '/identity/modification/{reference}/download'
  */
 downloadResult.url = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -333,7 +333,7 @@ downloadResult.url = (args: { reference: string | number } | [reference: string 
 
 /**
 * @see \App\Http\Controllers\ModificationController::downloadResult
- * @see app/Http/Controllers/ModificationController.php:380
+ * @see app/Http/Controllers/ModificationController.php:398
  * @route '/identity/modification/{reference}/download'
  */
 downloadResult.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -342,7 +342,7 @@ downloadResult.get = (args: { reference: string | number } | [reference: string 
 })
 /**
 * @see \App\Http\Controllers\ModificationController::downloadResult
- * @see app/Http/Controllers/ModificationController.php:380
+ * @see app/Http/Controllers/ModificationController.php:398
  * @route '/identity/modification/{reference}/download'
  */
 downloadResult.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -352,7 +352,7 @@ downloadResult.head = (args: { reference: string | number } | [reference: string
 
     /**
 * @see \App\Http\Controllers\ModificationController::downloadResult
- * @see app/Http/Controllers/ModificationController.php:380
+ * @see app/Http/Controllers/ModificationController.php:398
  * @route '/identity/modification/{reference}/download'
  */
     const downloadResultForm = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -362,7 +362,7 @@ downloadResult.head = (args: { reference: string | number } | [reference: string
 
             /**
 * @see \App\Http\Controllers\ModificationController::downloadResult
- * @see app/Http/Controllers/ModificationController.php:380
+ * @see app/Http/Controllers/ModificationController.php:398
  * @route '/identity/modification/{reference}/download'
  */
         downloadResultForm.get = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -371,7 +371,7 @@ downloadResult.head = (args: { reference: string | number } | [reference: string
         })
             /**
 * @see \App\Http\Controllers\ModificationController::downloadResult
- * @see app/Http/Controllers/ModificationController.php:380
+ * @see app/Http/Controllers/ModificationController.php:398
  * @route '/identity/modification/{reference}/download'
  */
         downloadResultForm.head = (args: { reference: string | number } | [reference: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

@@ -362,4 +362,25 @@ class Store extends BaseTenant implements TenantWithDatabase
             && ! empty($this->resend_api_key)
             && ! empty($this->resend_from_email);
     }
+
+    /**
+     * Check if a specific service is available for this store (plan entitled and merchant enabled).
+     */
+    public function isServiceAvailable(string $key): bool
+    {
+        $service = Service::where('key', $key)->first();
+        if (! $service || ! $service->is_active) {
+            return false;
+        }
+
+        if (! $service->isAccessibleByStore($this)) {
+            return false;
+        }
+
+        $storeService = StoreService::where('store_id', $this->id)
+            ->where('service_id', $service->id)
+            ->first();
+
+        return $storeService ? (bool) $storeService->is_enabled : true;
+    }
 }

@@ -24,10 +24,7 @@ class DashboardController extends Controller
 
         $services = [];
         foreach ($allServices as $service) {
-            $hasAccess = true;
-            if ($service->feature_id && $service->feature) {
-                $hasAccess = $tenant->hasFeature($service->feature->slug);
-            }
+            $hasAccess = $service->isAccessibleByStore($tenant);
 
             $setting = StoreService::where('store_id', $tenant->id)
                 ->where('service_id', $service->id)

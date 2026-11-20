@@ -3,6 +3,7 @@
 use App\Http\Controllers\AirtimeCashController;
 use App\Http\Controllers\AirtimeController;
 use App\Http\Controllers\DataController;
+use App\Http\Controllers\ServicesController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'transaction_pin'])->group(function () {
@@ -20,4 +21,11 @@ Route::middleware(['auth', 'verified', 'transaction_pin'])->group(function () {
     Route::get('/vtu/airtime_cash', fn () => redirect()->route('vtu.airtime-to-cash'));
     Route::get('/vtu/airtime-cash', fn () => redirect()->route('vtu.airtime-to-cash'));
     Route::post('/vtu/airtime-to-cash/submit', [AirtimeCashController::class, 'submit'])->name('vtu.airtime-to-cash.submit');
+
+    // Additional Services (Handled gracefully with ServiceUnavailable until fully integrated)
+    Route::get('/vtu/cable', [ServicesController::class, 'cable'])->name('vtu.cable');
+    Route::get('/vtu/electricity', [ServicesController::class, 'electricity'])->name('vtu.electricity');
+    Route::get('/vtu/education', [ServicesController::class, 'education'])->name('vtu.education');
+    Route::get('/vtu/exam-pins', [ServicesController::class, 'education'])->name('vtu.exam-pins');
+    Route::get('/vtu/bulk-sms', [ServicesController::class, 'bulkSms'])->name('vtu.bulk-sms');
 });

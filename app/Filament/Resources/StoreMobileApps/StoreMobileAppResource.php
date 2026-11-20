@@ -19,7 +19,7 @@ class StoreMobileAppResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDevicePhoneMobile;
 
-    protected static UnitEnum|string|null $navigationGroup = '🏬 Tenancy & Stores';
+    protected static UnitEnum|string|null $navigationGroup = 'Tenancy & Stores';
 
     protected static ?string $navigationLabel = 'Merchant Mobile Apps';
 

@@ -26,22 +26,28 @@ class BvnVerificationController extends Controller
         $user = $request->user();
         $store = tenant();
 
+        if ($store && ! $store->isServiceAvailable('bvn_verification')) {
+            return Inertia::render('Storefront/ServiceUnavailable', [
+                'serviceName' => 'BVN Verification Services',
+                'serviceKey' => 'bvn_verification',
+                'category' => 'Identity',
+                'message' => 'Bank Verification Number (BVN) verification and slip services are currently not active. Please contact support for assistance.',
+                'store' => [
+                    'name' => $store->name,
+                    'contact_email' => $store->contact_email,
+                    'contact_phone' => $store->contact_phone,
+                    'whatsapp_chat_phone' => $store->whatsapp_chat_phone,
+                    'social_whatsapp' => $store->social_whatsapp,
+                ],
+            ]);
+        }
+
         $mainWallet = method_exists($user, 'wallet') ? $user->wallet('main') : null;
         $walletBalance = (float) ($mainWallet?->balance ?? 0.00);
 
         // Service Availability check
         $service = Service::where('key', 'bvn_verification')->first();
-        $hasAccess = true;
-        if ($service?->feature_id && $service?->feature) {
-            try {
-                $hasAccess = (bool) $store->hasFeature($service->feature->slug);
-            } catch (\Throwable) {
-                $hasAccess = false;
-            }
-        }
-        $storeService = $service && $store ? StoreService::where('store_id', $store->id)->where('service_id', $service->id)->first() : null;
-        $isEnabled = $storeService ? (bool) $storeService->is_enabled : $hasAccess;
-        $isAvailable = $hasAccess && $isEnabled;
+        $isAvailable = true;
 
         // Dynamic slips loaded from database for BVN service
         $slips = [];

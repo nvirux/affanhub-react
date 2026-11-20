@@ -27,7 +27,7 @@ class WithdrawalResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static UnitEnum|string|null $navigationGroup = '👥 Customers & Accounts';
+    protected static UnitEnum|string|null $navigationGroup = 'Finance & Payouts';
 
     protected static ?string $navigationLabel = 'Merchant Profit Payouts';
 

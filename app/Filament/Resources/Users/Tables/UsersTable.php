@@ -219,7 +219,7 @@ class UsersTable
                         ->form(function (User $record) {
                             $templates = MerchantOutreachService::getCustomerTemplates($record->name, $record->store?->name);
                             $options = collect($templates)->mapWithKeys(fn ($item, $key) => [$key => $item['label']])->toArray();
-                            $options['custom'] = '✏️ Custom Message';
+                            $options['custom'] = 'Custom Message';
 
                             return [
                                 TextInput::make('phone')

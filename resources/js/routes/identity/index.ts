@@ -395,6 +395,318 @@ modification.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
     
     modification.form = modificationForm
+/**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin-validation'
+ */
+export const ninValidation = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ninValidation.url(options),
+    method: 'get',
+})
+
+ninValidation.definition = {
+    methods: ["get","head"],
+    url: '/identity/nin-validation',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin-validation'
+ */
+ninValidation.url = (options?: RouteQueryOptions) => {
+    return ninValidation.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin-validation'
+ */
+ninValidation.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ninValidation.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin-validation'
+ */
+ninValidation.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ninValidation.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin-validation'
+ */
+    const ninValidationForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ninValidation.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin-validation'
+ */
+        ninValidationForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ninValidation.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::ninValidation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/nin-validation'
+ */
+        ninValidationForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ninValidation.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ninValidation.form = ninValidationForm
+/**
+* @see \App\Http\Controllers\ServicesController::validation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/validation'
+ */
+export const validation = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: validation.url(options),
+    method: 'get',
+})
+
+validation.definition = {
+    methods: ["get","head"],
+    url: '/identity/validation',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::validation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/validation'
+ */
+validation.url = (options?: RouteQueryOptions) => {
+    return validation.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::validation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/validation'
+ */
+validation.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: validation.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::validation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/validation'
+ */
+validation.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: validation.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::validation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/validation'
+ */
+    const validationForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: validation.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::validation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/validation'
+ */
+        validationForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: validation.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::validation
+ * @see app/Http/Controllers/ServicesController.php:110
+ * @route '/identity/validation'
+ */
+        validationForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: validation.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    validation.form = validationForm
+/**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe-clearance'
+ */
+export const ipeClearance = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ipeClearance.url(options),
+    method: 'get',
+})
+
+ipeClearance.definition = {
+    methods: ["get","head"],
+    url: '/identity/ipe-clearance',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe-clearance'
+ */
+ipeClearance.url = (options?: RouteQueryOptions) => {
+    return ipeClearance.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe-clearance'
+ */
+ipeClearance.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ipeClearance.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe-clearance'
+ */
+ipeClearance.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ipeClearance.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe-clearance'
+ */
+    const ipeClearanceForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ipeClearance.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe-clearance'
+ */
+        ipeClearanceForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ipeClearance.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::ipeClearance
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe-clearance'
+ */
+        ipeClearanceForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ipeClearance.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ipeClearance.form = ipeClearanceForm
+/**
+* @see \App\Http\Controllers\ServicesController::ipe
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe'
+ */
+export const ipe = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ipe.url(options),
+    method: 'get',
+})
+
+ipe.definition = {
+    methods: ["get","head"],
+    url: '/identity/ipe',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ServicesController::ipe
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe'
+ */
+ipe.url = (options?: RouteQueryOptions) => {
+    return ipe.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ServicesController::ipe
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe'
+ */
+ipe.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ipe.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\ServicesController::ipe
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe'
+ */
+ipe.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ipe.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\ServicesController::ipe
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe'
+ */
+    const ipeForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ipe.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\ServicesController::ipe
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe'
+ */
+        ipeForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ipe.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\ServicesController::ipe
+ * @see app/Http/Controllers/ServicesController.php:115
+ * @route '/identity/ipe'
+ */
+        ipeForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ipe.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    ipe.form = ipeForm
 const identity = {
     nin: Object.assign(nin, ninBd9d09),
 bvn: Object.assign(bvn, bvnC51c8d),
@@ -402,6 +714,10 @@ ninModification: Object.assign(ninModification, ninModification),
 bvnModification: Object.assign(bvnModification, bvnModification),
 modification: Object.assign(modification, modification88c75b),
 verifications: Object.assign(verifications, verifications),
+ninValidation: Object.assign(ninValidation, ninValidation),
+validation: Object.assign(validation, validation),
+ipeClearance: Object.assign(ipeClearance, ipeClearance),
+ipe: Object.assign(ipe, ipe),
 cac: Object.assign(cac, cac),
 cacServices: Object.assign(cacServices, cacServices),
 }

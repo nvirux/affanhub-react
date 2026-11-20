@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\BvnVerificationController::verify
- * @see app/Http/Controllers/BvnVerificationController.php:119
+ * @see app/Http/Controllers/BvnVerificationController.php:125
  * @route '/identity/bvn/verify'
  */
 export const verify = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ verify.definition = {
 
 /**
 * @see \App\Http\Controllers\BvnVerificationController::verify
- * @see app/Http/Controllers/BvnVerificationController.php:119
+ * @see app/Http/Controllers/BvnVerificationController.php:125
  * @route '/identity/bvn/verify'
  */
 verify.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ verify.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\BvnVerificationController::verify
- * @see app/Http/Controllers/BvnVerificationController.php:119
+ * @see app/Http/Controllers/BvnVerificationController.php:125
  * @route '/identity/bvn/verify'
  */
 verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\BvnVerificationController::verify
- * @see app/Http/Controllers/BvnVerificationController.php:119
+ * @see app/Http/Controllers/BvnVerificationController.php:125
  * @route '/identity/bvn/verify'
  */
     const verifyForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -123,7 +123,7 @@ verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\BvnVerificationController::verify
- * @see app/Http/Controllers/BvnVerificationController.php:119
+ * @see app/Http/Controllers/BvnVerificationController.php:125
  * @route '/identity/bvn/verify'
  */
         verifyForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

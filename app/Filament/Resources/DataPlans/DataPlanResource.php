@@ -36,7 +36,7 @@ class DataPlanResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCircleStack;
 
-    protected static UnitEnum|string|null $navigationGroup = '⚡ VTU & Services';
+    protected static UnitEnum|string|null $navigationGroup = 'VTU & Services';
 
     protected static ?int $navigationSort = 4;
 
@@ -90,7 +90,7 @@ class DataPlanResource extends Resource
                     ->nullable()
                     ->placeholder('e.g., 1001'),
                 Toggle::make('is_best_offer')
-                    ->label('HOT 🔥 Best Offer / Featured')
+                    ->label('Best Offer / Featured')
                     ->default(false),
                 Toggle::make('is_active')
                     ->label('Global Active Status')
@@ -134,7 +134,7 @@ class DataPlanResource extends Resource
                     ->label('Validity')
                     ->searchable(),
                 ToggleColumn::make('is_best_offer')
-                    ->label('HOT 🔥 Best Offer'),
+                    ->label('Best Offer'),
                 ToggleColumn::make('is_active')
                     ->label('Active'),
                 TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
@@ -147,7 +147,7 @@ class DataPlanResource extends Resource
                     ->label('Data Type')
                     ->relationship('dataType', 'name'),
                 TernaryFilter::make('is_best_offer')
-                    ->label('Best Offer / HOT 🔥'),
+                    ->label('Best Offer'),
                 TernaryFilter::make('is_active')
                     ->label('Active Status'),
             ])
@@ -158,7 +158,7 @@ class DataPlanResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('bulk_set_tier_margins')
-                        ->label('⚡ Set Tier Margins on Selected')
+                        ->label('Set Tier Margins on Selected')
                         ->icon('heroicon-o-calculator')
                         ->color('warning')
                         ->form([
@@ -346,7 +346,7 @@ class DataPlanResource extends Resource
                         }),
 
                     BulkAction::make('mark_best_offer')
-                        ->label('Set as HOT 🔥 Best Offer')
+                        ->label('Set as Best Offer')
                         ->icon('heroicon-o-fire')
                         ->color('danger')
                         ->requiresConfirmation()

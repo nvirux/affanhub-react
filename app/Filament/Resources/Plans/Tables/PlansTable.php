@@ -66,22 +66,22 @@ class PlansTable
             ])
             ->recordActions([
                 Action::make('set_data_prices')
-                    ->label('⚡ Set Data Prices')
+                    ->label('Set Data Prices')
                     ->icon('heroicon-o-bolt')
                     ->color('warning')
-                    ->modalHeading(fn (Plan $record) => "⚡ Set Data Wholesale Rates for {$record->name} Tier")
+                    ->modalHeading(fn (Plan $record) => "Set Data Wholesale Rates for {$record->name} Tier")
                     ->modalDescription(fn (Plan $record) => "Configure wholesale purchase prices for stores subscribed to {$record->name}.")
                     ->modalSubmitActionLabel('Apply Rates')
                     ->form([
                         Select::make('network_id')
                             ->label('Target Network')
-                            ->options(['all' => '🌐 All Networks'] + Network::where('is_active', true)->pluck('name', 'id')->toArray())
+                            ->options(['all' => 'All Networks'] + Network::where('is_active', true)->pluck('name', 'id')->toArray())
                             ->default('all')
                             ->required(),
 
                         Select::make('data_type_id')
                             ->label('Target Data Type')
-                            ->options(['all' => '📁 All Data Types'] + DataType::where('is_active', true)->pluck('name', 'id')->toArray())
+                            ->options(['all' => 'All Data Types'] + DataType::where('is_active', true)->pluck('name', 'id')->toArray())
                             ->default('all')
                             ->required(),
 

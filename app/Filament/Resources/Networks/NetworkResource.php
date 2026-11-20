@@ -24,7 +24,7 @@ class NetworkResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSignal;
 
-    protected static UnitEnum|string|null $navigationGroup = '⚡ VTU & Services';
+    protected static UnitEnum|string|null $navigationGroup = 'VTU & Services';
 
     protected static ?int $navigationSort = 2;
 

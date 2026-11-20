@@ -43,7 +43,7 @@ class AirtimeCashPromoBannerWidget extends Widget
         if ($isInPromo) {
             return [
                 'type' => 'promo',
-                'title' => '🔥 Special Promotion Active!',
+                'title' => 'Special Promotion Active!',
                 'message' => "Airtime to Cash is unlocked for all store plans free of charge until {$service->promo_until->format('M d, Y')}!",
                 'badge' => 'FREE PROMO',
                 'action_label' => null,

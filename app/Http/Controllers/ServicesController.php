@@ -22,10 +22,7 @@ class ServicesController extends Controller
 
         $services = [];
         foreach ($allServices as $service) {
-            $hasAccess = true;
-            if ($service->feature_id && $service->feature) {
-                $hasAccess = $tenant->hasFeature($service->feature->slug);
-            }
+            $hasAccess = $service->isAccessibleByStore($tenant);
 
             $setting = StoreService::where('store_id', $tenant->id)
                 ->where('service_id', $service->id)
@@ -59,5 +56,64 @@ class ServicesController extends Controller
         return Inertia::render('Storefront/Services', [
             'services' => $services,
         ]);
+    }
+
+    /**
+     * Render the ServiceUnavailable page for any service.
+     */
+    public function showUnavailable(Request $request, string $serviceKey, ?string $customTitle = null, ?string $customCategory = null): Response
+    {
+        $tenant = tenant();
+        $service = Service::where('key', $serviceKey)->first();
+
+        $name = $customTitle ?? ($service?->name ?? ucwords(str_replace(['_', '-'], ' ', $serviceKey)));
+        $category = $customCategory ?? match ($service?->category) {
+            'identity' => 'Identity',
+            default => 'VTU',
+        };
+
+        return Inertia::render('Storefront/ServiceUnavailable', [
+            'serviceName' => $name,
+            'serviceKey' => $serviceKey,
+            'category' => $category,
+            'message' => "{$name} services are currently not active. Please contact support for assistance.",
+            'store' => [
+                'name' => $tenant?->name,
+                'contact_email' => $tenant?->contact_email,
+                'contact_phone' => $tenant?->contact_phone,
+                'whatsapp_chat_phone' => $tenant?->whatsapp_chat_phone,
+                'social_whatsapp' => $tenant?->social_whatsapp,
+            ],
+        ]);
+    }
+
+    public function bulkSms(Request $request): Response
+    {
+        return $this->showUnavailable($request, 'bulk_sms', 'Bulk SMS', 'VTU');
+    }
+
+    public function cable(Request $request): Response
+    {
+        return $this->showUnavailable($request, 'cable', 'Cable TV', 'VTU');
+    }
+
+    public function electricity(Request $request): Response
+    {
+        return $this->showUnavailable($request, 'electricity', 'Electricity Bills', 'VTU');
+    }
+
+    public function education(Request $request): Response
+    {
+        return $this->showUnavailable($request, 'education', 'Exam PINs & Education', 'VTU');
+    }
+
+    public function ninValidation(Request $request): Response
+    {
+        return $this->showUnavailable($request, 'nin_validation', 'NIN Validation', 'Identity');
+    }
+
+    public function ipeClearance(Request $request): Response
+    {
+        return $this->showUnavailable($request, 'ipe_clearance', 'IPE Clearance', 'Identity');
     }
 }

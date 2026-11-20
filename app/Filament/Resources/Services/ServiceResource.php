@@ -2,14 +2,10 @@
 
 namespace App\Filament\Resources\Services;
 
-use App\Models\Feature;
 use App\Models\Plan;
 use App\Models\Service;
 use BackedEnum;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DateTimePicker;
@@ -26,6 +22,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 
 class ServiceResource extends Resource
@@ -34,7 +31,7 @@ class ServiceResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
 
-    protected static UnitEnum|string|null $navigationGroup = '⚡ VTU & Services';
+    protected static UnitEnum|string|null $navigationGroup = 'VTU & Services';
 
     protected static ?int $navigationSort = 1;
 
@@ -54,8 +51,8 @@ class ServiceResource extends Resource
                             ->placeholder('e.g., airtime_cash, nin_verification'),
                         Select::make('category')
                             ->options([
-                                'vtu' => '⚡ VTU Utilities',
-                                'identity' => '🪪 Identity Services',
+                                'vtu' => 'VTU Utilities',
+                                'identity' => 'Identity Services',
                             ])
                             ->required(),
                         TextInput::make('icon')
@@ -74,61 +71,39 @@ class ServiceResource extends Resource
                     ])
                     ->columns(2),
 
-                Section::make('Subscription Plan Access & Feature Gating')
-                    ->description('Define which plans can access this service, or unlock it temporarily with promotions and trials.')
+                Section::make('Subscription Plan Access & Entitlements')
+                    ->description('Define which subscription plans include this service, or unlock it temporarily with promotions and trials.')
                     ->schema([
-                        Select::make('feature_id')
-                            ->label('Linked Plan Feature')
-                            ->relationship('feature', 'name')
-                            ->nullable()
-                            ->placeholder('None (100% Free - Available to all plans)')
-                            ->searchable()
-                            ->preload()
-                            ->createOptionForm([
-                                TextInput::make('name')
-                                    ->required()
-                                    ->placeholder('e.g., Airtime to Cash Access'),
-                                TextInput::make('slug')
-                                    ->required()
-                                    ->unique(Feature::class, 'slug')
-                                    ->placeholder('e.g., vtu_airtime_cash'),
-                                Select::make('type')
-                                    ->options([
-                                        'boolean' => 'Boolean (On / Off)',
-                                        'integer' => 'Integer (Limit / Quota)',
-                                    ])
-                                    ->default('boolean')
-                                    ->required(),
-                                TextInput::make('default_value')
-                                    ->default('false')
-                                    ->helperText('Default value for plans without this feature.'),
-                                Textarea::make('description')
-                                    ->placeholder('Feature description...'),
-                            ])
-                            ->helperText('Select the Feature that subscription plans must have to access this service. Leave blank to make it free for everyone.'),
+                        CheckboxList::make('plans')
+                            ->label('Included in Subscription Plans')
+                            ->relationship('plans', 'name')
+                            ->columns(3)
+                            ->columnSpanFull()
+                            ->helperText('Select which plans grant access to this service. Stores on these plans will be able to turn this service ON on their storefront.'),
 
                         DateTimePicker::make('promo_until')
-                            ->label('🔥 Promotional Global Free Access Until')
+                            ->label('Promotional Global Free Access Until')
                             ->placeholder('No active promotion')
                             ->helperText('If set to a future date, ALL stores (even on Starter) can use this service for free until this date.'),
 
                         TextInput::make('trial_days')
-                            ->label('⏱️ New Store Free Trial Days')
+                            ->label('New Store Free Trial Days')
                             ->numeric()
                             ->minValue(0)
                             ->suffix('days')
                             ->placeholder('e.g., 14')
                             ->helperText('Newly created stores get free trial access to this service for this many days after registration.'),
                     ])
-                    ->columns(3),
+                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderable('sort_order')
+            ->defaultSort('sort_order', 'asc')
             ->columns([
-                TextColumn::make('id')->sortable(),
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()
@@ -141,14 +116,9 @@ class ServiceResource extends Resource
                         default => 'info',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'identity' => '🪪 Identity',
-                        default => '⚡ VTU',
+                        'identity' => 'Identity',
+                        default => 'VTU',
                     }),
-                TextColumn::make('feature.name')
-                    ->label('Linked Feature')
-                    ->placeholder('None (Unlocked)')
-                    ->badge()
-                    ->color('warning'),
                 TextColumn::make('allowed_plans')
                     ->label('Plan Access')
                     ->state(fn (Service $record) => $record->getAllowedPlansSummary())
@@ -162,18 +132,18 @@ class ServiceResource extends Resource
                     ->label('Promo / Trial')
                     ->state(function (Service $record): string {
                         if ($record->isInPromo()) {
-                            return '🔥 Promo until '.$record->promo_until->format('M d, Y');
+                            return 'Promo until '.$record->promo_until->format('M d, Y');
                         }
                         if ($record->trial_days && $record->trial_days > 0) {
-                            return '⏱️ '.$record->trial_days.'d store trial';
+                            return $record->trial_days.'d store trial';
                         }
 
                         return 'Standard';
                     })
                     ->badge()
                     ->color(fn (string $state): string => match (true) {
-                        str_starts_with($state, '🔥') => 'danger',
-                        str_starts_with($state, '⏱️') => 'info',
+                        str_starts_with($state, 'Promo') => 'danger',
+                        str_ends_with($state, 'store trial') => 'info',
                         default => 'gray',
                     }),
                 ToggleColumn::make('is_active')
@@ -181,23 +151,27 @@ class ServiceResource extends Resource
                 TextColumn::make('sort_order')->sortable(),
                 TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('sort_order', 'asc')
             ->recordActions([
                 Action::make('manage_plan_access')
-                    ->label('⚡ Plan Access')
+                    ->label('Plan Access')
                     ->icon('heroicon-o-key')
                     ->color('warning')
-                    ->modalHeading(fn (Service $record) => "⚡ Manage Plan Access: {$record->name}")
+                    ->modalHeading(fn (Service $record) => "Manage Plan Access: {$record->name}")
                     ->modalDescription(fn (Service $record) => "Control which subscription tiers can use {$record->name}, set promotional free dates, or offer new-store trials.")
                     ->modalSubmitActionLabel('Save Access Rules')
                     ->form([
                         Radio::make('access_mode')
                             ->label('Access Policy')
                             ->options([
-                                'free' => '🔓 Free for All Plans (Available to all stores without restrictions)',
-                                'plans' => '🔒 Restricted to Specific Plans (Select which plans unlock this service)',
+                                'free' => 'Free for All Plans (Available to all stores across all plans)',
+                                'plans' => 'Restricted to Specific Plans (Select which plans unlock this service)',
                             ])
-                            ->default(fn (Service $record) => $record->feature_id ? 'plans' : 'free')
+                            ->default(function (Service $record): string {
+                                $allCount = Plan::count();
+                                $currentCount = $record->plans()->count();
+
+                                return ($currentCount > 0 && $currentCount < $allCount) ? 'plans' : 'free';
+                            })
                             ->live()
                             ->required(),
 
@@ -209,25 +183,29 @@ class ServiceResource extends Resource
                             ->helperText('Stores on checked plans will have this service enabled. Stores on unchecked plans will be locked.'),
 
                         DateTimePicker::make('promo_until')
-                            ->label('🔥 Promotional Free Window (Optional)')
+                            ->label('Promotional Free Window (Optional)')
                             ->helperText('Make this service free for ALL stores (even Starter) until this date and time.'),
 
                         TextInput::make('trial_days')
-                            ->label('⏱️ New Store Trial Days (Optional)')
+                            ->label('New Store Trial Days (Optional)')
                             ->numeric()
                             ->minValue(0)
                             ->suffix('days')
                             ->helperText('All new stores get free access to this service for this many days after signup.'),
 
                         Toggle::make('sync_all_stores')
-                            ->label('🔄 Immediately sync StoreService across all stores')
+                            ->label('Immediately sync StoreService across all stores')
                             ->default(true)
                             ->helperText('Ensures all store service entries are created and updated right away.'),
                     ])
                     ->fillForm(function (Service $record): array {
+                        $allCount = Plan::count();
+                        $planIds = $record->plans()->pluck('plans.id')->toArray();
+                        $isRestricted = (! empty($planIds) && count($planIds) < $allCount);
+
                         return [
-                            'access_mode' => $record->feature_id ? 'plans' : 'free',
-                            'allowed_plans' => $record->getAllowedPlanIds(),
+                            'access_mode' => $isRestricted ? 'plans' : 'free',
+                            'allowed_plans' => ! empty($planIds) ? $planIds : Plan::pluck('id')->toArray(),
                             'promo_until' => $record->promo_until,
                             'trial_days' => $record->trial_days,
                             'sync_all_stores' => true,
@@ -235,9 +213,9 @@ class ServiceResource extends Resource
                     })
                     ->action(function (Service $record, array $data): void {
                         if ($data['access_mode'] === 'free') {
-                            $record->feature_id = null;
+                            $record->plans()->sync(Plan::pluck('id')->toArray());
                         } else {
-                            $record->syncPlansAccess($data['allowed_plans'] ?? []);
+                            $record->plans()->sync($data['allowed_plans'] ?? []);
                         }
 
                         $record->promo_until = ! empty($data['promo_until']) ? $data['promo_until'] : null;
@@ -273,13 +251,12 @@ class ServiceResource extends Resource
                     }),
 
                 EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return false;
     }
 
     public static function getPages(): array

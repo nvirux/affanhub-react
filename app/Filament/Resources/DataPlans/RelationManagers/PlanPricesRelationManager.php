@@ -70,7 +70,7 @@ class PlanPricesRelationManager extends RelationManager
                 CreateAction::make()
                     ->label('Add Tier Price'),
                 Action::make('populate_all_tiers')
-                    ->label('⚡ Auto-Populate All Tiers')
+                    ->label('Auto-Populate All Tiers')
                     ->icon('heroicon-o-bolt')
                     ->color('warning')
                     ->requiresConfirmation()

@@ -21,7 +21,7 @@ class FeatureResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAdjustmentsHorizontal;
 
-    protected static UnitEnum|string|null $navigationGroup = '💳 Plans & Monetization';
+    protected static UnitEnum|string|null $navigationGroup = 'Plans & Monetization';
 
     protected static ?int $navigationSort = 2;
 

@@ -26,6 +26,22 @@ class CacController extends Controller
         $user = $request->user();
         $store = tenant();
 
+        if ($store && ! $store->isServiceAvailable('cac_services')) {
+            return Inertia::render('Storefront/ServiceUnavailable', [
+                'serviceName' => 'CAC Registration Services',
+                'serviceKey' => 'cac_services',
+                'category' => 'Identity',
+                'message' => 'Corporate Affairs Commission (CAC) business and company registration services are currently not active. Please contact our support team for assistance.',
+                'store' => [
+                    'name' => $store->name,
+                    'contact_email' => $store->contact_email,
+                    'contact_phone' => $store->contact_phone,
+                    'whatsapp_chat_phone' => $store->whatsapp_chat_phone,
+                    'social_whatsapp' => $store->social_whatsapp,
+                ],
+            ]);
+        }
+
         $mainWallet = method_exists($user, 'wallet') ? $user->wallet('main') : null;
         $walletBalance = (float) ($mainWallet?->balance ?? 0.00);
 
