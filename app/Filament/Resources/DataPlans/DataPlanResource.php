@@ -8,6 +8,7 @@ use App\Models\Network;
 use App\Models\Plan;
 use App\Models\PlanDataPrice;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -101,6 +102,7 @@ class DataPlanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with(['network', 'dataType', 'planPrices.plan']))
             ->columns([
                 TextColumn::make('network.name')
                     ->label('Network')
@@ -123,9 +125,45 @@ class DataPlanResource extends Resource
                     ->state(fn (DataPlan $record) => $record->cost_price !== null ? '₦'.number_format((float) $record->cost_price, 2) : '—')
                     ->sortable(),
                 TextInputColumn::make('selling_price')
-                    ->label('Wholesale Price (₦)')
+                    ->label('Base Wholesale (₦)')
                     ->rules(['nullable', 'numeric', 'min:0'])
                     ->sortable(),
+                TextColumn::make('estimated_profit')
+                    ->label('Est. Profit')
+                    ->state(function (DataPlan $record) {
+                        $cost = (float) $record->cost_price;
+                        $wholesale = (float) $record->selling_price;
+                        if ($cost <= 0 || $wholesale <= 0) {
+                            return '—';
+                        }
+                        $profit = $wholesale - $cost;
+
+                        return ($profit >= 0 ? '+₦' : '-₦').number_format(abs($profit), 2);
+                    })
+                    ->badge()
+                    ->color(fn ($state): string => match (true) {
+                        str_starts_with((string) $state, '+') => 'success',
+                        str_starts_with((string) $state, '-') => 'danger',
+                        default => 'gray',
+                    })
+                    ->sortable(query: fn ($query, $direction) => $query->orderByRaw('(selling_price - cost_price) '.$direction)),
+                TextColumn::make('tier_prices')
+                    ->label('Plan Tier Prices')
+                    ->state(function (DataPlan $record) {
+                        $prices = $record->planPrices->keyBy('plan_id');
+                        $starter = $prices->get(1)?->wholesale_price ?? $record->selling_price;
+                        $pro = $prices->get(2)?->wholesale_price;
+                        $ent = $prices->get(3)?->wholesale_price;
+
+                        $s = $starter !== null ? '₦'.number_format((float) $starter, 0) : '—';
+                        $p = $pro !== null ? '₦'.number_format((float) $pro, 0) : '—';
+                        $e = $ent !== null ? '₦'.number_format((float) $ent, 0) : '—';
+
+                        return "Starter: {$s} | Pro: {$p} | Ent: {$e}";
+                    })
+                    ->badge()
+                    ->color('info')
+                    ->wrap(),
                 TextInputColumn::make('default_retail_price')
                     ->label('Default Retail Price (₦)')
                     ->rules(['required', 'numeric', 'min:0'])
@@ -152,6 +190,96 @@ class DataPlanResource extends Resource
                     ->label('Active Status'),
             ])
             ->recordActions([
+                Action::make('set_tier_pricing')
+                    ->label('Tier Pricing')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->color('warning')
+                    ->modalHeading(fn (DataPlan $record) => "Set Tier Wholesale Pricing - {$record->network?->name} {$record->name}")
+                    ->modalDescription(fn (DataPlan $record) => 'Configure wholesale prices for each subscription plan tier. Upstream provider cost is ₦'.number_format((float) $record->cost_price, 2))
+                    ->modalSubmitActionLabel('Save Tier Prices')
+                    ->fillForm(function (DataPlan $record): array {
+                        $prices = $record->planPrices->keyBy('plan_id');
+
+                        return [
+                            'starter_price' => $prices->get(1)?->wholesale_price ?? $record->selling_price,
+                            'pro_price' => $prices->get(2)?->wholesale_price ?? $record->selling_price,
+                            'enterprise_price' => $prices->get(3)?->wholesale_price ?? $record->selling_price,
+                            'default_retail_price' => $record->default_retail_price,
+                        ];
+                    })
+                    ->form([
+                        Grid::make(3)
+                            ->schema([
+                                TextInput::make('starter_price')
+                                    ->label('Starter Plan Wholesale (₦)')
+                                    ->numeric()
+                                    ->prefix('₦')
+                                    ->helperText('Wholesale price for Starter merchants (also updates base selling_price)')
+                                    ->required(),
+                                TextInput::make('pro_price')
+                                    ->label('Pro Plan Wholesale (₦)')
+                                    ->numeric()
+                                    ->prefix('₦')
+                                    ->helperText('Wholesale price for Pro merchants')
+                                    ->required(),
+                                TextInput::make('enterprise_price')
+                                    ->label('Enterprise Plan Wholesale (₦)')
+                                    ->numeric()
+                                    ->prefix('₦')
+                                    ->helperText('Wholesale price for Enterprise merchants')
+                                    ->required(),
+                            ]),
+                        TextInput::make('default_retail_price')
+                            ->label('Default Customer Retail Price (₦)')
+                            ->numeric()
+                            ->prefix('₦')
+                            ->helperText('Default price displayed on storefronts')
+                            ->required(),
+                    ])
+                    ->action(function (DataPlan $record, array $data): void {
+                        $starterPrice = (float) $data['starter_price'];
+                        $proPrice = (float) $data['pro_price'];
+                        $enterprisePrice = (float) $data['enterprise_price'];
+                        $retailPrice = (float) $data['default_retail_price'];
+
+                        // 1. Update DataPlan base selling_price (Starter wholesale) and default_retail_price
+                        $record->update([
+                            'selling_price' => round($starterPrice, 2),
+                            'default_retail_price' => round($retailPrice, 2),
+                        ]);
+
+                        // 2. Resolve plans by slug/id dynamically
+                        $plans = Plan::whereIn('slug', ['starter', 'pro', 'enterprise'])->get()->keyBy('slug');
+                        $starterPlan = $plans->get('starter') ?? Plan::find(1);
+                        $proPlan = $plans->get('pro') ?? Plan::find(2);
+                        $entPlan = $plans->get('enterprise') ?? Plan::find(3);
+
+                        $tierData = [
+                            $starterPlan?->id => $starterPrice,
+                            $proPlan?->id => $proPrice,
+                            $entPlan?->id => $enterprisePrice,
+                        ];
+
+                        foreach ($tierData as $planId => $price) {
+                            if ($planId) {
+                                PlanDataPrice::updateOrCreate(
+                                    [
+                                        'plan_id' => $planId,
+                                        'data_plan_id' => $record->id,
+                                    ],
+                                    [
+                                        'wholesale_price' => round($price, 2),
+                                    ]
+                                );
+                            }
+                        }
+
+                        Notification::make()
+                            ->title('Tier Wholesale Pricing Updated')
+                            ->body("Wholesale prices for {$record->name} updated successfully.")
+                            ->success()
+                            ->send();
+                    }),
                 EditAction::make(),
                 DeleteAction::make(),
             ])
