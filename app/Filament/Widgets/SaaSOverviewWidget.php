@@ -9,6 +9,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class SaaSOverviewWidget extends BaseWidget
 {
+    protected static ?int $sort = 4;
+
     protected function getStats(): array
     {
         $activeStores = Store::where('status', 'active')->count();

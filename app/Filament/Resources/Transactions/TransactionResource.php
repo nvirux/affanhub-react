@@ -59,8 +59,33 @@ class TransactionResource extends Resource
                     ->color('primary')
                     ->searchable(),
                 TextColumn::make('amount')
+                    ->label('Amount')
                     ->money('NGN')
                     ->weight('bold')
+                    ->sortable(),
+                TextColumn::make('platform_profit')
+                    ->label('Platform Profit')
+                    ->money('NGN')
+                    ->badge()
+                    ->color(fn ($state): string => (float) $state > 0 ? 'success' : 'gray')
+                    ->sortable(),
+                TextColumn::make('profit')
+                    ->label('Store Profit')
+                    ->money('NGN')
+                    ->color('gray')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                TextColumn::make('cost_price')
+                    ->label('Wholesale Cost')
+                    ->money('NGN')
+                    ->color('gray')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                TextColumn::make('vendor_cost')
+                    ->label('Vendor Cost')
+                    ->money('NGN')
+                    ->color('gray')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('reference')
                     ->copyable()
@@ -206,6 +231,13 @@ class TransactionResource extends Resource
                     }),
             ])
             ->defaultSort('created_at', 'desc');
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            Widgets\TransactionProfitStatsWidget::class,
+        ];
     }
 
     public static function getPages(): array

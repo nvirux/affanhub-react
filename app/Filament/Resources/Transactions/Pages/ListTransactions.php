@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Transactions\Pages;
 
 use App\Filament\Resources\Transactions\TransactionResource;
+use App\Filament\Resources\Transactions\Widgets\TransactionProfitStatsWidget;
 use App\Models\Transaction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -11,6 +12,13 @@ use Illuminate\Database\Eloquent\Builder;
 class ListTransactions extends ListRecords
 {
     protected static string $resource = TransactionResource::class;
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            TransactionProfitStatsWidget::class,
+        ];
+    }
 
     public function getTabs(): array
     {
