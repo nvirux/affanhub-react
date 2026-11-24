@@ -81,6 +81,13 @@ class DataPlanResource extends Resource
                     ->prefix('₦')
                     ->nullable()
                     ->placeholder('e.g., 220.00'),
+                TextInput::make('min_profit')
+                    ->label('Guaranteed Min Profit Floor (₦)')
+                    ->helperText('Optional. Plan-specific minimum profit floor. If left empty, global tier settings apply.')
+                    ->numeric()
+                    ->prefix('₦')
+                    ->nullable()
+                    ->placeholder('e.g., 20.00'),
                 TextInput::make('default_retail_price')
                     ->label('Default Customer Retail Price (₦)')
                     ->numeric()
@@ -129,17 +136,23 @@ class DataPlanResource extends Resource
                     ->label('Base Wholesale (₦)')
                     ->rules(['nullable', 'numeric', 'min:0'])
                     ->sortable(),
+                TextInputColumn::make('min_profit')
+                    ->label('Min Profit Floor (₦)')
+                    ->rules(['nullable', 'numeric', 'min:0'])
+                    ->sortable(),
                 TextColumn::make('estimated_profit')
                     ->label('Est. Profit')
                     ->state(function (DataPlan $record) {
                         $cost = (float) $record->cost_price;
                         $wholesale = (float) $record->selling_price;
-                        if ($cost <= 0 || $wholesale <= 0) {
+                        if ($cost <= 0) {
                             return '—';
                         }
-                        $profit = $wholesale - $cost;
+                        $floorMargin = $record->getMinProfitFloor('starter');
+                        $effectiveWholesale = max($wholesale, $cost + $floorMargin);
+                        $profit = $effectiveWholesale - $cost;
 
-                        return ($profit >= 0 ? '+₦' : '-₦').number_format(abs($profit), 2);
+                        return '+₦'.number_format($profit, 2);
                     })
                     ->description(function (DataPlan $record) {
                         $cost = (float) $record->cost_price;
@@ -150,17 +163,15 @@ class DataPlanResource extends Resource
                         $pro = $prices->get(2)?->wholesale_price;
                         $ent = $prices->get(3)?->wholesale_price;
 
-                        $parts = [];
-                        if ($pro !== null) {
-                            $diff = (float) $pro - $cost;
-                            $parts[] = 'Pro: '.($diff >= 0 ? '+₦' : '-₦').number_format(abs($diff), 0);
-                        }
-                        if ($ent !== null) {
-                            $diff = (float) $ent - $cost;
-                            $parts[] = 'Ent: '.($diff >= 0 ? '+₦' : '-₦').number_format(abs($diff), 0);
-                        }
+                        $proFloor = $record->getMinProfitFloor('pro');
+                        $proEffective = $pro !== null ? max((float) $pro, $cost + $proFloor) : ($cost + $proFloor);
+                        $proDiff = $proEffective - $cost;
 
-                        return ! empty($parts) ? implode(' · ', $parts) : null;
+                        $entFloor = $record->getMinProfitFloor('enterprise');
+                        $entEffective = $ent !== null ? max((float) $ent, $cost + $entFloor) : ($cost + $entFloor);
+                        $entDiff = $entEffective - $cost;
+
+                        return 'Pro: +₦'.number_format($proDiff, 0).' · Ent: +₦'.number_format($entDiff, 0);
                     })
                     ->badge()
                     ->color(fn ($state): string => match (true) {
@@ -168,7 +179,7 @@ class DataPlanResource extends Resource
                         str_starts_with((string) $state, '-') => 'danger',
                         default => 'gray',
                     })
-                    ->sortable(query: fn ($query, $direction) => $query->orderByRaw('(selling_price - cost_price) '.$direction)),
+                    ->sortable(query: fn ($query, $direction) => $query->orderByRaw('(COALESCE(selling_price, 0) - COALESCE(cost_price, 0)) '.$direction)),
                 TextColumn::make('tier_prices')
                     ->label('Plan Tier Prices')
                     ->state(function (DataPlan $record) {
@@ -178,21 +189,18 @@ class DataPlanResource extends Resource
                         $pro = $prices->get(2)?->wholesale_price;
                         $ent = $prices->get(3)?->wholesale_price;
 
-                        $fmt = function ($price) use ($cost) {
-                            if ($price === null) {
-                                return '—';
+                        $fmt = function ($price, $tierSlug) use ($cost, $record) {
+                            $floor = $record->getMinProfitFloor($tierSlug);
+                            if ($cost <= 0) {
+                                return $price !== null ? '₦'.number_format((float) $price, 0) : '—';
                             }
-                            $val = (float) $price;
-                            $str = '₦'.number_format($val, 0);
-                            if ($cost > 0) {
-                                $diff = $val - $cost;
-                                $str .= ' ('.($diff >= 0 ? '+' : '').'₦'.number_format($diff, 0).')';
-                            }
+                            $val = $price !== null ? max((float) $price, $cost + $floor) : ($cost + $floor);
+                            $diff = $val - $cost;
 
-                            return $str;
+                            return '₦'.number_format($val, 0).' (+₦'.number_format($diff, 0).')';
                         };
 
-                        return "Starter: {$fmt($starter)} | Pro: {$fmt($pro)} | Ent: {$fmt($ent)}";
+                        return "Starter: {$fmt($starter, 'starter')} | Pro: {$fmt($pro, 'pro')} | Ent: {$fmt($ent, 'enterprise')}";
                     })
                     ->badge()
                     ->color('info')

@@ -17,6 +17,7 @@ class DataPlan extends Model
         'validity',
         'cost_price',
         'selling_price',
+        'min_profit',
         'default_retail_price',
         'plan_code',
         'is_active',
@@ -26,6 +27,7 @@ class DataPlan extends Model
     protected $casts = [
         'cost_price' => 'decimal:2',
         'selling_price' => 'decimal:2',
+        'min_profit' => 'decimal:2',
         'default_retail_price' => 'decimal:2',
         'is_active' => 'boolean',
         'is_best_offer' => 'boolean',
@@ -50,6 +52,27 @@ class DataPlan extends Model
     public function storeDataPlans()
     {
         return $this->hasMany(StoreDataPlan::class);
+    }
+
+    /**
+     * Resolve the minimum profit margin floor for this data plan.
+     * Prioritizes the plan's custom min_profit if configured, otherwise falls back to tier platform settings.
+     */
+    public function getMinProfitFloor(string $tierSlug = 'starter'): float
+    {
+        if ($this->min_profit !== null && (float) $this->min_profit > 0) {
+            return (float) $this->min_profit;
+        }
+
+        $minPlatformMargin = match ($tierSlug) {
+            'enterprise' => (float) PlatformSetting::get('vtu_min_profit_enterprise', 5.00),
+            'pro' => (float) PlatformSetting::get('vtu_min_profit_pro', 10.00),
+            default => (float) PlatformSetting::get('vtu_min_profit_starter', 15.00),
+        };
+
+        $minFloor = (float) PlatformSetting::get('vtu_min_platform_profit_floor', 5.00);
+
+        return max($minPlatformMargin, $minFloor);
     }
 
     /**

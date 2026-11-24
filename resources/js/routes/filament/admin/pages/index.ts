@@ -156,6 +156,84 @@ platformPaymentSettings.head = (options?: RouteQueryOptions): RouteDefinition<'h
     
     platformPaymentSettings.form = platformPaymentSettingsForm
 /**
+* @see \App\Filament\Pages\PlatformVtuProfitSettings::__invoke
+ * @see app/Filament/Pages/PlatformVtuProfitSettings.php:7
+ * @route '//admin.localhost/platform-vtu-profit-settings'
+ */
+export const platformVtuProfitSettings = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: platformVtuProfitSettings.url(options),
+    method: 'get',
+})
+
+platformVtuProfitSettings.definition = {
+    methods: ["get","head"],
+    url: '//admin.localhost/platform-vtu-profit-settings',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Filament\Pages\PlatformVtuProfitSettings::__invoke
+ * @see app/Filament/Pages/PlatformVtuProfitSettings.php:7
+ * @route '//admin.localhost/platform-vtu-profit-settings'
+ */
+platformVtuProfitSettings.url = (options?: RouteQueryOptions) => {
+    return platformVtuProfitSettings.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Filament\Pages\PlatformVtuProfitSettings::__invoke
+ * @see app/Filament/Pages/PlatformVtuProfitSettings.php:7
+ * @route '//admin.localhost/platform-vtu-profit-settings'
+ */
+platformVtuProfitSettings.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: platformVtuProfitSettings.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Filament\Pages\PlatformVtuProfitSettings::__invoke
+ * @see app/Filament/Pages/PlatformVtuProfitSettings.php:7
+ * @route '//admin.localhost/platform-vtu-profit-settings'
+ */
+platformVtuProfitSettings.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: platformVtuProfitSettings.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Filament\Pages\PlatformVtuProfitSettings::__invoke
+ * @see app/Filament/Pages/PlatformVtuProfitSettings.php:7
+ * @route '//admin.localhost/platform-vtu-profit-settings'
+ */
+    const platformVtuProfitSettingsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: platformVtuProfitSettings.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Filament\Pages\PlatformVtuProfitSettings::__invoke
+ * @see app/Filament/Pages/PlatformVtuProfitSettings.php:7
+ * @route '//admin.localhost/platform-vtu-profit-settings'
+ */
+        platformVtuProfitSettingsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: platformVtuProfitSettings.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Filament\Pages\PlatformVtuProfitSettings::__invoke
+ * @see app/Filament/Pages/PlatformVtuProfitSettings.php:7
+ * @route '//admin.localhost/platform-vtu-profit-settings'
+ */
+        platformVtuProfitSettingsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: platformVtuProfitSettings.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    platformVtuProfitSettings.form = platformVtuProfitSettingsForm
+/**
 * @see \Filament\Pages\Dashboard::__invoke
  * @see vendor/filament/filament/src/Pages/Dashboard.php:7
  * @route '//admin.localhost'
@@ -236,6 +314,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 const pages = {
     platformMobileAppSettings: Object.assign(platformMobileAppSettings, platformMobileAppSettings),
 platformPaymentSettings: Object.assign(platformPaymentSettings, platformPaymentSettings),
+platformVtuProfitSettings: Object.assign(platformVtuProfitSettings, platformVtuProfitSettings),
 dashboard: Object.assign(dashboard, dashboard),
 }
 

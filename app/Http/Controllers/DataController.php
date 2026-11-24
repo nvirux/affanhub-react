@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DataPlan;
 use App\Models\DataType;
 use App\Models\Network;
+use App\Models\PlatformSetting;
 use App\Models\StoreDataPlan;
 use App\Services\Vtu\DataService;
 use Illuminate\Http\Request;
@@ -38,11 +39,22 @@ class DataController extends Controller
             ->get()
             ->keyBy('data_plan_id');
 
-        $formattedPlans = $plans->map(function ($plan) use ($customStorePlans) {
+        $minMerchantMargin = (float) PlatformSetting::get('vtu_min_merchant_margin', 15.00);
+
+        $formattedPlans = $plans->map(function ($plan) use ($customStorePlans, $minMerchantMargin) {
             $custom = $customStorePlans->get($plan->id);
             $retailPrice = $custom ? (float) $custom->selling_price : (float) $plan->default_retail_price;
             $isEnabled = $custom ? (bool) $custom->is_enabled : (bool) $plan->is_active;
             $isBestOffer = ($custom && $custom->is_best_offer !== null) ? (bool) $custom->is_best_offer : (bool) $plan->is_best_offer;
+
+            // Guarantee retail floor protection so customer sees the exact price they are debited
+            if ($custom) {
+                $wholesale = $custom->getWholesaleCost();
+                $floorRetail = round($wholesale + $minMerchantMargin, 2);
+                if ($retailPrice < $floorRetail) {
+                    $retailPrice = $floorRetail;
+                }
+            }
 
             return [
                 'id' => $plan->id,

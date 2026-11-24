@@ -4,6 +4,7 @@ namespace App\Services\Vtu;
 
 use App\Models\DataPlan;
 use App\Models\PlanDataPrice;
+use App\Models\PlatformSetting;
 use App\Models\Service;
 use App\Models\Store;
 use App\Models\StoreDataPlan;
@@ -73,10 +74,10 @@ class DataService
 
         // Resolve exact wholesale cost based on store's active subscription tier (e.g. Pro, Enterprise)
         $resellerWholesaleCost = (float) ($storeDataPlan->getWholesaleCost() ?? 0.0);
-        if ($resellerWholesaleCost <= 0) {
-            $subscription = $store->activeSubscription
-                ?? Subscription::where('store_id', $store->id)->whereIn('status', ['active', 'trialing'])->latest()->first();
+        $subscription = $store->activeSubscription
+            ?? Subscription::with('plan')->where('store_id', $store->id)->whereIn('status', ['active', 'trialing'])->latest()->first();
 
+        if ($resellerWholesaleCost <= 0) {
             $tierPrice = null;
             if ($subscription && $subscription->plan_id) {
                 $tierPrice = PlanDataPrice::where('plan_id', $subscription->plan_id)
@@ -90,6 +91,26 @@ class DataService
         }
 
         $vendorCost = (float) ($dataPlan->cost_price ?? $resellerWholesaleCost);
+
+        // Guaranteed Minimum Platform Profit Floor Engine
+        // Prioritizes plan-specific min_profit if configured, otherwise falls back to tier platform settings
+        $planSlug = strtolower((string) ($subscription?->plan?->slug ?? 'starter'));
+        $minPlatformMargin = $dataPlan->getMinProfitFloor($planSlug);
+
+        $floorWholesalePrice = round($vendorCost + $minPlatformMargin, 2);
+        if ($resellerWholesaleCost < $floorWholesalePrice) {
+            $resellerWholesaleCost = $floorWholesalePrice;
+        }
+
+        // Guaranteed Merchant Protection Floor Engine:
+        // Ensure customer retail price is at least wholesale cost + minimum merchant margin
+        $minMerchantMargin = (float) PlatformSetting::get('vtu_min_merchant_margin', 15.00);
+        $floorRetailPrice = round($resellerWholesaleCost + $minMerchantMargin, 2);
+        if ($customerRetailPrice < $floorRetailPrice) {
+            $customerRetailPrice = $floorRetailPrice;
+            $facePrice = $customerRetailPrice;
+        }
+
         $profitMargin = max(0, round($customerRetailPrice - $resellerWholesaleCost, 2));
         $platformProfit = max(0, round($resellerWholesaleCost - $vendorCost, 2));
 

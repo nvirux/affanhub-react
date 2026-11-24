@@ -82,7 +82,7 @@ airtime.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     airtime.form = airtimeForm
 /**
 * @see \App\Http\Controllers\DataController::data
- * @see app/Http/Controllers/DataController.php:22
+ * @see app/Http/Controllers/DataController.php:23
  * @route '/vtu/data'
  */
 export const data = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ data.definition = {
 
 /**
 * @see \App\Http\Controllers\DataController::data
- * @see app/Http/Controllers/DataController.php:22
+ * @see app/Http/Controllers/DataController.php:23
  * @route '/vtu/data'
  */
 data.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ data.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DataController::data
- * @see app/Http/Controllers/DataController.php:22
+ * @see app/Http/Controllers/DataController.php:23
  * @route '/vtu/data'
  */
 data.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -115,7 +115,7 @@ data.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\DataController::data
- * @see app/Http/Controllers/DataController.php:22
+ * @see app/Http/Controllers/DataController.php:23
  * @route '/vtu/data'
  */
 data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -125,7 +125,7 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\DataController::data
- * @see app/Http/Controllers/DataController.php:22
+ * @see app/Http/Controllers/DataController.php:23
  * @route '/vtu/data'
  */
     const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -135,7 +135,7 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\DataController::data
- * @see app/Http/Controllers/DataController.php:22
+ * @see app/Http/Controllers/DataController.php:23
  * @route '/vtu/data'
  */
         dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -144,7 +144,7 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\DataController::data
- * @see app/Http/Controllers/DataController.php:22
+ * @see app/Http/Controllers/DataController.php:23
  * @route '/vtu/data'
  */
         dataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

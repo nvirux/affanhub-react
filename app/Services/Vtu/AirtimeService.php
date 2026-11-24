@@ -5,6 +5,7 @@ namespace App\Services\Vtu;
 use App\Models\AirtimeDiscount;
 use App\Models\Network;
 use App\Models\PlanAirtimeDiscount;
+use App\Models\PlatformSetting;
 use App\Models\Service;
 use App\Models\Store;
 use App\Models\StoreAirtimeDiscount;
@@ -79,11 +80,28 @@ class AirtimeService
             ? (float) $storeDiscount->max_amount
             : ($tierMax ?? $globalMax);
 
-        // 5. Calculations
+        // 5. Calculations & Guaranteed Profit Floor Engine
         $globalBuyDiscount = $global ? (float) $global->buy_discount : 3.00;
+
+        // Guaranteed Minimum Platform Airtime Profit Floor Engine:
+        // Platform always retains at least vtu_min_airtime_profit_percent (default 0.50%)
+        $minAirtimeProfitPercent = (float) PlatformSetting::get('vtu_min_airtime_profit_percent', 0.50);
+        $maxAllowedWholesaleDiscount = max(0.0, round($globalBuyDiscount - $minAirtimeProfitPercent, 2));
+
+        if ($effectiveWholesaleDiscount > $maxAllowedWholesaleDiscount) {
+            $effectiveWholesaleDiscount = $maxAllowedWholesaleDiscount;
+        }
+
         $vendorCost = round($faceAmount * (1 - ($globalBuyDiscount / 100)), 2);
-        $customerRetailPrice = round($faceAmount * (1 - ($effectiveRetailDiscount / 100)), 2);
         $storeWholesaleCost = round($faceAmount * (1 - ($effectiveWholesaleDiscount / 100)), 2);
+        $customerRetailPrice = round($faceAmount * (1 - ($effectiveRetailDiscount / 100)), 2);
+
+        // Merchant Protection: Retail price cannot be lower than wholesale cost
+        if ($customerRetailPrice < $storeWholesaleCost) {
+            $customerRetailPrice = $storeWholesaleCost;
+            $effectiveRetailDiscount = $effectiveWholesaleDiscount;
+        }
+
         $discountAmount = max(0, round($faceAmount - $customerRetailPrice, 2));
         $profitMargin = max(0, round($customerRetailPrice - $storeWholesaleCost, 2));
         $platformProfit = max(0, round($storeWholesaleCost - $vendorCost, 2));
